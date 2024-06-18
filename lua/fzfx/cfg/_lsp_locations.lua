@@ -15,11 +15,15 @@ local previewers_helper = require("fzfx.helper.previewers")
 local PreviewerTypeEnum = require("fzfx.schema").PreviewerTypeEnum
 
 -- Please see:
--- Microsoft LSP specification: https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/
+-- LSP specification: https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/
 -- Neovim LSP manual: https://neovim.io/doc/user/lsp.html
 
 local M = {}
 
+-- Please see:
+-- LSP specification - Location: https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#location
+-- LSP specification - LocationLink: https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#locationLink
+--
 --- @alias fzfx.LspRangeStart {line:integer,character:integer}
 --- @alias fzfx.LspRangeEnd {line:integer,character:integer}
 --- @alias fzfx.LspRange {start:fzfx.LspRangeStart,end:fzfx.LspRangeEnd}
@@ -155,8 +159,9 @@ end
 
 -- locations {
 
--- lsp methods: https://github.com/neovim/neovim/blob/dc9f7b814517045b5354364655f660aae0989710/runtime/lua/vim/lsp/protocol.lua#L1028
--- lsp capabilities: https://github.com/neovim/neovim/blob/dc9f7b814517045b5354364655f660aae0989710/runtime/lua/vim/lsp.lua#L39
+-- Please see:
+-- Neovim LSP methods: https://github.com/neovim/neovim/blob/dc9f7b814517045b5354364655f660aae0989710/runtime/lua/vim/lsp/protocol.lua#L1028
+-- Neovim LSP capabilities: https://github.com/neovim/neovim/blob/dc9f7b814517045b5354364655f660aae0989710/runtime/lua/vim/lsp.lua#L39
 --
 --- @alias fzfx.LspMethod "textDocument/definition"|"textDocument/type_definition"|"textDocument/references"|"textDocument/implementation"|"callHierarchy/incomingCalls"|"callHierarchy/outgoingCalls"|"textDocument/prepareCallHierarchy"
 --- @alias fzfx.LspServerCapability "definitionProvider"|"typeDefinitionProvider"|"referencesProvider"|"implementationProvider"|"callHierarchyProvider"
