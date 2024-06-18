@@ -78,8 +78,7 @@ jobs:
           sudo apt-get -y -qq install bat
           sudo apt-get -y -qq install fzf
           luarocks install luacov
-          luarocks install luacov-reporter-lcov
-          luarocks install vusted
+          luarocks --lua-version=5.1 install vusted
           vusted --coverage ./spec
       - name: Generate Reports
         run: |
@@ -91,10 +90,10 @@ jobs:
           ls -l .
           echo "tail ./luacov.report.out"
           tail -n 50 ./luacov.report.out
-          cp luacov.report.out luacov.report.txt
+          # cp luacov.report.out luacov.report.txt
       - uses: codecov/codecov-action@v4
         with:
-          files: luacov.report.txt
+          files: luacov.report.out
         env:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
   release:
