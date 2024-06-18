@@ -22,7 +22,7 @@ https://github.com/linrongbin16/fzfx.nvim/assets/6496887/b5e2b0dc-4dd6-4c18-b1da
 
 - [Features](#-features)
 - [Requirements](#-requirements)
-  - [For Windows](#for-windows)
+  - [Windows](#windows)
 - [Install](#-install)
 - [Usage](#-usage)
   - [Files & Buffers](#files--buffers)
@@ -78,7 +78,7 @@ https://github.com/linrongbin16/fzfx.nvim/assets/6496887/b5e2b0dc-4dd6-4c18-b1da
 - [delta](https://github.com/dandavison/delta) (**optional** for preview git diff, show, blame).
 - [lsd](https://github.com/lsd-rs/lsd)/[eza](https://github.com/eza-community/eza) (**optional** for file explorer, by default use [ls](https://man7.org/linux/man-pages/man1/ls.1.html)).
 
-### For Windows
+### Windows
 
 Windows users will have to install the linux shell environment and core utils, since basic shell commands such as `echo`, `mkdir` are internally required.
 
