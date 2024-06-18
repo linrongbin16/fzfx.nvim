@@ -550,15 +550,19 @@ M._lsp_position_context_maker = function()
   return context
 end
 
--- if you want to use fzf-builtin previewer with bat, please use below configs:
+-- If you want to use fzf-builtin previewer with bat, please use below configs:
 --
+-- ```
 -- previewer = previewers_helper.preview_files_grep
 -- previewer_type = PreviewerTypeEnum.COMMAND_LIST
-
--- if you want to use nvim buffer previewer, please use below configs:
+-- ```
 --
+-- If you want to use nvim buffer previewer, please use below configs:
+--
+-- ```
 -- previewer = previewers_helper.buffer_preview_files_grep
 -- previewer_type = PreviewerTypeEnum.BUFFER_FILE
+-- ```
 
 local previewer = switches.buffer_previewer_disabled() and previewers_helper.preview_files_grep
   or previewers_helper.buffer_preview_files_grep
