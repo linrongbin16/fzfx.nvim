@@ -50,18 +50,17 @@ describe("fzfx.cfg.file_explorer", function()
       ".rw-r--r--   28k linrongbin  8 Oct 11:37  README.md",
       "drwxr-xr-x     - linrongbin  8 Oct 11:44  test",
     }
-    it("_file_explorer_context_maker", function()
-      local ctx = file_explorer_cfg._file_explorer_context_maker()
-      -- print(string.format("file explorer context:%s\n", vim.inspect(ctx)))
+    it("_context_maker", function()
+      local ctx = file_explorer_cfg._context_maker()
       assert_eq(type(ctx), "table")
       assert_true(ctx.bufnr > 0)
       assert_true(ctx.winnr > 0)
       assert_true(ctx.tabnr > 0)
       assert_true(vim.fn.filereadable(ctx.cwd) > 0)
     end)
-    it("_make_file_explorer_provider", function()
-      local ctx = file_explorer_cfg._file_explorer_context_maker()
-      local f1 = file_explorer_cfg._make_file_explorer_provider("-lh")
+    it("_make_provider", function()
+      local ctx = file_explorer_cfg._context_maker()
+      local f1 = file_explorer_cfg._make_provider("-lh")
       assert_eq(type(f1), "function")
       local actual1 = f1("", ctx)
       -- print(
@@ -81,7 +80,7 @@ describe("fzfx.cfg.file_explorer", function()
           path.normalize(vim.fn.getcwd(), { double_backslash = true, expand = true })
         ) > 0
       )
-      local f2 = file_explorer_cfg._make_file_explorer_provider("-lha")
+      local f2 = file_explorer_cfg._make_provider("-lha")
       assert_eq(type(f2), "function")
       local actual2 = f2("", ctx)
       -- print(
@@ -120,11 +119,11 @@ describe("fzfx.cfg.file_explorer", function()
         assert_eq(actual[5], "lua/fzfx/config.lua")
       end
     end)
-    it("_file_explorer_previewer", function()
-      local ctx = file_explorer_cfg._file_explorer_context_maker()
+    it("_previewer", function()
+      local ctx = file_explorer_cfg._context_maker()
       if constants.HAS_LSD then
         for _, line in ipairs(LSD_LINES) do
-          local actual = file_explorer_cfg._file_explorer_previewer(line, ctx)
+          local actual = file_explorer_cfg._previewer(line, ctx)
           if actual ~= nil then
             assert_eq(type(actual), "table")
             assert_true(actual[1] == constants.BAT or actual[1] == "cat" or actual[1] == "lsd")
@@ -132,7 +131,7 @@ describe("fzfx.cfg.file_explorer", function()
         end
       elseif constants.HAS_EZA then
         for _, line in ipairs(EZA_LINES) do
-          local actual = file_explorer_cfg._file_explorer_previewer(line, ctx)
+          local actual = file_explorer_cfg._previewer(line, ctx)
           if actual ~= nil then
             assert_eq(type(actual), "table")
             assert_true(
@@ -142,7 +141,7 @@ describe("fzfx.cfg.file_explorer", function()
         end
       else
         for _, line in ipairs(LS_LINES) do
-          local actual = file_explorer_cfg._file_explorer_previewer(line, ctx)
+          local actual = file_explorer_cfg._previewer(line, ctx)
           if actual ~= nil then
             assert_eq(type(actual), "table")
             assert_true(actual[1] == constants.BAT or actual[1] == "cat" or actual[1] == "ls")
@@ -151,7 +150,7 @@ describe("fzfx.cfg.file_explorer", function()
       end
     end)
     it("_cd_file_explorer", function()
-      local ctx = file_explorer_cfg._file_explorer_context_maker()
+      local ctx = file_explorer_cfg._context_maker()
       if constants.HAS_LSD then
         for _, line in ipairs(LSD_LINES) do
           local actual = file_explorer_cfg._cd_file_explorer(line, ctx)
@@ -170,7 +169,7 @@ describe("fzfx.cfg.file_explorer", function()
       end
     end)
     it("_upper_file_explorer", function()
-      local ctx = file_explorer_cfg._file_explorer_context_maker()
+      local ctx = file_explorer_cfg._context_maker()
       if constants.HAS_LSD then
         for _, line in ipairs(LSD_LINES) do
           local actual = file_explorer_cfg._upper_file_explorer(line, ctx)

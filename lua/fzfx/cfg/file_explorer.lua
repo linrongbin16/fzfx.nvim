@@ -2,7 +2,7 @@ local str = require("fzfx.commons.str")
 local path = require("fzfx.commons.path")
 local fileio = require("fzfx.commons.fileio")
 
-local constants = require("fzfx.lib.constants")
+local consts = require("fzfx.lib.constants")
 local shells = require("fzfx.lib.shells")
 local log = require("fzfx.lib.log")
 local LogLevels = require("fzfx.lib.log").LogLevels
@@ -81,76 +81,124 @@ M.variants = {
   },
 }
 
---- @param ls_args "-lh"|"-lha"
+--- @param opts {include_hidden:boolean?}?
+--- @return "-lh"|"-lha"
+M._parse_opts = function(opts)
+  opts = opts or {}
+  local include_hidden = opts.include_hidden or false
+  return include_hidden and "-lha" or "-lh"
+end
+
+--- @param opts {include_hidden:boolean?}?
 --- @return fun(query:string, context:fzfx.FileExplorerPipelineContext):string?
-M._make_file_explorer_provider = function(ls_args)
+M._make_provider_lsd = function(opts)
+  local args = M._parse_opts(opts)
+
   --- @param query string
   --- @param context fzfx.FileExplorerPipelineContext
   --- @return string?
   local function impl(query, context)
-    local cwd = fileio.readfile(context.cwd)
-    if constants.HAS_LSD then
-      return constants.HAS_ECHO
-          and string.format(
-            "echo %s && lsd %s --color=always --header -- %s",
-            shells.shellescape(cwd --[[@as string]]),
-            ls_args,
-            shells.shellescape(cwd --[[@as string]])
-          )
-        or string.format(
-          "lsd %s --color=always --header -- %s",
-          ls_args,
-          shells.shellescape(cwd --[[@as string]])
+    local cwd = fileio.readfile(context.cwd) --[[@as string]]
+    return consts.HAS_ECHO
+        and string.format(
+          "echo %s && lsd %s --color=always --header -- %s",
+          shells.shellescape(cwd),
+          args,
+          shells.shellescape(cwd)
         )
-    elseif constants.HAS_EZA then
-      if str.endswith(ls_args, "a") then
-        ls_args = ls_args .. "a"
-      end
-      return constants.HAS_ECHO
-          and string.format(
-            "echo %s && %s --color=always %s -- %s",
-            shells.shellescape(cwd --[[@as string]]),
-            constants.EZA,
-            ls_args,
-            shells.shellescape(cwd --[[@as string]])
-          )
-        or string.format(
-          "%s --color=always %s -- %s",
-          constants.EZA,
-          ls_args,
-          shells.shellescape(cwd --[[@as string]])
-        )
-    elseif constants.HAS_LS then
-      return constants.HAS_ECHO
-          and string.format(
-            "echo %s && ls --color=always %s %s",
-            shells.shellescape(cwd --[[@as string]]),
-            ls_args,
-            shells.shellescape(cwd --[[@as string]])
-          )
-        or string.format(
-          "ls --color=always %s %s",
-          ls_args,
-          shells.shellescape(cwd --[[@as string]])
-        )
-    else
-      log.echo(LogLevels.INFO, "no ls/eza/exa command found.")
-      return nil
-    end
+      or string.format("lsd %s --color=always --header -- %s", args, shells.shellescape(cwd))
   end
 
   return impl
 end
 
+--- @param opts {include_hidden:boolean?}?
+--- @return fun(query:string, context:fzfx.FileExplorerPipelineContext):string?
+M._make_provider_eza = function(opts)
+  local args = M._parse_opts(opts)
+
+  --- @param query string
+  --- @param context fzfx.FileExplorerPipelineContext
+  --- @return string?
+  local function impl(query, context)
+    local cwd = fileio.readfile(context.cwd) --[[@as string]]
+    if str.endswith(args, "a") then
+      -- eza need double 'a' to show '.' and '..' directories
+      args = args .. "a"
+    end
+    return consts.HAS_ECHO
+        and string.format(
+          "echo %s && %s --color=always %s -- %s",
+          shells.shellescape(cwd),
+          consts.EZA,
+          args,
+          shells.shellescape(cwd)
+        )
+      or string.format("%s --color=always %s -- %s", consts.EZA, args, shells.shellescape(cwd))
+  end
+
+  return impl
+end
+
+--- @param opts {include_hidden:boolean?}?
+--- @return fun(query:string, context:fzfx.FileExplorerPipelineContext):string?
+M._make_provider_ls = function(opts)
+  local args = M._parse_opts(opts)
+
+  --- @param query string
+  --- @param context fzfx.FileExplorerPipelineContext
+  --- @return string?
+  local function impl(query, context)
+    local cwd = fileio.readfile(context.cwd) --[[@as string]]
+    return consts.HAS_ECHO
+        and string.format(
+          "echo %s && ls --color=always %s %s",
+          shells.shellescape(cwd),
+          args,
+          shells.shellescape(cwd)
+        )
+      or string.format("ls --color=always %s %s", args, shells.shellescape(cwd))
+  end
+
+  return impl
+end
+
+--- @return fun(query:string, context:fzfx.FileExplorerPipelineContext):string?
+M._make_provider_dummy = function()
+  --- @param query string
+  --- @param context fzfx.FileExplorerPipelineContext
+  --- @return string?
+  local function impl(query, context)
+    log.echo(LogLevels.INFO, "no ls/eza/exa command found.")
+    return nil
+  end
+
+  return impl
+end
+
+--- @param opts {include_hidden:boolean?}?
+--- @return fun(query:string, context:fzfx.FileExplorerPipelineContext):string?
+M._make_provider = function(opts)
+  if consts.HAS_LSD then
+    return M._make_provider_lsd(opts)
+  elseif consts.HAS_EZA then
+    return M._make_provider_eza(opts)
+  elseif consts.HAS_LS then
+    return M._make_provider_ls(opts)
+  else
+    return M._make_provider_dummy()
+  end
+end
+
 M.providers = {
   filter_hidden = {
     key = "ctrl-r",
-    provider = M._make_file_explorer_provider("-lh"),
+    provider = M._make_provider(),
     provider_type = ProviderTypeEnum.COMMAND,
   },
   include_hidden = {
     key = "ctrl-u",
-    provider = M._make_file_explorer_provider("-lha"),
+    provider = M._make_provider({ include_hidden = true }),
     provider_type = ProviderTypeEnum.COMMAND,
   },
 }
@@ -158,7 +206,7 @@ M.providers = {
 --- @param filename string
 --- @return string[]|nil
 M._directory_previewer = function(filename)
-  if constants.HAS_LSD then
+  if consts.HAS_LSD then
     return {
       "lsd",
       "--color=always",
@@ -167,9 +215,9 @@ M._directory_previewer = function(filename)
       "--",
       filename,
     }
-  elseif constants.HAS_EZA then
+  elseif consts.HAS_EZA then
     return {
-      constants.EZA,
+      consts.EZA,
       "--color=always",
       "-lha",
       "--",
@@ -186,10 +234,10 @@ end
 --- @param line string
 --- @param context fzfx.FileExplorerPipelineContext
 --- @return string[]|nil
-M._file_explorer_previewer = function(line, context)
-  local parsed = constants.HAS_LSD and parsers_helper.parse_lsd(line, context)
+M._previewer = function(line, context)
+  local parsed = consts.HAS_LSD and parsers_helper.parse_lsd(line, context)
     or (
-      constants.HAS_EZA and parsers_helper.parse_eza(line, context)
+      consts.HAS_EZA and parsers_helper.parse_eza(line, context)
       or parsers_helper.parse_ls(line, context)
     )
   if vim.fn.filereadable(parsed.filename) > 0 then
@@ -201,17 +249,17 @@ M._file_explorer_previewer = function(line, context)
   end
 end
 
-local previewer_label = constants.HAS_LSD and labels_helper.label_lsd
-  or (constants.HAS_EZA and labels_helper.label_eza or labels_helper.label_ls)
+local previewer_label = consts.HAS_LSD and labels_helper.label_lsd
+  or (consts.HAS_EZA and labels_helper.label_eza or labels_helper.label_ls)
 
 M.previewers = {
   filter_hidden = {
-    previewer = M._file_explorer_previewer,
+    previewer = M._previewer,
     previewer_type = PreviewerTypeEnum.COMMAND_LIST,
     previewer_label = previewer_label,
   },
   include_hidden = {
-    previewer = M._file_explorer_previewer,
+    previewer = M._previewer,
     previewer_type = PreviewerTypeEnum.COMMAND_LIST,
     previewer_label = previewer_label,
   },
@@ -220,9 +268,9 @@ M.previewers = {
 --- @param line string
 --- @param context fzfx.FileExplorerPipelineContext
 M._cd_file_explorer = function(line, context)
-  local parsed = constants.HAS_LSD and parsers_helper.parse_lsd(line, context)
+  local parsed = consts.HAS_LSD and parsers_helper.parse_lsd(line, context)
     or (
-      constants.HAS_EZA and parsers_helper.parse_eza(line, context)
+      consts.HAS_EZA and parsers_helper.parse_eza(line, context)
       or parsers_helper.parse_ls(line, context)
     )
   if vim.fn.isdirectory(parsed.filename) > 0 then
@@ -246,7 +294,7 @@ M._upper_file_explorer = function(line, context)
   log.debug("|_upper_file_explorer| target:" .. vim.inspect(target))
   -- Windows root folder: `C:\`
   -- Unix/linux root folder: `/`
-  local root_len = constants.IS_WINDOWS and 3 or 1
+  local root_len = consts.IS_WINDOWS and 3 or 1
   if vim.fn.isdirectory(target) > 0 and string.len(target) > root_len then
     fileio.writefile(context.cwd, target)
   end
@@ -276,10 +324,10 @@ M.fzf_opts = {
   { "--prompt", path.shorten() .. " > " },
   function()
     local n = 0
-    if constants.HAS_ECHO then
+    if consts.HAS_ECHO then
       n = n + 1
     end
-    if constants.HAS_LSD or constants.HAS_EZA or constants.HAS_LS then
+    if consts.HAS_LSD or consts.HAS_EZA or consts.HAS_LS then
       n = n + 1
     end
     return n > 0 and string.format("--header-lines=%d", n) or nil
@@ -288,7 +336,7 @@ M.fzf_opts = {
 
 --- @alias fzfx.FileExplorerPipelineContext {bufnr:integer,winnr:integer,tabnr:integer,cwd:string}
 --- @return fzfx.FileExplorerPipelineContext
-M._file_explorer_context_maker = function()
+M._context_maker = function()
   local temp = vim.fn.tempname()
   fileio.writefile(temp --[[@as string]], vim.fn.getcwd() --[[@as string]])
   local context = {
@@ -301,7 +349,7 @@ M._file_explorer_context_maker = function()
 end
 
 M.other_opts = {
-  context_maker = M._file_explorer_context_maker,
+  context_maker = M._context_maker,
 }
 
 return M
