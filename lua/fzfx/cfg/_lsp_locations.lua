@@ -6,7 +6,7 @@ local tbl = require("fzfx.commons.tbl")
 local str = require("fzfx.commons.str")
 local path = require("fzfx.commons.path")
 local fileio = require("fzfx.commons.fileio")
-local term_color = require("fzfx.commons.color.term")
+local color_term = require("fzfx.commons.color.term")
 
 local switches = require("fzfx.lib.switches")
 local log = require("fzfx.lib.log")
@@ -153,7 +153,7 @@ M._render_lsp_location_to_line = function(loc)
     return nil
   end
 
-  local line = M._colorize_lsp_range(filelines[range.start.line + 1], range, term_color.red)
+  local line = M._colorize_lsp_range(filelines[range.start.line + 1], range, color_term.red)
   -- log.debug(
   --   "|_render_lsp_location_to_line| range:%s, loc_line:%s",
   --   vim.inspect(range),
@@ -162,7 +162,7 @@ M._render_lsp_location_to_line = function(loc)
   local rendered_line = string.format(
     "%s:%s:%s:%s",
     providers_helper.LSP_FILENAME_COLOR(vim.fn.fnamemodify(filename, ":~:.")),
-    term_color.green(tostring(range.start.line + 1)),
+    color_term.green(tostring(range.start.line + 1)),
     tostring(range.start.character + 1),
     line
   )
@@ -298,29 +298,27 @@ M._is_lsp_call_hierarchy_item = function(item)
 end
 
 --- @param method string
---- @param call_item fzfx.Options?
+--- @param call_item fzfx.LspCallHierarchyIncomingCall|any
 --- @return boolean
 M._is_lsp_call_hierarchy_incoming_call = function(method, call_item)
   return method == "callHierarchy/incomingCalls"
-    and type(call_item) == "table"
-    and M._is_lsp_call_hierarchy_item(call_item.from)
-    and type(call_item.fromRanges) == "table"
+    and M._is_lsp_call_hierarchy_item(tbl.tbl_get(call_item, "from"))
+    and type(tbl.tbl_get(call_item, "fromRanges")) == "table"
 end
 
 --- @param method string
---- @param call_item fzfx.Options?
+--- @param call_item fzfx.LspCallHierarchyOutgoingCall|any
 --- @return boolean
 M._is_lsp_call_hierarchy_outgoing_call = function(method, call_item)
   return method == "callHierarchy/outgoingCalls"
-    and type(call_item) == "table"
-    and M._is_lsp_call_hierarchy_item(call_item.to)
-    and type(call_item.fromRanges) == "table"
+    and M._is_lsp_call_hierarchy_item(tbl.tbl_get(call_item, "to"))
+    and type(tbl.tbl_get(call_item, "fromRanges")) == "table"
 end
 
 --- @param item fzfx.LspCallHierarchyItem
 --- @param ranges fzfx.LspRange[]
---- @return string[]
-M._render_lsp_call_hierarchy_line = function(item, ranges)
+--- @return string[]|nil
+M._render_lsp_call_hierarchy_to_lines = function(item, ranges)
   -- log.debug(
   --   string.format(
   --     "|_render_lsp_call_hierarchy_line| item:%s, ranges:%s",
@@ -328,26 +326,28 @@ M._render_lsp_call_hierarchy_line = function(item, ranges)
   --     vim.inspect(ranges)
   --   )
   -- )
-  local filename = nil
-  if type(item.uri) == "string" and string.len(item.uri) > 0 and M._is_lsp_range(item.range) then
+
+  local filename
+  if str.not_empty(item.uri) and M._is_lsp_range(item.range) then
     filename = path.reduce(vim.uri_to_fname(item.uri))
     filename = path.normalize(filename, { double_backslash = true, expand = true })
     -- log.debug("|_render_lsp_call_hierarchy_line| location filename: " .. vim.inspect(filename))
   end
   if type(ranges) ~= "table" or #ranges == 0 then
-    return {}
+    return nil
   end
   if type(filename) ~= "string" or vim.fn.filereadable(filename) <= 0 then
-    return {}
+    return nil
   end
   local filelines = fileio.readlines(filename)
   if type(filelines) ~= "table" then
-    return {}
+    return nil
   end
-  local lines = {}
-  for i, r in ipairs(ranges) do
+
+  local results = {}
+  for _, r in ipairs(ranges) do
     if type(filelines) == "table" and #filelines >= r.start.line + 1 then
-      local item_line = M._colorize_lsp_range(filelines[r.start.line + 1], r, term_color.red)
+      local line = M._colorize_lsp_range(filelines[r.start.line + 1], r, color_term.red)
       -- log.debug(
       --   string.format(
       --     "|_render_lsp_call_hierarchy_line| %s-range:%s, item_line:%s",
@@ -356,12 +356,12 @@ M._render_lsp_call_hierarchy_line = function(item, ranges)
       --     vim.inspect(item_line)
       --   )
       -- )
-      local line = string.format(
+      local rendered_line = string.format(
         "%s:%s:%s:%s",
         providers_helper.LSP_FILENAME_COLOR(vim.fn.fnamemodify(filename, ":~:.")),
-        term_color.green(tostring(r.start.line + 1)),
+        color_term.green(tostring(r.start.line + 1)),
         tostring(r.start.character + 1),
-        item_line
+        line
       )
       -- log.debug(
       --   string.format(
@@ -370,10 +370,10 @@ M._render_lsp_call_hierarchy_line = function(item, ranges)
       --     vim.inspect(line)
       --   )
       -- )
-      table.insert(lines, line)
+      table.insert(results, rendered_line)
     end
   end
-  return lines
+  return results
 end
 
 --- @param method fzfx.LspMethod
@@ -507,7 +507,7 @@ M._make_lsp_call_hierarchy_provider = function(opts)
           --   )
           -- )
           if M._is_lsp_call_hierarchy_item(hi_item) and type(from_ranges) == "table" then
-            local lines = M._render_lsp_call_hierarchy_line(
+            local lines = M._render_lsp_call_hierarchy_to_lines(
               hi_item --[[@as fzfx.LspCallHierarchyItem]],
               from_ranges
             )
