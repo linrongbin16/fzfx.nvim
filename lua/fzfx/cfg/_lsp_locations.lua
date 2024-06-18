@@ -1,3 +1,7 @@
+-- Please see:
+-- LSP specification: https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/
+-- Neovim LSP manual: https://neovim.io/doc/user/lsp.html
+
 local tbl = require("fzfx.commons.tbl")
 local path = require("fzfx.commons.path")
 local fileio = require("fzfx.commons.fileio")
@@ -14,23 +18,17 @@ local previewers_helper = require("fzfx.helper.previewers")
 
 local PreviewerTypeEnum = require("fzfx.schema").PreviewerTypeEnum
 
--- Please see:
--- LSP specification: https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/
--- Neovim LSP manual: https://neovim.io/doc/user/lsp.html
-
 local M = {}
 
--- Please see:
--- LSP specification - Location: https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#location
--- LSP specification - LocationLink: https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#locationLink
--- LSP specification - Range: https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#range
--- LSP specification - DocumentUri: https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#documentUri
---
+-- LSP Range: https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#range
 --- @alias fzfx.LspRangeStart {line:integer,character:integer}
 --- @alias fzfx.LspRangeEnd {line:integer,character:integer}
 --- @alias fzfx.LspRange {start:fzfx.LspRangeStart,end:fzfx.LspRangeEnd}
+-- LSP DocumentUri: https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#documentUri
 --- @alias fzfx.LspDocumentUri string
+-- LSP Location: https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#location
 --- @alias fzfx.LspLocation {uri:fzfx.LspDocumentUri,range:fzfx.LspRange}
+-- LSP LocationLink: https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#locationLink
 --- @alias fzfx.LspLocationLink {originSelectionRange:fzfx.LspRange,targetUri:fzfx.LspDocumentUri,targetRange:fzfx.LspRange,targetSelectionRange:fzfx.LspRange}
 
 --- @param r fzfx.LspRange|any
@@ -48,13 +46,13 @@ M._is_lsp_document_uri = function(u)
   return type(u) == "string"
 end
 
---- @param loc fzfx.LspLocation|fzfx.LspLocationLink|any
+--- @param loc fzfx.LspLocation|any
 M._is_lsp_location = function(loc)
   return M._is_lsp_document_uri(tbl.tbl_get(loc, "uri"))
     and M._is_lsp_range(tbl.tbl_get(loc, "range"))
 end
 
---- @param loc fzfx.LspLocation|fzfx.LspLocationLink|nil
+--- @param loc fzfx.LspLocationLink|any
 M._is_lsp_locationlink = function(loc)
   return M._is_lsp_document_uri(tbl.tbl_get(loc, "targetUri"))
     and M._is_lsp_range(tbl.tbl_get(loc, "targetRange"))
@@ -63,7 +61,7 @@ end
 --- @param line string
 --- @param range fzfx.LspRange
 --- @param renderer fun(text:string):string
---- @return string?
+--- @return string
 M._colorize_lsp_range = function(line, range, renderer)
   local line_start = range.start.character + 1
   local line_end = range["end"].line ~= range.start.line and #line
