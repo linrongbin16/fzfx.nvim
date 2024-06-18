@@ -95,6 +95,7 @@ describe("fzfx.cfg._lsp_locations", function()
       assert_true(str.endswith(loc3, "function()"))
     end)
     it("_render_lsp_location_to_line case 1", function()
+      local PWD = vim.env.PWD
       local range = {
         start = { line = 1, character = 10 },
         ["end"] = { line = 10, character = 31 },
@@ -104,10 +105,12 @@ describe("fzfx.cfg._lsp_locations", function()
         range = range,
       }
       local actual = _lsp_locations._render_lsp_location_to_line(loc)
+      print(string.format("_render_lsp_location_to_line-1 PWD:%s", vim.inspect(PWD)))
       print(string.format("_render_lsp_location_to_line-1:%s\n", vim.inspect(actual)))
       assert_true(actual == nil)
     end)
     it("_render_lsp_location_to_line case 2", function()
+      local PWD = vim.env.PWD
       local range = {
         start = { line = 10, character = 10 },
         ["end"] = { line = 10, character = 31 },
@@ -117,6 +120,7 @@ describe("fzfx.cfg._lsp_locations", function()
         targetRange = range,
       }
       local actual = _lsp_locations._render_lsp_location_to_line(loc)
+      print(string.format("_render_lsp_location_to_line-2 PWD:%s", vim.inspect(PWD)))
       print(string.format("_render_lsp_location_to_line-2:%s\n", vim.inspect(actual)))
       if not GITHUB_ACTIONS then
         assert_true(type(actual) == "string")
@@ -125,6 +129,7 @@ describe("fzfx.cfg._lsp_locations", function()
       end
     end)
     it("_render_lsp_location_to_line case 3", function()
+      local PWD = vim.env.PWD
       local range = {
         start = { line = 3000, character = 10 },
         ["end"] = { line = 3000, character = 31 },
@@ -134,6 +139,7 @@ describe("fzfx.cfg._lsp_locations", function()
         range = range,
       }
       local actual = _lsp_locations._render_lsp_location_to_line(loc)
+      print(string.format("_render_lsp_location_to_line-3 PWD:%s", vim.inspect(PWD)))
       print(string.format("_render_lsp_location_to_line-3:%s\n", vim.inspect(actual)))
       assert_true(actual == nil)
     end)
