@@ -96,7 +96,6 @@ describe("fzfx.cfg._lsp_locations", function()
       assert_true(str.endswith(loc3, "function()"))
     end)
     it("_render_lsp_location_to_line case 1", function()
-      local PWD = vim.env.PWD
       local range = {
         start = { line = 1, character = 10 },
         ["end"] = { line = 10, character = 31 },
@@ -117,7 +116,6 @@ describe("fzfx.cfg._lsp_locations", function()
       assert_true(actual == nil)
     end)
     it("_render_lsp_location_to_line case 2", function()
-      local PWD = vim.env.PWD
       local range = {
         start = { line = 10, character = 10 },
         ["end"] = { line = 10, character = 31 },
@@ -135,14 +133,9 @@ describe("fzfx.cfg._lsp_locations", function()
           vim.inspect(loc)
         )
       )
-      -- if not GITHUB_ACTIONS then
       assert_true(type(actual) == "string")
-      -- else
-      --   assert_true(type(actual) == "string" or actual == nil)
-      -- end
     end)
     it("_render_lsp_location_to_line case 3", function()
-      local PWD = vim.env.PWD
       local range = {
         start = { line = 3000, character = 10 },
         ["end"] = { line = 3000, character = 31 },
