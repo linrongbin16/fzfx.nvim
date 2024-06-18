@@ -64,21 +64,22 @@ M._buf_path = function(bufnr)
   return bufpath
 end
 
---- @param args_list string[]
---- @param option string?
+-- Split `opts` string option by whitespaces, and append them to arguments table `args`.
+--- @param args string[]
+--- @param opts string?
 --- @return string[]
-M._append_options = function(args_list, option)
-  assert(type(args_list) == "table")
-  if str.not_empty(option) then
-    local option_splits = str.split(option --[[@as string]], " ")
-    for _, o in ipairs(option_splits) do
+M._append_options = function(args, opts)
+  assert(type(args) == "table")
+  if str.not_empty(opts) then
+    local splits = str.split(opts --[[@as string]], " ")
+    for _, o in ipairs(splits) do
       if str.not_empty(o) then
-        table.insert(args_list, o)
+        table.insert(args, o)
       end
     end
   end
 
-  return args_list
+  return args
 end
 
 --- @param query string
