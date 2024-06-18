@@ -79,9 +79,12 @@ M.variants = {
   },
 }
 
+M._GIT_LS_WORKSPACE = { "git", "ls-files", ":/" }
+M._GIT_LS_CWD = { "git", "ls-files" }
+
 --- @param opts {current_folder:boolean?}?
 --- @return fun():string[]|nil
-M._make_git_files_provider = function(opts)
+M._make_provider = function(opts)
   --- @return string[]|nil
   local function impl()
     local git_root_cmd = cmds.GitRootCommand:run()
@@ -89,14 +92,14 @@ M._make_git_files_provider = function(opts)
       log.echo(LogLevels.INFO, "not in git repo.")
       return nil
     end
-    return tbl.tbl_get(opts, "current_folder") and { "git", "ls-files" }
-      or { "git", "ls-files", ":/" }
+    return tbl.tbl_get(opts, "current_folder") and vim.deepcopy(M._GIT_LS_CWD)
+      or vim.deepcopy(M._GIT_LS_WORKSPACE)
   end
   return impl
 end
 
-local current_folder_provider = M._make_git_files_provider({ current_folder = true })
-local workspace_provider = M._make_git_files_provider()
+local current_folder_provider = M._make_provider({ current_folder = true })
+local workspace_provider = M._make_provider()
 
 M.providers = {
   current_folder = {
@@ -113,15 +116,19 @@ M.providers = {
   },
 }
 
--- if you want to use fzf-builtin previewer with bat, please use below configs:
+-- If you want to use fzf-builtin previewer with bat, please use below configs:
 --
+-- ```
 -- previewer = previewers_helper.preview_files_find
 -- previewer_type = PreviewerTypeEnum.COMMAND_LIST
-
--- if you want to use nvim buffer previewer, please use below configs:
+-- ```
 --
+-- If you want to use nvim buffer previewer, please use below configs:
+--
+-- ```
 -- previewer = previewers_helper.buffer_preview_files_find
 -- previewer_type = PreviewerTypeEnum.BUFFER_FILE
+-- ```
 
 local previewer = switches.buffer_previewer_disabled() and previewers_helper.preview_files_find
   or previewers_helper.buffer_preview_files_find
