@@ -109,7 +109,7 @@ describe("fzfx.cfg._lsp_locations", function()
     end)
     it("_render_lsp_location_to_line case 2", function()
       local range = {
-        start = { line = 1, character = 10 },
+        start = { line = 10, character = 10 },
         ["end"] = { line = 10, character = 31 },
       }
       local loc = {

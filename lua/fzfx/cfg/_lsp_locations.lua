@@ -10,6 +10,7 @@ local term_color = require("fzfx.commons.color.term")
 local switches = require("fzfx.lib.switches")
 local log = require("fzfx.lib.log")
 local LogLevels = require("fzfx.lib.log").LogLevels
+local lsp = require("fzfx.lib.lsp")
 
 local actions_helper = require("fzfx.helper.actions")
 local labels_helper = require("fzfx.helper.previewer_labels")
@@ -173,13 +174,12 @@ end
 
 -- locations {
 
--- Please see:
 -- Neovim LSP methods: https://github.com/neovim/neovim/blob/dc9f7b814517045b5354364655f660aae0989710/runtime/lua/vim/lsp/protocol.lua#L1028
 -- Neovim LSP capabilities: https://github.com/neovim/neovim/blob/dc9f7b814517045b5354364655f660aae0989710/runtime/lua/vim/lsp.lua#L39
 --
 --- @alias fzfx.LspMethod "textDocument/definition"|"textDocument/type_definition"|"textDocument/references"|"textDocument/implementation"|"callHierarchy/incomingCalls"|"callHierarchy/outgoingCalls"|"textDocument/prepareCallHierarchy"
 --- @alias fzfx.LspServerCapability "definitionProvider"|"typeDefinitionProvider"|"referencesProvider"|"implementationProvider"|"callHierarchyProvider"
----
+
 --- @param opts {method:fzfx.LspMethod,capability:fzfx.LspServerCapability,timeout:integer?}
 --- @return fun(query:string,context:fzfx.LspLocationPipelineContext):string[]|nil
 M._make_lsp_locations_provider = function(opts)
@@ -187,8 +187,7 @@ M._make_lsp_locations_provider = function(opts)
   --- @param context fzfx.LspLocationPipelineContext
   --- @return string[]|nil
   local function impl(query, context)
-    ---@diagnostic disable-next-line: deprecated
-    local lsp_clients = vim.lsp.get_active_clients({ bufnr = context.bufnr })
+    local lsp_clients = lsp.get_clients({ bufnr = context.bufnr })
     if tbl.tbl_empty(lsp_clients) then
       log.echo(LogLevels.INFO, "no active lsp clients.")
       return nil
