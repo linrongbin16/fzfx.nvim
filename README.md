@@ -74,7 +74,7 @@ https://github.com/linrongbin16/fzfx.nvim/assets/6496887/b5e2b0dc-4dd6-4c18-b1da
 - [rg](https://github.com/BurntSushi/ripgrep) (**optional** for live grep, by default use [grep](https://man7.org/linux/man-pages/man1/grep.1.html)).
 - [fd](https://github.com/sharkdp/fd) (**optional** for find files, by default use [find](https://man7.org/linux/man-pages/man1/find.1.html)).
 - [bat](https://github.com/sharkdp/bat) (**optional** for preview files, by default use [cat](https://man7.org/linux/man-pages/man1/cat.1.html)).
-- [git](https://git-scm.com/) (**mandatory** for git diff, show, blame).
+- [git](https://git-scm.com/) (**mandatory** for all git commands).
 - [delta](https://github.com/dandavison/delta) (**optional** for preview git diff, show, blame).
 - [lsd](https://github.com/lsd-rs/lsd)/[eza](https://github.com/eza-community/eza) (**optional** for file explorer, by default use [ls](https://man7.org/linux/man-pages/man1/ls.1.html)).
 
