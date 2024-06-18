@@ -52,35 +52,6 @@ M.variants = {
   },
 }
 
---- @param bufnr integer
---- @return string?
-M._buf_path = function(bufnr)
-  local bufpath = bufs.buf_is_valid(bufnr) and path.reduce(vim.api.nvim_buf_get_name(bufnr)) or nil
-  if str.empty(bufpath) then
-    log.echo(LogLevels.INFO, string.format("invalid buffer(%s).", vim.inspect(bufnr)))
-    return nil
-  end
-  return bufpath
-end
-
--- Split `opts` string option by whitespaces, and append them to arguments table `args`.
---- @param args string[]
---- @param opts string?
---- @return string[]
-M._append_options = function(args, opts)
-  assert(type(args) == "table")
-  if str.not_empty(opts) then
-    local splits = str.split(opts --[[@as string]], " ")
-    for _, o in ipairs(splits) do
-      if str.not_empty(o) then
-        table.insert(args, o)
-      end
-    end
-  end
-
-  return args
-end
-
 --- @param query string
 --- @param context fzfx.PipelineContext
 --- @return string[]|nil
@@ -89,13 +60,13 @@ M._provider_rg = function(query, context)
   local payload = parsed.payload
   local option = parsed.option
 
-  local bufpath = M._buf_path(context.bufnr)
+  local bufpath = _grep.buf_path(context.bufnr)
   if not bufpath then
     return nil
   end
 
   local args = vim.deepcopy(_grep.UNRESTRICTED_RG)
-  args = M._append_options(args, option)
+  args = _grep.append_options(args, option)
 
   table.insert(args, "-I")
   table.insert(args, payload)
@@ -111,13 +82,13 @@ M._provider_grep = function(query, context)
   local payload = parsed.payload
   local option = parsed.option
 
-  local bufpath = M._buf_path(context.bufnr)
+  local bufpath = _grep.buf_path(context.bufnr)
   if not bufpath then
     return nil
   end
 
   local args = vim.deepcopy(_grep.UNRESTRICTED_GREP)
-  args = M._append_options(args, option)
+  args = _grep.append_options(args, option)
 
   table.insert(args, "-h")
   table.insert(args, payload)
