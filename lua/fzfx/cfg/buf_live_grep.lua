@@ -55,7 +55,7 @@ M.variants = {
 
 --- @param bufnr integer
 --- @return string?
-M._get_buf_path = function(bufnr)
+M._buf_path = function(bufnr)
   local bufpath = bufs.buf_is_valid(bufnr) and path.reduce(vim.api.nvim_buf_get_name(bufnr)) or nil
   if str.empty(bufpath) then
     log.echo(LogLevels.INFO, string.format("invalid buffer(%s).", vim.inspect(bufnr)))
@@ -89,7 +89,7 @@ M._provider_rg = function(query, context)
   local payload = parsed.payload
   local option = parsed.option
 
-  local bufpath = M._get_buf_path(context.bufnr)
+  local bufpath = M._buf_path(context.bufnr)
   if not bufpath then
     return nil
   end
@@ -111,7 +111,7 @@ M._provider_grep = function(query, context)
   local payload = parsed.payload
   local option = parsed.option
 
-  local bufpath = M._get_buf_path(context.bufnr)
+  local bufpath = M._buf_path(context.bufnr)
   if not bufpath then
     return nil
   end

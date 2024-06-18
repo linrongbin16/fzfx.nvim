@@ -16,13 +16,16 @@ describe("fzfx.cfg.buf_live_grep", function()
   local buf_live_grep_cfg = require("fzfx.cfg.buf_live_grep")
   require("fzfx").setup()
 
-  describe("[_get_buf_path]", function()
+  describe("[_buf_path]", function()
     it("test", function()
-      local actual = buf_live_grep_cfg._get_buf_path(0)
-      if actual then
-        assert_eq(type(actual), "string")
-        assert_true(string.len(actual) > 0)
+      local actual1 = buf_live_grep_cfg._buf_path(0)
+      if actual1 then
+        assert_eq(type(actual1), "string")
+        assert_true(string.len(actual1) > 0)
       end
+
+      local actual2 = buf_live_grep_cfg._buf_path(nil)
+      assert_true(actual2 == nil)
     end)
   end)
   describe("[_append_options]", function()
