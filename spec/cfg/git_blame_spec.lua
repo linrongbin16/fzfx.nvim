@@ -25,7 +25,6 @@ describe("fzfx.cfg.git_blame", function()
   describe("git_blame", function()
     it("_provider", function()
       local actual = git_blame_cfg._provider("", contexts.make_pipeline_context())
-      -- if actual ~= nil then
       assert_eq(type(actual), "string")
       assert_true(str.find(actual, "git blame") > 0)
       if consts.HAS_DELTA then
@@ -33,7 +32,6 @@ describe("fzfx.cfg.git_blame", function()
       else
         assert_true(str.find(actual, "delta") == nil)
       end
-      -- end
     end)
   end)
 end)
