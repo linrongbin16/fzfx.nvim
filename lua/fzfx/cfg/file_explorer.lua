@@ -323,7 +323,7 @@ M.previewers = {
 
 --- @param line string
 --- @param context fzfx.FileExplorerPipelineContext
-M._cd_file_explorer = function(line, context)
+M._cd = function(line, context)
   local parsed = parser(line, context)
 
   if path.isdir(parsed.filename) then
@@ -333,7 +333,7 @@ end
 
 --- @param line string
 --- @param context fzfx.FileExplorerPipelineContext
-M._upper_file_explorer = function(line, context)
+M._upper = function(line, context)
   -- log.debug(
   --   string.format(
   --     "|_upper_file_explorer| line:%s, context:%s",
@@ -356,12 +356,12 @@ end
 M.interactions = {
   cd = {
     key = "ctrl-l",
-    interaction = M._cd_file_explorer,
+    interaction = M._cd,
     reload_after_execute = true,
   },
   upper = {
     key = "ctrl-h",
-    interaction = M._upper_file_explorer,
+    interaction = M._upper,
     reload_after_execute = true,
   },
 }

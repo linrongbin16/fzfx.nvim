@@ -78,38 +78,49 @@ M.variants = {
   },
 }
 
---- @param opts {current_folder:boolean?}?
---- @return boolean
-M._is_current_folder_mode = function(opts)
-  ---@diagnostic disable-next-line: need-check-nil
-  return tbl.tbl_not_empty(opts) and opts.current_folder --[[@as boolean]]
-end
+M._GIT_STATUS_CURRENT_DIR = {
+  "git",
+  "-c",
+  "color.status=always",
+  "status",
+  "--short",
+  ".",
+}
+
+M._GIT_STATUS_WORKSPACE = {
+  "git",
+  "-c",
+  "color.status=always",
+  "status",
+  "--short",
+}
 
 --- @param opts {current_folder:boolean?}?
---- @return fun():string[]|nil
-M._make_git_status_provider = function(opts)
-  local function impl()
+--- @return fun(query:string, context:fzfx.PipelineContext):string[]|nil
+M._make_provider = function(opts)
+  local current_folder_mode = tbl.tbl_get(opts, "current_folder") or false
+
+  --- @param query string
+  --- @param context fzfx.PipelineContext
+  --- @return string[]|nil
+  local function impl(query, context)
     local git_root_cmd = cmds.GitRootCommand:run()
     if git_root_cmd:failed() then
       log.echo(LogLevels.INFO, "not in git repo.")
       return nil
     end
-    return M._is_current_folder_mode(opts)
-        and {
-          "git",
-          "-c",
-          "color.status=always",
-          "status",
-          "--short",
-          ".",
-        }
-      or { "git", "-c", "color.status=always", "status", "--short" }
+    if current_folder_mode then
+      return vim.deepcopy(M._GIT_STATUS_CURRENT_DIR)
+    else
+      return vim.deepcopy(M._GIT_STATUS_WORKSPACE)
+    end
   end
+
   return impl
 end
 
-local current_folder_provider = M._make_git_status_provider({ current_folder = true })
-local workspace_provider = M._make_git_status_provider()
+local current_folder_provider = M._make_provider({ current_folder = true })
+local workspace_provider = M._make_provider()
 
 M.providers = {
   current_folder = {
@@ -125,8 +136,9 @@ M.providers = {
 }
 
 --- @param line string
+--- @param context fzfx.PipelineContext
 --- @return string?
-M._git_status_previewer = function(line)
+M._previewer = function(line, context)
   local parsed = parsers_helper.parse_git_status(line)
   if constants.HAS_DELTA then
     local win_width = previewers_helper.get_preview_window_width()
@@ -142,10 +154,10 @@ end
 
 M.previewers = {
   current_folder = {
-    previewer = M._git_status_previewer,
+    previewer = M._previewer,
   },
   workspace = {
-    previewer = M._git_status_previewer,
+    previewer = M._previewer,
   },
 }
 

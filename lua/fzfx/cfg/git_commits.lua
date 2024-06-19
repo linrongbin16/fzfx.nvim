@@ -11,6 +11,8 @@ local previewers_helper = require("fzfx.helper.previewers")
 local ProviderTypeEnum = require("fzfx.schema").ProviderTypeEnum
 local CommandFeedEnum = require("fzfx.schema").CommandFeedEnum
 
+local _git = require("fzfx.cfg._git")
+
 local M = {}
 
 M.command = {
@@ -76,11 +78,28 @@ M.variants = {
   },
 }
 
-local GIT_LOG_PRETTY_FORMAT = "%C(yellow)%h %C(cyan)%cd %C(green)%aN%C(auto)%d %Creset%s"
+M._GIT_LOG_CURRENT_BUFFER = {
+  "git",
+  "log",
+  "--pretty=" .. _git.GIT_LOG_PRETTY_FORMAT,
+  "--date=short",
+  "--color=always",
+  "--",
+}
+
+M._GIT_LOG_WORKSPACE = {
+  "git",
+  "log",
+  "--pretty=" .. _git.GIT_LOG_PRETTY_FORMAT,
+  "--date=short",
+  "--color=always",
+}
 
 --- @param opts {buffer:boolean?}?
 --- @return fun(query:string,context:fzfx.PipelineContext):string[]|nil
-M._make_git_commits_provider = function(opts)
+M._make_provider = function(opts)
+  local buffer_mode = tbl.tbl_get(opts, "buffer") or false
+
   --- @param query string
   --- @param context fzfx.PipelineContext
   --- @return string[]|nil
@@ -90,35 +109,24 @@ M._make_git_commits_provider = function(opts)
       log.echo(LogLevels.INFO, "not in git repo.")
       return nil
     end
-    if tbl.tbl_get(opts, "buffer") then
+    local args
+    if buffer_mode then
       if not bufs.buf_is_valid(context.bufnr) then
         log.echo(LogLevels.INFO, string.format("invalid buffer(%s).", vim.inspect(context.bufnr)))
         return nil
       end
-      return {
-        "git",
-        "log",
-        "--pretty=" .. GIT_LOG_PRETTY_FORMAT,
-        "--date=short",
-        "--color=always",
-        "--",
-        vim.api.nvim_buf_get_name(context.bufnr),
-      }
+      args = vim.deepcopy(M._GIT_LOG_CURRENT_BUFFER)
+      table.insert(args, vim.api.nvim_buf_get_name(context.bufnr))
     else
-      return {
-        "git",
-        "log",
-        "--pretty=" .. GIT_LOG_PRETTY_FORMAT,
-        "--date=short",
-        "--color=always",
-      }
+      args = vim.deepcopy(M._GIT_LOG_WORKSPACE)
     end
+    return args
   end
   return impl
 end
 
-local all_commits_provider = M._make_git_commits_provider()
-local buffer_commits_provider = M._make_git_commits_provider({ buffer = true })
+local all_commits_provider = M._make_provider()
+local buffer_commits_provider = M._make_provider({ buffer = true })
 
 M.providers = {
   all_commits = {
