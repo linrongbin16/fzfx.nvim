@@ -1,4 +1,3 @@
----@diagnostic disable: undefined-field, unused-local, missing-fields, need-check-nil, param-type-mismatch, assign-type-mismatch
 local cwd = vim.fn.getcwd()
 
 describe("fzfx.cfg.git_status", function()
@@ -22,7 +21,7 @@ describe("fzfx.cfg.git_status", function()
   require("fzfx").setup()
 
   describe("[git_status]", function()
-    it("_git_status_previewer", function()
+    it("_previewer", function()
       local lines = {
         " M fzfx/config.lua",
         " D fzfx/constants.lua",
@@ -31,7 +30,7 @@ describe("fzfx.cfg.git_status", function()
         "?? ../hello",
       }
       for _, line in ipairs(lines) do
-        local actual = git_status_cfg._git_status_previewer(line)
+        local actual = git_status_cfg._previewer(line)
         assert_eq(type(actual), "string")
         assert_true(str.find(actual, "git diff") > 0)
         if vim.fn.executable("delta") > 0 then
@@ -41,30 +40,20 @@ describe("fzfx.cfg.git_status", function()
         end
       end
     end)
-    it("_make_git_status_provider", function()
-      local actual1 = git_status_cfg._make_git_status_provider({})()
-      local actual2 = git_status_cfg._make_git_status_provider({ current_folder = true })()
-      -- print(
-      --     string.format("git status provider1:%s\n", vim.inspect(actual1))
-      -- )
-      -- print(
-      --     string.format("git status provider2:%s\n", vim.inspect(actual2))
-      -- )
-      assert_true(actual1 == nil or vim.deep_equal(actual1, {
-        "git",
-        "-c",
-        "color.status=always",
-        "status",
-        "--short",
-      }))
-      assert_true(actual2 == nil or vim.deep_equal(actual2, {
-        "git",
-        "-c",
-        "color.status=always",
-        "status",
-        "--short",
-        ".",
-      }))
+    it("_make_provider", function()
+      local actual1 = git_status_cfg._make_provider()()
+      local n1 = #git_status_cfg._GIT_STATUS_WORKSPACE
+      assert_eq(type(actual1), "table")
+      for i = 1, n1 do
+        assert_eq(actual1[i], git_status_cfg._GIT_STATUS_WORKSPACE[i])
+      end
+
+      local actual2 = git_status_cfg._make_provider({ current_folder = true })()
+      local n2 = #git_status_cfg._GIT_STATUS_CURRENT_DIR
+      assert_eq(type(actual2), "table")
+      for i = 1, n2 do
+        assert_eq(actual2[i], git_status_cfg._GIT_STATUS_CURRENT_DIR[i])
+      end
     end)
   end)
 end)
