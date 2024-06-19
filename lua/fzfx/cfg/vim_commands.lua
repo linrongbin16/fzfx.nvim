@@ -106,11 +106,12 @@ M.variants = {
   },
 }
 
+-- Parse EX commands from vim documents, returns the EX command name.
 --- @param line string
 --- @return string
-M._parse_vim_ex_command_name = function(line)
-  local name_stop_pos = str.find(line, "|", 3)
-  return vim.trim(line:sub(3, name_stop_pos - 1))
+M._parse_ex_command_name = function(line)
+  local stop = str.find(line, "|", 3)
+  return str.trim(line:sub(3, stop - 1))
 end
 
 --- @return table<string, fzfx.VimCommand>
@@ -130,7 +131,7 @@ M._get_vim_ex_commands = function()
       local line = lines[i]
       if str.startswith(line, "|:") then
         log.debug(string.format("|_get_vim_ex_commands| line[%d]:%s", i, vim.inspect(line)))
-        local name = M._parse_vim_ex_command_name(line)
+        local name = M._parse_ex_command_name(line)
         if type(name) == "string" and string.len(name) > 0 then
           results[name] = {
             name = name,

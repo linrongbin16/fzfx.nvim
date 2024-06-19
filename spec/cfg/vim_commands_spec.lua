@@ -19,14 +19,14 @@ describe("fzfx.cfg.vim_commands", function()
   require("fzfx").setup()
 
   describe("[commands]", function()
-    it("_parse_vim_ex_command_name", function()
+    it("_parse_ex_command_name", function()
       local lines = {
         "|:|",
         "|:next|",
         "|:FzfxGBranches|",
       }
       for _, line in ipairs(lines) do
-        local actual = vim_commands_cfg._parse_vim_ex_command_name(line)
+        local actual = vim_commands_cfg._parse_ex_command_name(line)
         local expect = vim.trim(line:sub(3, #line - 1))
         assert_eq(actual, expect)
       end
