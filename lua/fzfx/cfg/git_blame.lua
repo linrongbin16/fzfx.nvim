@@ -49,7 +49,7 @@ M.variants = {
 --- @param query string
 --- @param context fzfx.PipelineContext
 --- @return string?
-M._git_blame_provider = function(query, context)
+M._provider = function(query, context)
   local git_root_cmd = cmds.GitRootCommand:run()
   if git_root_cmd:failed() then
     log.echo(LogLevels.INFO, "not in git repo.")
@@ -78,7 +78,7 @@ end
 M.providers = {
   default = {
     key = "default",
-    provider = M._git_blame_provider,
+    provider = M._provider,
     provider_type = ProviderTypeEnum.COMMAND,
   },
 }
