@@ -40,7 +40,7 @@ describe("fzfx.cfg.lsp_diagnostics", function()
         )
       end
     end)
-    it("_process_lsp_diagnostic_item", function()
+    it("_process_diag", function()
       local diags = {
         { bufnr = 0, lnum = 1, col = 1, message = "a", severity = 1 },
         { bufnr = 1, lnum = 1, col = 1, message = "b", severity = 2 },
@@ -49,7 +49,7 @@ describe("fzfx.cfg.lsp_diagnostics", function()
         { bufnr = 5, lnum = 1, col = 1, message = "e" },
       }
       for _, diag in ipairs(diags) do
-        local actual = lsp_diagnostics_cfg._process_lsp_diagnostic_item(diag)
+        local actual = lsp_diagnostics_cfg._process_diag(diag)
         if actual ~= nil then
           assert_eq(actual.bufnr, diag.bufnr)
           assert_eq(actual.lnum, diag.lnum + 1)
@@ -58,8 +58,59 @@ describe("fzfx.cfg.lsp_diagnostics", function()
         end
       end
     end)
-    it("_make_lsp_diagnostics_provider", function()
-      local f = lsp_diagnostics_cfg._make_lsp_diagnostics_provider()
+    it("_render_diag_to_line", function()
+      local inputs = {
+        {
+          bufnr = 0,
+          filename = "lua/fzfx/config.lua",
+          lnum = 10,
+          col = 13,
+          text = "Unused local `query`",
+          severity = 1,
+        },
+        {
+          bufnr = 0,
+          filename = "lua/fzfx/config.lua",
+          lnum = 1,
+          col = 2,
+          text = "Unused local `query`",
+          severity = 2,
+        },
+        {
+          bufnr = 0,
+          filename = "lua/fzfx/config.lua",
+          lnum = 5000,
+          col = 500,
+          text = "Unused local `query`",
+          severity = 3,
+        },
+        {
+          bufnr = 0,
+          filename = "lua/fzfx/config.lua",
+          lnum = 30,
+          col = 12,
+          text = "Unused local `query`",
+          severity = 4,
+        },
+        {
+          bufnr = 0,
+          filename = "lua/fzfx/config.lua",
+          lnum = 30,
+          col = 12,
+          text = "Unused local `query`",
+        },
+      }
+      for _, input in ipairs(inputs) do
+        local actual = lsp_diagnostics_cfg._render_diag_to_line(input)
+        assert_eq(type(actual), "string")
+        assert_true(str.find(actual, input.text) > 0)
+        assert_true(str.find(actual, tostring(input.filename)) > 0)
+        assert_true(str.find(actual, tostring(input.lnum)) > 0)
+        assert_true(str.find(actual, tostring(input.col)) > 0)
+      end
+    end)
+    it("_make_provider", function()
+      local f = lsp_diagnostics_cfg._make_provider()
       local actual = f("", {})
       if actual ~= nil then
         assert_eq(type(actual), "table")

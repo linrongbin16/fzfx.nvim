@@ -95,7 +95,7 @@ local _, _, HINT_TEXT_HL =
 
 --- @alias fzfx.LspDiagnosticSignDef {severity:integer,name:string,text:string,texthl:string,textcolor:string}
 --- @type fzfx.LspDiagnosticSignDef[]
-M._LSP_DIAGNOSTIC_SIGNS = {
+M._DEFAULT_LSP_DIAGNOSTIC_SIGNS = {
   -- 1 Error
   {
     severity = 1,
@@ -134,7 +134,7 @@ M._LSP_DIAGNOSTIC_SIGNS = {
 --- @return fzfx.LspDiagnosticSignDef[]
 M._make_signs = function()
   local results = {}
-  for _, signs in ipairs(M._LSP_DIAGNOSTIC_SIGNS) do
+  for _, signs in ipairs(M._DEFAULT_LSP_DIAGNOSTIC_SIGNS) do
     local sign_def = vim.fn.sign_getdefined(signs.name) --[[@as table]]
     local item = vim.deepcopy(signs)
     if not tbl.tbl_empty(sign_def) then
@@ -145,6 +145,8 @@ M._make_signs = function()
   end
   return results
 end
+
+local DIAGNOSTIC_SIGNS = M._make_signs()
 
 --- @param diag {bufnr:integer,lnum:integer,col:integer,message:string,severity:integer}
 --- @return {bufnr:integer,filename:string,lnum:integer,col:integer,text:string,severity:integer}?
@@ -165,11 +167,44 @@ M._process_diag = function(diag)
   return result
 end
 
+-- Render a diagnostic item to a line for (the left side of) fzf binary.
+-- The rendering format refers to the rg's query results.
+-- Which looks like: "lua/fzfx/config.lua:10:13: Unused local `query`."
+--- @param diag {bufnr:integer,filename:string,lnum:integer,col:integer,text:string,severity:integer}
+--- @return string
+M._render_diag_to_line = function(diag)
+  -- log.debug(string.format("|_render_diag_to_line| diag:%s", vim.inspect(diag)))
+
+  local msg = ""
+  if type(diag.text) == "string" and string.len(diag.text) > 0 then
+    local sign = DIAGNOSTIC_SIGNS[diag.severity]
+    if tbl.tbl_not_empty(sign) then
+      local color_renderer = color_term[sign.textcolor]
+      msg = " " .. color_renderer(sign.text, sign.texthl)
+    end
+    msg = msg .. " " .. diag.text
+  end
+  -- log.debug(
+  --   string.format(
+  --     "|_make_lsp_diagnostics_provider| diag:%s, builder:%s",
+  --     vim.inspect(diag),
+  --     vim.inspect(builder)
+  --   )
+  -- )
+  local rendered_line = string.format(
+    "%s:%s:%s:%s",
+    _lsp.LSP_FILENAME_COLOR(diag.filename),
+    color_term.green(tostring(diag.lnum)),
+    tostring(diag.col),
+    msg
+  )
+  return rendered_line
+end
+
 --- @param opts {buffer:boolean?}?
 --- @return fun(query:string,context:fzfx.PipelineContext):string[]|nil
 M._make_provider = function(opts)
   local buffer_mode = tbl.tbl_get(opts, "buffer") or false
-  local signs = M._make_signs()
 
   --- @param query string
   --- @param context fzfx.PipelineContext
@@ -186,46 +221,22 @@ M._make_provider = function(opts)
       log.echo(LogLevels.INFO, "no diagnostics found.")
       return nil
     end
-    -- sort order: error > warn > info > hint
+    -- Sort by severity: error > warn > info > hint
     table.sort(diags, function(a, b)
       return a.severity < b.severity
     end)
 
     local results = {}
     for _, item in ipairs(diags) do
-      local diag = M._process_diag(item)
-      if diag then
-        -- it looks like:
-        -- `lua/fzfx/config.lua:10:13: Unused local `query`.
-        log.debug(string.format("|_make_lsp_diagnostics_provider| diag:%s", vim.inspect(diag)))
-        local builder = ""
-        if type(diag.text) == "string" and string.len(diag.text) > 0 then
-          if type(signs[diag.severity]) == "table" then
-            local sign_item = signs[diag.severity]
-            local color_renderer = color_term[sign_item.textcolor]
-            builder = " " .. color_renderer(sign_item.text, sign_item.texthl)
-          end
-          builder = builder .. " " .. diag.text
-        end
-        log.debug(
-          string.format(
-            "|_make_lsp_diagnostics_provider| diag:%s, builder:%s",
-            vim.inspect(diag),
-            vim.inspect(builder)
-          )
-        )
-        local line = string.format(
-          "%s:%s:%s:%s",
-          _lsp.LSP_FILENAME_COLOR(diag.filename),
-          color_term.green(tostring(diag.lnum)),
-          tostring(diag.col),
-          builder
-        )
+      local processed_diag = M._process_diag(item)
+      if processed_diag then
+        local line = M._render_diag_to_line(processed_diag)
         table.insert(results, line)
       end
     end
     return results
   end
+
   return impl
 end
 
