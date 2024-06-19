@@ -22,17 +22,17 @@ describe("fzfx.cfg.git_branches", function()
   require("fzfx").setup()
 
   describe("git_branches", function()
-    it("_make_git_branches_provider local", function()
-      local f = git_branches_cfg._make_git_branches_provider()
+    it("_make_provider local", function()
+      local f = git_branches_cfg._make_provider()
+      local actual = f("", nil)
+      assert_true(actual == nil or type(actual) == "table")
+    end)
+    it("_make_provider remotes", function()
+      local f = git_branches_cfg._make_provider({ remote_branch = true })
       local actual = f()
       assert_true(actual == nil or type(actual) == "table")
     end)
-    it("_make_git_branches_provider remotes", function()
-      local f = git_branches_cfg._make_git_branches_provider({ remote_branch = true })
-      local actual = f()
-      assert_true(actual == nil or type(actual) == "table")
-    end)
-    it("_git_branches_previewer", function()
+    it("_previewer", function()
       local lines = {
         "main",
         "my-plugin-dev",
@@ -43,7 +43,7 @@ describe("fzfx.cfg.git_branches", function()
         "remotes/origin/ci-verbose",
       }
       for i, line in ipairs(lines) do
-        local actual = git_branches_cfg._git_branches_previewer(line)
+        local actual = git_branches_cfg._previewer(line, nil)
         assert_true(str.find(actual, "git log --pretty") == 1)
       end
     end)

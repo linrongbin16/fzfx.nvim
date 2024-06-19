@@ -78,9 +78,13 @@ M.variants = {
 
 --- @param opts {remote_branch:boolean?}?
 --- @return fun():string[]|nil
-M._make_git_branches_provider = function(opts)
+M._make_provider = function(opts)
+  local remote_branch = tbl.tbl_get(opts, "remote_branch") or false
+
+  --- @param query string
+  --- @param context fzfx.PipelineContext
   --- @return string[]|nil
-  local function impl()
+  local function impl(query, context)
     local git_root_cmd = cmds.GitRootCommand:run()
     if git_root_cmd:failed() then
       log.echo(LogLevels.INFO, "not in git repo.")
@@ -91,26 +95,26 @@ M._make_git_branches_provider = function(opts)
       log.echo(LogLevels.WARN, table.concat(git_current_branch_cmd.result.stderr, " "))
       return nil
     end
-    local branch_results = {}
-    table.insert(branch_results, string.format("* %s", git_current_branch_cmd:output()))
-    local git_branches_cmd =
-      cmds.GitBranchesCommand:run(tbl.tbl_get(opts, "remote_branch") and true or false)
+    local results = {}
+    table.insert(results, string.format("* %s", git_current_branch_cmd:output()))
+    local git_branches_cmd = cmds.GitBranchesCommand:run(remote_branch)
     if git_branches_cmd:failed() then
       log.echo(LogLevels.WARN, table.concat(git_current_branch_cmd.result.stderr, " "))
       return nil
     end
     for _, line in ipairs(git_branches_cmd.result.stdout) do
       if vim.trim(line):sub(1, 1) ~= "*" then
-        table.insert(branch_results, string.format("  %s", vim.trim(line)))
+        table.insert(results, string.format("  %s", vim.trim(line)))
       end
     end
-    return branch_results
+    return results
   end
+
   return impl
 end
 
-local local_branch_provider = M._make_git_branches_provider()
-local remote_branch_provider = M._make_git_branches_provider({ remote_branch = true })
+local local_branch_provider = M._make_provider()
+local remote_branch_provider = M._make_provider({ remote_branch = true })
 
 M.providers = {
   local_branch = {
@@ -128,11 +132,10 @@ M.providers = {
 local GIT_LOG_PRETTY_FORMAT = "%C(yellow)%h %C(cyan)%cd %C(green)%aN%C(auto)%d %Creset%s"
 
 --- @param line string
+--- @param context fzfx.PipelineContext
 --- @return string
-M._git_branches_previewer = function(line)
+M._previewer = function(line, context)
   local branch = str.split(line, " ")[1]
-  -- "git log --graph --date=short --color=always --pretty='%C(auto)%cd %h%d %s'",
-  -- "git log --graph --color=always --date=relative",
   return string.format(
     "git log --pretty=%s --graph --date=short --color=always %s",
     shells.shellescape(GIT_LOG_PRETTY_FORMAT),
@@ -142,10 +145,10 @@ end
 
 M.previewers = {
   local_branch = {
-    previewer = M._git_branches_previewer,
+    previewer = M._previewer,
   },
   remote_branch = {
-    previewer = M._git_branches_previewer,
+    previewer = M._previewer,
   },
 }
 
@@ -169,22 +172,6 @@ M.fzf_opts = {
     end
     return str.not_empty(git_current_branch_cmd:output()) and "--header-lines=1" or nil
   end,
-}
-
---- @alias fzfx.GitBranchesPipelineContext {remotes:string[]|nil}
---- @return fzfx.GitBranchesPipelineContext
-M._git_branches_context_maker = function()
-  local ctx = {}
-  local git_remotes_cmd = cmds.GitRemotesCommand:run()
-  if git_remotes_cmd:failed() then
-    return ctx
-  end
-  ctx.remotes = git_remotes_cmd:output()
-  return ctx
-end
-
-M.other_opts = {
-  context_maker = M._git_branches_context_maker,
 }
 
 return M
