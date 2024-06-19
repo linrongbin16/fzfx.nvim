@@ -174,4 +174,21 @@ M.fzf_opts = {
   end,
 }
 
+-- This is actually for the "git checkout" actions.
+--- @alias fzfx.GitBranchesPipelineContext {remotes:string[]|nil}
+--- @return fzfx.GitBranchesPipelineContext
+M._context_maker = function()
+  local ctx = {}
+  local git_remotes_cmd = cmds.GitRemotesCommand:run()
+  if git_remotes_cmd:failed() then
+    return ctx
+  end
+  ctx.remotes = git_remotes_cmd:output()
+  return ctx
+end
+
+M.other_opts = {
+  context_maker = M._context_maker,
+}
+
 return M
