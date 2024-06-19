@@ -22,8 +22,8 @@ describe("fzfx.cfg.lsp_diagnostics", function()
   require("fzfx").setup()
 
   describe("lsp_diagnostics", function()
-    it("_make_lsp_diagnostic_signs", function()
-      local actual = lsp_diagnostics_cfg._make_lsp_diagnostic_signs()
+    it("_make_signs", function()
+      local actual = lsp_diagnostics_cfg._make_signs()
       assert_eq(type(actual), "table")
       assert_eq(#actual, 4)
       for i, sign_item in ipairs(actual) do
