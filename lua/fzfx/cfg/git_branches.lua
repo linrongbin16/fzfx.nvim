@@ -11,6 +11,8 @@ local actions_helper = require("fzfx.helper.actions")
 local ProviderTypeEnum = require("fzfx.schema").ProviderTypeEnum
 local CommandFeedEnum = require("fzfx.schema").CommandFeedEnum
 
+local _git = require("fzfx.cfg._git")
+
 local M = {}
 
 M.command = {
@@ -129,8 +131,6 @@ M.providers = {
   },
 }
 
-local GIT_LOG_PRETTY_FORMAT = "%C(yellow)%h %C(cyan)%cd %C(green)%aN%C(auto)%d %Creset%s"
-
 --- @param line string
 --- @param context fzfx.PipelineContext
 --- @return string
@@ -138,7 +138,7 @@ M._previewer = function(line, context)
   local branch = str.split(line, " ")[1]
   return string.format(
     "git log --pretty=%s --graph --date=short --color=always %s",
-    shells.shellescape(GIT_LOG_PRETTY_FORMAT),
+    shells.shellescape(_git.GIT_LOG_PRETTY_FORMAT),
     branch
   )
 end

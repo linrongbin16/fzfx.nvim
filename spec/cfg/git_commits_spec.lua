@@ -21,31 +21,28 @@ describe("fzfx.cfg.git_commits", function()
   local git_commits_cfg = require("fzfx.cfg.git_commits")
   require("fzfx").setup()
 
-  describe("[_make_git_commits_provider]", function()
-    it("all commits", function()
-      local f = git_commits_cfg._make_git_commits_provider()
+  describe("[_make_provider]", function()
+    it("workspace", function()
+      local f = git_commits_cfg._make_provider()
       local actual = f("", {})
-      if actual ~= nil then
-        assert_eq(type(actual), "table")
-        assert_eq(actual[1], "git")
-        assert_eq(actual[2], "log")
-        assert_true(str.startswith(actual[3], "--pretty="))
-        assert_eq(actual[4], "--date=short")
-        assert_eq(actual[5], "--color=always")
+      -- if actual ~= nil then
+      assert_eq(type(actual), "table")
+      local n = #git_commits_cfg._GIT_LOG_WORKSPACE
+      for i = 1, n do
+        assert_eq(actual[i], git_commits_cfg._GIT_LOG_WORKSPACE[i])
       end
+      -- end
     end)
-    it("buffer commits", function()
-      local f = git_commits_cfg._make_git_commits_provider({ buffer = true })
+    it("current buffer", function()
+      local f = git_commits_cfg._make_provider({ buffer = true })
       local actual = f("", contexts.make_pipeline_context())
       if actual ~= nil then
         assert_eq(type(actual), "table")
-        assert_eq(actual[1], "git")
-        assert_eq(actual[2], "log")
-        assert_true(str.startswith(actual[3], "--pretty="))
-        assert_eq(actual[4], "--date=short")
-        assert_eq(actual[5], "--color=always")
-        assert_eq(actual[6], "--")
-        assert_true(str.endswith(actual[7], "README.md"))
+        local n = #git_commits_cfg._GIT_LOG_CURRENT_BUFFER
+        for i = 1, n do
+          assert_eq(actual[i], git_commits_cfg._GIT_LOG_CURRENT_BUFFER[i])
+        end
+        assert_true(str.find(actual[#actual], "README.md") > 0)
       end
     end)
   end)
