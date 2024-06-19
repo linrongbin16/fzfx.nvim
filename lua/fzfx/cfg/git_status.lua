@@ -96,13 +96,13 @@ M._GIT_STATUS_WORKSPACE = {
 }
 
 --- @param opts {current_folder:boolean?}?
---- @return fun(query:string, context:fzfx.PipelineContext):string[]
+--- @return fun(query:string, context:fzfx.PipelineContext):string[]|nil
 M._make_provider = function(opts)
   local current_folder_mode = tbl.tbl_get(opts, "current_folder") or false
 
   --- @param query string
   --- @param context fzfx.PipelineContext
-  --- @return string[]
+  --- @return string[]|nil
   local function impl(query, context)
     local git_root_cmd = cmds.GitRootCommand:run()
     if git_root_cmd:failed() then
