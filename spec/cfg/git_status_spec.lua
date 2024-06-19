@@ -11,12 +11,8 @@ describe("fzfx.cfg.git_status", function()
     vim.cmd([[noautocmd edit README.md]])
   end)
 
-  local github_actions = os.getenv("GITHUB_ACTIONS") == "true"
-
   local str = require("fzfx.commons.str")
   local consts = require("fzfx.lib.constants")
-  local contexts = require("fzfx.helper.contexts")
-  local fzf_helpers = require("fzfx.detail.fzf_helpers")
   local git_status_cfg = require("fzfx.cfg.git_status")
   require("fzfx").setup()
 
@@ -30,10 +26,10 @@ describe("fzfx.cfg.git_status", function()
         "?? ../hello",
       }
       for _, line in ipairs(lines) do
-        local actual = git_status_cfg._previewer(line)
+        local actual = git_status_cfg._previewer(line, nil)
         assert_eq(type(actual), "string")
         assert_true(str.find(actual, "git diff") > 0)
-        if vim.fn.executable("delta") > 0 then
+        if consts.HAS_DELTA then
           assert_true(str.find(actual, "delta") > 0)
         else
           assert_true(str.find(actual, "delta") == nil)
@@ -41,14 +37,14 @@ describe("fzfx.cfg.git_status", function()
       end
     end)
     it("_make_provider", function()
-      local actual1 = git_status_cfg._make_provider()()
+      local actual1 = git_status_cfg._make_provider()("", nil)
       local n1 = #git_status_cfg._GIT_STATUS_WORKSPACE
       assert_eq(type(actual1), "table")
       for i = 1, n1 do
         assert_eq(actual1[i], git_status_cfg._GIT_STATUS_WORKSPACE[i])
       end
 
-      local actual2 = git_status_cfg._make_provider({ current_folder = true })()
+      local actual2 = git_status_cfg._make_provider({ current_folder = true })("", nil)
       local n2 = #git_status_cfg._GIT_STATUS_CURRENT_DIR
       assert_eq(type(actual2), "table")
       for i = 1, n2 do

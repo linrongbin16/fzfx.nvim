@@ -136,8 +136,9 @@ M.providers = {
 }
 
 --- @param line string
+--- @param context fzfx.PipelineContext
 --- @return string?
-M._previewer = function(line)
+M._previewer = function(line, context)
   local parsed = parsers_helper.parse_git_status(line)
   if constants.HAS_DELTA then
     local win_width = previewers_helper.get_preview_window_width()
