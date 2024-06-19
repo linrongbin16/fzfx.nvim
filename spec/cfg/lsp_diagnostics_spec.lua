@@ -1,4 +1,3 @@
----@diagnostic disable: undefined-field, unused-local, missing-fields, need-check-nil, param-type-mismatch, assign-type-mismatch
 local cwd = vim.fn.getcwd()
 
 describe("fzfx.cfg.lsp_diagnostics", function()
@@ -22,25 +21,23 @@ describe("fzfx.cfg.lsp_diagnostics", function()
   require("fzfx").setup()
 
   describe("lsp_diagnostics", function()
-    it("_make_lsp_diagnostic_signs", function()
-      local actual = lsp_diagnostics_cfg._make_lsp_diagnostic_signs()
+    it("_make_signs", function()
+      local actual = lsp_diagnostics_cfg._make_signs()
       assert_eq(type(actual), "table")
       assert_eq(#actual, 4)
-      for i, sign_item in ipairs(actual) do
-        assert_eq(type(sign_item), "table")
-        assert_true(sign_item.severity >= 1 and sign_item.severity <= 4)
+      for i, sign in ipairs(actual) do
+        assert_eq(type(sign), "table")
+        assert_true(sign.severity >= 1 and sign.severity <= 4)
+        assert_true(string.len(sign.name) > 0 and str.startswith(sign.name, "DiagnosticSign"))
         assert_true(
-          string.len(sign_item.name) > 0 and str.startswith(sign_item.name, "DiagnosticSign")
-        )
-        assert_true(
-          str.endswith(sign_item.name, "Error")
-            or str.endswith(sign_item.name, "Warn")
-            or str.endswith(sign_item.name, "Info")
-            or str.endswith(sign_item.name, "Hint")
+          str.endswith(sign.name, "Error")
+            or str.endswith(sign.name, "Warn")
+            or str.endswith(sign.name, "Info")
+            or str.endswith(sign.name, "Hint")
         )
       end
     end)
-    it("_process_lsp_diagnostic_item", function()
+    it("_process_diag", function()
       local diags = {
         { bufnr = 0, lnum = 1, col = 1, message = "a", severity = 1 },
         { bufnr = 1, lnum = 1, col = 1, message = "b", severity = 2 },
@@ -49,7 +46,7 @@ describe("fzfx.cfg.lsp_diagnostics", function()
         { bufnr = 5, lnum = 1, col = 1, message = "e" },
       }
       for _, diag in ipairs(diags) do
-        local actual = lsp_diagnostics_cfg._process_lsp_diagnostic_item(diag)
+        local actual = lsp_diagnostics_cfg._process_diag(diag)
         if actual ~= nil then
           assert_eq(actual.bufnr, diag.bufnr)
           assert_eq(actual.lnum, diag.lnum + 1)
@@ -58,8 +55,59 @@ describe("fzfx.cfg.lsp_diagnostics", function()
         end
       end
     end)
-    it("_make_lsp_diagnostics_provider", function()
-      local f = lsp_diagnostics_cfg._make_lsp_diagnostics_provider()
+    it("_render_diag_to_line", function()
+      local inputs = {
+        {
+          bufnr = 0,
+          filename = "lua/fzfx/config.lua",
+          lnum = 10,
+          col = 13,
+          text = "Unused local `query`",
+          severity = 1,
+        },
+        {
+          bufnr = 0,
+          filename = "lua/fzfx/config.lua",
+          lnum = 1,
+          col = 2,
+          text = "Unused local `query`",
+          severity = 2,
+        },
+        {
+          bufnr = 0,
+          filename = "lua/fzfx/config.lua",
+          lnum = 5000,
+          col = 500,
+          text = "Unused local `query`",
+          severity = 3,
+        },
+        {
+          bufnr = 0,
+          filename = "lua/fzfx/config.lua",
+          lnum = 30,
+          col = 12,
+          text = "Unused local `query`",
+          severity = 4,
+        },
+        {
+          bufnr = 0,
+          filename = "lua/fzfx/config.lua",
+          lnum = 30,
+          col = 12,
+          text = "Unused local `query`",
+        },
+      }
+      for _, input in ipairs(inputs) do
+        local actual = lsp_diagnostics_cfg._render_diag_to_line(input)
+        assert_eq(type(actual), "string")
+        assert_true(str.find(actual, input.text) > 0)
+        assert_true(str.find(actual, tostring(input.filename)) > 0)
+        assert_true(str.find(actual, tostring(input.lnum)) > 0)
+        assert_true(str.find(actual, tostring(input.col)) > 0)
+      end
+    end)
+    it("_make_provider", function()
+      local f = lsp_diagnostics_cfg._make_provider()
       local actual = f("", {})
       if actual ~= nil then
         assert_eq(type(actual), "table")
