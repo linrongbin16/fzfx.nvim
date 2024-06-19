@@ -26,17 +26,15 @@ describe("fzfx.cfg.lsp_diagnostics", function()
       local actual = lsp_diagnostics_cfg._make_signs()
       assert_eq(type(actual), "table")
       assert_eq(#actual, 4)
-      for i, sign_item in ipairs(actual) do
-        assert_eq(type(sign_item), "table")
-        assert_true(sign_item.severity >= 1 and sign_item.severity <= 4)
+      for i, sign in ipairs(actual) do
+        assert_eq(type(sign), "table")
+        assert_true(sign.severity >= 1 and sign.severity <= 4)
+        assert_true(string.len(sign.name) > 0 and str.startswith(sign.name, "DiagnosticSign"))
         assert_true(
-          string.len(sign_item.name) > 0 and str.startswith(sign_item.name, "DiagnosticSign")
-        )
-        assert_true(
-          str.endswith(sign_item.name, "Error")
-            or str.endswith(sign_item.name, "Warn")
-            or str.endswith(sign_item.name, "Info")
-            or str.endswith(sign_item.name, "Hint")
+          str.endswith(sign.name, "Error")
+            or str.endswith(sign.name, "Warn")
+            or str.endswith(sign.name, "Info")
+            or str.endswith(sign.name, "Hint")
         )
       end
     end)
