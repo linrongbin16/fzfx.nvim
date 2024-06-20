@@ -194,7 +194,7 @@ describe("fzfx.cfg.vim_commands", function()
 
       for i, opt in ipairs(opts) do
         local commands = vim_commands_cfg._get_commands(ctx, opt)
-        local actual = vim_commands_cfg._render_lines(commands)
+        local actual = vim_commands_cfg._render_lines(commands, ctx)
         assert_eq(type(actual), "table")
         assert_true(#actual >= 0)
 

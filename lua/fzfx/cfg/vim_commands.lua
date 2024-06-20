@@ -408,10 +408,9 @@ M._render_header = function(vc)
 end
 
 --- @param commands fzfx.VimCommand[]
+--- @param context fzfx.VimCommandsPipelineContext
 --- @return string[]
-M._render_lines = function(commands)
-  local name_column_width, opts_column_width = M._calculate_name_and_opts_width(commands)
-
+M._render_lines = function(commands, context)
   --- @param r fzfx.VimCommand
   --- @return string
   local function rendered_desc_or_loc(r)
@@ -434,11 +433,11 @@ M._render_lines = function(commands)
 
   local results = {}
   local formatter = "%-"
-    .. tostring(name_column_width)
+    .. tostring(context.name_column_width)
     .. "s"
     .. " "
     .. "%-"
-    .. tostring(opts_column_width)
+    .. tostring(context.opts_column_width)
     .. "s %s"
   local header = string.format(formatter, NAME, OPTS, DEF_OR_LOC)
   table.insert(results, header)
@@ -495,7 +494,7 @@ end
 --- @return string[]
 local function _provider(query, context)
   local commands = M._get_commands(context, { ex_commands = true, user_commands = true })
-  return M._render_lines(commands)
+  return M._render_lines(commands, context)
 end
 
 --- @param query string
@@ -503,7 +502,7 @@ end
 --- @return string[]
 local function _ex_provider(query, context)
   local commands = M._get_commands(context, { ex_commands = true })
-  return M._render_lines(commands)
+  return M._render_lines(commands, context)
 end
 
 --- @param query string
@@ -511,7 +510,7 @@ end
 --- @return string[]
 local function _user_provider(query, context)
   local commands = M._get_commands(context, { user_commands = true })
-  return M._render_lines(commands)
+  return M._render_lines(commands, context)
 end
 
 M.providers = {
@@ -596,7 +595,7 @@ M.fzf_opts = {
   { "--prompt", "Commands > " },
 }
 
---- @alias fzfx.VimCommandsPipelineContext {bufnr:integer,winnr:integer,tabnr:integer,output_lines:string[]}
+--- @alias fzfx.VimCommandsPipelineContext {bufnr:integer,winnr:integer,tabnr:integer,output_lines:string[],name_column_width:integer,opts_column_width:integer}
 --- @return fzfx.VimCommandsPipelineContext
 M._context_maker = function()
   local ctx = {
@@ -606,11 +605,10 @@ M._context_maker = function()
   }
 
   ctx.output_lines = M._get_commands_output_in_lines()
-
-  -- local commands = M._get_vim_commands({ ex_commands = true, user_commands = true })
-  -- local name_width, opts_width = M._calculate_vim_commands_columns_width(commands)
-  -- ctx.name_width = name_width
-  -- ctx.opts_width = opts_width
+  local commands = M._get_commands(ctx, { ex_commands = true, user_commands = true })
+  local name_column_width, opts_column_width = M._calculate_name_and_opts_width(commands)
+  ctx.name_column_width = name_column_width
+  ctx.opts_column_width = opts_column_width
 
   return ctx
 end
