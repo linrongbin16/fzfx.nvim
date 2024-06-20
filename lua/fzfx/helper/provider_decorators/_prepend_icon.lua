@@ -1,11 +1,17 @@
-local str = require("fzfx.commons.str")
-local term_color = require("fzfx.commons.color.term")
+-- Prepend file type icons at the beginning of a line.
+-- Works for files and grep results (or other query results followed this pattern).
+-- Such as `FzfxFiles`, `FzfxLiveGrep`, `FzfxBuffers`, `FzfxGLiveGrep`, `FzfxLspDiagnostics` etc.
 
-local DEVICONS_OK = nil
+local str = require("fzfx.commons.str")
+local color_term = require("fzfx.commons.color.term")
+
 local DEVICONS = nil
 if str.not_empty(vim.env._FZFX_NVIM_DEVICONS_PATH) then
   vim.opt.runtimepath:append(vim.env._FZFX_NVIM_DEVICONS_PATH)
-  DEVICONS_OK, DEVICONS = pcall(require, "nvim-web-devicons")
+  local ok, dev = pcall(require, "nvim-web-devicons")
+  if ok and dev ~= nil then
+    DEVICONS = dev
+  end
 end
 
 local M = {}
@@ -15,7 +21,7 @@ local M = {}
 --- @param index integer?
 --- @return string
 M._decorate = function(line, delimiter, index)
-  if not DEVICONS_OK or DEVICONS == nil then
+  if not DEVICONS then
     return line
   end
 
@@ -29,7 +35,7 @@ M._decorate = function(line, delimiter, index)
   -- remove ansi color codes
   -- see: https://stackoverflow.com/a/55324681/4438921
   if str.not_empty(filename) then
-    filename = term_color.erase(filename)
+    filename = color_term.erase(filename)
   end
   local ext = vim.fn.fnamemodify(filename --[[@as string]], ":e")
   local icon_text, icon_color = DEVICONS.get_icon_color(filename, ext)
@@ -40,7 +46,7 @@ M._decorate = function(line, delimiter, index)
   --     vim.inspect(icon_color)
   -- )
   if str.not_empty(icon_text) then
-    local rendered_text = term_color.render(icon_text, icon_color)
+    local rendered_text = color_term.render(icon_text, icon_color)
     return rendered_text .. " " .. line
   else
     if vim.fn.isdirectory(filename) > 0 then
