@@ -132,9 +132,10 @@ describe("helper.previewer_labels", function()
   end)
 
   describe("[label_vim_command]", function()
+    --- @type fzfx.VimCommandsPipelineContext
     local CONTEXT = {
-      name_width = 17,
-      opts_width = 37,
+      name_column_width = 17,
+      opts_column_width = 37,
     }
     it("test location", function()
       local lines = {
@@ -164,9 +165,10 @@ describe("helper.previewer_labels", function()
   end)
 
   describe("[label_vim_keymap]", function()
+    --- @type fzfx.VimKeyMapsPipelineContext
     local CONTEXT = {
-      key_width = 44,
-      opts_width = 26,
+      key_column_width = 44,
+      opts_column_width = 26,
     }
     it("test location", function()
       local lines = {
@@ -295,7 +297,7 @@ describe("helper.previewer_labels", function()
   end)
 
   describe("[label_vim_mark]", function()
-    local CONTEXT = require("fzfx.cfg.vim_marks")._vim_marks_context_maker()
+    local CONTEXT = require("fzfx.cfg.vim_marks")._context_maker()
     it("test", function()
       local n = #CONTEXT.marks
       for i = 2, n do

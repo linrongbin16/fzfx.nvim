@@ -11,18 +11,41 @@ describe("fzfx.cfg.vim_keymaps", function()
     vim.cmd([[noautocmd edit README.md]])
   end)
 
-  local github_actions = os.getenv("GITHUB_ACTIONS") == "true"
+  local GITHUB_ACTIONS = os.getenv("GITHUB_ACTIONS") == "true"
+
   local str = require("fzfx.commons.str")
   local constants = require("fzfx.lib.constants")
-  local contexts = require("fzfx.helper.contexts")
-  local fzf_helpers = require("fzfx.detail.fzf_helpers")
   local vim_keymaps_cfg = require("fzfx.cfg.vim_keymaps")
   require("fzfx").setup()
 
   describe("[keymaps]", function()
-    it("_make_vim_keymaps_provider all", function()
-      local ctx = vim_keymaps_cfg._vim_keymaps_context_maker()
-      local f = vim_keymaps_cfg._make_vim_keymaps_provider("all")
+    local CONTEXT = vim_keymaps_cfg._context_maker()
+    it("_get_keymaps_output_in_lines", function()
+      local output_lines = vim_keymaps_cfg._get_maps_output_in_lines()
+      assert_eq(type(output_lines), "table")
+      assert_true(#output_lines > 0)
+    end)
+    it("_parse_output_line", function()
+      local output_lines = vim_keymaps_cfg._get_maps_output_in_lines()
+      for i, line in ipairs(output_lines) do
+        if str.not_empty(line) then
+          local actual = vim_keymaps_cfg._parse_output_line(line)
+          print(
+            string.format(
+              "_parse_output_line-%d, line:%s, actual:%s\n",
+              i,
+              vim.inspect(line),
+              vim.inspect(actual)
+            )
+          )
+          assert_eq(type(actual), "table")
+          assert_true(str.not_empty(actual.lhs))
+        end
+      end
+    end)
+    it("_make_provider a (all)", function()
+      local ctx = vim_keymaps_cfg._context_maker()
+      local f = vim_keymaps_cfg._make_provider("a")
       local actual = f("", ctx)
       if actual ~= nil then
         assert_eq(type(actual), "table")
@@ -33,9 +56,9 @@ describe("fzfx.cfg.vim_keymaps", function()
         end
       end
     end)
-    it("_make_vim_keymaps_provider n", function()
-      local ctx = vim_keymaps_cfg._vim_keymaps_context_maker()
-      local f = vim_keymaps_cfg._make_vim_keymaps_provider("n")
+    it("_make_provider n (normal mode)", function()
+      local ctx = vim_keymaps_cfg._context_maker()
+      local f = vim_keymaps_cfg._make_provider("n")
       local actual = f("", ctx)
       if actual ~= nil then
         assert_eq(type(actual), "table")
@@ -46,9 +69,9 @@ describe("fzfx.cfg.vim_keymaps", function()
         end
       end
     end)
-    it("_make_vim_keymaps_provider i", function()
-      local ctx = vim_keymaps_cfg._vim_keymaps_context_maker()
-      local f = vim_keymaps_cfg._make_vim_keymaps_provider("i")
+    it("_make_provider i (insert mode)", function()
+      local ctx = vim_keymaps_cfg._context_maker()
+      local f = vim_keymaps_cfg._make_provider("i")
       local actual = f("", ctx)
       if actual ~= nil then
         assert_eq(type(actual), "table")
@@ -59,9 +82,9 @@ describe("fzfx.cfg.vim_keymaps", function()
         end
       end
     end)
-    it("_make_vim_keymaps_provider v", function()
-      local ctx = vim_keymaps_cfg._vim_keymaps_context_maker()
-      local f = vim_keymaps_cfg._make_vim_keymaps_provider("v")
+    it("_make_provider v (visual mode)", function()
+      local ctx = vim_keymaps_cfg._context_maker()
+      local f = vim_keymaps_cfg._make_provider("v")
       local actual = f("", ctx)
       if actual ~= nil then
         assert_eq(type(actual), "table")
@@ -72,8 +95,8 @@ describe("fzfx.cfg.vim_keymaps", function()
         end
       end
     end)
-    it("_get_vim_keymaps", function()
-      local actual = vim_keymaps_cfg._get_vim_keymaps()
+    it("_get_keymaps", function()
+      local actual = vim_keymaps_cfg._get_keymaps(CONTEXT.output_lines)
       -- print(string.format("vim keymaps:%s\n", vim.inspect(actual)))
       assert_eq(type(actual), "table")
       assert_true(#actual >= 0)
@@ -85,23 +108,17 @@ describe("fzfx.cfg.vim_keymaps", function()
         assert_true(string.len(act.mode) == 1)
       end
     end)
-    it("_render_vim_keymaps_column_opts", function()
-      local actual1 = vim_keymaps_cfg._render_vim_keymaps_column_opts({
+    it("_render_header", function()
+      local actual1 = vim_keymaps_cfg._render_header({
         lhs = "#",
         mode = "n",
         noremap = true,
         nowait = false,
         silent = false,
       })
-      -- print(
-      --     string.format(
-      --         "render vim keymap opts1:%s\n",
-      --         vim.inspect(actual1)
-      --     )
-      -- )
       assert_eq(actual1, "n   |Y      |N     |N     ")
     end)
-    it("_render_vim_keymaps_columns_status", function()
+    it("_calculate_columns_widths", function()
       local keymaps = {
         {
           lhs = "#",
@@ -111,14 +128,14 @@ describe("fzfx.cfg.vim_keymaps", function()
           silent = false,
         },
       }
-      local actual1, actual2 = vim_keymaps_cfg._render_vim_keymaps_columns_status(keymaps)
+      local actual1, actual2 = vim_keymaps_cfg._calculate_columns_widths(keymaps)
       assert_eq(actual1, math.max(string.len(keymaps[1].lhs), string.len("Lhs")))
       assert_eq(actual2, string.len("Mode|Noremap|Nowait|Silent"))
     end)
-    it("_render_vim_keymaps", function()
-      local keymaps = vim_keymaps_cfg._get_vim_keymaps()
-      local lhs_width, opts_width = vim_keymaps_cfg._render_vim_keymaps_columns_status(keymaps)
-      local actual = vim_keymaps_cfg._render_vim_keymaps(keymaps, lhs_width, opts_width)
+    it("_render_lines", function()
+      local keymaps = vim_keymaps_cfg._get_keymaps(CONTEXT.output_lines)
+      local lhs_width, opts_width = vim_keymaps_cfg._calculate_columns_widths(keymaps)
+      local actual = vim_keymaps_cfg._render_lines(keymaps, lhs_width, opts_width)
       -- print(string.format("render vim keymaps:%s\n", vim.inspect(actual)))
       assert_eq(type(actual), "table")
       assert_true(#actual >= 1)
@@ -128,24 +145,24 @@ describe("fzfx.cfg.vim_keymaps", function()
         assert_true(string.len(actual[i]) > 0)
       end
     end)
-    it("_vim_keymaps_context_maker", function()
-      local ctx = vim_keymaps_cfg._vim_keymaps_context_maker()
+    it("_context_maker", function()
+      local ctx = vim_keymaps_cfg._context_maker()
       -- print(string.format("vim keymaps context:%s\n", vim.inspect(ctx)))
       assert_eq(type(ctx), "table")
       assert_true(ctx.bufnr > 0)
       assert_true(ctx.winnr > 0)
       assert_true(ctx.tabnr > 0)
-      assert_true(ctx.key_width > 0)
-      assert_true(ctx.opts_width > 0)
+      assert_true(ctx.key_column_width > 0)
+      assert_true(ctx.opts_column_width > 0)
     end)
-    it("_vim_keymaps_previewer", function()
+    it("_previewer", function()
       local lines = {
         '<C-Tab>                                      o   |Y      |N     |N      "<C-C><C-W>w"',
         "<Plug>(YankyCycleBackward)                   n   |Y      |N     |Y      ~/.config/nvim/lazy/yanky.nvim/lua/yanky.lua:290",
       }
-      local ctx = vim_keymaps_cfg._vim_keymaps_context_maker()
+      local ctx = vim_keymaps_cfg._context_maker()
       for _, line in ipairs(lines) do
-        local actual = vim_keymaps_cfg._vim_keymaps_previewer(line, ctx)
+        local actual = vim_keymaps_cfg._previewer(line, ctx)
         assert_eq(type(actual), "table")
         assert_true(actual[1] == constants.BAT or actual[1] == "cat" or actual[1] == "echo")
       end

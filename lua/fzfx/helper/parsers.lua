@@ -515,7 +515,8 @@ M.parse_vim_command = function(line, context)
     string.format("failed to parse vim command lines:%s", vim.inspect(line))
   )
   local command = vim.trim(line:sub(1, first_space_pos - 1))
-  local desc_or_loc = vim.trim(line:sub(context.name_width + 1 + context.opts_width + 1 + 1))
+  local desc_or_loc =
+    vim.trim(line:sub(context.name_column_width + 1 + context.opts_column_width + 1 + 1))
   -- log.debug(
   --     "|fzfx.helper.parsers - parse_vim_commands| desc_or_loc:%s",
   --     vim.inspect(desc_or_loc)
@@ -575,7 +576,8 @@ M.parse_vim_keymap = function(line, context)
   local lhs = vim.trim(line:sub(1, first_space_pos - 1))
   local first_bar_pos = str.find(line, "|", first_space_pos + 1)
   local mode = vim.trim(line:sub(first_space_pos + 1, first_bar_pos - 1))
-  local rhs_or_loc = vim.trim(line:sub(context.key_width + 1 + context.opts_width + 1 + 1))
+  local rhs_or_loc =
+    vim.trim(line:sub(context.key_column_width + 1 + context.opts_column_width + 1 + 1))
   -- log.debug(
   --     "|fzfx.helper.parsers - parse_vim_commands| desc_or_loc:%s",
   --     vim.inspect(desc_or_loc)

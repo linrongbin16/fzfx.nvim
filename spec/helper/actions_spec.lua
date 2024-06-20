@@ -665,9 +665,10 @@ describe("helper.actions", function()
   end)
 
   describe("[feed_vim_command]", function()
+    --- @type fzfx.VimCommandsPipelineContext
     local CONTEXT = {
-      name_width = 17,
-      opts_width = 37,
+      name_column_width = 17,
+      opts_column_width = 37,
     }
     it("make", function()
       local actual = actions._make_feed_vim_command({
@@ -681,9 +682,10 @@ describe("helper.actions", function()
   end)
 
   describe("[feed_vim_key]", function()
+    --- @type fzfx.VimKeyMapsPipelineContext
     local CONTEXT = {
-      key_width = 44,
-      opts_width = 26,
+      key_column_width = 44,
+      opts_column_width = 26,
     }
     it("make normal keys", function()
       local parsed = actions._make_feed_vim_key({
@@ -896,7 +898,7 @@ describe("helper.actions", function()
   end)
 
   describe("[edit_vim_mark]", function()
-    local CONTEXT = require("fzfx.cfg.vim_marks")._vim_marks_context_maker()
+    local CONTEXT = require("fzfx.cfg.vim_marks")._context_maker()
     it("make", function()
       local lines = tbl.List
         :copy(CONTEXT.marks)
@@ -937,7 +939,7 @@ describe("helper.actions", function()
   end)
 
   describe("[setqflist_vim_mark]", function()
-    local CONTEXT = require("fzfx.cfg.vim_marks")._vim_marks_context_maker()
+    local CONTEXT = require("fzfx.cfg.vim_marks")._context_maker()
     it("make", function()
       local lines = tbl.List
         :copy(CONTEXT.marks)

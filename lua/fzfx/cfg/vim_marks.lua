@@ -132,7 +132,8 @@ M.variants = {
   },
 }
 
--- the ':marks' output looks like:
+-- Get the `:marks` output as lines.
+-- The ':marks' output looks like:
 --
 --```
 --mark line  col file/text
@@ -153,41 +154,55 @@ M.variants = {
 -- ^    134   14 -- the ':marks' output looks like:
 -- .    134   13 -- the ':marks' output looks like:
 --```
+--
+--- @return string[]
+M._get_marks_output_in_lines = function()
+  local tmpfile = vim.fn.tempname() --[[@as string]]
+  vim.cmd(string.format(
+    [[
+    redir! > %s
+    silent execute 'marks'
+    redir END
+    ]],
+    tmpfile
+  ))
+  local lines = fileio.readlines(tmpfile) --[[@as string[] ]]
+  return lines
+end
+
+-- Parse the header (first) line of `:marks` outputs, returns the "mark", "lineno", "col", "file/text" index positions.
 --- @alias fzfx.VimMarksHeaderPosition {mark_pos:integer,lineno_pos:integer,col_pos:integer,file_text_pos:integer}
---- @param first_line string
+--- @param header string
 --- @return fzfx.VimMarksHeaderPosition
-M._parse_mark_command_output_first_line = function(first_line)
+M._parse_output_header = function(header)
   local MARK = "mark"
   local LINE = "line"
   local COL = "col"
   local FILE_TEXT = "file/text"
 
   log.ensure(
-    string.len(first_line) > 0,
-    string.format("invalid 'marks' first line output:%s", vim.inspect(first_line))
+    string.len(header) > 0,
+    string.format("invalid 'marks' first line output:%s", vim.inspect(header))
   )
-  local mark_pos = str.find(first_line, MARK) --[[@as integer]]
+  local mark_pos = str.find(header, MARK) --[[@as integer]]
   log.ensure(
     num.ge(mark_pos, 0),
-    string.format("invalid 'marks' first line, failed to find 'mark':%s", vim.inspect(first_line))
+    string.format("invalid 'marks' first line, failed to find 'mark':%s", vim.inspect(header))
   )
-  local lineno_pos = str.find(first_line, LINE, mark_pos + string.len(MARK)) --[[@as integer]]
+  local lineno_pos = str.find(header, LINE, mark_pos + string.len(MARK)) --[[@as integer]]
   log.ensure(
     num.ge(lineno_pos, 0),
-    string.format("invalid 'marks' first line, failed to find 'line':%s", vim.inspect(first_line))
+    string.format("invalid 'marks' first line, failed to find 'line':%s", vim.inspect(header))
   )
-  local col_pos = str.find(first_line, COL, lineno_pos + string.len(LINE)) --[[@as integer]]
+  local col_pos = str.find(header, COL, lineno_pos + string.len(LINE)) --[[@as integer]]
   log.ensure(
     num.ge(col_pos, 0),
-    string.format("invalid 'marks' first line, failed to find 'col':%s", vim.inspect(first_line))
+    string.format("invalid 'marks' first line, failed to find 'col':%s", vim.inspect(header))
   )
-  local file_text_pos = str.find(first_line, FILE_TEXT, col_pos + string.len(COL)) --[[@as integer]]
+  local file_text_pos = str.find(header, FILE_TEXT, col_pos + string.len(COL)) --[[@as integer]]
   log.ensure(
     num.ge(file_text_pos, 0),
-    string.format(
-      "invalid 'marks' first line, failed to find 'file/text':%s",
-      vim.inspect(first_line)
-    )
+    string.format("invalid 'marks' first line, failed to find 'file/text':%s", vim.inspect(header))
   )
 
   return {
@@ -198,46 +213,35 @@ M._parse_mark_command_output_first_line = function(first_line)
   }
 end
 
+--- @param output_lines string[]
 --- @return string[]
-M._get_vim_marks = function()
-  local tmpfile = vim.fn.tempname()
-  vim.cmd(string.format(
-    [[
-    redir! > %s
-    silent execute 'marks'
-    redir END
-    ]],
-    tmpfile
-  ))
-
-  local marks_output_lines = fileio.readlines(tmpfile --[[@as string]]) --[[@as table]]
-  local marks_results = {}
-
-  for i, line in ipairs(marks_output_lines) do
+M._get_marks = function(output_lines)
+  local marks = {}
+  for _, line in ipairs(output_lines) do
     if str.not_empty(line) then
-      table.insert(marks_results, line)
+      table.insert(marks, line)
     end
   end
-  return marks_results
+  return marks
 end
 
 --- @param query string
 --- @param context fzfx.VimMarksPipelineContext
 --- @return string[]
-M._vim_marks_provider = function(query, context)
+M._provider = function(query, context)
   return context.marks
 end
 
 M.providers = {
   key = "default",
-  provider = M._vim_marks_provider,
+  provider = M._provider,
   provider_type = ProviderTypeEnum.LIST,
 }
 
 --- @param line string
 --- @param context fzfx.VimMarksPipelineContext
 --- @return string[]|nil
-M._vim_marks_previewer = function(line, context)
+M._previewer = function(line, context)
   if str.empty(line) then
     return nil
   end
@@ -281,7 +285,7 @@ M._vim_marks_previewer = function(line, context)
 end
 
 M.previewers = {
-  previewer = M._vim_marks_previewer,
+  previewer = M._previewer,
   previewer_type = PreviewerTypeEnum.COMMAND_LIST,
   previewer_label = labels_helper.label_vim_mark,
 }
@@ -302,27 +306,28 @@ M.fzf_opts = {
 
 --- @alias fzfx.VimMarksPipelineContext {bufnr:integer,winnr:integer,tabnr:integer,marks:string[],mark_pos:integer,lineno_pos:integer,col_pos:integer,file_text_pos:integer}
 --- @return fzfx.VimMarksPipelineContext
-M._vim_marks_context_maker = function()
+M._context_maker = function()
   local ctx = {
     bufnr = vim.api.nvim_get_current_buf(),
     winnr = vim.api.nvim_get_current_win(),
     tabnr = vim.api.nvim_get_current_tabpage(),
   }
 
-  local marks = M._get_vim_marks()
-  local first_line = marks[1]
-  local pos = M._parse_mark_command_output_first_line(first_line)
+  local output_lines = M._get_marks_output_in_lines()
+  local marks = M._get_marks(output_lines)
+  local header = marks[1]
+  local positions = M._parse_output_header(header)
 
   ctx.marks = marks
-  ctx.mark_pos = pos.mark_pos
-  ctx.lineno_pos = pos.lineno_pos
-  ctx.col_pos = pos.col_pos
-  ctx.file_text_pos = pos.file_text_pos
+  ctx.mark_pos = positions.mark_pos
+  ctx.lineno_pos = positions.lineno_pos
+  ctx.col_pos = positions.col_pos
+  ctx.file_text_pos = positions.file_text_pos
   return ctx
 end
 
 M.other_opts = {
-  context_maker = M._vim_marks_context_maker,
+  context_maker = M._context_maker,
 }
 
 return M

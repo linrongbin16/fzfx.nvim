@@ -349,9 +349,10 @@ describe("helper.parsers", function()
   describe("[parse_vim_commands]", function()
     local VIM_COMMANDS_HEADER =
       "Name              Bang|Bar|Nargs|Range|Complete         Desc/Location"
+    --- @type fzfx.VimCommandsPipelineContext
     local CONTEXT = {
-      name_width = 17,
-      opts_width = 37,
+      name_column_width = 17,
+      opts_column_width = 37,
     }
     it("test location1", function()
       local lines = {
@@ -428,11 +429,10 @@ describe("helper.parsers", function()
   end)
 
   describe("[parse_vim_keymap]", function()
-    local VIM_COMMANDS_HEADER =
-      "Lhs                                          Mode|Noremap|Nowait|Silent Rhs/Location"
+    --- @type fzfx.VimKeyMapsPipelineContext
     local CONTEXT = {
-      key_width = 44,
-      opts_width = 26,
+      key_column_width = 44,
+      opts_column_width = 26,
     }
     it("parse ex map with locations", function()
       local lines = {
@@ -556,7 +556,7 @@ describe("helper.parsers", function()
   end)
 
   describe("[parse_vim_mark]", function()
-    local CONTEXT = require("fzfx.cfg.vim_marks")._vim_marks_context_maker()
+    local CONTEXT = require("fzfx.cfg.vim_marks")._context_maker()
     it("test", function()
       local n = #CONTEXT.marks
       for i = 2, n do
