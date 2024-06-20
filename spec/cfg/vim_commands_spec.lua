@@ -277,6 +277,7 @@ describe("fzfx.cfg.vim_commands", function()
             return a == consts.ECHO
           end))
         end
+        i = i + 1
       end
     end)
   end)
