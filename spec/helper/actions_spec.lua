@@ -682,9 +682,10 @@ describe("helper.actions", function()
   end)
 
   describe("[feed_vim_key]", function()
+    --- @type fzfx.VimKeyMapsPipelineContext
     local CONTEXT = {
-      key_width = 44,
-      opts_width = 26,
+      key_column_width = 44,
+      opts_column_width = 26,
     }
     it("make normal keys", function()
       local parsed = actions._make_feed_vim_key({

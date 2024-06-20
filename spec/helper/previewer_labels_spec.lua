@@ -165,9 +165,10 @@ describe("helper.previewer_labels", function()
   end)
 
   describe("[label_vim_keymap]", function()
+    --- @type fzfx.VimKeyMapsPipelineContext
     local CONTEXT = {
-      key_width = 44,
-      opts_width = 26,
+      key_column_width = 44,
+      opts_column_width = 26,
     }
     it("test location", function()
       local lines = {
