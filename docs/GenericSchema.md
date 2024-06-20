@@ -104,15 +104,19 @@ Sometimes we want to decorate the generated lines, for example we want to prepen
 In the `fzfx.ProviderDecorator`:
 
 1. The `module` option must be a lua module that contains a `decorate(line:string?):string?` lua function.
-2. Please see builtin provider decorators here: [`fzfx.helper.provider_decorators`](https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/helper/provider_decorators) package.
 
-   1. [`prepend_icon_find.lua`](https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/helper/provider_decorators/prepend_icon_find.lua): Prepend file type icons for `fd`/`find` providers.
-   2. [`prepend_icon_grep.lua`](https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/helper/provider_decorators/prepend_icon_grep.lua): Prepend file type icons for `rg`/`grep` providers.
+   > Please see below decorators for the definition:
+   >
+   > - [`fzfx.helper.provider_decorators.prepend_icon_find`](https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/helper/provider_decorators/prepend_icon_find.lua): Prepend file type icons (with colors) for `fd`/`find` query results, each line is a simple file path.
+   > - [`fzfx.helper.provider_decorators.prepend_icon_grep`](https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/helper/provider_decorators/prepend_icon_grep.lua): Prepend file type icons (with colors) for `rg`/`grep` query results, each line is a file path + line number (+ optional column) + line content.
+   >
+   > Also see below commands configurations for the usage:
+   >
+   > - [`fzfx.cfg.files`](https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/cfg/files.lua): the `FzfxFiles` command.
+   > - [`fzfx.cfg.live_grep`](https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/cfg/files.lua): the `FzfxLiveGrep` command.
 
-3. The default nvim config folder `:stdpath('config')` is been added to runtime path by default when loading a provider decorator, so all lua plugins/modules in your nvim config can be loaded.
-4. The `rtp` option is optional, set this option if the lua module is in some other places.
-
-> Also see `provider_decorator` option in [files.lua](https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/cfg/files.lua) (the `FzfxFiles` command), and in [live_grep.lua](https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/cfg/live_grep.lua) (the `FzfxLiveGrep` command).
+2. The default nvim config folder `:stdpath('config')` is been added to runtime path by default when loading a provider decorator, so all lua plugins/modules in your nvim config can be loaded.
+3. The `rtp` option is optional, set this option if the lua module is in some other places.
 
 You may notice that, there's no 2nd parameter `context` in the `fzfx._FunctionProviderDecorator` API signature. This is a limitation of current architecture.
 
