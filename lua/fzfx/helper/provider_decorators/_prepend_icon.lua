@@ -6,23 +6,23 @@ local str = require("fzfx.commons.str")
 local path = require("fzfx.commons.path")
 local color_term = require("fzfx.commons.color.term")
 
-local DEVICONS = nil
+local M = {}
+
+M.DEVICONS = nil
 if str.not_empty(vim.env._FZFX_NVIM_DEVICONS_PATH) then
   vim.opt.runtimepath:append(vim.env._FZFX_NVIM_DEVICONS_PATH)
   local ok, dev = pcall(require, "nvim-web-devicons")
   if ok and dev ~= nil then
-    DEVICONS = dev
+    M.DEVICONS = dev
   end
 end
-
-local M = {}
 
 --- @param line string
 --- @param delimiter string?
 --- @param index integer?
 --- @return string
 M._decorate = function(line, delimiter, index)
-  if not DEVICONS then
+  if not M.DEVICONS then
     return line
   end
 
@@ -47,7 +47,7 @@ M._decorate = function(line, delimiter, index)
     return string.format("%s %s", vim.env._FZFX_NVIM_FILE_FOLDER_ICON, line)
   else
     -- Try to query file type icon and color for it.
-    local text, color = DEVICONS.get_icon_color(filename, nil, { default = true })
+    local text, color = M.DEVICONS.get_icon_color(filename, nil, { default = true })
 
     -- log_debug(
     --     "|fzfx.shell_helpers - render_line_with_icon| ext:%s, icon:%s, icon_color:%s",
