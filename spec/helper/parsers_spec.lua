@@ -349,9 +349,10 @@ describe("helper.parsers", function()
   describe("[parse_vim_commands]", function()
     local VIM_COMMANDS_HEADER =
       "Name              Bang|Bar|Nargs|Range|Complete         Desc/Location"
+    --- @type fzfx.VimCommandsPipelineContext
     local CONTEXT = {
-      name_width = 17,
-      opts_width = 37,
+      name_column_width = 17,
+      opts_column_width = 37,
     }
     it("test location1", function()
       local lines = {

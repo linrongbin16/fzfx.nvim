@@ -665,9 +665,10 @@ describe("helper.actions", function()
   end)
 
   describe("[feed_vim_command]", function()
+    --- @type fzfx.VimCommandsPipelineContext
     local CONTEXT = {
-      name_width = 17,
-      opts_width = 37,
+      name_column_width = 17,
+      opts_column_width = 37,
     }
     it("make", function()
       local actual = actions._make_feed_vim_command({

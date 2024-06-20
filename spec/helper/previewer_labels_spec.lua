@@ -132,9 +132,10 @@ describe("helper.previewer_labels", function()
   end)
 
   describe("[label_vim_command]", function()
+    --- @type fzfx.VimCommandsPipelineContext
     local CONTEXT = {
-      name_width = 17,
-      opts_width = 37,
+      name_column_width = 17,
+      opts_column_width = 37,
     }
     it("test location", function()
       local lines = {
