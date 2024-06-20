@@ -429,11 +429,10 @@ describe("helper.parsers", function()
   end)
 
   describe("[parse_vim_keymap]", function()
-    local VIM_COMMANDS_HEADER =
-      "Lhs                                          Mode|Noremap|Nowait|Silent Rhs/Location"
+    --- @type fzfx.VimKeyMapsPipelineContext
     local CONTEXT = {
-      key_width = 44,
-      opts_width = 26,
+      key_column_width = 44,
+      opts_column_width = 26,
     }
     it("parse ex map with locations", function()
       local lines = {

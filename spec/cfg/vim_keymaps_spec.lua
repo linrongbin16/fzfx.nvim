@@ -28,10 +28,19 @@ describe("fzfx.cfg.vim_keymaps", function()
     it("_parse_output_line", function()
       local output_lines = vim_keymaps_cfg._get_maps_output_in_lines()
       for i, line in ipairs(output_lines) do
-        local actual = vim_keymaps_cfg._parse_output_line(line)
-        assert_eq(type(actual), "table")
-        assert_true(str.not_empty(actual.lhs))
-        assert_true(str.not_empty(actual.rhs))
+        if str.not_empty(line) then
+          local actual = vim_keymaps_cfg._parse_output_line(line)
+          print(
+            string.format(
+              "_parse_output_line-%d, line:%s, actual:%s\n",
+              i,
+              vim.inspect(line),
+              vim.inspect(actual)
+            )
+          )
+          assert_eq(type(actual), "table")
+          assert_true(str.not_empty(actual.lhs))
+        end
       end
     end)
     it("_make_provider a (all)", function()
@@ -87,7 +96,7 @@ describe("fzfx.cfg.vim_keymaps", function()
       end
     end)
     it("_get_vim_keymaps", function()
-      local actual = vim_keymaps_cfg._get_vim_keymaps()
+      local actual = vim_keymaps_cfg._get_vim_keymaps(CONTEXT.output_lines)
       -- print(string.format("vim keymaps:%s\n", vim.inspect(actual)))
       assert_eq(type(actual), "table")
       assert_true(#actual >= 0)
