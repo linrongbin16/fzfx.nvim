@@ -110,7 +110,7 @@ In the `fzfx.ProviderDecorator`:
    > - [`fzfx.helper.provider_decorators.prepend_icon_find`](https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/helper/provider_decorators/prepend_icon_find.lua): Prepend file type icons (with colors) for `fd`/`find` query results, each line is a simple file path.
    > - [`fzfx.helper.provider_decorators.prepend_icon_grep`](https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/helper/provider_decorators/prepend_icon_grep.lua): Prepend file type icons (with colors) for `rg`/`grep` query results, each line is a file path + line number (+ optional column) + line content.
    >
-   > Also see below commands configurations for the usage:
+   > Also see below configurations for the usage:
    >
    > - [`fzfx.cfg.files`](https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/cfg/files.lua): the `FzfxFiles` command.
    > - [`fzfx.cfg.live_grep`](https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/cfg/files.lua): the `FzfxLiveGrep` command.
@@ -120,16 +120,16 @@ In the `fzfx.ProviderDecorator`:
 
 You may notice that, there's no 2nd parameter `context` in the `fzfx._FunctionProviderDecorator` API signature. This is a limitation of current architecture.
 
-> A `context` only exists inside **_the Neovim editor_**, but here we actually run the provider decorator inside the lua script interpreted by the `nvim` child process inside the popup window.
->
-> Due to performance reason, the decorator is not connected with its parent process, e.g. the Neovim editor. Because it will have to be invoked for each line of the query result, and making RPC requests must be a heavy load.
->
-> We use a hack that expose the runtime path of the provider decorator's (the lua function) module path to the child `nvim` process, then allows it invokes the decorator.
->
-> **Please always keep in mind**:
->
-> 1. Decorator runs in a child process outside of the Neovim editor.
-> 2. No plugins are loaded, only standard LuaJIT and Neovim APIs are available.
+Because the `context` only exists inside **_the Neovim editor_**, but here we actually run the provider decorator inside the lua script interpreted by the `nvim` child process inside the popup window.
+
+Due to performance reason, the decorator is not connected with its parent process, e.g. the Neovim editor. Because it will have to be invoked for each line of the query result, and making RPC requests must be a heavy load.
+
+We use a hack that expose the runtime path of the provider decorator's (the lua function) module path to the child `nvim` process, then allows it invokes the decorator.
+
+**Please always keep in mind**:
+
+1. Decorator runs in a child process outside of the Neovim editor.
+2. No plugins are loaded, only standard LuaJIT and Neovim APIs are available.
 
 ## Previewer
 
