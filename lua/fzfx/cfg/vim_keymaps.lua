@@ -229,7 +229,7 @@ end
 
 --- @param output_lines string[]
 --- @return fzfx.VimKeyMap[]
-M._get_vim_keymaps = function(output_lines)
+M._get_keymaps = function(output_lines)
   local LAST_SET_FROM = "\tLast set from "
   local LAST_SET_FROM_LUA = "\tLast set from Lua"
   local LINE = " line "
@@ -260,12 +260,12 @@ M._get_vim_keymaps = function(output_lines)
   end
 
   -- log.debug(
-  --     "|fzfx.config - _get_vim_keymaps| keys_output_map1:%s",
+  --     "|_get_keymaps| keys_output_map1:%s",
   --     vim.inspect(keys_output_map)
   -- )
   local api_keymaps = vim.api.nvim_get_keymap("") --[[@as table]]
   -- log.debug(
-  --     "|fzfx.config - _get_vim_keymaps| api_keys_list:%s",
+  --     "|_get_keymaps| api_keys_list:%s",
   --     vim.inspect(api_keys_list)
   -- )
   local api_maps = {}
@@ -330,7 +330,7 @@ M._get_vim_keymaps = function(output_lines)
     end
   end
 
-  log.debug(string.format("|_get_vim_keymaps| keys_output_map2:%s", vim.inspect(output_maps)))
+  log.debug(string.format("|_get_keymaps| keys_output_map2:%s", vim.inspect(output_maps)))
   local sorted_results = {}
   for _, o in pairs(output_maps) do
     table.insert(sorted_results, o)
@@ -338,7 +338,7 @@ M._get_vim_keymaps = function(output_lines)
   table.sort(sorted_results, function(a, b)
     return a.lhs < b.lhs
   end)
-  log.debug(string.format("|_get_vim_keymaps| results:%s", vim.inspect(sorted_results)))
+  log.debug(string.format("|_get_keymaps| results:%s", vim.inspect(sorted_results)))
   return sorted_results
 end
 
@@ -451,7 +451,7 @@ M._make_provider = function(mode)
   --- @param context fzfx.VimKeyMapsPipelineContext
   --- @return string[]|nil
   local function impl(query, context)
-    local keymaps = M._get_vim_keymaps(context.output_lines)
+    local keymaps = M._get_keymaps(context.output_lines)
     local target_keymaps = {}
     if mode == "a" then
       target_keymaps = keymaps
@@ -589,7 +589,7 @@ M._context_maker = function()
   }
   ctx.output_lines = M._get_maps_output_in_lines()
 
-  local keymaps = M._get_vim_keymaps(ctx.output_lines)
+  local keymaps = M._get_keymaps(ctx.output_lines)
   local key_column_width, opts_column_width = M._calculate_columns_widths(keymaps)
   ctx.key_column_width = key_column_width
   ctx.opts_column_width = opts_column_width
