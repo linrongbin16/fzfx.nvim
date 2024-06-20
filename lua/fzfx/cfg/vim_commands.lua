@@ -377,11 +377,10 @@ M._get_user_commands = function(output_lines)
   return results
 end
 
--- Calculate the proper columns width for the commands table.
--- Returns the name's width, and the other options' width.
+-- Calculate `name` and `opts` column width.
 --- @param commands fzfx.VimCommand[]
 --- @return integer,integer
-M._calculate_name_and_opts_width = function(commands)
+M._calculate_column_widths = function(commands)
   local NAME = "Name"
   local OPTS = "Bang|Bar|Nargs|Range|Complete"
   local name_width = string.len(NAME)
@@ -616,7 +615,7 @@ M._context_maker = function()
 
   ctx.output_lines = M._get_commands_output_in_lines()
   local commands = M._get_commands(ctx, { ex_commands = true, user_commands = true })
-  local name_column_width, opts_column_width = M._calculate_name_and_opts_width(commands)
+  local name_column_width, opts_column_width = M._calculate_column_widths(commands)
   ctx.name_column_width = name_column_width
   ctx.opts_column_width = opts_column_width
 

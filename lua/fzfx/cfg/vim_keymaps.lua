@@ -418,7 +418,8 @@ M._render_lines = function(keymaps, key_column_width, opts_column_width)
   return results
 end
 
---- @param mode "n"|"i"|"v"|"all"
+-- Normal mode, insert mode, visual mode, all modes
+--- @param mode "n"|"i"|"v"|"a"
 --- @return fun(query:string,context:fzfx.VimKeyMapsPipelineContext):string[]|nil
 M._make_provider = function(mode)
   --- @param query string
@@ -427,7 +428,7 @@ M._make_provider = function(mode)
   local function impl(query, context)
     local keys = M._get_vim_keymaps(context.output_lines)
     local filtered_keys = {}
-    if mode == "all" then
+    if mode == "a" then
       filtered_keys = keys
     else
       for _, k in ipairs(keys) do
@@ -455,7 +456,7 @@ end
 M.providers = {
   all_mode = {
     key = "ctrl-a",
-    provider = M._make_provider("all"),
+    provider = M._make_provider("a"),
     provider_type = ProviderTypeEnum.LIST,
   },
   n_mode = {
@@ -478,7 +479,7 @@ M.providers = {
 --- @param line string
 --- @param context fzfx.VimKeyMapsPipelineContext
 --- @return string[]|nil
-M._vim_keymaps_previewer = function(line, context)
+M._previewer = function(line, context)
   local parsed = parsers_helper.parse_vim_keymap(line, context)
   -- log.debug(
   --   "|fzfx.config - vim_keymaps_previewer| line:%s, context:%s, desc_or_loc:%s",
@@ -510,22 +511,22 @@ end
 
 M.previewers = {
   all_mode = {
-    previewer = M._vim_keymaps_previewer,
+    previewer = M._previewer,
     previewer_type = PreviewerTypeEnum.COMMAND_LIST,
     previewer_label = labels_helper.label_vim_keymap,
   },
   n_mode = {
-    previewer = M._vim_keymaps_previewer,
+    previewer = M._previewer,
     previewer_type = PreviewerTypeEnum.COMMAND_LIST,
     previewer_label = labels_helper.label_vim_keymap,
   },
   i_mode = {
-    previewer = M._vim_keymaps_previewer,
+    previewer = M._previewer,
     previewer_type = PreviewerTypeEnum.COMMAND_LIST,
     previewer_label = labels_helper.label_vim_keymap,
   },
   v_mode = {
-    previewer = M._vim_keymaps_previewer,
+    previewer = M._previewer,
     previewer_type = PreviewerTypeEnum.COMMAND_LIST,
     previewer_label = labels_helper.label_vim_keymap,
   },
@@ -544,25 +545,20 @@ M.fzf_opts = {
   { "--prompt", "Key Maps > " },
 }
 
+-- Calculate `key` column and `opts` column width.
 --- @param keys fzfx.VimKeyMap[]
 --- @return integer,integer
-M._render_vim_keymaps_columns_status = function(keys)
+M._calculate_columns_widths = function(keys)
   local KEY = "Key"
   local OPTS = "Mode|Noremap|Nowait|Silent"
-  local max_key = string.len(KEY)
-  local max_opts = string.len(OPTS)
+
+  local max_key_width = string.len(KEY)
+  local max_opts_width = string.len(OPTS)
   for _, k in ipairs(keys) do
-    max_key = math.max(max_key, string.len(k.lhs))
-    max_opts = math.max(max_opts, string.len(M._render_header(k)))
+    max_key_width = math.max(max_key_width, string.len(k.lhs))
+    max_opts_width = math.max(max_opts_width, string.len(M._render_header(k)))
   end
-  log.debug(
-    string.format(
-      "|_render_vim_keymaps_columns_status| lhs:%s, opts:%s",
-      vim.inspect(max_key),
-      vim.inspect(max_opts)
-    )
-  )
-  return max_key, max_opts
+  return max_key_width, max_opts_width
 end
 
 --- @alias fzfx.VimKeyMapsPipelineContext {bufnr:integer,winnr:integer,tabnr:integer,output_lines:string[],key_column_width:integer,opts_column_width:integer}
@@ -575,10 +571,10 @@ M._context_maker = function()
   }
   ctx.output_lines = M._get_maps_output_in_lines()
 
-  local keys = M._get_vim_keymaps(ctx.output_lines)
-  local key_width, opts_width = M._render_vim_keymaps_columns_status(keys)
-  ctx.key_width = key_width
-  ctx.opts_width = opts_width
+  local keymaps = M._get_vim_keymaps(ctx.output_lines)
+  local key_column_width, opts_column_width = M._calculate_columns_widths(keymaps)
+  ctx.key_column_width = key_column_width
+  ctx.opts_column_width = opts_column_width
   return ctx
 end
 

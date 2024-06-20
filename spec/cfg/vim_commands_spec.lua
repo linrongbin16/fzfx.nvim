@@ -142,7 +142,7 @@ describe("fzfx.cfg.vim_commands", function()
       assert_eq(type(actual3), "table")
       assert_eq(#actual1, #actual2 + #actual3)
     end)
-    it("_calculate_name_and_opts_width", function()
+    it("_calculate_column_widths", function()
       local commands = {
         {
           name = "FzfxGBranches",
@@ -159,7 +159,7 @@ describe("fzfx.cfg.vim_commands", function()
           },
         },
       }
-      local name_actual, opts_actual = vim_commands_cfg._calculate_name_and_opts_width(commands)
+      local name_actual, opts_actual = vim_commands_cfg._calculate_column_widths(commands)
       assert_eq(name_actual, string.len(commands[1].name))
       assert_eq(opts_actual, string.len("Bang|Bar|Nargs|Range|Complete"))
     end)

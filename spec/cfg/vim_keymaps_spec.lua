@@ -34,9 +34,9 @@ describe("fzfx.cfg.vim_keymaps", function()
         assert_true(str.not_empty(actual.rhs))
       end
     end)
-    it("_make_provider all", function()
+    it("_make_provider a (all)", function()
       local ctx = vim_keymaps_cfg._context_maker()
-      local f = vim_keymaps_cfg._make_provider("all")
+      local f = vim_keymaps_cfg._make_provider("a")
       local actual = f("", ctx)
       if actual ~= nil then
         assert_eq(type(actual), "table")
@@ -109,7 +109,7 @@ describe("fzfx.cfg.vim_keymaps", function()
       })
       assert_eq(actual1, "n   |Y      |N     |N     ")
     end)
-    it("_render_vim_keymaps_columns_status", function()
+    it("_calculate_columns_widths", function()
       local keymaps = {
         {
           lhs = "#",
@@ -119,13 +119,13 @@ describe("fzfx.cfg.vim_keymaps", function()
           silent = false,
         },
       }
-      local actual1, actual2 = vim_keymaps_cfg._render_vim_keymaps_columns_status(keymaps)
+      local actual1, actual2 = vim_keymaps_cfg._calculate_columns_widths(keymaps)
       assert_eq(actual1, math.max(string.len(keymaps[1].lhs), string.len("Lhs")))
       assert_eq(actual2, string.len("Mode|Noremap|Nowait|Silent"))
     end)
     it("_render_lines", function()
       local keymaps = vim_keymaps_cfg._get_vim_keymaps(CONTEXT.output_lines)
-      local lhs_width, opts_width = vim_keymaps_cfg._render_vim_keymaps_columns_status(keymaps)
+      local lhs_width, opts_width = vim_keymaps_cfg._calculate_columns_widths(keymaps)
       local actual = vim_keymaps_cfg._render_lines(keymaps, lhs_width, opts_width)
       -- print(string.format("render vim keymaps:%s\n", vim.inspect(actual)))
       assert_eq(type(actual), "table")
@@ -146,14 +146,14 @@ describe("fzfx.cfg.vim_keymaps", function()
       assert_true(ctx.key_width > 0)
       assert_true(ctx.opts_width > 0)
     end)
-    it("_vim_keymaps_previewer", function()
+    it("_previewer", function()
       local lines = {
         '<C-Tab>                                      o   |Y      |N     |N      "<C-C><C-W>w"',
         "<Plug>(YankyCycleBackward)                   n   |Y      |N     |Y      ~/.config/nvim/lazy/yanky.nvim/lua/yanky.lua:290",
       }
       local ctx = vim_keymaps_cfg._context_maker()
       for _, line in ipairs(lines) do
-        local actual = vim_keymaps_cfg._vim_keymaps_previewer(line, ctx)
+        local actual = vim_keymaps_cfg._previewer(line, ctx)
         assert_eq(type(actual), "table")
         assert_true(actual[1] == constants.BAT or actual[1] == "cat" or actual[1] == "echo")
       end
