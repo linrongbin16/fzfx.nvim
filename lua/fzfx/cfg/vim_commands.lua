@@ -407,26 +407,25 @@ M._render_header = function(vc)
   return string.format("%-4s|%-3s|%-5s|%-5s|%s", bang, bar, nargs, range, complete)
 end
 
+--- @param vc fzfx.VimCommand
+--- @return string
+M._render_desc_or_location = function(vc)
+  if
+    type(tbl.tbl_get(vc, "loc", "filename")) == "string"
+    and type(tbl.tbl_get(vc, "loc", "lineno")) == "number"
+  then
+    return string.format("%s:%d", path.reduce(vc.loc.filename), vc.loc.lineno)
+  elseif type(tbl.tbl_get(vc, "opts", "desc")) == "string" then
+    return string.format('"%s"', vc.opts.desc)
+  else
+    return ""
+  end
+end
+
 --- @param commands fzfx.VimCommand[]
 --- @param context fzfx.VimCommandsPipelineContext
 --- @return string[]
 M._render_lines = function(commands, context)
-  --- @param r fzfx.VimCommand
-  --- @return string
-  local function rendered_desc_or_loc(r)
-    if
-      type(r.loc) == "table"
-      and type(r.loc.filename) == "string"
-      and type(r.loc.lineno) == "number"
-    then
-      return string.format("%s:%d", path.reduce(r.loc.filename), r.loc.lineno)
-    else
-      return (type(r.opts) == "table" and type(r.opts.desc) == "string")
-          and string.format('"%s"', r.opts.desc)
-        or ""
-    end
-  end
-
   local NAME = "Name"
   local OPTS = "Bang|Bar|Nargs|Range|Complete"
   local DEF_OR_LOC = "Definition/Location"
@@ -449,7 +448,8 @@ M._render_lines = function(commands, context)
     )
   )
   for i, c in ipairs(commands) do
-    local rendered = string.format(formatter, c.name, M._render_header(c), rendered_desc_or_loc(c))
+    local rendered =
+      string.format(formatter, c.name, M._render_header(c), M._render_desc_or_location(c))
     log.debug(string.format("|_render_lines| rendered[%d]:%s", i, vim.inspect(rendered)))
     table.insert(results, rendered)
   end

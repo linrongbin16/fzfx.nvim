@@ -11,11 +11,10 @@ describe("fzfx.cfg.vim_commands", function()
     vim.cmd([[noautocmd edit README.md]])
   end)
 
-  local github_actions = os.getenv("GITHUB_ACTIONS") == "true"
+  local GITHUB_ACTIONS = os.getenv("GITHUB_ACTIONS") == "true"
 
   local str = require("fzfx.commons.str")
   local tbl = require("fzfx.commons.tbl")
-  local path = require("fzfx.commons.path")
   local vim_commands_cfg = require("fzfx.cfg.vim_commands")
   require("fzfx").setup()
 
@@ -178,6 +177,25 @@ describe("fzfx.cfg.vim_commands", function()
         },
       })
       assert_eq(actual2, "N   |N  |*    |.    |<Lua>")
+    end)
+    it("_render_desc_or_location", function()
+      local inputs = {
+        { loc = { filename = "filename", lineno = 1 } },
+        { opts = { desc = "desc" } },
+      }
+      local expects = {
+        "filename:1",
+        '"desc"',
+      }
+      for i, input in ipairs(inputs) do
+        local actual = vim_commands_cfg._render_desc_or_location(input)
+        local expect = expects[i]
+        assert_true(str.find(actual, expect) > 0)
+      end
+
+      local input2 = {}
+      local actual2 = vim_commands_cfg._render_desc_or_location(input2)
+      assert_eq(actual2, "")
     end)
     it("_render_lines", function()
       local ctx = vim_commands_cfg._context_maker()
