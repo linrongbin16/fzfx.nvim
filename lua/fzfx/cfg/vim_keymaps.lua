@@ -412,10 +412,35 @@ M._render_lines = function(keymaps, key_column_width, opts_column_width)
   for i, km in ipairs(keymaps) do
     local rendered_line =
       string.format(formatter, km.lhs, M._render_header(km), M._render_definition_or_location(km))
-    log.debug(string.format("|_render_vim_keymaps| rendered[%d]:%s", i, vim.inspect(rendered_line)))
+    log.debug(string.format("|_render_lines| line-%d:%s", i, vim.inspect(rendered_line)))
     table.insert(results, rendered_line)
   end
   return results
+end
+
+--- @param km fzfx.VimKeyMap
+--- @return boolean
+M._is_normal_mode = function(km)
+  if str.empty(km.mode) then
+    return true
+  end
+  return str.find(string.lower(km.mode), "n") ~= nil
+end
+
+--- @param km fzfx.VimKeyMap
+--- @return boolean
+M._is_visual_mode = function(km)
+  if str.empty(km.mode) then
+    return false
+  end
+  local m = string.lower(km.mode)
+  return str.find(m, "v") ~= nil or str.find(m, "s") ~= nil or str.find(m, "x") ~= nil
+end
+
+--- @param km fzfx.VimKeyMap
+--- @return boolean
+M._is_insert_mode = function(km)
+  return str.not_empty(km.mode) and str.find(string.lower(km.mode), "i") ~= nil
 end
 
 -- Normal mode, insert mode, visual mode, all modes
@@ -426,29 +451,22 @@ M._make_provider = function(mode)
   --- @param context fzfx.VimKeyMapsPipelineContext
   --- @return string[]|nil
   local function impl(query, context)
-    local keys = M._get_vim_keymaps(context.output_lines)
-    local filtered_keys = {}
+    local keymaps = M._get_vim_keymaps(context.output_lines)
+    local target_keymaps = {}
     if mode == "a" then
-      filtered_keys = keys
+      target_keymaps = keymaps
     else
-      for _, k in ipairs(keys) do
-        if k.mode == mode then
-          table.insert(filtered_keys, k)
-        elseif
-          mode == "v"
-          and (str.find(k.mode, "v") or str.find(k.mode, "s") or str.find(k.mode, "x"))
-        then
-          table.insert(filtered_keys, k)
-        elseif mode == "n" and str.find(k.mode, "n") then
-          table.insert(filtered_keys, k)
-        elseif mode == "i" and str.find(k.mode, "i") then
-          table.insert(filtered_keys, k)
-        elseif mode == "n" and string.len(k.mode) == 0 then
-          table.insert(filtered_keys, k)
+      for _, km in ipairs(keymaps) do
+        if mode == "n" and M._is_normal_mode(km) then
+          table.insert(target_keymaps, km)
+        elseif mode == "i" and M._is_insert_mode(km) then
+          table.insert(target_keymaps, km)
+        elseif mode == "v" and M._is_visual_mode(km) then
+          table.insert(target_keymaps, km)
         end
       end
     end
-    return M._render_lines(filtered_keys, context.key_column_width, context.opts_column_width)
+    return M._render_lines(target_keymaps, context.key_column_width, context.opts_column_width)
   end
   return impl
 end
