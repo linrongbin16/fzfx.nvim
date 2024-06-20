@@ -18,6 +18,7 @@ local PreviewerTypeEnum = require("fzfx.schema").PreviewerTypeEnum
 local CommandFeedEnum = require("fzfx.schema").CommandFeedEnum
 
 local _grep = require("fzfx.cfg._grep")
+local _decorator = require("fzfx.cfg._decorator")
 
 local M = {}
 
@@ -203,19 +204,19 @@ M.providers = {
     key = "ctrl-r",
     provider = restricted_provider,
     provider_type = ProviderTypeEnum.COMMAND_LIST,
-    provider_decorator = { module = "prepend_icon_grep", builtin = true },
+    provider_decorator = { module = _decorator.PREPEND_ICON_GREP },
   },
   unrestricted_mode = {
     key = "ctrl-u",
     provider = unrestricted_provider,
     provider_type = ProviderTypeEnum.COMMAND_LIST,
-    provider_decorator = { module = "prepend_icon_grep", builtin = true },
+    provider_decorator = { module = _decorator.PREPEND_ICON_GREP },
   },
   buffer_mode = {
     key = "ctrl-o",
     provider = buffer_provider,
     provider_type = ProviderTypeEnum.COMMAND_LIST,
-    provider_decorator = { module = "prepend_icon_grep", builtin = true },
+    provider_decorator = { module = _decorator.PREPEND_ICON_GREP },
   },
 }
 

@@ -10,6 +10,8 @@ local previewers_helper = require("fzfx.helper.previewers")
 local PreviewerTypeEnum = require("fzfx.schema").PreviewerTypeEnum
 local CommandFeedEnum = require("fzfx.schema").CommandFeedEnum
 
+local _decorator = require("fzfx.cfg._decorator")
+
 local M = {}
 
 M.command = {
@@ -139,12 +141,12 @@ M.providers = {
   restricted_mode = {
     key = "ctrl-r",
     provider = restricted_provider,
-    provider_decorator = { module = "prepend_icon_find", builtin = true },
+    provider_decorator = { module = _decorator.PREPEND_ICON_FIND },
   },
   unrestricted_mode = {
     key = "ctrl-u",
     provider = unrestricted_provider,
-    provider_decorator = { module = "prepend_icon_find", builtin = true },
+    provider_decorator = { module = _decorator.PREPEND_ICON_FIND },
   },
 }
 
