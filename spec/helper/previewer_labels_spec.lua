@@ -297,7 +297,7 @@ describe("helper.previewer_labels", function()
   end)
 
   describe("[label_vim_mark]", function()
-    local CONTEXT = require("fzfx.cfg.vim_marks")._vim_marks_context_maker()
+    local CONTEXT = require("fzfx.cfg.vim_marks")._context_maker()
     it("test", function()
       local n = #CONTEXT.marks
       for i = 2, n do

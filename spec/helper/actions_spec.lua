@@ -898,7 +898,7 @@ describe("helper.actions", function()
   end)
 
   describe("[edit_vim_mark]", function()
-    local CONTEXT = require("fzfx.cfg.vim_marks")._vim_marks_context_maker()
+    local CONTEXT = require("fzfx.cfg.vim_marks")._context_maker()
     it("make", function()
       local lines = tbl.List
         :copy(CONTEXT.marks)
@@ -939,7 +939,7 @@ describe("helper.actions", function()
   end)
 
   describe("[setqflist_vim_mark]", function()
-    local CONTEXT = require("fzfx.cfg.vim_marks")._vim_marks_context_maker()
+    local CONTEXT = require("fzfx.cfg.vim_marks")._context_maker()
     it("make", function()
       local lines = tbl.List
         :copy(CONTEXT.marks)

@@ -11,20 +11,26 @@ describe("fzfx.cfg.vim_marks", function()
     vim.cmd([[noautocmd edit README.md]])
   end)
 
-  local github_actions = os.getenv("GITHUB_ACTIONS") == "true"
+  local GITHUB_ACTIONS = os.getenv("GITHUB_ACTIONS") == "true"
+
   local str = require("fzfx.commons.str")
   local tbl = require("fzfx.commons.tbl")
   local num = require("fzfx.commons.num")
   local constants = require("fzfx.lib.constants")
-  local contexts = require("fzfx.helper.contexts")
-  local fzf_helpers = require("fzfx.detail.fzf_helpers")
   local vim_marks_cfg = require("fzfx.cfg.vim_marks")
   require("fzfx").setup()
 
-  describe("[_parse_mark_command_output_first_line]", function()
+  describe("[_get_marks_output_in_lines]", function()
+    it("test", function()
+      local actual = vim_marks_cfg._get_marks_output_in_lines()
+      assert_eq(type(actual), "table")
+      assert_true(#actual > 0)
+    end)
+  end)
+  describe("[_parse_output_header]", function()
     it("test", function()
       local input = "mark line  col file/text"
-      local actual = vim_marks_cfg._parse_mark_command_output_first_line(input)
+      local actual = vim_marks_cfg._parse_output_header(input)
       assert_eq(type(actual), "table")
       assert_eq(actual.mark_pos, 1)
       assert_eq(actual.lineno_pos, str.find(input, "line"))
@@ -32,9 +38,10 @@ describe("fzfx.cfg.vim_marks", function()
       assert_eq(actual.file_text_pos, str.find(input, "file"))
     end)
   end)
-  describe("[_get_vim_marks]", function()
+  describe("[_get_marks]", function()
     it("test", function()
-      local marks = vim_marks_cfg._get_vim_marks()
+      local output_lines = vim_marks_cfg._get_marks_output_in_lines()
+      local marks = vim_marks_cfg._get_marks(output_lines)
       assert_eq(type(marks), "table")
       for _, m in ipairs(marks) do
         assert_eq(type(m), "string")
@@ -42,10 +49,10 @@ describe("fzfx.cfg.vim_marks", function()
       end
     end)
   end)
-  describe("[_vim_marks_provider]", function()
+  describe("[_provider]", function()
     it("test", function()
-      local ctx = vim_marks_cfg._vim_marks_context_maker()
-      local marks = vim_marks_cfg._vim_marks_provider("", ctx)
+      local ctx = vim_marks_cfg._context_maker()
+      local marks = vim_marks_cfg._provider("", ctx)
       if marks then
         assert_eq(type(marks), "table")
         for _, m in ipairs(marks) do
@@ -55,12 +62,12 @@ describe("fzfx.cfg.vim_marks", function()
       end
     end)
   end)
-  describe("[_vim_marks_previewer]", function()
+  describe("[_previewer]", function()
     it("test", function()
-      local ctx = vim_marks_cfg._vim_marks_context_maker()
+      local ctx = vim_marks_cfg._context_maker()
       local marks = ctx.marks
       for i, line in ipairs(marks) do
-        local actual = vim_marks_cfg._vim_marks_previewer(line, ctx)
+        local actual = vim_marks_cfg._previewer(line, ctx)
         if actual then
           assert_eq(type(actual), "table")
           for j, act in ipairs(actual) do
@@ -87,9 +94,9 @@ describe("fzfx.cfg.vim_marks", function()
       end
     end)
   end)
-  describe("[_vim_marks_context_maker]", function()
+  describe("[_context_maker]", function()
     it("test", function()
-      local actual = vim_marks_cfg._vim_marks_context_maker()
+      local actual = vim_marks_cfg._context_maker()
       assert_true(tbl.tbl_not_empty(actual))
       assert_true(tbl.list_not_empty(actual.marks))
       for _, m in ipairs(actual.marks) do
