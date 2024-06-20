@@ -258,9 +258,17 @@ describe("fzfx.cfg.vim_commands", function()
       while i <= n do
         local line = rendered_lines[i]
         local actual = vim_commands_cfg._previewer(line, ctx) --[[@as string[] ]]
-        local vc = commands[i]
+        local vc = commands[i - 1]
         assert_eq(type(actual), "table")
         assert_eq(type(vc), "table")
+        print(
+          string.format(
+            "_previewer-%d, vc:%s, actual:%s\n",
+            i,
+            vim.inspect(vc),
+            vim.inspect(actual)
+          )
+        )
         if vim_commands_cfg._is_location(vc) then
           if consts.HAS_BAT then
             assert_true(tbl.List:copy(actual):some(function(a)
