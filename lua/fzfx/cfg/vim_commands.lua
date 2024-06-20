@@ -3,7 +3,7 @@ local str = require("fzfx.commons.str")
 local path = require("fzfx.commons.path")
 local fileio = require("fzfx.commons.fileio")
 
-local constants = require("fzfx.lib.constants")
+local consts = require("fzfx.lib.constants")
 local log = require("fzfx.lib.log")
 local LogLevels = require("fzfx.lib.log").LogLevels
 
@@ -408,14 +408,24 @@ M._render_header = function(vc)
 end
 
 --- @param vc fzfx.VimCommand
+--- @return boolean
+M._is_location = function(vc)
+  return type(tbl.tbl_get(vc, "loc", "filename")) == "string"
+    and type(tbl.tbl_get(vc, "loc", "lineno")) == "number"
+end
+
+--- @param vc fzfx.VimCommand
+--- @return boolean
+M._is_description = function(vc)
+  return type(tbl.tbl_get(vc, "opts", "desc")) == "string"
+end
+
+--- @param vc fzfx.VimCommand
 --- @return string
 M._render_desc_or_location = function(vc)
-  if
-    type(tbl.tbl_get(vc, "loc", "filename")) == "string"
-    and type(tbl.tbl_get(vc, "loc", "lineno")) == "number"
-  then
+  if M._is_location(vc) then
     return string.format("%s:%d", path.reduce(vc.loc.filename), vc.loc.lineno)
-  elseif type(tbl.tbl_get(vc, "opts", "desc")) == "string" then
+  elseif M._is_description(vc) then
     return string.format('"%s"', vc.opts.desc)
   else
     return ""
@@ -448,10 +458,10 @@ M._render_lines = function(commands, context)
     )
   )
   for i, c in ipairs(commands) do
-    local rendered =
+    local rendered_line =
       string.format(formatter, c.name, M._render_header(c), M._render_desc_or_location(c))
-    log.debug(string.format("|_render_lines| rendered[%d]:%s", i, vim.inspect(rendered)))
-    table.insert(results, rendered)
+    log.debug(string.format("|_render_lines| rendered[%d]:%s", i, vim.inspect(rendered_line)))
+    table.insert(results, rendered_line)
   end
   return results
 end
@@ -552,12 +562,12 @@ M._previewer = function(line, context)
     --   vim.inspect(parsed)
     -- )
     return previewers_helper.preview_files_with_line_range(parsed.filename, parsed.lineno)
-  elseif constants.HAS_ECHO and tbl.tbl_not_empty(parsed) then
+  elseif consts.HAS_ECHO and tbl.tbl_not_empty(parsed) then
     -- log.debug(
     --   "|_previewer| desc:%s",
     --   vim.inspect(parsed)
     -- )
-    return { "echo", parsed.definition or "" }
+    return { consts.ECHO, parsed.definition or "" }
   else
     log.echo(LogLevels.INFO, "no echo command found.")
     return nil

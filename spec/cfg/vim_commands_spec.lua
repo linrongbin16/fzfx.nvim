@@ -15,6 +15,7 @@ describe("fzfx.cfg.vim_commands", function()
 
   local str = require("fzfx.commons.str")
   local tbl = require("fzfx.commons.tbl")
+  local consts = require("fzfx.lib.constants")
   local vim_commands_cfg = require("fzfx.cfg.vim_commands")
   require("fzfx").setup()
 
@@ -243,6 +244,40 @@ describe("fzfx.cfg.vim_commands", function()
       assert_true(ctx.tabnr > 0)
       assert_eq(type(ctx.output_lines), "table")
       assert_true(#ctx.output_lines > 0)
+    end)
+  end)
+  describe("[_previewer]", function()
+    it("test", function()
+      local ctx = vim_commands_cfg._context_maker()
+      local commands =
+        vim_commands_cfg._get_commands(ctx, { ex_commands = true, user_commands = true })
+      local rendered_lines = vim_commands_cfg._render_lines(commands, ctx)
+
+      local n = #rendered_lines
+      local i = 2
+      while i <= n do
+        local line = rendered_lines[i]
+        local actual = vim_commands_cfg._previewer(line, ctx) --[[@as string[] ]]
+        local vc = commands[i]
+        assert_eq(type(actual), "table")
+        assert_eq(type(vc), "table")
+        if vim_commands_cfg._is_location(vc) then
+          if consts.HAS_BAT then
+            assert_true(tbl.List:copy(actual):some(function(a)
+              return a == consts.BAT
+            end))
+          else
+            assert_true(tbl.List:copy(actual):some(function(a)
+              return a == consts.CAT
+            end))
+          end
+        else
+          assert_true(vim_commands_cfg._is_description(vc))
+          assert_true(tbl.List:copy(actual):some(function(a)
+            return a == consts.ECHO
+          end))
+        end
+      end
     end)
   end)
 end)
