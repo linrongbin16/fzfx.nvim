@@ -11,7 +11,7 @@ describe("fzfx.cfg.vim_keymaps", function()
     vim.cmd([[noautocmd edit README.md]])
   end)
 
-  local github_actions = os.getenv("GITHUB_ACTIONS") == "true"
+  local GITHUB_ACTIONS = os.getenv("GITHUB_ACTIONS") == "true"
 
   local str = require("fzfx.commons.str")
   local constants = require("fzfx.lib.constants")
