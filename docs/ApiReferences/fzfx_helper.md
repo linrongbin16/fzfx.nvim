@@ -26,6 +26,6 @@ It's easy to tell that the query results are lines, each line contains a single 
 
    !> Note: The 3rd component **column number** only exists in `rg`, while `grep` and `git grep` don't have it.
 
-4. The line text itself.
+4. The line text.
 
 ## `fzfx.helper.provider_decorators`
