@@ -129,21 +129,22 @@ M.parse_grep_no_filename = function(line)
   return { lineno = lineno, text = text }
 end
 
--- parse lines from rg. looks like:
+-- Parse `rg`, which looks like:
+--
 -- ```
--- 󰢱 bin/general/provider.lua:31:2:  local conf = require("fzfx.config")
--- 󰢱 bin/general/previewer.lua:57:13:  local str = require("fzfx.commons.str")
+-- 󰢱 bin/general/provider.lua:31:2:local conf = require("fzfx.config")
+-- 󰢱 bin/general/previewer.lua:57:13:local str = require("fzfx.commons.str")
 -- ```
 --
--- remove the prepend icon and returns **expanded** file path, line number, column number and text.
+-- It removes the (optional) prepend file type icon, returns expanded full path file name, line number, (optional) column number and text.
 --
 --- @param line string
 --- @return {filename:string,lineno:integer,column:integer?,text:string}
 M.parse_rg = function(line)
-  local filename = nil
-  local lineno = nil
-  local column = nil
-  local text = nil
+  local filename
+  local lineno
+  local column
+  local text
 
   local first_colon_pos = str.find(line, ":")
   assert(
@@ -164,9 +165,7 @@ M.parse_rg = function(line)
     column = line:sub(second_colon_pos + 1, third_colon_pos - 1)
     text = line:sub(third_colon_pos + 1)
   else
-    -- if failed to found the third ':', then
-    -- 1. first try to parse right hands as 'column'
-    -- 2. if failed, treat them as 'text'
+    -- If failed to found the third ':', then try to parse right hands as 'column', if failed again, treat them as 'text'.
     local rhs = line:sub(second_colon_pos + 1)
     if tonumber(rhs) == nil then
       text = rhs
