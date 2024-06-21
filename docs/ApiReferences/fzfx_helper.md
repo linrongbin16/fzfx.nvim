@@ -16,6 +16,7 @@ This sub-package contains all the actions.
 
 This sub-package contains all the parsers used for parsing user inputs & query results. For example the `FzfxLiveGrep` runs `rg --column -n --no-heading --color=always -H -S 'fzfx'` command (suppose you have `rg` and search for text `'fzfx'`) as the underlying command, the query results look like:
 
+<img width="860" alt="image" src="https://github.com/linrongbin16/fzfx.nvim/assets/6496887/033cd998-3b06-4846-8cff-d2794216ebc0">
 
 
 ## `fzfx.helper.provider_decorators`
