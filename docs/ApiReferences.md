@@ -1,5 +1,3 @@
-<!-- markdownlint-disable MD013 MD034 MD033 MD038 MD051 MD040 -->
-
 # API References
 
 The modules in `fzfx.cfg` are recommended as a reference when you want to customize/implement your own search commands.
