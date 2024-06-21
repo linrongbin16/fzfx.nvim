@@ -1913,7 +1913,9 @@ For detailed explanation of each components, please see [A Generic Schema for Cr
 
 ### API References
 
-To help easier customizing/integrating, fzfx provides below modules and APIs:
+To help easier customizing/integrating, fzfx provides below modules and APIs.
+
+It's highly recommended to use these APIs when you're creating a new searching command, rather than start from scratch, since they usually take various situations and edge cases into consideration.
 
 - `fzfx.cfg`: Top-level configurations that directly register the searching command, such as `FzfxFiles`, `FzfxLiveGrep`, etc. Each module is an independent configuration.
 - `fzfx.helper`: Line-oriented utilities for parsing user input, query results and rendering the lines for (both left side and right side of) the fzf binary. Since a searching command is actually all about the lines: generating, previewing and invoking binded function on the lines.
