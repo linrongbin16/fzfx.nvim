@@ -149,19 +149,19 @@ M.parse_rg = function(line)
   local first_colon_pos = str.find(line, ":")
   assert(
     type(first_colon_pos) == "number",
-    string.format("failed to parse rg lines:%s", vim.inspect(line))
+    string.format("failed to parse rg:%s", vim.inspect(line))
   )
   filename = line:sub(1, first_colon_pos - 1)
 
   local second_colon_pos = str.find(line, ":", first_colon_pos + 1)
   assert(
     type(second_colon_pos) == "number",
-    string.format("failed to parse rg lines:%s", vim.inspect(line))
+    string.format("failed to parse rg:%s", vim.inspect(line))
   )
   lineno = line:sub(first_colon_pos + 1, second_colon_pos - 1)
 
   local third_colon_pos = str.find(line, ":", second_colon_pos + 1)
-  if num.gt(third_colon_pos, 0) then
+  if type(third_colon_pos) == "number" and third_colon_pos > 0 then
     column = line:sub(second_colon_pos + 1, third_colon_pos - 1)
     text = line:sub(third_colon_pos + 1)
   else
