@@ -6,7 +6,16 @@ And there're multiple sub-packages inside (sorted in alphabetical order):
 
 - [`actions`](#fzfxhelperactions)
 - [`parsers`](#fzfxhelperparsers)
+- [`provider_decorators`](#fzfxhelperprovider_decorators)
 
 ## `fzfx.helper.actions`
 
+This sub-package contains all the actions.
+
 ## `fzfx.helper.parsers`
+
+This sub-package contains all the parsers used for parsing user inputs & query results. For example the `FzfxLiveGrep` runs `rg --column -n --no-heading --color=always -H -S 'fzfx'` command (suppose you have `rg` and search for text `'fzfx'`) as the underlying command, the query results look like:
+
+
+
+## `fzfx.helper.provider_decorators`
