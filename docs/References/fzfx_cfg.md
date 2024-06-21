@@ -1,4 +1,4 @@
-<!-- markdownlint-disable MD013 MD034 MD033 MD038 MD051 MD040 -->
+<!-- markdownlint-disable MD013 -->
 
 # [`fzfx.cfg`](https://github.com/linrongbin16/fzfx.nvim/lua/fzfx/cfg)
 
