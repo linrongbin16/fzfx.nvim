@@ -18,5 +18,14 @@ This sub-package contains all the parsers used for parsing user inputs & query r
 
 <img width="860" alt="image" src="https://github.com/linrongbin16/fzfx.nvim/assets/6496887/033cd998-3b06-4846-8cff-d2794216ebc0">
 
+It's easy to tell that the query results are lines, each line contains a single query result. In each line, there're 4 components separated by colons (`:`):
+
+1. The file path that contains the keyword `'fzfx'`, starting from current working directory (`CWD`/`PWD`).
+2. The line number specifies which line contains the keyword `'fzfx'`.
+3. The column number specifies which column is the keyword `'fzfx'` starting.
+
+   !> Note: The 3rd component **column number** only exists in `rg`, while `grep` and `git grep` don't have it.
+
+4. The line text itself.
 
 ## `fzfx.helper.provider_decorators`
