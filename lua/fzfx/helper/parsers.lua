@@ -94,13 +94,14 @@ M.parse_grep = function(line)
   return { filename = filename, lineno = lineno, text = text }
 end
 
--- parse lines from grep without filename. looks like:
+-- Parse `grep` without filename (`-I`), it looks like:
+--
 -- ```
 -- 31:local conf = require("fzfx.config")
 -- 57:local str = require("fzfx.commons.str")
 -- ```
 --
--- returns line number and text.
+-- It returns line number and raw text contents.
 --
 --- @param line string
 --- @return {lineno:integer?,text:string}
@@ -109,13 +110,11 @@ M.parse_grep_no_filename = function(line)
   local text = nil
 
   local first_colon_pos = str.find(line, ":")
-  if num.gt(first_colon_pos, 0) then
+  if type(first_colon_pos) == "number" and first_colon_pos > 0 then
     lineno = line:sub(1, first_colon_pos - 1)
     text = line:sub(first_colon_pos + 1)
   else
-    -- if failed to found the first ':', then
-    -- 1. first try to parse right hands as 'lineno'
-    -- 2. if failed, treat them as 'text'
+    -- If failed to found the first colon ':', then try to parse right hands as 'lineno', if failed again, treat them as 'text'.
     local rhs = line
     if tonumber(rhs) == nil then
       text = rhs

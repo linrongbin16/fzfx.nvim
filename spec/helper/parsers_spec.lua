@@ -70,13 +70,6 @@ describe("helper.parsers", function()
       }
       for _, line in ipairs(lines) do
         local actual = parsers_helper.parse_grep(line)
-        -- print(
-        --   string.format(
-        --     "parse grep without icon, line:%s, parsed:%s\n",
-        --     vim.inspect(line),
-        --     vim.inspect(actual)
-        --   )
-        -- )
         assert_eq(type(actual), "table")
         assert_eq(type(actual.filename), "string")
         assert_eq(type(actual.lineno), "number")
@@ -149,25 +142,19 @@ describe("helper.parsers", function()
   end)
 
   describe("[parse_grep_no_filename]", function()
-    it("test", function()
+    it("with first colon", function()
       vim.env._FZFX_NVIM_DEVICONS_PATH = nil
       local lines = {
         "1",
+        "2:",
         "1:2",
         "1: ok ok",
         "2:3:hello",
       }
       for _, line in ipairs(lines) do
         local actual = parsers_helper.parse_grep_no_filename(line)
-        print(
-          string.format(
-            "parse grep no filename, line:%s, actual:%s\n",
-            vim.inspect(line),
-            vim.inspect(actual)
-          )
-        )
         assert_eq(type(actual), "table")
-        assert_eq(actual.filename, nil)
+        assert_true(actual.filename == nil)
         assert_eq(type(actual.lineno), "number")
 
         local first_colon_pos = str.find(line, ":")
@@ -175,11 +162,42 @@ describe("helper.parsers", function()
           assert_eq(actual.lineno, tonumber(line:sub(1, first_colon_pos - 1)))
           assert_eq(actual.text, line:sub(first_colon_pos + 1))
         else
-          assert_true(
-            (actual.lineno == tonumber(line) and actual.text == "")
-              or (actual.text == line and actual.lineno == nil)
-          )
+          assert_true(actual.lineno == tonumber(line) and actual.text == "")
         end
+      end
+    end)
+    it("without first colon, treat as 'lineno'", function()
+      vim.env._FZFX_NVIM_DEVICONS_PATH = nil
+      local lines = {
+        "1",
+        "2 ",
+        "12",
+        "81247",
+      }
+      for _, line in ipairs(lines) do
+        local actual = parsers_helper.parse_grep_no_filename(line)
+        assert_eq(type(actual), "table")
+        assert_true(actual.filename == nil)
+        assert_eq(actual.text, "")
+
+        assert_eq(type(actual.lineno), "number")
+        assert_eq(actual.lineno, tonumber(line))
+      end
+    end)
+    it("without first colon, treat as 'text'", function()
+      vim.env._FZFX_NVIM_DEVICONS_PATH = nil
+      local lines = {
+        "1-sdf",
+        "2 ok ok",
+        "12 hello world",
+        "81247 query texts ",
+      }
+      for _, line in ipairs(lines) do
+        local actual = parsers_helper.parse_grep_no_filename(line)
+        assert_eq(type(actual), "table")
+        assert_true(actual.filename == nil)
+        assert_true(actual.lineno == nil)
+        assert_eq(actual.text, line)
       end
     end)
   end)
