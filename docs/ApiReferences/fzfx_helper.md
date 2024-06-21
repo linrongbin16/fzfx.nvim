@@ -28,4 +28,6 @@ It's easy to tell that the query results are lines, each line contains a single 
 
 4. The line text.
 
+When previewing this line, `fzf` will let the previewer know which line it's currently pointing to.
+
 ## `fzfx.helper.provider_decorators`
