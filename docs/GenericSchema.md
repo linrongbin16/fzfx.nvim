@@ -39,7 +39,7 @@ With this pattern, all the details of launching the fzf shell command and intera
 
 Let's define it more specifically.
 
-> Also see: [schema.lua](https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/schema.lua).
+> Also see [`schema.lua`](https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/schema.lua).
 
 ## Context
 
