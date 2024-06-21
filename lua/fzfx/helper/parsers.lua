@@ -35,7 +35,10 @@ M.parse_find = function(line)
 
   if env.icon_enabled() then
     local first_space_pos = str.find(line, " ")
-    assert(type(first_space_pos) == "number")
+    assert(
+      type(first_space_pos) == "number",
+      string.format("failed to parse fd/find:%s", vim.inspect(line))
+    )
     -- The real file name starts after the first space.
     filename = line:sub(first_space_pos + 1)
   else
@@ -47,36 +50,35 @@ M.parse_find = function(line)
   }
 end
 
--- parse lines from grep. looks like:
+-- Parse `grep`, it looks like:
+--
 -- ```
--- 󰢱 bin/general/provider.lua:31:  local conf = require("fzfx.config")
--- 󰢱 bin/general/previewer.lua:57:  local str = require("fzfx.commons.str")
+-- 󰢱 bin/general/provider.lua:31:local conf = require("fzfx.config")
+-- 󰢱 bin/general/previewer.lua:57:local str = require("fzfx.commons.str")
 -- ```
 --
--- remove the prepend icon and returns **expanded** file path, line number and text.
+-- It removes the (optional) prepend file type icon, returns expanded full path file name, (optional) line number and raw text contents.
 --
 --- @param line string
 --- @return {filename:string,lineno:integer?,text:string}
 M.parse_grep = function(line)
-  local filename = nil
-  local lineno = nil
-  local text = nil
+  local filename
+  local lineno
+  local text
 
   local first_colon_pos = str.find(line, ":")
   assert(
     type(first_colon_pos) == "number",
-    string.format("failed to parse grep lines:%s", vim.inspect(line))
+    string.format("failed to parse grep:%s", vim.inspect(line))
   )
   filename = line:sub(1, first_colon_pos - 1)
 
   local second_colon_pos = str.find(line, ":", first_colon_pos + 1)
-  if num.gt(second_colon_pos, 0) then
+  if type(second_colon_pos) == "number" and second_colon_pos > 0 then
     lineno = line:sub(first_colon_pos + 1, second_colon_pos - 1)
     text = line:sub(second_colon_pos + 1)
   else
-    -- if failed to found the second ':', then
-    -- 1. first try to parse right hands as 'lineno'
-    -- 2. if failed, treat them as 'text'
+    -- If failed to found the second colon ':', then try to parse the right hands as 'lineno', if failed again, treat them as 'text'.
     local rhs = line:sub(first_colon_pos + 1)
     if tonumber(rhs) == nil then
       text = rhs

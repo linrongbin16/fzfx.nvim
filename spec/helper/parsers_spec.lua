@@ -60,7 +60,7 @@ describe("helper.parsers", function()
   end)
 
   describe("[parse_grep]", function()
-    it("test without icon", function()
+    it("without icons", function()
       vim.env._FZFX_NVIM_DEVICONS_PATH = nil
       local lines = {
         "~/github/linrongbin16/fzfx.nvim/README.md:1",
@@ -89,7 +89,7 @@ describe("helper.parsers", function()
         )
       end
     end)
-    it("test with icon", function()
+    it("with icons", function()
       vim.env._FZFX_NVIM_DEVICONS_PATH = DEVICONS_PATH
       local lines = {
         " ~/github/linrongbin16/fzfx.nvim/README.md:12",
@@ -108,7 +108,46 @@ describe("helper.parsers", function()
         assert_eq(actual.filename, parsers_helper.parse_find(line_splits[1]).filename)
       end
     end)
+    it("without icons, don't have the second colon, treat as 'lineno'", function()
+      vim.env._FZFX_NVIM_DEVICONS_PATH = nil
+      local lines = {
+        "~/github/linrongbin16/fzfx.nvim/README.md:1",
+        "~/github/linrongbin16/fzfx.nvim/lua/fzfx.lua:12",
+        "~/github/linrongbin16/fzfx.nvim/lua/fzfx.lua:1 ",
+        "~/github/linrongbin16/fzfx.nvim/lua/fzfx/config.lua:23   ",
+      }
+      for _, line in ipairs(lines) do
+        local actual = parsers_helper.parse_grep(line)
+        assert_eq(type(actual), "table")
+        assert_eq(type(actual.filename), "string")
+        assert_eq(type(actual.lineno), "number")
+        local splits = str.split(line, ":")
+        local split2 = str.trim(splits[2])
+        assert_eq(actual.lineno, tonumber(split2))
+        assert_eq(actual.filename, parsers_helper.parse_find(splits[1]).filename)
+      end
+    end)
+    it("without icons, don't have the second colon, treat as 'text'", function()
+      vim.env._FZFX_NVIM_DEVICONS_PATH = nil
+      local lines = {
+        "~/github/linrongbin16/fzfx.nvim/README.md:1 asdf",
+        "~/github/linrongbin16/fzfx.nvim/lua/fzfx.lua:12 hello",
+        "~/github/linrongbin16/fzfx.nvim/lua/fzfx.lua:1 ok ok",
+        "~/github/linrongbin16/fzfx.nvim/lua/fzfx/config.lua:23   query text",
+      }
+      for _, line in ipairs(lines) do
+        local actual = parsers_helper.parse_grep(line)
+        assert_eq(type(actual), "table")
+        assert_eq(type(actual.filename), "string")
+        assert_true(actual.lineno == nil)
+        assert_eq(type(actual.text), "string")
+        local splits = str.split(line, ":")
+        assert_eq(actual.text, splits[2])
+        assert_eq(actual.filename, parsers_helper.parse_find(splits[1]).filename)
+      end
+    end)
   end)
+
   describe("[parse_grep_no_filename]", function()
     it("test", function()
       vim.env._FZFX_NVIM_DEVICONS_PATH = nil
