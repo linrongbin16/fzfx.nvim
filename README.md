@@ -1918,7 +1918,7 @@ For detailed explanation of each components, please see [A Generic Schema for Cr
 To help easier customizing/integrating, fzfx provides below modules and APIs:
 
 - `fzfx.cfg`: Top-level configurations that directly register the searching command, such as `FzfxFiles`, `FzfxLiveGrep`, etc. Each module is an independent configuration.
-- `fzfx.helper`: Line-oriented helper utilities for parsing and rendering user queries and lines, since a search command is actually all about the lines in (both left and right side of) the fzf binary: generate lines, preview lines, invoke callbacks on selected lines, etc.
+- `fzfx.helper`: Line-oriented utilities for parsing user input, query results and rendering the lines for (both left side and right side of) the fzf binary. Since a searching command is actually all about the lines: generating, previewing and invoking binded function on the lines.
 - `fzfx.lib`: Low-level fundamental infrastructures, fzfx use the [commons](https://github.com/linrongbin16/commons.nvim) lua library for most of the common utilities, please also refer to [commons.nvim's documentation](https://linrongbin16.github.io/commons.nvim/).
 
   > The **commons** library was originally part of **fzfx.lib**, since I found they're so commonly used that I almost need them for every of my Neovim plugins, I extracted them from fzfx and build up this library.

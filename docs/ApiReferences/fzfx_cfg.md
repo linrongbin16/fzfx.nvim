@@ -1,6 +1,6 @@
 # [`fzfx.cfg`](https://github.com/linrongbin16/fzfx.nvim/lua/fzfx/cfg)
 
-The `fzfx.cfg` lua package contains all top-level configurations that been directly registered to create a searching command, such as `FzfxFiles`, `FzfxLiveGrep`, etc. Each module is an independent configuration (sorted in alphabetical order):
+The `fzfx.cfg` package contains all top-level configurations that been directly registered to create a searching command, such as `FzfxFiles`, `FzfxLiveGrep`, etc. Each module is an independent configuration (sorted in alphabetical order):
 
 - [`buf_live_grep.lua`](https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/cfg/buf_live_grep.lua): `FzfxBufLiveGrep`.
 - [`buffers.lua`](https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/cfg/buffers.lua): `FzfxBuffers`.
