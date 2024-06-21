@@ -1,4 +1,4 @@
-# [`fzfx.cfg`](https://github.com/linrongbin16/fzfx.nvim/lua/fzfx/cfg)
+# [`fzfx.cfg`](https://github.com/linrongbin16/fzfx.nvim/tree/main/lua/fzfx/cfg)
 
 The `fzfx.cfg` package contains all top-level configurations that been directly registered to create a searching command, such as `FzfxFiles`, `FzfxLiveGrep`, etc. Each module is an independent configuration (sorted in alphabetical order):
 
