@@ -30,4 +30,7 @@ It's easy to tell that the query results are lines, each line contains a single 
 
 When previewing this line, `fzf` will let the previewer know which line it's currently pointing to.
 
+<img width="989" alt="image" src="https://github.com/linrongbin16/fzfx.nvim/assets/6496887/38b507f7-fd5b-47c9-89b6-0db1aaa87e85">
+
+
 ## `fzfx.helper.provider_decorators`
