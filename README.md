@@ -1919,9 +1919,9 @@ It's highly recommended to use these APIs when you're creating a new searching c
 
 - `fzfx.cfg`: Top-level configurations that directly register the searching command, such as `FzfxFiles`, `FzfxLiveGrep`, etc. Each module is an independent configuration.
 - `fzfx.helper`: Line-oriented utilities for parsing user input, query results and rendering the lines for (both left side and right side of) the fzf binary. Since a searching command is actually all about the lines: generating, previewing and invoking binded function on the lines.
-- `fzfx.lib`: Low-level fundamental infrastructures, fzfx use the [commons](https://github.com/linrongbin16/commons.nvim) lua library for most of the common utilities, please also refer to [commons.nvim's documentation](https://linrongbin16.github.io/commons.nvim/).
+- `fzfx.lib`: Fundamental infrastructures, fzfx uses the [commons.nvim](https://github.com/linrongbin16/commons.nvim) library as a common utility lua library, please also refer to the commons.nvim's [documentation](https://linrongbin16.github.io/commons.nvim/).
 
-  > The **commons** library was originally part of **fzfx.lib**, since I found they're so commonly used that I almost need them for every of my Neovim plugins, I extracted them from fzfx and build up this library.
+  > The commons.nvim library was originally part of `fzfx.lib`, since I found they're so commonly used and I almost need them for every of my Neovim plugins, I extracted them into this library.
 
 Please see [API References](https://linrongbin16.github.io/fzfx.nvim/#/ApiReferences) for more details.
 
