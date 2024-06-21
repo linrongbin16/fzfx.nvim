@@ -1,5 +1,3 @@
-<!-- markdownlint-disable MD013 -->
-
 # [`fzfx.cfg`](https://github.com/linrongbin16/fzfx.nvim/lua/fzfx/cfg)
 
 The `fzfx.cfg` lua package contains all top-level configurations that been directly registered to create a searching command, such as `FzfxFiles`, `FzfxLiveGrep`, etc. Each module is an independent configuration (sorted in alphabetical order):
