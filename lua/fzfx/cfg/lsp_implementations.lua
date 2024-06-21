@@ -2,6 +2,7 @@ local ProviderTypeEnum = require("fzfx.schema").ProviderTypeEnum
 local CommandFeedEnum = require("fzfx.schema").CommandFeedEnum
 
 local _lsp_locations = require("fzfx.cfg._lsp_locations")
+local _decorator = require("fzfx.cfg._decorator")
 
 local M = {}
 
@@ -22,7 +23,7 @@ M.providers = {
     capability = "implementationProvider",
   }),
   provider_type = ProviderTypeEnum.LIST,
-  provider_decorator = { module = "prepend_icon_grep", builtin = true },
+  provider_decorator = { module = _decorator.PREPEND_ICON_GREP },
 }
 
 M.previewers = _lsp_locations.previewers

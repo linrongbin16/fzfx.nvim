@@ -18,6 +18,7 @@ local PreviewerTypeEnum = require("fzfx.schema").PreviewerTypeEnum
 local CommandFeedEnum = require("fzfx.schema").CommandFeedEnum
 
 local _lsp = require("fzfx.cfg._lsp")
+local _decorator = require("fzfx.cfg._decorator")
 
 local M = {}
 
@@ -245,13 +246,13 @@ M.providers = {
     key = "ctrl-w",
     provider = M._make_provider(),
     provider_type = ProviderTypeEnum.LIST,
-    provider_decorator = { module = "prepend_icon_grep", builtin = true },
+    provider_decorator = { module = _decorator.PREPEND_ICON_GREP },
   },
   buffer_diagnostics = {
     key = "ctrl-u",
     provider = M._make_provider({ buffer = true }),
     provider_type = ProviderTypeEnum.LIST,
-    provider_decorator = { module = "prepend_icon_grep", builtin = true },
+    provider_decorator = { module = _decorator.PREPEND_ICON_GREP },
   },
 }
 

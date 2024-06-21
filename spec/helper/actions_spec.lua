@@ -1,4 +1,3 @@
----@diagnostic disable: undefined-field, unused-local, missing-fields, need-check-nil, param-type-mismatch, assign-type-mismatch, redundant-parameter
 local cwd = vim.fn.getcwd()
 
 describe("helper.actions", function()

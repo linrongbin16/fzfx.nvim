@@ -15,6 +15,7 @@ local PreviewerTypeEnum = require("fzfx.schema").PreviewerTypeEnum
 local CommandFeedEnum = require("fzfx.schema").CommandFeedEnum
 
 local _grep = require("fzfx.cfg._grep")
+local _decorator = require("fzfx.cfg._decorator")
 
 local M = {}
 
@@ -77,7 +78,7 @@ M.providers = {
   key = "default",
   provider = M._provider,
   provider_type = ProviderTypeEnum.COMMAND_LIST,
-  provider_decorator = { module = "prepend_icon_grep", builtin = true },
+  provider_decorator = { module = _decorator.PREPEND_ICON_GREP },
 }
 
 -- If you want to use fzf-builtin previewer with bat, please use below configs:

@@ -1,3 +1,7 @@
+-- Prepend file type icons at the beginning of a line.
+-- Works for files results (or other query results followed this pattern).
+-- Such as `FzfxFiles`, `FzfxBuffers` etc.
+
 local _prepend_icon = require("fzfx.helper.provider_decorators._prepend_icon")
 
 local M = {}
