@@ -10,7 +10,7 @@ local log = require("fzfx.lib.log")
 
 local M = {}
 
--- parse lines from fd/find, also support buffers, git files. looks like:
+-- Parse lines from fd/find, also support buffers, git files. looks like:
 -- ```
 -- 󰢱 bin/general/provider.lua
 -- 󰢱 bin/general/previewer.lua
