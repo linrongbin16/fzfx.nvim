@@ -21,7 +21,7 @@ describe("helper.parsers", function()
   local DEVICONS_PATH = "~/github/linrongbin16/.config/nvim/lazy/nvim-web-devicons"
 
   describe("[parse_find]", function()
-    it("test without icon", function()
+    it("without icons", function()
       vim.env._FZFX_NVIM_DEVICONS_PATH = nil
       local lines = {
         "~/github/linrongbin16/fzfx.nvim/README.md",
@@ -37,7 +37,7 @@ describe("helper.parsers", function()
         assert_eq(expect, actual.filename)
       end
     end)
-    it("test with icon", function()
+    it("with icons", function()
       vim.env._FZFX_NVIM_DEVICONS_PATH = DEVICONS_PATH
       local lines = {
         " ~/github/linrongbin16/fzfx.nvim/README.md",

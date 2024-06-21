@@ -10,13 +10,15 @@ local log = require("fzfx.lib.log")
 
 local M = {}
 
--- Parse lines from fd/find, also support buffers, git files. looks like:
+-- Parse `fd`/`find`, it looks like:
+--
 -- ```
 -- 󰢱 bin/general/provider.lua
 -- 󰢱 bin/general/previewer.lua
 -- ```
 --
--- remove the prepend icon and returns **expanded** file path. looks like:
+-- It removes the (optional) prepend file type icon, returns expanded full path file name, which looks like:
+--
 -- ```
 -- /Users/linrongbin/github/linrongbin16/fzfx.nvim/bin/general/provider.lua
 -- /Users/linrongbin/github/linrongbin16/fzfx.nvim/bin/general/previewer.lua
@@ -25,24 +27,21 @@ local M = {}
 --- @param line string
 --- @return {filename:string}
 M.parse_find = function(line)
-  local filename = nil
+  local filename
+
   if str.empty(line) then
     return { filename = nil }
   end
+
   if env.icon_enabled() then
-    local first_icon_pos = str.find(line, " ")
-    log.ensure(
-      type(first_icon_pos) == "number",
-      string.format(
-        "failed to parse filename, cannot find first icon pos:%s, line:%s",
-        vim.inspect(first_icon_pos),
-        vim.inspect(line)
-      )
-    )
-    filename = line:sub(first_icon_pos + 1)
+    local first_space_pos = str.find(line, " ")
+    assert(type(first_space_pos) == "number")
+    -- The real file name starts after the first space.
+    filename = line:sub(first_space_pos + 1)
   else
     filename = line
   end
+
   return {
     filename = path.normalize(filename, { double_backslash = true, expand = true }),
   }
