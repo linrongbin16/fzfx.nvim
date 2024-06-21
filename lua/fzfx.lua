@@ -1,8 +1,17 @@
 local log = require("fzfx.lib.log")
 local LogLevels = require("fzfx.lib.log").LogLevels
 
+local M = {}
+
+-- Register a command (such as `FzfxFiles`) in fzfx.
+--- @param name string
+--- @param configs fzfx.Options
+M.register = function(name, configs)
+  require("fzfx.detail.general").setup(name, configs)
+end
+
 --- @param opts fzfx.Options?
-local function setup(opts)
+M.setup = function(opts)
   -- configs
   local configs = require("fzfx.config").setup(opts)
 
@@ -30,51 +39,38 @@ local function setup(opts)
   require("fzfx.detail.bat_helpers").setup()
   require("fzfx.detail.fzf_helpers").setup()
 
-  local general = require("fzfx.detail.general")
-
   -- files & buffers
-  general.setup("files", configs.files)
-  general.setup("buffers", configs.buffers)
+  M.register("files", configs.files)
+  M.register("buffers", configs.buffers)
 
   -- grep
-  general.setup("live_grep", configs.live_grep)
-  general.setup("buf_live_grep", configs.buf_live_grep)
+  M.register("live_grep", configs.live_grep)
+  M.register("buf_live_grep", configs.buf_live_grep)
 
   -- git
-  general.setup("git_files", configs.git_files)
-  general.setup("git_live_grep", configs.git_live_grep)
-  general.setup("git_status", configs.git_status)
-  general.setup("git_branches", configs.git_branches)
-  general.setup("git_commits", configs.git_commits)
-  general.setup("git_blame", configs.git_blame)
+  M.register("git_files", configs.git_files)
+  M.register("git_live_grep", configs.git_live_grep)
+  M.register("git_status", configs.git_status)
+  M.register("git_branches", configs.git_branches)
+  M.register("git_commits", configs.git_commits)
+  M.register("git_blame", configs.git_blame)
 
   -- lsp & diagnostics
-  general.setup("lsp_definitions", configs.lsp_definitions)
-  general.setup("lsp_type_definitions", configs.lsp_type_definitions)
-  general.setup("lsp_references", configs.lsp_references)
-  general.setup("lsp_implementations", configs.lsp_implementations)
-  general.setup("lsp_incoming_calls", configs.lsp_incoming_calls)
-  general.setup("lsp_outgoing_calls", configs.lsp_outgoing_calls)
-  general.setup("lsp_diagnostics", configs.lsp_diagnostics)
+  M.register("lsp_definitions", configs.lsp_definitions)
+  M.register("lsp_type_definitions", configs.lsp_type_definitions)
+  M.register("lsp_references", configs.lsp_references)
+  M.register("lsp_implementations", configs.lsp_implementations)
+  M.register("lsp_incoming_calls", configs.lsp_incoming_calls)
+  M.register("lsp_outgoing_calls", configs.lsp_outgoing_calls)
+  M.register("lsp_diagnostics", configs.lsp_diagnostics)
 
   -- vim
-  general.setup("vim_commands", configs.vim_commands)
-  general.setup("vim_keymaps", configs.vim_keymaps)
-  general.setup("vim_marks", configs.vim_marks)
+  M.register("vim_commands", configs.vim_commands)
+  M.register("vim_keymaps", configs.vim_keymaps)
+  M.register("vim_marks", configs.vim_marks)
 
   -- file explorer
-  general.setup("file_explorer", configs.file_explorer)
+  M.register("file_explorer", configs.file_explorer)
 end
-
---- @param name string
---- @param configs fzfx.Options
-local function register(name, configs)
-  require("fzfx.detail.general").setup(name, configs)
-end
-
-local M = {
-  setup = setup,
-  register = register,
-}
 
 return M
