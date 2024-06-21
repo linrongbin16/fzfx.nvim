@@ -3,5 +3,5 @@
 - [Home](/)
 - [Known Issues](/KnownIssues.md)
 - [A Generic Schema for Creating FZF Command](/GenericSchema.md)
-- Module/API References
+- API References
   - [`fzfx.cfg`](/ApiReferences/fzfx_cfg.md)
