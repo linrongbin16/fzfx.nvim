@@ -10,6 +10,7 @@ describe("helper.parsers", function()
     vim.api.nvim_command("cd " .. cwd)
   end)
 
+  local uv = require("fzfx.commons.uv")
   local str = require("fzfx.commons.str")
   local num = require("fzfx.commons.num")
   local tbl = require("fzfx.commons.tbl")
@@ -500,6 +501,7 @@ describe("helper.parsers", function()
   end)
 
   describe("[parse_vim_command]", function()
+    local HOME_DIR = uv.os_homedir() --[[@as string]]
     local VIM_COMMANDS_HEADER =
       "Name              Bang|Bar|Nargs|Range|Complete         Desc/Location"
     --- @type fzfx.VimCommandsPipelineContext
@@ -512,6 +514,9 @@ describe("helper.parsers", function()
         ":                 N   |Y  |N/A  |N/A  |N/A              /opt/homebrew/Cellar/neovim/0.9.4/share/nvim/runtime/doc/index.txt:1121",
         "!                 N   |Y  |N/A  |N/A  |N/A              /opt/homebrew/Cellar/neovim/0.9.4/share/nvim/runtime/doc/index.txt:1122",
         "Next              N   |Y  |N/A  |N/A  |N/A              /opt/homebrew/Cellar/neovim/0.9.4/share/nvim/runtime/doc/index.txt:1124",
+        "FzfxCommands      Y   |Y  |N/A  |N/A  |N/A              ~/github/linrongbin16/fzfx.nvim/lua/fzfx/general.lua:120",
+        "FzfxFiles         Y   |Y  |N/A  |N/A  |N/A              ~/github/linrongbin16/fzfx.nvim/lua/fzfx/general.lua:120",
+        "Barbecue          Y   |Y  |N/A  |N/A  |N/A              ~/.config/nvim/lazy/barbecue/lua/barbecue.lua:73",
       }
       local expects = {
         {
@@ -528,6 +533,21 @@ describe("helper.parsers", function()
           command = "Next",
           filename = "/opt/homebrew/Cellar/neovim/0.9.4/share/nvim/runtime/doc/index.txt",
           lineno = 1124,
+        },
+        {
+          command = "FzfxCommands",
+          filename = HOME_DIR .. "/github/linrongbin16/fzfx.nvim/lua/fzfx/general.lua",
+          lineno = 120,
+        },
+        {
+          command = "FzfxFiles",
+          filename = HOME_DIR .. "/github/linrongbin16/fzfx.nvim/lua/fzfx/general.lua",
+          lineno = 120,
+        },
+        {
+          command = "Barbecue",
+          filename = HOME_DIR .. "/.config/nvim/lazy/barbecue/lua/barbecue.lua",
+          lineno = 73,
         },
       }
       for i, line in ipairs(lines) do
@@ -547,55 +567,21 @@ describe("helper.parsers", function()
         assert_eq(actual.lineno, expect.lineno)
       end
     end)
-    it("test definition1", function()
+    it("definitions", function()
       local lines = {
-        ':bdelete          N   |Y  |N/A  |N/A  |N/A              "delete buffer"',
-      }
-      for _, line in ipairs(lines) do
-        local first_space_pos = str.find(line, " ")
-        local expect_command = line:sub(1, first_space_pos - 1)
-        local double_quote_before_last = str.rfind(line, '"', #line - 1)
-        local expect_def = vim.trim(line:sub(double_quote_before_last + 1, #line - 1))
-        local actual = parsers_helper.parse_vim_command(line, CONTEXT)
-        assert_eq(type(actual), "table")
-        assert_eq(actual.command, expect_command)
-        assert_eq(actual.definition, expect_def)
-      end
-    end)
-    it("test location2", function()
-      local lines = {
-        "FzfxCommands      Y   |Y  |N/A  |N/A  |N/A              ~/github/linrongbin16/fzfx.nvim/lua/fzfx/general.lua:120",
-        "FzfxFiles         Y   |Y  |N/A  |N/A  |N/A              ~/github/linrongbin16/fzfx.nvim/lua/fzfx/general.lua:120",
-        "Barbecue          Y   |Y  |N/A  |N/A  |N/A              ~/.config/nvim/lazy/barbecue/lua/barbecue.lua:73",
-      }
-      for _, line in ipairs(lines) do
-        local first_space_pos = str.find(line, " ")
-        local expect_command = line:sub(1, first_space_pos - 1)
-        local last_space_pos = str.rfind(line, " ")
-        local expect_splits = str.split(line:sub(last_space_pos + 1), ":")
-        local actual = parsers_helper.parse_vim_command(line, CONTEXT)
-        assert_eq(type(actual), "table")
-        assert_eq(actual.command, expect_command)
-        assert_eq(
-          actual.filename,
-          path.normalize(expect_splits[1], { double_backslash = true, expand = true })
-        )
-        assert_eq(actual.lineno, tonumber(expect_splits[2]))
-      end
-    end)
-    it("test definition2", function()
-      local lines = {
+        'bdelete           N   |Y  |N/A  |N/A  |N/A              "delete buffer"',
         'Bdelete           N   |Y  |N/A  |N/A  |N/A              "delete buffer"',
       }
-      for _, line in ipairs(lines) do
-        local first_space_pos = str.find(line, " ")
-        local expect_command = line:sub(1, first_space_pos - 1)
-        local double_quote_before_last = str.rfind(line, '"', #line - 1)
-        local expect_def = vim.trim(line:sub(double_quote_before_last + 1, #line - 1))
+      local expects = {
+        { command = "bdelete", definition = "delete buffer" },
+        { command = "Bdelete", definition = "delete buffer" },
+      }
+      for i, line in ipairs(lines) do
         local actual = parsers_helper.parse_vim_command(line, CONTEXT)
+        local expect = expects[i]
         assert_eq(type(actual), "table")
-        assert_eq(actual.command, expect_command)
-        assert_eq(actual.definition, expect_def)
+        assert_eq(actual.command, expect.command)
+        assert_eq(actual.definition, expect.definition)
       end
     end)
   end)
@@ -606,20 +592,34 @@ describe("helper.parsers", function()
       key_column_width = 44,
       opts_column_width = 26,
     }
-    it("parse ex map with locations", function()
+    it("locations", function()
       local lines = {
         "<C-F>                                            |N      |N     |N      ~/.config/nvim/lazy/nvim-cmp/lua/cmp/utils/keymap.lua:127",
-        "<CR>                                             |N      |N     |N      ~/.config/nvim/lazy/nvim-cmp/lua/cmp/utils/keymap.lua:127",
+        "<CR>                                             |N      |N     |N      ~/.config/nvim/lazy/nvim-cmp/lua/cmp/utils/keymap.lua:128",
         "<Plug>(YankyGPutAfterShiftRight)             n   |Y      |N     |Y      ~/.config/nvim/lazy/yanky.nvim/lua/yanky.lua:369",
       }
-      for _, line in ipairs(lines) do
-        local first_space_pos = str.find(line, " ")
-        local expect_lhs = line:sub(1, first_space_pos - 1)
-        local last_space_pos = str.rfind(line, " ")
-        local expect_splits = str.split(line:sub(last_space_pos + 1), ":")
+      local expects = {
+        {
+          lhs = "<C-F>",
+          filename = "~/.config/nvim/lazy/nvim-cmp/lua/cmp/utils/keymap.lua",
+          lineno = 127,
+        },
+        {
+          lhs = "<CR>",
+          filename = "~/.config/nvim/lazy/nvim-cmp/lua/cmp/utils/keymap.lua",
+          lineno = 128,
+        },
+        {
+          lhs = "<Plug>(YankyGPutAfterShiftRight)",
+          filename = "~/.config/nvim/lazy/yanky.nvim/lua/yanky.lua",
+          lineno = 369,
+        },
+      }
+      for i, line in ipairs(lines) do
+        local expect = expects[i]
         local actual = parsers_helper.parse_vim_keymap(line, CONTEXT)
         assert_eq(type(actual), "table")
-        assert_eq(actual.lhs, expect_lhs)
+        assert_eq(actual.lhs, expect.lhs)
         assert_eq(
           actual.filename,
           path.normalize(expect_splits[1], { double_backslash = true, expand = true })
