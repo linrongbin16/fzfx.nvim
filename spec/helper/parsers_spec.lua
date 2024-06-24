@@ -15,6 +15,7 @@ describe("helper.parsers", function()
   local tbl = require("fzfx.commons.tbl")
   local path = require("fzfx.commons.path")
   local fileio = require("fzfx.commons.fileio")
+  local consts = require("fzfx.lib.constants")
   local parsers_helper = require("fzfx.helper.parsers")
   require("fzfx").setup()
 
@@ -370,10 +371,10 @@ describe("helper.parsers", function()
   end)
 
   describe("[parse_ls/parse_lsd/parse_eza]", function()
-    local cwdtmp = vim.fn.tempname()
-    fileio.writefile(cwdtmp, cwd)
-    local CONTEXT = { cwd = cwdtmp }
-    it("test ls", function()
+    local tmp = vim.fn.tempname()
+    fileio.writefile(tmp, cwd)
+    local CONTEXT = { cwd = tmp }
+    it("ls", function()
       local lines = {
         "-rw-r--r--   1 linrongbin Administrators 1.1K Jul  9 14:35 LICENSE",
         "-rw-r--r--   1 linrongbin Administrators 6.2K Sep 28 22:26 README.md",
@@ -399,10 +400,10 @@ describe("helper.parsers", function()
         "codecov.yml",
       }
       for i, line in ipairs(lines) do
-        local expect = expects[i]
         local actual = parsers_helper.parse_ls(line, CONTEXT)
+        local expect = expects[i]
         print(
-          string.format("parse ls, line:%s, actual:%s\n", vim.inspect(line), vim.inspect(actual))
+          string.format("parse_ls, line:%s, actual:%s\n", vim.inspect(line), vim.inspect(actual))
         )
         assert_eq(type(actual), "table")
         assert_eq(
@@ -411,7 +412,7 @@ describe("helper.parsers", function()
         )
       end
     end)
-    it("test lsd", function()
+    it("lsd", function()
       local lines = {
         "drwxr-xr-x  rlin staff 160 B  Wed Oct 25 16:59:44 2023 bin",
         ".rw-r--r--  rlin staff  54 KB Tue Oct 31 22:29:35 2023 CHANGELOG.md",
@@ -440,7 +441,7 @@ describe("helper.parsers", function()
         )
       end
     end)
-    it("test eza for windows", function()
+    it("eza for windows", function()
       local lines = {
         -- Mode  Size Date Modified Name
         "d----    - 30 Sep 21:55  deps",
@@ -454,9 +455,9 @@ describe("helper.parsers", function()
         "install.ps1",
         "install.sh",
       }
-      local parse_eza_on_windows = parsers_helper._make_parse_ls(5)
+      local parse_eza_for_win = parsers_helper._make_parse_ls(5, consts.EZA)
       for i, line in ipairs(lines) do
-        local actual = parse_eza_on_windows(line, CONTEXT).filename
+        local actual = parse_eza_for_win(line, CONTEXT).filename
         local expect = expects[i]
         assert_eq(
           actual,
@@ -464,7 +465,7 @@ describe("helper.parsers", function()
         )
       end
     end)
-    it("test eza for macOS/linux", function()
+    it("eza for macOS/linux", function()
       local lines = {
         -- Permissions Size User Date Modified Name
         "drwxr-xr-x     - linrongbin 28 Aug 12:39  autoload",
@@ -488,9 +489,9 @@ describe("helper.parsers", function()
         "test1-README.md",
         "test2-README.md",
       }
-      local parse_eza_on_macos_linux = parsers_helper._make_parse_ls(6)
+      local parse_eza_for_unix = parsers_helper._make_parse_ls(6, consts.EZA)
       for i, line in ipairs(lines) do
-        local actual = parse_eza_on_macos_linux(line, CONTEXT).filename
+        local actual = parse_eza_for_unix(line, CONTEXT).filename
         local expect =
           path.normalize(path.join(cwd, expects[i]), { double_backslash = true, expand = true })
         assert_eq(actual, expect)

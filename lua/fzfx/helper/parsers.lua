@@ -428,7 +428,7 @@ M.parse_git_commit = function(line)
   return { commit = trimmed }
 end
 
--- parse lines from ls/lsd/eza/exa.
+-- Parse "ls"/"lsd"/"eza"/"exa" with "-lh"/"-lha" option.
 --
 -- The `ls -lh` looks like (file name starts from the 8th space):
 --
@@ -490,12 +490,12 @@ end
 -- drwxr-xr-x  rlin staff 992 B  Wed Nov  1 11:16:13 2023 test
 -- ```
 --
--- remove the prepend extra info and returns **expanded** file path.
+-- It removes the extra prefix info, returns only the expanded full file path.
 --
---- @package
 --- @param start_pos integer
+--- @param name string
 --- @return fun(line:string,context:fzfx.FileExplorerPipelineContext):{filename:string}
-M._make_parse_ls = function(start_pos)
+M._make_parse_ls = function(start_pos, name)
   --- @param line string
   --- @param context fzfx.FileExplorerPipelineContext
   --- @return {filename:string}
@@ -503,23 +503,22 @@ M._make_parse_ls = function(start_pos)
     local cwd = fileio.readfile(context.cwd, { trim = true })
     assert(
       str.not_empty(cwd),
-      string.format("failed to parse file explorer context:%s", vim.inspect(cwd))
+      string.format("failed to parse file explorer context, cwd:%s", vim.inspect(cwd))
     )
     local pos = 1
     for i = 1, start_pos do
       pos = str.find(line, " ", pos) --[[@as integer]]
-      assert(
-        num.gt(pos, 0),
-        string.format("failed to parse ls/eza/lsd lines:%s", vim.inspect(line))
-      )
+      assert(num.gt(pos, 0), string.format("failed to parse %s:%s", name, vim.inspect(line)))
       while pos + 1 <= #line and string.byte(line, pos + 1) == string.byte(" ") do
         pos = pos + 1
       end
       pos = pos + 1
     end
 
-    -- remove extra single/double quotes
-    local result = str.trim(vim.trim(line:sub(pos)), "['\"]+")
+    -- Remove extra single/double quotes
+    local truncated = line:sub(pos)
+    local trimmed1 = vim.trim(truncated)
+    local result = str.trim(trimmed1, "['\"]+")
     return {
       filename = path.normalize(path.join(cwd, result), { double_backslash = true, expand = true }),
     }
@@ -527,9 +526,13 @@ M._make_parse_ls = function(start_pos)
   return impl
 end
 
-M.parse_ls = M._make_parse_ls(8)
-M.parse_eza = consts.IS_WINDOWS and M._make_parse_ls(5) or M._make_parse_ls(6)
-M.parse_lsd = M._make_parse_ls(10)
+M.parse_ls = M._make_parse_ls(8, consts.LS)
+if consts.IS_WINDOWS then
+  M.parse_eza = M._make_parse_ls(5, consts.EZA)
+else
+  M.parse_eza = M._make_parse_ls(6, consts.EZA)
+end
+M.parse_lsd = M._make_parse_ls(10, consts.LSD)
 
 -- parse vim commands. looks like:
 -- ```
