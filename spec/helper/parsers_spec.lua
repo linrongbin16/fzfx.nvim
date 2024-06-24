@@ -309,7 +309,7 @@ describe("helper.parsers", function()
     end)
   end)
   describe("[parse_rg_no_filename]", function()
-    it("test", function()
+    it("normal data", function()
       local lines = {
         "12:30",
         "13:1:",
@@ -329,6 +329,25 @@ describe("helper.parsers", function()
         if #line_splits >= 3 then
           assert_eq(actual.text, line_splits[3])
         end
+      end
+    end)
+    it("don't have the second colon, treat as 'column'", function()
+      local lines = {
+        "12:30",
+        "13:1",
+        "13:2   ",
+        "1:3   ",
+        "1:3   ",
+      }
+      for i, line in ipairs(lines) do
+        local actual = parsers_helper.parse_rg_no_filename(line)
+        assert_eq(type(actual), "table")
+        assert_eq(actual.filename, nil)
+        assert_eq(type(actual.lineno), "number")
+        assert_eq(actual.text, "")
+        local line_splits = str.split(line, ":")
+        assert_eq(actual.lineno, tonumber(line_splits[1]))
+        assert_eq(actual.column, tonumber(line_splits[2]))
       end
     end)
   end)
