@@ -686,7 +686,8 @@ M.parse_vim_mark = function(line, context)
   local trimmed_file_text = str.trim(file_text_value) --[[@as string?]]
   local file_text
   if str.not_empty(trimmed_file_text) then
-    file_text = path.normalize(trimmed_file_text, { expand = true, double_backslash = true })
+    file_text =
+      path.normalize(trimmed_file_text --[[@as string]], { expand = true, double_backslash = true })
   else
     file_text = ""
   end
