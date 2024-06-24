@@ -203,7 +203,7 @@ describe("helper.parsers", function()
   end)
 
   describe("[parse_rg]", function()
-    it("test without icon", function()
+    it("without icons", function()
       vim.env._FZFX_NVIM_DEVICONS_PATH = nil
       local lines = {
         "~/github/linrongbin16/fzfx.nvim/README.md:12:30",
@@ -224,7 +224,7 @@ describe("helper.parsers", function()
         assert_eq(actual.column, tonumber(line_splits[3]))
       end
     end)
-    it("test with icon", function()
+    it("with icons", function()
       vim.env._FZFX_NVIM_DEVICONS_PATH = DEVICONS_PATH
       local lines = {
         " ~/github/linrongbin16/fzfx.nvim/README.md:12:30",
@@ -246,6 +246,28 @@ describe("helper.parsers", function()
         if #line_splits >= 4 then
           assert_eq(actual.text, line_splits[4])
         end
+      end
+    end)
+    it("without icons, don't have the third colon, treat as 'column'", function()
+      vim.env._FZFX_NVIM_DEVICONS_PATH = nil
+      local lines = {
+        " ~/github/linrongbin16/fzfx.nvim/README.md:12:30",
+        "󰢱 ~/github/linrongbin16/fzfx.nvim/lua/fzfx.lua:15:98",
+        "󰢱 ~/github/linrongbin16/fzfx.nvim/lua/fzfx.lua:15:82  ",
+        "󰢱 ~/github/linrongbin16/fzfx.nvim/lua/fzfx/config.lua:1:70 ",
+        "󰢱 ~/github/linrongbin16/fzfx.nvim/lua/fzfx/config.lua:4:71   ",
+      }
+      for _, line in ipairs(lines) do
+        local actual = parsers_helper.parse_rg(line)
+        assert_eq(type(actual), "table")
+        assert_eq(type(actual.filename), "string")
+        assert_eq(type(actual.lineno), "number")
+        assert_eq(type(actual.column), "number")
+        assert_eq(actual.text, "")
+        local line_splits = str.split(line, ":")
+        assert_eq(actual.filename, parsers_helper.parse_find(line_splits[1]).filename)
+        assert_eq(actual.lineno, tonumber(line_splits[2]))
+        assert_eq(actual.column, tonumber(line_splits[3]))
       end
     end)
   end)

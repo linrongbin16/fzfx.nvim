@@ -182,7 +182,7 @@ M.parse_rg = function(line)
   return { filename = filename, lineno = lineno, column = column, text = text }
 end
 
--- parse lines from rg without filename. looks like:
+-- Parse `rg` with `-I` option, i.e. without filename. It looks like:
 -- ```
 -- 󰢱 31:2:local conf = require("fzfx.config")
 -- 󰢱 57:13:local str = require("fzfx.commons.str")
