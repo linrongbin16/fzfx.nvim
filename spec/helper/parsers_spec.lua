@@ -350,6 +350,23 @@ describe("helper.parsers", function()
         assert_eq(actual.column, tonumber(line_splits[2]))
       end
     end)
+    it("don't have the second colon, treat as 'text'", function()
+      local lines = {
+        "12:hello",
+        "13:1ok",
+        "13:2   test",
+      }
+      for i, line in ipairs(lines) do
+        local actual = parsers_helper.parse_rg_no_filename(line)
+        assert_eq(type(actual), "table")
+        assert_eq(actual.filename, nil)
+        assert_eq(type(actual.lineno), "number")
+        assert_eq(actual.column, nil)
+        local splits = str.split(line, ":")
+        assert_eq(actual.lineno, tonumber(splits[1]))
+        assert_eq(actual.text, splits[2])
+      end
+    end)
   end)
 
   describe("[parse_ls/parse_lsd/parse_eza]", function()
@@ -610,7 +627,7 @@ describe("helper.parsers", function()
   end)
 
   describe("[parse_git_status]", function()
-    it("parse", function()
+    it("test", function()
       local lines = {
         " M fzfx/config.lua",
         " D fzfx/constants.lua",
@@ -618,19 +635,22 @@ describe("helper.parsers", function()
         " M ../test/line_helpers_spec.lua",
         "?? ../hello",
       }
+      local expects = {
+        "fzfx/config.lua",
+        "fzfx/constants.lua",
+        "fzfx/line_helpers.lua",
+        "../test/line_helpers_spec.lua",
+        "../hello",
+      }
       for i, line in ipairs(lines) do
         local actual = parsers_helper.parse_git_status(line)
-        local expect = path.normalize(
-          str.split(line, " ", { trimempty = true })[2],
-          { double_backslash = true, expand = true }
-        )
+        local expect = expects[i]
         print(
           string.format(
-            "parse_git_status [%s], line:%s, actual:%s, expect:%s\n",
-            vim.inspect(i),
+            "parse_git_status-%d, line:%s, actual:%s\n",
+            i,
             vim.inspect(line),
-            vim.inspect(actual),
-            vim.inspect(expect)
+            vim.inspect(actual)
           )
         )
         assert_eq(type(actual), "table")

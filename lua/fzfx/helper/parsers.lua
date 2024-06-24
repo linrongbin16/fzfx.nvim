@@ -225,24 +225,29 @@ M.parse_rg_no_filename = function(line)
   return { lineno = lineno, column = column, text = text }
 end
 
--- parse lines from `git status --short`. looks like:
+-- Parse `git status --short`, which looks like:
+--
 -- ```
 --  M lua/fzfx/helper/parsers.lua
 -- ?? test.txt
 -- ```
 --
--- remove the prepend symbol and returns **expanded** file path.
+-- It removes the prepend status symbol, returns expanded full file name.
 --
 --- @param line string
 --- @return {filename:string}
 M.parse_git_status = function(line)
-  line = vim.trim(line)
-  local i = 1
-  while i <= #line and not str.isspace(line:sub(i, i)) do
-    i = i + 1
+  line = str.trim(line)
+  local first_space_pos = 1
+  local n = #line
+  while first_space_pos <= n and not str.isspace(line:sub(first_space_pos, first_space_pos)) do
+    first_space_pos = first_space_pos + 1
   end
   return {
-    filename = path.normalize(line:sub(i), { double_backslash = true, expand = true }),
+    filename = path.normalize(
+      line:sub(first_space_pos),
+      { double_backslash = true, expand = true }
+    ),
   }
 end
 
