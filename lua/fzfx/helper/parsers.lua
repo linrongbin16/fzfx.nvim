@@ -209,9 +209,7 @@ M.parse_rg_no_filename = function(line)
     column = line:sub(first_colon_pos + 1, second_colon_pos - 1)
     text = line:sub(second_colon_pos + 1)
   else
-    -- if failed to found the second ':', then
-    -- 1. first try to parse right hands as 'column'
-    -- 2. if failed, treat them as 'text'
+    -- If failed to found the second ':', then try to parse right hands as 'column', if failed again, treat them as 'text'.
     local rhs = line:sub(first_colon_pos + 1)
     if tonumber(rhs) == nil then
       text = rhs
