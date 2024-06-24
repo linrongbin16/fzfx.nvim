@@ -587,6 +587,7 @@ describe("helper.parsers", function()
   end)
 
   describe("[parse_vim_keymap]", function()
+    local HOME_DIR = uv.os_homedir() --[[@as string]]
     --- @type fzfx.VimKeyMapsPipelineContext
     local CONTEXT = {
       key_column_width = 44,
@@ -601,17 +602,17 @@ describe("helper.parsers", function()
       local expects = {
         {
           lhs = "<C-F>",
-          filename = "~/.config/nvim/lazy/nvim-cmp/lua/cmp/utils/keymap.lua",
+          filename = HOME_DIR .. "/.config/nvim/lazy/nvim-cmp/lua/cmp/utils/keymap.lua",
           lineno = 127,
         },
         {
           lhs = "<CR>",
-          filename = "~/.config/nvim/lazy/nvim-cmp/lua/cmp/utils/keymap.lua",
+          filename = HOME_DIR .. "/.config/nvim/lazy/nvim-cmp/lua/cmp/utils/keymap.lua",
           lineno = 128,
         },
         {
           lhs = "<Plug>(YankyGPutAfterShiftRight)",
-          filename = "~/.config/nvim/lazy/yanky.nvim/lua/yanky.lua",
+          filename = HOME_DIR .. "/.config/nvim/lazy/yanky.nvim/lua/yanky.lua",
           lineno = 369,
         },
       }
@@ -620,14 +621,11 @@ describe("helper.parsers", function()
         local actual = parsers_helper.parse_vim_keymap(line, CONTEXT)
         assert_eq(type(actual), "table")
         assert_eq(actual.lhs, expect.lhs)
-        assert_eq(
-          actual.filename,
-          path.normalize(expect_splits[1], { double_backslash = true, expand = true })
-        )
-        assert_eq(actual.lineno, tonumber(expect_splits[2]))
+        assert_eq(actual.filename, expect.filename)
+        assert_eq(actual.lineno, expect.lineno)
       end
     end)
-    it("parse definition", function()
+    it("definitions", function()
       local lines = {
         '%                                            n   |N      |N     |Y      "<Plug>(matchup-%)"',
         '&                                            n   |Y      |N     |N      ":&&<CR>"',
