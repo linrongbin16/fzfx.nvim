@@ -641,7 +641,8 @@ M.parse_vim_keymap = function(line, context)
   end
 end
 
--- parse vim marks, looks like:
+-- Parse vim marks, which looks like:
+--
 -- ```
 -- mark line  col file/text
 --  '    543    7 return M
@@ -662,7 +663,7 @@ end
 --  .    134   13 -- the ':marks' output looks like:
 -- ```
 --
--- returns mark/line/col with **expanded** file path, or with text.
+-- It returns mark/line/col and either expanded full file name, or marked text.
 --
 --- @param line string
 --- @param context fzfx.VimMarksPipelineContext
