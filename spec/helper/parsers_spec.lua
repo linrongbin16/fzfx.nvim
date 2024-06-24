@@ -270,6 +270,43 @@ describe("helper.parsers", function()
         assert_eq(actual.column, tonumber(line_splits[3]))
       end
     end)
+    it("without icons, don't have the third colon, treat as 'text'", function()
+      vim.env._FZFX_NVIM_DEVICONS_PATH = nil
+      local lines = {
+        " ~/github/linrongbin16/fzfx.nvim/README.md:12:30  hello",
+        "󰢱 ~/github/linrongbin16/fzfx.nvim/lua/fzfx.lua:15:98 ok ok",
+        "󰢱 ~/github/linrongbin16/fzfx.nvim/lua/fzfx.lua:15:yes and no",
+        "󰢱 ~/github/linrongbin16/fzfx.nvim/lua/fzfx/config.lua:1:",
+        "󰢱 ~/github/linrongbin16/fzfx.nvim/lua/fzfx/config.lua:4:  ok",
+      }
+      for i, line in ipairs(lines) do
+        local actual = parsers_helper.parse_rg(line)
+        print(
+          string.format(
+            "parse_rg-%d, line:%s, actual:%s\n",
+            i,
+            vim.inspect(line),
+            vim.inspect(actual)
+          )
+        )
+        assert_eq(type(actual), "table")
+        assert_eq(type(actual.filename), "string")
+        assert_eq(type(actual.lineno), "number")
+        assert_true(actual.column == nil)
+        local splits = str.split(line, ":")
+        print(
+          string.format(
+            "parse_rg-%d, line:%s, splits:%s\n",
+            i,
+            vim.inspect(line),
+            vim.inspect(splits)
+          )
+        )
+        assert_eq(actual.filename, parsers_helper.parse_find(splits[1]).filename)
+        assert_eq(actual.lineno, tonumber(splits[2]))
+        assert_eq(actual.text, splits[3])
+      end
+    end)
   end)
   describe("[parse_rg_no_filename]", function()
     it("test", function()
