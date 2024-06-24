@@ -673,34 +673,30 @@ M.parse_vim_mark = function(line, context)
   )
   local mark_value = string.sub(line, context.mark_pos, context.lineno_pos - 1)
   local mark = str.trim(mark_value)
+
   local lineno_value = string.sub(line, context.lineno_pos, context.col_pos - 1)
-  lineno_value = str.trim(lineno_value)
-  -- log.debug("|parse_vim_mark| lineno_value:%s", vim.inspect(lineno_value))
-  local lineno = tonumber(lineno_value) --[[@as integer]]
+  local trimmed_lineno_value = str.trim(lineno_value)
+  local lineno = tonumber(trimmed_lineno_value) --[[@as integer]]
+
   local col_value = string.sub(line, context.col_pos, context.file_text_pos - 1)
-  col_value = str.trim(col_value)
-  -- log.debug("|parse_vim_mark| col_value:%s", vim.inspect(col_value))
-  local col = tonumber(col_value)
+  local trimmed_col_value = str.trim(col_value)
+  local col = tonumber(trimmed_col_value)
+
   local file_text_value = string.sub(line, context.file_text_pos)
-  local file_text = str.trim(file_text_value) --[[@as string?]]
-  file_text = str.not_empty(file_text)
-      and path.normalize(
-        file_text --[[@as string]],
-        { expand = true, double_backslash = true }
-      )
-    or nil
-  local isfile = path.isfile(file_text or "")
-  local result = {
-    mark = mark,
-    lineno = lineno,
-    col = col,
-  }
-  if isfile then
-    result.filename = file_text or ""
+  local trimmed_file_text = str.trim(file_text_value) --[[@as string?]]
+  local file_text
+  if str.not_empty(trimmed_file_text) then
+    file_text = path.normalize(trimmed_file_text, { expand = true, double_backslash = true })
   else
-    result.text = file_text or ""
+    file_text = ""
   end
-  return result
+
+  local isfile = path.isfile(file_text)
+  if isfile then
+    return { mark = mark, lineno = lineno, col = col, filename = file_text }
+  else
+    return { mark = mark, lineno = lineno, col = col, text = file_text }
+  end
 end
 
 return M
