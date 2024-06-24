@@ -1923,7 +1923,7 @@ It's highly recommended to use these APIs when you're creating a new searching c
 
   > The commons.nvim library was originally part of `fzfx.lib`, since I found they're so commonly used and I almost need them for every of my Neovim plugins, I extracted them into this library.
 
-Please see [API References](https://linrongbin16.github.io/fzfx.nvim/#/ApiReferences) for more details.
+Please see [API References](https://linrongbin16.github.io/fzfx.nvim/#) for more details.
 
 ## 🪲 Known Issues
 
