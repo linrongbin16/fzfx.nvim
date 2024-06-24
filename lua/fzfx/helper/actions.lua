@@ -131,7 +131,7 @@ end
 
 --- @param lines string[]
 --- @param context fzfx.PipelineContext
---- @return (string|function)[]|nil
+--- @return string[]|nil
 M._make_set_cursor_rg_no_filename = function(lines, context)
   if lines == nil or #lines == 0 then
     return nil
@@ -225,13 +225,14 @@ M._make_setqflist_rg_no_filename = function(lines, context)
     table.insert(qfs, {
       filename = filename,
       lnum = parsed.lineno,
-      col = parsed.column,
+      col = parsed.column or 1,
       text = parsed.text,
     })
   end
   return qfs
 end
 
+-- Run `:setqflist` commands for rg/grep results with no filename.
 --- @param lines string[]
 --- @param context fzfx.PipelineContext?
 M.setqflist_rg_no_filename = function(lines, context)
