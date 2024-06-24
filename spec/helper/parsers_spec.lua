@@ -824,7 +824,7 @@ describe("helper.parsers", function()
 
   describe("[parse_vim_mark]", function()
     local CONTEXT = require("fzfx.cfg.vim_marks")._context_maker()
-    it("test", function()
+    it("real marks", function()
       local n = #CONTEXT.marks
       for i = 2, n do
         local line = CONTEXT.marks[i]
@@ -838,6 +838,77 @@ describe("helper.parsers", function()
         local expect_col = str.trim(string.sub(line, CONTEXT.col_pos, CONTEXT.file_text_pos - 1))
         assert_eq(actual.col, tonumber(expect_col))
         local expect_file_text = str.trim(string.sub(line, CONTEXT.file_text_pos)) or ""
+        assert_true(
+          actual.filename
+              == path.normalize(expect_file_text, { expand = true, double_backslash = true })
+            or actual.text == expect_file_text
+        )
+        if actual.filename then
+          assert_eq(actual.text, nil)
+        else
+          assert_eq(actual.filename, nil)
+        end
+      end
+    end)
+    it("mocked marks", function()
+      local mocked_marks = {
+        "mark line  col file/text",
+        " '    828   17 local n = #CONTEXT.marks",
+        " 0     28    0 /Users/rlin/github/rsvim/rsvim/src/bin/rsvim.rs",
+        " 1    830   14 local line = CONTEXT.marks[i]",
+        " 2    848   11 else",
+        " 3    885   11 -invalid-",
+        " 4    848   11 else",
+        " 5    885   11 -invalid-",
+        " 6    848   11 else",
+        " 7    885   11 -invalid-",
+        " 8    848   11 else",
+        " 9    885   11 -invalid-",
+        ' "    827   11 it("real marks", function()',
+        " [    854   28 local mocked_marks = {}",
+        " ]    854   29 local mocked_marks = {}",
+        " ^    854   29 local mocked_marks = {}",
+        " .    854   28 local mocked_marks = {}",
+        ' <    826   10 local CONTEXT = require("fzfx.cfg.vim_marks")._context_maker()',
+        ' >    826   10 local CONTEXT = require("fzfx.cfg.vim_marks")._context_maker()',
+      }
+
+      local function mocked_context()
+        local vim_marks_cfg = require("fzfx.cfg.vim_marks")
+
+        local ctx = {
+          bufnr = vim.api.nvim_get_current_buf(),
+          winnr = vim.api.nvim_get_current_win(),
+          tabnr = vim.api.nvim_get_current_tabpage(),
+        }
+
+        local output_lines = mocked_marks
+        local marks = vim_marks_cfg._get_marks(output_lines)
+        local header = marks[1]
+        local positions = vim_marks_cfg._parse_output_header(header)
+
+        ctx.marks = marks
+        ctx.mark_pos = positions.mark_pos
+        ctx.lineno_pos = positions.lineno_pos
+        ctx.col_pos = positions.col_pos
+        ctx.file_text_pos = positions.file_text_pos
+        return ctx
+      end
+
+      local ctx = mocked_context()
+      local n = #ctx.marks
+      for i = 2, n do
+        local line = ctx.marks[i]
+        local actual = parsers_helper.parse_vim_mark(line, ctx)
+
+        assert_true(tbl.tbl_not_empty(actual))
+        local expect_mark = str.trim(string.sub(line, 1, ctx.lineno_pos - 1))
+        assert_eq(actual.mark, expect_mark)
+        local expect_lineno = str.trim(string.sub(line, ctx.lineno_pos, ctx.col_pos - 1))
+        assert_eq(actual.lineno, tonumber(expect_lineno))
+        local expect_col = str.trim(string.sub(line, ctx.col_pos, ctx.file_text_pos - 1))
+        assert_eq(actual.col, tonumber(expect_col))
+        local expect_file_text = str.trim(string.sub(line, ctx.file_text_pos)) or ""
         assert_true(
           actual.filename
               == path.normalize(expect_file_text, { expand = true, double_backslash = true })
