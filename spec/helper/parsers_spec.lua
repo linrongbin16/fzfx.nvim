@@ -829,16 +829,7 @@ describe("helper.parsers", function()
       for i = 2, n do
         local line = CONTEXT.marks[i]
         local actual = parsers_helper.parse_vim_mark(line, CONTEXT)
-        local splits = str.split(line, " ", { trimempty = true, plain = true })
-        print(
-          string.format(
-            "parse_vim_mark [%s], line:%s, actual:%s, splits:%s\n",
-            vim.inspect(i),
-            vim.inspect(line),
-            vim.inspect(actual),
-            vim.inspect(splits)
-          )
-        )
+
         assert_true(tbl.tbl_not_empty(actual))
         local expect_mark = str.trim(string.sub(line, 1, CONTEXT.lineno_pos - 1))
         assert_eq(actual.mark, expect_mark)
