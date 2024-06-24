@@ -1453,8 +1453,12 @@ local function _make_user_command(name, command_config, variant_configs, group_c
       )
     )
 
-    local other_args = first_space_pos ~= nil and str.trim(string.sub(input_args, first_space_pos))
-      or ""
+    local other_args
+    if first_space_pos then
+      other_args = str.trim(string.sub(input_args, first_space_pos))
+    else
+      other_args = ""
+    end
     local feed_obj = fzf_helpers.get_command_feed(varcfg.feed, other_args, name) or { query = "" }
 
     local default_provider = feed_obj.default_provider or varcfg.default_provider

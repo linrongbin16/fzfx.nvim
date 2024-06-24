@@ -2,6 +2,8 @@
 
 # Welcome to fzfx.nvim's Documentation!
 
-- [A Generic Schema for Creating FZF Command](/GenericSchema.md)
-- [API References](/ApiReferences.md)
 - [Known Issues](/KnownIssues.md)
+- [A Generic Schema for Creating FZF Command](/GenericSchema.md)
+- API References
+  - [`fzfx.cfg`](/ApiReferences/fzfx_cfg.md)
+  - [`fzfx.helper`](/ApiReferences/fzfx_helper.md)

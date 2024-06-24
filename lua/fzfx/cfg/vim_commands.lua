@@ -111,7 +111,8 @@ M.variants = {
 --- @return string
 M._parse_ex_command_name = function(line)
   local stop = str.find(line, "|", 3)
-  return str.trim(line:sub(3, stop - 1))
+  local result = str.trim(line:sub(3, stop - 1))
+  return result
 end
 
 -- Get EX commands as command name => command details map.

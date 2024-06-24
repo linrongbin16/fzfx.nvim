@@ -10,13 +10,15 @@ local log = require("fzfx.lib.log")
 
 local M = {}
 
--- parse lines from fd/find, also support buffers, git files. looks like:
+-- Parse `fd`/`find`, it looks like:
+--
 -- ```
 -- 󰢱 bin/general/provider.lua
 -- 󰢱 bin/general/previewer.lua
 -- ```
 --
--- remove the prepend icon and returns **expanded** file path. looks like:
+-- It removes the (optional) prepend file type icon, returns expanded full path file name, which looks like:
+--
 -- ```
 -- /Users/linrongbin/github/linrongbin16/fzfx.nvim/bin/general/provider.lua
 -- /Users/linrongbin/github/linrongbin16/fzfx.nvim/bin/general/previewer.lua
@@ -25,59 +27,58 @@ local M = {}
 --- @param line string
 --- @return {filename:string}
 M.parse_find = function(line)
-  local filename = nil
+  local filename
+
   if str.empty(line) then
     return { filename = nil }
   end
+
   if env.icon_enabled() then
-    local first_icon_pos = str.find(line, " ")
-    log.ensure(
-      type(first_icon_pos) == "number",
-      string.format(
-        "failed to parse filename, cannot find first icon pos:%s, line:%s",
-        vim.inspect(first_icon_pos),
-        vim.inspect(line)
-      )
+    local first_space_pos = str.find(line, " ")
+    assert(
+      type(first_space_pos) == "number",
+      string.format("failed to parse fd/find:%s", vim.inspect(line))
     )
-    filename = line:sub(first_icon_pos + 1)
+    -- The real file name starts after the first space.
+    filename = line:sub(first_space_pos + 1)
   else
     filename = line
   end
+
   return {
     filename = path.normalize(filename, { double_backslash = true, expand = true }),
   }
 end
 
--- parse lines from grep. looks like:
+-- Parse `grep`, it looks like:
+--
 -- ```
--- 󰢱 bin/general/provider.lua:31:  local conf = require("fzfx.config")
--- 󰢱 bin/general/previewer.lua:57:  local str = require("fzfx.commons.str")
+-- 󰢱 bin/general/provider.lua:31:local conf = require("fzfx.config")
+-- 󰢱 bin/general/previewer.lua:57:local str = require("fzfx.commons.str")
 -- ```
 --
--- remove the prepend icon and returns **expanded** file path, line number and text.
+-- It removes the (optional) prepend file type icon, returns expanded full path file name, (optional) line number and raw text contents.
 --
 --- @param line string
 --- @return {filename:string,lineno:integer?,text:string}
 M.parse_grep = function(line)
-  local filename = nil
-  local lineno = nil
-  local text = nil
+  local filename
+  local lineno
+  local text
 
   local first_colon_pos = str.find(line, ":")
   assert(
     type(first_colon_pos) == "number",
-    string.format("failed to parse grep lines:%s", vim.inspect(line))
+    string.format("failed to parse grep:%s", vim.inspect(line))
   )
   filename = line:sub(1, first_colon_pos - 1)
 
   local second_colon_pos = str.find(line, ":", first_colon_pos + 1)
-  if num.gt(second_colon_pos, 0) then
+  if type(second_colon_pos) == "number" and second_colon_pos > 0 then
     lineno = line:sub(first_colon_pos + 1, second_colon_pos - 1)
     text = line:sub(second_colon_pos + 1)
   else
-    -- if failed to found the second ':', then
-    -- 1. first try to parse right hands as 'lineno'
-    -- 2. if failed, treat them as 'text'
+    -- If failed to found the second colon ':', then try to parse the right hands as 'lineno', if failed again, treat them as 'text'.
     local rhs = line:sub(first_colon_pos + 1)
     if tonumber(rhs) == nil then
       text = rhs
@@ -93,13 +94,14 @@ M.parse_grep = function(line)
   return { filename = filename, lineno = lineno, text = text }
 end
 
--- parse lines from grep without filename. looks like:
+-- Parse `grep` without filename (`-I`), it looks like:
+--
 -- ```
 -- 31:local conf = require("fzfx.config")
 -- 57:local str = require("fzfx.commons.str")
 -- ```
 --
--- returns line number and text.
+-- It returns line number and raw text contents.
 --
 --- @param line string
 --- @return {lineno:integer?,text:string}
@@ -108,13 +110,11 @@ M.parse_grep_no_filename = function(line)
   local text = nil
 
   local first_colon_pos = str.find(line, ":")
-  if num.gt(first_colon_pos, 0) then
+  if type(first_colon_pos) == "number" and first_colon_pos > 0 then
     lineno = line:sub(1, first_colon_pos - 1)
     text = line:sub(first_colon_pos + 1)
   else
-    -- if failed to found the first ':', then
-    -- 1. first try to parse right hands as 'lineno'
-    -- 2. if failed, treat them as 'text'
+    -- If failed to found the first colon ':', then try to parse right hands as 'lineno', if failed again, treat them as 'text'.
     local rhs = line
     if tonumber(rhs) == nil then
       text = rhs
@@ -129,44 +129,43 @@ M.parse_grep_no_filename = function(line)
   return { lineno = lineno, text = text }
 end
 
--- parse lines from rg. looks like:
+-- Parse `rg`, which looks like:
+--
 -- ```
--- 󰢱 bin/general/provider.lua:31:2:  local conf = require("fzfx.config")
--- 󰢱 bin/general/previewer.lua:57:13:  local str = require("fzfx.commons.str")
+-- 󰢱 bin/general/provider.lua:31:2:local conf = require("fzfx.config")
+-- 󰢱 bin/general/previewer.lua:57:13:local str = require("fzfx.commons.str")
 -- ```
 --
--- remove the prepend icon and returns **expanded** file path, line number, column number and text.
+-- It removes the (optional) prepend file type icon, returns expanded full path file name, line number, (optional) column number and text.
 --
 --- @param line string
 --- @return {filename:string,lineno:integer,column:integer?,text:string}
 M.parse_rg = function(line)
-  local filename = nil
-  local lineno = nil
-  local column = nil
-  local text = nil
+  local filename
+  local lineno
+  local column
+  local text
 
   local first_colon_pos = str.find(line, ":")
   assert(
     type(first_colon_pos) == "number",
-    string.format("failed to parse rg lines:%s", vim.inspect(line))
+    string.format("failed to parse rg:%s", vim.inspect(line))
   )
   filename = line:sub(1, first_colon_pos - 1)
 
   local second_colon_pos = str.find(line, ":", first_colon_pos + 1)
   assert(
     type(second_colon_pos) == "number",
-    string.format("failed to parse rg lines:%s", vim.inspect(line))
+    string.format("failed to parse rg:%s", vim.inspect(line))
   )
   lineno = line:sub(first_colon_pos + 1, second_colon_pos - 1)
 
   local third_colon_pos = str.find(line, ":", second_colon_pos + 1)
-  if num.gt(third_colon_pos, 0) then
+  if type(third_colon_pos) == "number" and third_colon_pos > 0 then
     column = line:sub(second_colon_pos + 1, third_colon_pos - 1)
     text = line:sub(third_colon_pos + 1)
   else
-    -- if failed to found the third ':', then
-    -- 1. first try to parse right hands as 'column'
-    -- 2. if failed, treat them as 'text'
+    -- If failed to found the third ':', then try to parse right hands as 'column', if failed again, treat them as 'text'.
     local rhs = line:sub(second_colon_pos + 1)
     if tonumber(rhs) == nil then
       text = rhs
@@ -183,7 +182,7 @@ M.parse_rg = function(line)
   return { filename = filename, lineno = lineno, column = column, text = text }
 end
 
--- parse lines from rg without filename. looks like:
+-- Parse `rg` with `-I` option, i.e. without filename. It looks like:
 -- ```
 -- 󰢱 31:2:local conf = require("fzfx.config")
 -- 󰢱 57:13:local str = require("fzfx.commons.str")
@@ -210,9 +209,7 @@ M.parse_rg_no_filename = function(line)
     column = line:sub(first_colon_pos + 1, second_colon_pos - 1)
     text = line:sub(second_colon_pos + 1)
   else
-    -- if failed to found the second ':', then
-    -- 1. first try to parse right hands as 'column'
-    -- 2. if failed, treat them as 'text'
+    -- If failed to found the second ':', then try to parse right hands as 'column', if failed again, treat them as 'text'.
     local rhs = line:sub(first_colon_pos + 1)
     if tonumber(rhs) == nil then
       text = rhs
@@ -228,41 +225,61 @@ M.parse_rg_no_filename = function(line)
   return { lineno = lineno, column = column, text = text }
 end
 
--- parse lines from `git status --short`. looks like:
+-- Parse `git status --short`, which looks like:
+--
 -- ```
 --  M lua/fzfx/helper/parsers.lua
 -- ?? test.txt
 -- ```
 --
--- remove the prepend symbol and returns **expanded** file path.
+-- It removes the prepend status symbol, returns expanded full file name.
 --
 --- @param line string
 --- @return {filename:string}
 M.parse_git_status = function(line)
-  line = vim.trim(line)
-  local i = 1
-  while i <= #line and not str.isspace(line:sub(i, i)) do
-    i = i + 1
+  line = str.trim(line)
+  local first_space_pos = 1
+  local n = #line
+  while first_space_pos <= n and not str.isspace(line:sub(first_space_pos, first_space_pos)) do
+    first_space_pos = first_space_pos + 1
   end
   return {
-    filename = path.normalize(line:sub(i), { double_backslash = true, expand = true }),
+    filename = path.normalize(
+      line:sub(first_space_pos),
+      { double_backslash = true, expand = true }
+    ),
   }
 end
 
--- parse lines from `git branch` and `git branch --remotes`. looks like:
+-- Parse `git branch` and `git branch --remotes`.
+-- The local branches look like:
+--
 -- ```
 -- * chore-lint
--- main
--- origin/HEAD -> origin/main
--- origin/chore-lint
+--   main
+--   refactor12
 -- ```
 --
--- remove the prefix and extra symbols, returns branch name.
+-- The remote branches look like:
+--
+-- ```
+--   origin/HEAD -> origin/main
+--   origin/main
+--   origin/refactor12
+--   origin/release-please--branches--main--components--fzfx.nvim
+-- ```
+--
+-- Note: the component before '->' symbol is the remote branch name, the component afterr '->' symbol is the local branch name.
+--
+-- It removes the prepend symbols, returns local branch name and (optional) remote branch name.
 --
 --- @param line string
 --- @param context fzfx.GitBranchesPipelineContext
 --- @return {local_branch:string,remote_branch:string}
 M.parse_git_branch = function(line, context)
+  -- Removes prefix `t` from string `s`.
+  -- Returns `true` and the trimmed value if success.
+  -- Returns `false` and the original value if failed.
   --- @param s string
   --- @param t string
   --- @return boolean, string
@@ -274,111 +291,129 @@ M.parse_git_branch = function(line, context)
     end
   end
 
-  -- remove prefix "* "
+  -- Remove "* " (the current branch symbol).
+  -- Returns trimmed value (if success) or original value (if failed).
   --
-  -- The `git branch` looks like:
-  -- ```
-  -- * my-plugin-dev
-  -- ```
-  --
-  --- @param l string
+  --- @param s string
   --- @return string
-  local function _remove_star(l)
-    local success, l1 = _remove_prefix(l, "* ")
-    return success and l1 or l
+  local function _remove_star(s)
+    local ok, result = _remove_prefix(s, "* ")
+    if ok then
+      return result
+    else
+      return s
+    end
   end
 
-  -- remove prefix "remotes/origin/"
+  -- Removes remote prefix "remotes/origin/". Note: usually the remotes is 'origin' or 'upstream', but it's just a convention.
   --
-  -- The `git branch -a` looks like:
+  -- The `git branch --remotes` looks like:
+  --
   -- ```
-  --   main
-  -- * my-plugin-dev
   --   remotes/origin/HEAD -> origin/main
   --   remotes/origin/main
   --   remotes/origin/my-plugin-dev
   -- ```
   --
-  --- @param l string
+  --- @param s string
   --- @return string
-  local function _remove_remotes_origin_slash(l)
+  local function _remove_remotes_origin_prefix(s)
     if tbl.list_not_empty(context.remotes) then
       for _, r in ipairs(context.remotes) do
-        local success, l1 = _remove_prefix(l, string.format("remotes/%s/", r))
-        if success then
-          return l1
+        local ok, result = _remove_prefix(s, string.format("remotes/%s/", r))
+        if ok then
+          return result
         end
       end
     end
-    return l
+    return s
   end
 
-  -- remove prefix "origin/"
+  -- Removes prefix "origin/". Note: usually the remote is 'origin' or 'usptream', but it's just a convention.
   --
   -- The `git branch -r` looks like:
+  --
   -- ```
   -- origin/HEAD -> origin/main
   -- origin/main
   -- origin/my-plugin-dev
   -- ```
   --
-  --- @param l string
+  --- @param s string
   --- @return string
-  local function _remove_origin_slash(l)
+  local function _remove_origin_prefix(s)
     if tbl.list_not_empty(context.remotes) then
       for _, r in ipairs(context.remotes) do
-        local success, l1 = _remove_prefix(l, string.format("%s/", r))
-        if success then
-          return l1
+        local ok, result = _remove_prefix(s, string.format("%s/", r))
+        if ok then
+          return result
         end
       end
     end
-    return l
+    return s
   end
 
-  -- remove prefix "->", looks like:
+  -- Removes remotes prefix "remotes/".
   --
-  -- ```
-  -- origin/HEAD -> origin/main
-  -- ```
-  --
-  --- @param l string
+  --- @param s string
   --- @return string
-  local function _remove_right_arrow(l)
-    local arrow_pos = str.find(l, "->")
-    if num.gt(arrow_pos, 0) then
-      return vim.trim(l:sub(arrow_pos + 3))
+  local function _remove_remotes_prefix(s)
+    for _, r in ipairs(context.remotes) do
+      local ok, result = _remove_prefix(s, "remotes/")
+      if ok then
+        return result
+      end
     end
-    return l
+    return s
   end
 
-  local local_branch = vim.trim(line)
+  -- Remove prefix before "->" (include "->" itself).
+  --
+  --- @param s string
+  --- @return string
+  local function _remove_arrow(s)
+    local arrow_pos = str.find(s, "->")
+    if num.gt(arrow_pos, 0) then
+      local truncated = s:sub(arrow_pos + 3)
+      local result = str.trim(truncated)
+      return result
+    end
+    return s
+  end
+
+  local local_branch = str.trim(line)
   local remote_branch = local_branch
 
-  -- remove prefix "* "
+  -- Remove "* "
   local_branch = _remove_star(local_branch)
   remote_branch = local_branch
 
   if str.find(local_branch, "->") ~= nil then
-    -- remove right arrow ("->") prefix
-    local_branch = _remove_right_arrow(local_branch)
+    -- Remove right arrow ("->") prefix
+    local_branch = _remove_arrow(local_branch)
     remote_branch = local_branch
   end
 
-  -- remove prefix "remotes/origin/"
-  local_branch = _remove_remotes_origin_slash(local_branch)
+  -- Remove prefix "remotes/origin/"
+  local_branch = _remove_remotes_origin_prefix(local_branch)
 
-  -- remove prefix "origin/"
-  local_branch = _remove_origin_slash(local_branch)
+  -- Remove prefix "origin/"
+  local_branch = _remove_origin_prefix(local_branch)
+
+  -- Remove prefix "remotes/"
+  remote_branch = _remove_remotes_prefix(remote_branch)
 
   return { local_branch = local_branch, remote_branch = remote_branch }
 end
 
--- parse lines from `git log --pretty=oneline`. looks like:
+-- Parse `git log --pretty=oneline`, which looks like:
+--
 -- ```
 -- c2e32c 2023-11-30 linrongbin16 (HEAD -> chore-lint)
 -- 5fe6ad 2023-11-29 linrongbin16 chore
 -- ```
+--
+-- It removes suffix git logs, returns only the git commit ID at the beginning.
 --
 --- @param line string
 --- @return {commit:string}
@@ -386,12 +421,14 @@ M.parse_git_commit = function(line)
   local first_space_pos = str.find(line, " ")
   assert(
     num.gt(first_space_pos, 0),
-    string.format("failed to parse git commit line:%s", vim.inspect(line))
+    string.format("failed to parse git commit:%s", vim.inspect(line))
   )
-  return { commit = vim.trim(line:sub(1, first_space_pos - 1)) }
+  local truncated = line:sub(1, first_space_pos - 1)
+  local trimmed = str.trim(truncated)
+  return { commit = trimmed }
 end
 
--- parse lines from ls/lsd/eza/exa.
+-- Parse "ls"/"lsd"/"eza"/"exa" with "-lh"/"-lha" option.
 --
 -- The `ls -lh` looks like (file name starts from the 8th space):
 --
@@ -453,12 +490,12 @@ end
 -- drwxr-xr-x  rlin staff 992 B  Wed Nov  1 11:16:13 2023 test
 -- ```
 --
--- remove the prepend extra info and returns **expanded** file path.
+-- It removes the extra prefix info, returns only the expanded full file path.
 --
---- @package
 --- @param start_pos integer
+--- @param name string
 --- @return fun(line:string,context:fzfx.FileExplorerPipelineContext):{filename:string}
-M._make_parse_ls = function(start_pos)
+M._make_parse_ls = function(start_pos, name)
   --- @param line string
   --- @param context fzfx.FileExplorerPipelineContext
   --- @return {filename:string}
@@ -466,23 +503,22 @@ M._make_parse_ls = function(start_pos)
     local cwd = fileio.readfile(context.cwd, { trim = true })
     assert(
       str.not_empty(cwd),
-      string.format("failed to parse file explorer context:%s", vim.inspect(cwd))
+      string.format("failed to parse file explorer context, cwd:%s", vim.inspect(cwd))
     )
     local pos = 1
     for i = 1, start_pos do
       pos = str.find(line, " ", pos) --[[@as integer]]
-      assert(
-        num.gt(pos, 0),
-        string.format("failed to parse ls/eza/lsd lines:%s", vim.inspect(line))
-      )
+      assert(num.gt(pos, 0), string.format("failed to parse %s:%s", name, vim.inspect(line)))
       while pos + 1 <= #line and string.byte(line, pos + 1) == string.byte(" ") do
         pos = pos + 1
       end
       pos = pos + 1
     end
 
-    -- remove extra single/double quotes
-    local result = str.trim(vim.trim(line:sub(pos)), "['\"]+")
+    -- Remove extra single/double quotes
+    local truncated = line:sub(pos)
+    local trimmed1 = vim.trim(truncated)
+    local result = str.trim(trimmed1, "['\"]+")
     return {
       filename = path.normalize(path.join(cwd, result), { double_backslash = true, expand = true }),
     }
@@ -490,11 +526,16 @@ M._make_parse_ls = function(start_pos)
   return impl
 end
 
-M.parse_ls = M._make_parse_ls(8)
-M.parse_eza = consts.IS_WINDOWS and M._make_parse_ls(5) or M._make_parse_ls(6)
-M.parse_lsd = M._make_parse_ls(10)
+M.parse_ls = M._make_parse_ls(8, consts.LS)
+if consts.IS_WINDOWS then
+  M.parse_eza = M._make_parse_ls(5, consts.EZA)
+else
+  M.parse_eza = M._make_parse_ls(6, consts.EZA)
+end
+M.parse_lsd = M._make_parse_ls(10, consts.LSD)
 
--- parse vim commands. looks like:
+-- Parse vim commands, it looks like:
+--
 -- ```
 -- Name              Bang|Bar|Nargs|Range|Complete         Desc/Location
 -- #                 N   |Y  |N/A  |N/A  |N/A              /opt/homebrew/Cellar/neovim/0.9.4/share/nvim/runtime/doc/index.txt:1121
@@ -503,7 +544,7 @@ M.parse_lsd = M._make_parse_ls(10)
 -- bdelete           N   |Y  |N/A  |N/A  |N/A              "delete buffer"
 -- ```
 --
--- removes extra command attributes and returns the command name with **expanded** file path and line number, or with command description.
+-- It removes extra suffix info, returns command name with either expanded full file path and line number, or the command definition.
 --
 --- @param line string
 --- @param context fzfx.VimCommandsPipelineContext
@@ -512,24 +553,24 @@ M.parse_vim_command = function(line, context)
   local first_space_pos = str.find(line, " ")
   assert(
     num.gt(first_space_pos, 0),
-    string.format("failed to parse vim command lines:%s", vim.inspect(line))
+    string.format("failed to parse vim command:%s", vim.inspect(line))
   )
-  local command = vim.trim(line:sub(1, first_space_pos - 1))
+  local command = str.trim(line:sub(1, first_space_pos - 1))
   local desc_or_loc =
-    vim.trim(line:sub(context.name_column_width + 1 + context.opts_column_width + 1 + 1))
+    str.trim(line:sub(context.name_column_width + 1 + context.opts_column_width + 1 + 1))
   -- log.debug(
   --     "|fzfx.helper.parsers - parse_vim_commands| desc_or_loc:%s",
   --     vim.inspect(desc_or_loc)
   -- )
   if
-    string.len(desc_or_loc) > 0
+    str.not_empty(desc_or_loc)
     and not str.startswith(desc_or_loc, '"')
     and not str.endswith(desc_or_loc, '"')
   then
-    local split_pos = str.rfind(desc_or_loc, ":")
+    local last_colon_pos = str.rfind(desc_or_loc, ":")
     local splits = {
-      desc_or_loc:sub(1, split_pos - 1),
-      desc_or_loc:sub(split_pos + 1),
+      desc_or_loc:sub(1, last_colon_pos - 1),
+      desc_or_loc:sub(last_colon_pos + 1),
     }
     -- log.debug(
     --     "|fzfx.helper.parsers - parse_vim_commands| splits:%s",
@@ -544,14 +585,13 @@ M.parse_vim_command = function(line, context)
     -- )
     return { command = command, filename = filename, lineno = lineno }
   else
-    return {
-      command = command,
-      definition = str.trim(desc_or_loc, "['\"]+"),
-    }
+    local desc = str.trim(desc_or_loc, "['\"]+")
+    return { command = command, definition = desc }
   end
 end
 
--- parse vim keymap, looks like:
+-- Parse vim keymap, which looks like:
+--
 -- ```
 -- Lhs                                          Mode|Noremap|Nowait|Silent Rhs/Location
 -- <C-F>                                            |N      |N     |N      ~/.config/nvim/lazy/nvim-cmp/lua/cmp/utils/keymap.lua:127
@@ -562,7 +602,7 @@ end
 -- <2-LeftMouse>                                n   |N      |N     |Y      "<Plug>(matchup-double-click)"
 -- ```
 --
--- removes extra mapping attributes and returns the key left hands with **expanded** file path and line number, or with mapping description.
+-- It removes extra mapping attributes, returns the left hands (Lhs) and either expanded full file name with line number, or the mapping definition.
 --
 --- @param line string
 --- @param context fzfx.VimKeyMapsPipelineContext
@@ -571,49 +611,38 @@ M.parse_vim_keymap = function(line, context)
   local first_space_pos = str.find(line, " ")
   assert(
     num.gt(first_space_pos, 0),
-    string.format("failed to parse vim keymap lines:%s", vim.inspect(line))
+    string.format("failed to parse vim keymap:%s", vim.inspect(line))
   )
-  local lhs = vim.trim(line:sub(1, first_space_pos - 1))
+  local truncated1 = line:sub(1, first_space_pos - 1)
+  local lhs = str.trim(truncated1)
   local first_bar_pos = str.find(line, "|", first_space_pos + 1)
-  local mode = vim.trim(line:sub(first_space_pos + 1, first_bar_pos - 1))
-  local rhs_or_loc =
-    vim.trim(line:sub(context.key_column_width + 1 + context.opts_column_width + 1 + 1))
+  local truncated2 = line:sub(first_space_pos + 1, first_bar_pos - 1)
+  local mode = str.trim(truncated2)
+  local truncated3 = line:sub(context.key_column_width + 1 + context.opts_column_width + 1 + 1)
+  local loc_or_desc = str.trim(truncated3)
   -- log.debug(
   --     "|fzfx.helper.parsers - parse_vim_commands| desc_or_loc:%s",
   --     vim.inspect(desc_or_loc)
   -- )
   if
-    string.len(rhs_or_loc) > 0
-    and not str.startswith(rhs_or_loc, '"')
-    and not str.endswith(rhs_or_loc, '"')
+    str.not_empty(loc_or_desc)
+    and not str.startswith(loc_or_desc, '"')
+    and not str.endswith(loc_or_desc, '"')
   then
-    local split_pos = str.rfind(rhs_or_loc, ":")
-    local splits = {
-      rhs_or_loc:sub(1, split_pos - 1),
-      rhs_or_loc:sub(split_pos + 1),
-    }
-    -- log.debug(
-    --     "|fzfx.helper.parsers - parse_vim_commands| splits:%s",
-    --     vim.inspect(splits)
-    -- )
-    local filename = path.normalize(splits[1], { double_backslash = true, expand = true })
-    local lineno = tonumber(splits[2])
-    -- log.debug(
-    --     "|fzfx.helper.parsers - parse_vim_commands| filename:%s, lineno:%s",
-    --     vim.inspect(filename),
-    --     vim.inspect(lineno)
-    -- )
+    local last_colon_pos = str.rfind(loc_or_desc, ":")
+    local truncated_filename = loc_or_desc:sub(1, last_colon_pos - 1)
+    local truncated_lineno = loc_or_desc:sub(last_colon_pos + 1)
+    local filename = path.normalize(truncated_filename, { double_backslash = true, expand = true })
+    local lineno = tonumber(truncated_lineno)
     return { lhs = lhs, mode = mode, filename = filename, lineno = lineno }
   else
-    return {
-      lhs = lhs,
-      mode = mode,
-      definition = str.trim(rhs_or_loc, "['\"]+"),
-    }
+    local desc = str.trim(loc_or_desc, "['\"]+")
+    return { lhs = lhs, mode = mode, definition = desc }
   end
 end
 
--- parse vim marks, looks like:
+-- Parse vim marks, which looks like:
+--
 -- ```
 -- mark line  col file/text
 --  '    543    7 return M
@@ -634,7 +663,7 @@ end
 --  .    134   13 -- the ':marks' output looks like:
 -- ```
 --
--- returns mark/line/col with **expanded** file path, or with text.
+-- It returns mark/line/col and either expanded full file name, or marked text.
 --
 --- @param line string
 --- @param context fzfx.VimMarksPipelineContext
@@ -645,34 +674,38 @@ M.parse_vim_mark = function(line, context)
   )
   local mark_value = string.sub(line, context.mark_pos, context.lineno_pos - 1)
   local mark = str.trim(mark_value)
+
   local lineno_value = string.sub(line, context.lineno_pos, context.col_pos - 1)
-  lineno_value = str.trim(lineno_value)
-  -- log.debug("|parse_vim_mark| lineno_value:%s", vim.inspect(lineno_value))
-  local lineno = tonumber(lineno_value) --[[@as integer]]
+  local trimmed_lineno_value = str.trim(lineno_value)
+  local lineno = tonumber(trimmed_lineno_value) --[[@as integer]]
+
   local col_value = string.sub(line, context.col_pos, context.file_text_pos - 1)
-  col_value = str.trim(col_value)
-  -- log.debug("|parse_vim_mark| col_value:%s", vim.inspect(col_value))
-  local col = tonumber(col_value)
+  local trimmed_col_value = str.trim(col_value)
+  local col = tonumber(trimmed_col_value)
+
   local file_text_value = string.sub(line, context.file_text_pos)
-  local file_text = str.trim(file_text_value) --[[@as string?]]
-  file_text = str.not_empty(file_text)
-      and path.normalize(
-        file_text --[[@as string]],
-        { expand = true, double_backslash = true }
-      )
-    or nil
-  local isfile = path.isfile(file_text or "")
-  local result = {
-    mark = mark,
-    lineno = lineno,
-    col = col,
-  }
-  if isfile then
-    result.filename = file_text or ""
-  else
-    result.text = file_text or ""
+  local trimmed_file_text = str.trim(file_text_value) --[[@as string?]]
+  local file_text
+  if str.not_empty(trimmed_file_text) then
+    local normalized_filename =
+      path.normalize(trimmed_file_text --[[@as string]], { expand = true, double_backslash = true })
+    if path.isfile(normalized_filename) then
+      file_text = normalized_filename
+    elseif type(context.bufnr) == "number" and vim.api.nvim_buf_is_valid(context.bufnr) then
+      local bufname = vim.api.nvim_buf_get_name(context.bufnr)
+      if path.isfile(bufname) then
+        file_text = bufname
+      end
+    end
   end
-  return result
+  file_text = file_text or ""
+
+  local isfile = path.isfile(file_text)
+  if isfile then
+    return { mark = mark, lineno = lineno, col = col, filename = file_text }
+  else
+    return { mark = mark, lineno = lineno, col = col, text = file_text }
+  end
 end
 
 return M
