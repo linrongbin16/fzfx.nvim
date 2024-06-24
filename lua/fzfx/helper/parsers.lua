@@ -590,7 +590,8 @@ M.parse_vim_command = function(line, context)
   end
 end
 
--- parse vim keymap, looks like:
+-- Parse vim keymap, which looks like:
+--
 -- ```
 -- Lhs                                          Mode|Noremap|Nowait|Silent Rhs/Location
 -- <C-F>                                            |N      |N     |N      ~/.config/nvim/lazy/nvim-cmp/lua/cmp/utils/keymap.lua:127
@@ -601,7 +602,7 @@ end
 -- <2-LeftMouse>                                n   |N      |N     |Y      "<Plug>(matchup-double-click)"
 -- ```
 --
--- removes extra mapping attributes and returns the key left hands with **expanded** file path and line number, or with mapping description.
+-- It removes extra mapping attributes, returns the left hands (Lhs) and either expanded full file name with line number, or the mapping definition.
 --
 --- @param line string
 --- @param context fzfx.VimKeyMapsPipelineContext
@@ -610,45 +611,33 @@ M.parse_vim_keymap = function(line, context)
   local first_space_pos = str.find(line, " ")
   assert(
     num.gt(first_space_pos, 0),
-    string.format("failed to parse vim keymap lines:%s", vim.inspect(line))
+    string.format("failed to parse vim keymap:%s", vim.inspect(line))
   )
-  local lhs = vim.trim(line:sub(1, first_space_pos - 1))
+  local truncated1 = line:sub(1, first_space_pos - 1)
+  local lhs = str.trim(truncated1)
   local first_bar_pos = str.find(line, "|", first_space_pos + 1)
-  local mode = vim.trim(line:sub(first_space_pos + 1, first_bar_pos - 1))
-  local rhs_or_loc =
-    vim.trim(line:sub(context.key_column_width + 1 + context.opts_column_width + 1 + 1))
+  local truncated2 = line:sub(first_space_pos + 1, first_bar_pos - 1)
+  local mode = str.trim(truncated2)
+  local truncated3 = line:sub(context.key_column_width + 1 + context.opts_column_width + 1 + 1)
+  local loc_or_desc = str.trim(truncated3)
   -- log.debug(
   --     "|fzfx.helper.parsers - parse_vim_commands| desc_or_loc:%s",
   --     vim.inspect(desc_or_loc)
   -- )
   if
-    string.len(rhs_or_loc) > 0
-    and not str.startswith(rhs_or_loc, '"')
-    and not str.endswith(rhs_or_loc, '"')
+    str.not_empty(loc_or_desc)
+    and not str.startswith(loc_or_desc, '"')
+    and not str.endswith(loc_or_desc, '"')
   then
-    local split_pos = str.rfind(rhs_or_loc, ":")
-    local splits = {
-      rhs_or_loc:sub(1, split_pos - 1),
-      rhs_or_loc:sub(split_pos + 1),
-    }
-    -- log.debug(
-    --     "|fzfx.helper.parsers - parse_vim_commands| splits:%s",
-    --     vim.inspect(splits)
-    -- )
-    local filename = path.normalize(splits[1], { double_backslash = true, expand = true })
-    local lineno = tonumber(splits[2])
-    -- log.debug(
-    --     "|fzfx.helper.parsers - parse_vim_commands| filename:%s, lineno:%s",
-    --     vim.inspect(filename),
-    --     vim.inspect(lineno)
-    -- )
+    local last_colon_pos = str.rfind(loc_or_desc, ":")
+    local truncated_filename = loc_or_desc:sub(1, last_colon_pos - 1)
+    local truncated_lineno = loc_or_desc:sub(last_colon_pos + 1)
+    local filename = path.normalize(truncated_filename, { double_backslash = true, expand = true })
+    local lineno = tonumber(truncated_lineno)
     return { lhs = lhs, mode = mode, filename = filename, lineno = lineno }
   else
-    return {
-      lhs = lhs,
-      mode = mode,
-      definition = str.trim(rhs_or_loc, "['\"]+"),
-    }
+    local desc = str.trim(loc_or_desc, "['\"]+")
+    return { lhs = lhs, mode = mode, definition = desc }
   end
 end
 
