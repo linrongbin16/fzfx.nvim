@@ -663,7 +663,87 @@ describe("helper.parsers", function()
     local CONTEXT = {
       remotes = { "origin" },
     }
-    it("test", function()
+    it("all", function()
+      local lines = {
+        "  main",
+        "  refactor12",
+        "* chore-lint",
+        "  remotes/origin/HEAD -> origin/main",
+        "  remotes/origin/chore-lint",
+        "  remotes/origin/main",
+        "  remotes/origin/release-please--branches--main--components--fzfx.nvim",
+      }
+      local expect_locals = {
+        "main",
+        "refactor12",
+        "chore-lint",
+        "main",
+        "chore-lint",
+        "main",
+        "release-please--branches--main--components--fzfx.nvim",
+      }
+      local expect_remotes = {
+        "main",
+        "refactor12",
+        "chore-lint",
+        "origin/main",
+        "origin/chore-lint",
+        "origin/main",
+        "origin/release-please--branches--main--components--fzfx.nvim",
+      }
+      for i, line in ipairs(lines) do
+        local actual = parsers_helper.parse_git_branch(line, CONTEXT)
+        local expect_r = expect_remotes[i]
+        local expect_l = expect_locals[i]
+        print(
+          string.format(
+            "parse_git_branch-%d, actual:%s, expect_local:%s, expect_remote:%s\n",
+            vim.inspect(i),
+            vim.inspect(actual),
+            vim.inspect(expect_l),
+            vim.inspect(expect_r)
+          )
+        )
+        assert_eq(type(actual), "table")
+        assert_eq(expect_l, actual.local_branch)
+        assert_eq(expect_r, actual.remote_branch)
+      end
+    end)
+    it("local", function()
+      local lines = {
+        "  main",
+        "  refactor12",
+        "* chore-lint",
+      }
+      local expect_locals = {
+        "main",
+        "refactor12",
+        "chore-lint",
+      }
+      local expect_remotes = {
+        "main",
+        "refactor12",
+        "chore-lint",
+      }
+      for i, line in ipairs(lines) do
+        local actual = parsers_helper.parse_git_branch(line, CONTEXT)
+        local expect_r = expect_remotes[i]
+        local expect_l = expect_locals[i]
+        print(
+          string.format(
+            "parse_git_branch-%d, actual:%s, expect local:%s, expect remote:%s\n",
+            vim.inspect(i),
+            vim.inspect(actual),
+            vim.inspect(expect_l),
+            vim.inspect(expect_r)
+          )
+        )
+        assert_eq(type(actual), "table")
+        assert_eq(expect_l, actual.local_branch)
+        assert_eq(expect_r, actual.remote_branch)
+      end
+    end)
+    it("local", function()
       local lines = {
         "* chore-lint",
         "  main",

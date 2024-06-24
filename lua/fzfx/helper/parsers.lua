@@ -251,20 +251,35 @@ M.parse_git_status = function(line)
   }
 end
 
--- parse lines from `git branch` and `git branch --remotes`. looks like:
+-- Parse `git branch` and `git branch --remotes`.
+-- The local branches look like:
+--
 -- ```
 -- * chore-lint
--- main
--- origin/HEAD -> origin/main
--- origin/chore-lint
+--   main
+--   refactor12
 -- ```
 --
--- remove the prefix and extra symbols, returns branch name.
+-- The remote branches look like:
+--
+-- ```
+--   origin/HEAD -> origin/main
+--   origin/main
+--   origin/refactor12
+--   origin/release-please--branches--main--components--fzfx.nvim
+-- ```
+--
+-- Note: the component before '->' symbol is the remote branch name, the component afterr '->' symbol is the local branch name.
+--
+-- It removes the prepend symbols, returns local branch name and (optional) remote branch name.
 --
 --- @param line string
 --- @param context fzfx.GitBranchesPipelineContext
 --- @return {local_branch:string,remote_branch:string}
 M.parse_git_branch = function(line, context)
+  -- Removes prefix `t` from string `s`.
+  -- Returns `true` and the trimmed value if success.
+  -- Returns `false` and the original value if failed.
   --- @param s string
   --- @param t string
   --- @return boolean, string
@@ -276,102 +291,117 @@ M.parse_git_branch = function(line, context)
     end
   end
 
-  -- remove prefix "* "
+  -- Remove "* " (the current branch symbol).
+  -- Returns trimmed value (if success) or original value (if failed).
   --
-  -- The `git branch` looks like:
-  -- ```
-  -- * my-plugin-dev
-  -- ```
-  --
-  --- @param l string
+  --- @param s string
   --- @return string
-  local function _remove_star(l)
-    local success, l1 = _remove_prefix(l, "* ")
-    return success and l1 or l
+  local function _remove_star(s)
+    local ok, result = _remove_prefix(s, "* ")
+    if ok then
+      return result
+    else
+      return s
+    end
   end
 
-  -- remove prefix "remotes/origin/"
+  -- Removes remote prefix "remotes/origin/". Note: usually the remotes is 'origin' or 'upstream', but it's just a convention.
   --
-  -- The `git branch -a` looks like:
+  -- The `git branch --remotes` looks like:
+  --
   -- ```
-  --   main
-  -- * my-plugin-dev
   --   remotes/origin/HEAD -> origin/main
   --   remotes/origin/main
   --   remotes/origin/my-plugin-dev
   -- ```
   --
-  --- @param l string
+  --- @param s string
   --- @return string
-  local function _remove_remotes_origin_slash(l)
+  local function _remove_remotes_origin_prefix(s)
     if tbl.list_not_empty(context.remotes) then
       for _, r in ipairs(context.remotes) do
-        local success, l1 = _remove_prefix(l, string.format("remotes/%s/", r))
-        if success then
-          return l1
+        local ok, result = _remove_prefix(s, string.format("remotes/%s/", r))
+        if ok then
+          return result
         end
       end
     end
-    return l
+    return s
   end
 
-  -- remove prefix "origin/"
+  -- Removes prefix "origin/". Note: usually the remote is 'origin' or 'usptream', but it's just a convention.
   --
   -- The `git branch -r` looks like:
+  --
   -- ```
   -- origin/HEAD -> origin/main
   -- origin/main
   -- origin/my-plugin-dev
   -- ```
   --
-  --- @param l string
+  --- @param s string
   --- @return string
-  local function _remove_origin_slash(l)
+  local function _remove_origin_prefix(s)
     if tbl.list_not_empty(context.remotes) then
       for _, r in ipairs(context.remotes) do
-        local success, l1 = _remove_prefix(l, string.format("%s/", r))
-        if success then
-          return l1
+        local ok, result = _remove_prefix(s, string.format("%s/", r))
+        if ok then
+          return result
         end
       end
     end
-    return l
+    return s
   end
 
-  -- remove prefix "->", looks like:
+  -- Removes remotes prefix "remotes/".
   --
-  -- ```
-  -- origin/HEAD -> origin/main
-  -- ```
-  --
-  --- @param l string
+  --- @param s string
   --- @return string
-  local function _remove_right_arrow(l)
-    local arrow_pos = str.find(l, "->")
-    if num.gt(arrow_pos, 0) then
-      return vim.trim(l:sub(arrow_pos + 3))
+  local function _remove_remotes_prefix(s)
+    for _, r in ipairs(context.remotes) do
+      local ok, result = _remove_prefix(s, "remotes/")
+      if ok then
+        return result
+      end
     end
-    return l
+    return s
   end
 
-  local local_branch = vim.trim(line)
+  -- Remove prefix before "->" (include "->" itself).
+  --
+  --- @param s string
+  --- @return string
+  local function _remove_arrow(s)
+    local arrow_pos = str.find(s, "->")
+    if num.gt(arrow_pos, 0) then
+      local truncated = s:sub(arrow_pos + 3)
+      local result = str.trim(truncated)
+      return result
+    end
+    return s
+  end
+
+  local local_branch = str.trim(line)
   local remote_branch = local_branch
 
-  -- remove prefix "* "
+  -- Remove "* "
   local_branch = _remove_star(local_branch)
   remote_branch = local_branch
 
   if str.find(local_branch, "->") ~= nil then
-    -- remove right arrow ("->") prefix
-    local_branch = _remove_right_arrow(local_branch)
+    -- Remove right arrow ("->") prefix
+    local_branch = _remove_arrow(local_branch)
     remote_branch = local_branch
   end
 
-  -- remove prefix "remotes/origin/"
-  local_branch = _remove_remotes_origin_slash(local_branch)
+  -- Remove prefix "remotes/origin/"
+  local_branch = _remove_remotes_origin_prefix(local_branch)
 
-  -- remove prefix "origin/"
-  local_branch = _remove_origin_slash(local_branch)
+  -- Remove prefix "origin/"
+  local_branch = _remove_origin_prefix(local_branch)
+
+  -- Remove prefix "remotes/"
+  remote_branch = _remove_remotes_prefix(remote_branch)
 
   return { local_branch = local_branch, remote_branch = remote_branch }
 end
