@@ -406,11 +406,14 @@ M.parse_git_branch = function(line, context)
   return { local_branch = local_branch, remote_branch = remote_branch }
 end
 
--- parse lines from `git log --pretty=oneline`. looks like:
+-- Parse `git log --pretty=oneline`, which looks like:
+--
 -- ```
 -- c2e32c 2023-11-30 linrongbin16 (HEAD -> chore-lint)
 -- 5fe6ad 2023-11-29 linrongbin16 chore
 -- ```
+--
+-- It removes suffix git logs, returns only the git commit ID at the beginning.
 --
 --- @param line string
 --- @return {commit:string}
@@ -418,9 +421,11 @@ M.parse_git_commit = function(line)
   local first_space_pos = str.find(line, " ")
   assert(
     num.gt(first_space_pos, 0),
-    string.format("failed to parse git commit line:%s", vim.inspect(line))
+    string.format("failed to parse git commit:%s", vim.inspect(line))
   )
-  return { commit = vim.trim(line:sub(1, first_space_pos - 1)) }
+  local truncated = line:sub(1, first_space_pos - 1)
+  local trimmed = str.trim(truncated)
+  return { commit = trimmed }
 end
 
 -- parse lines from ls/lsd/eza/exa.
