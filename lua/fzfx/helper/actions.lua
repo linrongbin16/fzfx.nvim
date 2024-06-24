@@ -13,7 +13,13 @@ local LogLevels = require("fzfx.lib.log").LogLevels
 
 local M = {}
 
+-- No-op {
+
 M.nop = function() end
+
+-- No-op }
+
+-- fd/find {
 
 --- @package
 --- @param lines string[]
@@ -34,10 +40,8 @@ end
 M.edit_find = function(lines, context)
   local edits = M._make_edit_find(lines)
   prompts.confirm_discard_modified(context.bufnr, function()
-    for i, edit in ipairs(edits) do
-      -- log.debug(string.format("|edit_find| [%d]:[%s]", i, edit))
-      local ok, result = pcall(vim.cmd --[[@as function]], edit)
-      assert(ok, vim.inspect(result))
+    for _, e in ipairs(edits) do
+      vim.cmd(e)
     end
   end)
 end
@@ -56,50 +60,59 @@ end
 --- @param lines string[]
 M.setqflist_find = function(lines)
   local qfs = M._make_setqflist_find(lines --[[@as table]])
-  local ok, result = pcall(vim.cmd --[[@as function]], ":copen")
-  assert(ok, vim.inspect(result))
-  ok, result = pcall(vim.fn.setqflist, {}, " ", {
+  vim.cmd(":copen")
+  vim.fn.setqflist({}, " ", {
     nr = "$",
     items = qfs,
   })
-  assert(ok, vim.inspect(result))
 end
 
---- @package
+-- fd/find }
+
+-- rg {
+
+-- Make `:edit!` and `:call setpos` commands for rg results.
 --- @param lines string[]
+--- @param context fzfx.PipelineContext
 --- @return string[]
-M._make_edit_rg = function(lines)
+M._make_edit_rg = function(lines, context)
   local results = {}
+  local last_parsed
   for i, line in ipairs(lines) do
     local parsed = parsers.parse_rg(line)
+    last_parsed = parsed
     local edit = string.format("edit! %s", parsed.filename)
     table.insert(results, edit)
-    if i == #lines and parsed.lineno ~= nil then
-      local column = parsed.column or 1
-      local setpos = string.format("call setpos('.', [0, %d, %d])", parsed.lineno, column)
-      table.insert(results, setpos)
-      local center_cursor = string.format('execute "normal! zz"')
-      table.insert(results, center_cursor)
-    end
   end
+
+  if last_parsed and last_parsed.lineno then
+    table.insert(
+      results,
+      string.format(
+        "call setpos('.', [%d, %d, %d])",
+        context.bufnr,
+        last_parsed.lineno,
+        last_parsed.column or 1
+      )
+    )
+    table.insert(results, 'execute "normal! zz"')
+  end
+
   return results
 end
 
--- Run 'edit' command on rg results.
+-- Run `:edit!` and `:call setpos` commands for rg results.
 --- @param lines string[]
 --- @param context fzfx.PipelineContext
 M.edit_rg = function(lines, context)
-  local edits = M._make_edit_rg(lines)
+  local edits = M._make_edit_rg(lines, context)
   prompts.confirm_discard_modified(context.bufnr, function()
-    for i, edit in ipairs(edits) do
-      -- log.debug("|fzfx.helper.actions - edit_rg| [%d]:[%s]", i, edit)
-      local ok, result = pcall(vim.cmd --[[@as function]], edit)
-      assert(ok, vim.inspect(result))
+    for i, e in ipairs(edits) do
+      vim.cmd(e)
     end
   end)
 end
 
---- @package
 --- @param lines string[]
 --- @param context fzfx.PipelineContext
 --- @return (string|function)[]|nil
@@ -218,10 +231,15 @@ M.setqflist_rg_no_filename = function(lines, context)
   assert(ok, vim.inspect(result))
 end
 
+-- rg }
+
+-- grep {
+
 --- @package
 --- @param lines string[]
+--- @param context fzfx.PipelineContext
 --- @return string[]
-M._make_edit_grep = function(lines)
+M._make_edit_grep = function(lines, context)
   local results = {}
   for i, line in ipairs(lines) do
     local parsed = parsers.parse_grep(line)
@@ -229,7 +247,8 @@ M._make_edit_grep = function(lines)
     table.insert(results, edit)
     if i == #lines and parsed.lineno ~= nil then
       local column = 1
-      local setpos = string.format("call setpos('.', [0, %d, %d])", parsed.lineno, column)
+      local setpos =
+        string.format("call setpos('.', [%d, %d, %d])", context.bufnr, parsed.lineno, column)
       table.insert(results, setpos)
       local center_cursor = string.format('execute "normal! zz"')
       table.insert(results, center_cursor)
@@ -370,6 +389,8 @@ M.setqflist_grep_no_filename = function(lines, context)
   })
   assert(ok, vim.inspect(result))
 end
+
+-- grep }
 
 --- @param lines string[]
 --- @param context fzfx.FileExplorerPipelineContext
@@ -595,8 +616,12 @@ M._make_edit_vim_mark = function(lines, context)
           vim.api.nvim_set_current_win(context.winnr)
         end)
       end
-      local setpos =
-        string.format("call setpos('.', [0, %d, %d])", parsed.lineno or 1, parsed.col or 1)
+      local setpos = string.format(
+        "call setpos('.', [%d, %d, %d])",
+        context.bufnr,
+        parsed.lineno or 1,
+        parsed.col or 1
+      )
       table.insert(results, setpos)
       local center_cursor = string.format('execute "normal! zz"')
       table.insert(results, center_cursor)
