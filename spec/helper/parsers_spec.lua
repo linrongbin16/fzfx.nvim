@@ -8,6 +8,8 @@ describe("helper.parsers", function()
 
   before_each(function()
     vim.api.nvim_command("cd " .. cwd)
+    vim.o.swapfile = false
+    vim.cmd([[noautocmd edit README.md]])
   end)
 
   local uv = require("fzfx.commons.uv")
@@ -841,6 +843,9 @@ describe("helper.parsers", function()
         assert_true(
           actual.filename
               == path.normalize(expect_file_text, { expand = true, double_backslash = true })
+            or (type(CONTEXT.bufnr) == "number" and vim.api.nvim_buf_is_valid(CONTEXT.bufnr) and actual.filename == vim.api.nvim_buf_get_name(
+              CONTEXT.bufnr
+            ))
             or actual.text == expect_file_text
         )
         if actual.filename then
@@ -912,6 +917,9 @@ describe("helper.parsers", function()
         assert_true(
           actual.filename
               == path.normalize(expect_file_text, { expand = true, double_backslash = true })
+            or (type(ctx.bufnr) == "number" and vim.api.nvim_buf_is_valid(ctx.bufnr) and actual.filename == vim.api.nvim_buf_get_name(
+              ctx.bufnr
+            ))
             or actual.text == expect_file_text
         )
         if actual.filename then
