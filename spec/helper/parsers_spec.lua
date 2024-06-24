@@ -798,6 +798,7 @@ describe("helper.parsers", function()
       for i, line in ipairs(lines) do
         local actual = parsers_helper.parse_git_commit(line)
         local expect = expects[i]
+        assert_eq(type(actual), "table")
         assert_eq(actual.commit, expect)
       end
     end)
