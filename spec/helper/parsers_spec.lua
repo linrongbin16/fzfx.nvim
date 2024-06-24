@@ -743,35 +743,44 @@ describe("helper.parsers", function()
         assert_eq(expect_r, actual.remote_branch)
       end
     end)
-    it("local", function()
+    it("remote", function()
       local lines = {
-        "* chore-lint",
-        "  main",
-        "  remotes/origin/HEAD -> origin/main",
-        "  remotes/origin/chore-lint",
-        "  remotes/origin/main",
-        "  remotes/origin/release-please--branches--main--components--fzfx.nvim",
+        "  origin/HEAD -> origin/main",
+        "  origin/chore-lint",
+        "  origin/refactor12",
+        "  origin/main",
+        "  origin/release-please--branches--main--components--fzfx.nvim",
+      }
+      local expect_locals = {
+        "main",
+        "chore-lint",
+        "refactor12",
+        "main",
+        "release-please--branches--main--components--fzfx.nvim",
+      }
+      local expect_remotes = {
+        "origin/main",
+        "origin/chore-lint",
+        "origin/refactor12",
+        "origin/main",
+        "origin/release-please--branches--main--components--fzfx.nvim",
       }
       for i, line in ipairs(lines) do
         local actual = parsers_helper.parse_git_branch(line, CONTEXT)
-        local expect_splits = str.split(line, " ")
-        local expect_remote = expect_splits[#expect_splits]
-        local slash_splits = str.split(expect_remote, "/")
-        local expect_local = slash_splits[#slash_splits]
+        local expect_r = expect_remotes[i]
+        local expect_l = expect_locals[i]
         print(
           string.format(
-            "parse git branches, %d - actual:%s, expect_splits:%s, slash_splits:%s, expect_local:%s, expect_remote:%s\n",
+            "parse_git_branch-%d, actual:%s, expect_local:%s, expect_remote:%s\n",
             vim.inspect(i),
             vim.inspect(actual),
-            vim.inspect(expect_splits),
-            vim.inspect(slash_splits),
-            vim.inspect(expect_local),
-            vim.inspect(expect_remote)
+            vim.inspect(expect_l),
+            vim.inspect(expect_r)
           )
         )
         assert_eq(type(actual), "table")
-        assert_eq(expect_local, actual.local_branch)
-        assert_eq(expect_remote, actual.remote_branch)
+        assert_eq(expect_l, actual.local_branch)
+        assert_eq(expect_r, actual.remote_branch)
       end
     end)
   end)
