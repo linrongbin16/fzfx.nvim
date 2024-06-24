@@ -829,13 +829,7 @@ describe("helper.parsers", function()
       for i = 2, n do
         local line = CONTEXT.marks[i]
         local actual = parsers_helper.parse_vim_mark(line, CONTEXT)
-        local tmp = str.split(line, " ", { trimempty = true, plain = true })
-        local splits = {}
-        for _, t in ipairs(tmp) do
-          if str.not_empty(t) then
-            table.insert(splits, t)
-          end
-        end
+        local splits = str.split(line, " ", { trimempty = true, plain = true })
         print(
           string.format(
             "parse_vim_mark [%s], line:%s, actual:%s, splits:%s\n",
