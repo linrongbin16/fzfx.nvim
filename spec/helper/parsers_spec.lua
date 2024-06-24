@@ -499,7 +499,7 @@ describe("helper.parsers", function()
     end)
   end)
 
-  describe("[parse_vim_commands]", function()
+  describe("[parse_vim_command]", function()
     local VIM_COMMANDS_HEADER =
       "Name              Bang|Bar|Nargs|Range|Complete         Desc/Location"
     --- @type fzfx.VimCommandsPipelineContext
@@ -507,25 +507,44 @@ describe("helper.parsers", function()
       name_column_width = 17,
       opts_column_width = 37,
     }
-    it("test location1", function()
+    it("locations", function()
       local lines = {
         ":                 N   |Y  |N/A  |N/A  |N/A              /opt/homebrew/Cellar/neovim/0.9.4/share/nvim/runtime/doc/index.txt:1121",
-        ":!                N   |Y  |N/A  |N/A  |N/A              /opt/homebrew/Cellar/neovim/0.9.4/share/nvim/runtime/doc/index.txt:1122",
-        ":Next             N   |Y  |N/A  |N/A  |N/A              /opt/homebrew/Cellar/neovim/0.9.4/share/nvim/runtime/doc/index.txt:1124",
+        "!                 N   |Y  |N/A  |N/A  |N/A              /opt/homebrew/Cellar/neovim/0.9.4/share/nvim/runtime/doc/index.txt:1122",
+        "Next              N   |Y  |N/A  |N/A  |N/A              /opt/homebrew/Cellar/neovim/0.9.4/share/nvim/runtime/doc/index.txt:1124",
       }
-      for _, line in ipairs(lines) do
-        local first_space_pos = str.find(line, " ")
-        local expect_command = line:sub(1, first_space_pos - 1)
-        local last_space = str.rfind(line, " ")
-        local expect_splits = str.split(line:sub(last_space + 1), ":")
+      local expects = {
+        {
+          command = ":",
+          filename = "/opt/homebrew/Cellar/neovim/0.9.4/share/nvim/runtime/doc/index.txt",
+          lineno = 1121,
+        },
+        {
+          command = "!",
+          filename = "/opt/homebrew/Cellar/neovim/0.9.4/share/nvim/runtime/doc/index.txt",
+          lineno = 1122,
+        },
+        {
+          command = "Next",
+          filename = "/opt/homebrew/Cellar/neovim/0.9.4/share/nvim/runtime/doc/index.txt",
+          lineno = 1124,
+        },
+      }
+      for i, line in ipairs(lines) do
+        local expect = expects[i]
         local actual = parsers_helper.parse_vim_command(line, CONTEXT)
-        assert_eq(type(actual), "table")
-        assert_eq(actual.command, expect_command)
-        assert_eq(
-          actual.filename,
-          path.normalize(expect_splits[1], { double_backslash = true, expand = true })
+        print(
+          string.format(
+            "parse_vim_command-%d, actual:%s, expect:%s\n",
+            i,
+            vim.inspect(actual),
+            vim.inspect(expect)
+          )
         )
-        assert_eq(actual.lineno, tonumber(expect_splits[2]))
+        assert_eq(type(actual), "table")
+        assert_eq(actual.command, expect.command)
+        assert_eq(actual.filename, expect.filename)
+        assert_eq(actual.lineno, expect.lineno)
       end
     end)
     it("test definition1", function()

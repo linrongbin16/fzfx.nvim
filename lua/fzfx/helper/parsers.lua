@@ -534,7 +534,8 @@ else
 end
 M.parse_lsd = M._make_parse_ls(10, consts.LSD)
 
--- parse vim commands. looks like:
+-- Parse vim commands, it looks like:
+--
 -- ```
 -- Name              Bang|Bar|Nargs|Range|Complete         Desc/Location
 -- #                 N   |Y  |N/A  |N/A  |N/A              /opt/homebrew/Cellar/neovim/0.9.4/share/nvim/runtime/doc/index.txt:1121
@@ -543,7 +544,7 @@ M.parse_lsd = M._make_parse_ls(10, consts.LSD)
 -- bdelete           N   |Y  |N/A  |N/A  |N/A              "delete buffer"
 -- ```
 --
--- removes extra command attributes and returns the command name with **expanded** file path and line number, or with command description.
+-- It removes extra suffix info, returns command name with either expanded full file path and line number, or the command definition.
 --
 --- @param line string
 --- @param context fzfx.VimCommandsPipelineContext
@@ -552,24 +553,24 @@ M.parse_vim_command = function(line, context)
   local first_space_pos = str.find(line, " ")
   assert(
     num.gt(first_space_pos, 0),
-    string.format("failed to parse vim command lines:%s", vim.inspect(line))
+    string.format("failed to parse vim command:%s", vim.inspect(line))
   )
-  local command = vim.trim(line:sub(1, first_space_pos - 1))
+  local command = str.trim(line:sub(1, first_space_pos - 1))
   local desc_or_loc =
-    vim.trim(line:sub(context.name_column_width + 1 + context.opts_column_width + 1 + 1))
+    str.trim(line:sub(context.name_column_width + 1 + context.opts_column_width + 1 + 1))
   -- log.debug(
   --     "|fzfx.helper.parsers - parse_vim_commands| desc_or_loc:%s",
   --     vim.inspect(desc_or_loc)
   -- )
   if
-    string.len(desc_or_loc) > 0
+    str.not_empty(desc_or_loc)
     and not str.startswith(desc_or_loc, '"')
     and not str.endswith(desc_or_loc, '"')
   then
-    local split_pos = str.rfind(desc_or_loc, ":")
+    local last_colon_pos = str.rfind(desc_or_loc, ":")
     local splits = {
-      desc_or_loc:sub(1, split_pos - 1),
-      desc_or_loc:sub(split_pos + 1),
+      desc_or_loc:sub(1, last_colon_pos - 1),
+      desc_or_loc:sub(last_colon_pos + 1),
     }
     -- log.debug(
     --     "|fzfx.helper.parsers - parse_vim_commands| splits:%s",
@@ -584,10 +585,8 @@ M.parse_vim_command = function(line, context)
     -- )
     return { command = command, filename = filename, lineno = lineno }
   else
-    return {
-      command = command,
-      definition = str.trim(desc_or_loc, "['\"]+"),
-    }
+    local desc = str.trim(desc_or_loc, "['\"]+")
+    return { command = command, definition = desc }
   end
 end
 
