@@ -309,7 +309,7 @@ describe("helper.parsers", function()
     end)
   end)
   describe("[parse_rg_no_filename]", function()
-    it("normal data", function()
+    it("test", function()
       local lines = {
         "12:30",
         "13:1:",
