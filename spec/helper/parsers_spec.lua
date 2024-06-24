@@ -791,9 +791,13 @@ describe("helper.parsers", function()
         "c2e32c 2023-11-30 linrongbin16 (HEAD -> chore-lint)",
         "5fe6ad 2023-11-29 linrongbin16 chore",
       }
-      for _, line in ipairs(lines) do
+      local expects = {
+        "c2e32c",
+        "5fe6ad",
+      }
+      for i, line in ipairs(lines) do
         local actual = parsers_helper.parse_git_commit(line)
-        local expect = str.split(line, " ")[1]
+        local expect = expects[i]
         assert_eq(actual.commit, expect)
       end
     end)
