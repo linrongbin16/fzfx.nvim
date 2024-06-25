@@ -59,30 +59,106 @@ end
 M.edit_find = function(lines, context)
   local edits = M._make_edit_find(lines)
   M._confirm_discard_modified(context.bufnr, function()
-    for i, edit in ipairs(edits) do
-      local ok, result = pcall(vim.cmd --[[@as function]], edit)
-      assert(ok, vim.inspect(result))
+    for _, e in ipairs(edits) do
+      vim.cmd(e)
     end
   end)
 end
 
+-- Make `:setqflist` commands for fd/find results.
 --- @param lines string[]
 --- @return {filename:string,lnum:integer,col:integer}[]
 M._make_setqflist_find = function(lines)
-  local qfs = {}
+  local results = {}
   for _, line in ipairs(lines) do
     if str.not_empty(line) then
       local parsed = parsers.parse_find(line)
-      table.insert(qfs, { filename = parsed.filename, lnum = 1, col = 1 })
+      table.insert(results, { filename = parsed.filename, lnum = 1, col = 1 })
     end
   end
-  return qfs
+  return results
 end
 
 -- Run `:copen` and `:setqflist` commands for fd/find results.
 --- @param lines string[]
 M.setqflist_find = function(lines)
   local qfs = M._make_setqflist_find(lines)
+  vim.cmd(":copen")
+  vim.fn.setqflist({}, " ", {
+    nr = "$",
+    items = qfs,
+  })
+end
+
+-- fd/find }
+
+-- rg {
+
+-- Make `:edit!` and `:call setpos` commands for rg results.
+--- @param lines string[]
+--- @param context fzfx.PipelineContext
+--- @return {edits:string[],setpos:{bufnr:integer,lineno:integer,column:integer}?}
+M._make_edit_rg = function(lines, context)
+  local results = { edits = {} }
+  local last_parsed
+  for _, line in ipairs(lines) do
+    if str.not_empty(line) then
+      local parsed = parsers.parse_rg(line)
+      local edit = string.format("edit! %s", parsed.filename)
+      table.insert(results.edits, edit)
+      last_parsed = parsed
+    end
+  end
+
+  -- For the last position, move cursor to it.
+  if last_parsed and last_parsed.lineno ~= nil then
+    results.setpos = {
+      bufnr = context.bufnr,
+      lineno = last_parsed.lineno,
+      column = last_parsed.column or 1,
+    }
+  end
+
+  return results
+end
+
+-- Run `:edit!`, `:call setpos` and `:normal! zz` commands for rg results.
+--- @param lines string[]
+--- @param context fzfx.PipelineContext
+M.edit_rg = function(lines, context)
+  local results = M._make_edit_rg(lines, context)
+  local edits = results.edits
+  local setpos = results.setpos
+  M._confirm_discard_modified(context.bufnr, function()
+    for _, e in ipairs(edits) do
+      vim.cmd(e)
+    end
+    if setpos then
+      vim.fn.setpos(".", { setpos.bufnr, setpos.lineno, setpos.column })
+    end
+    vim.cmd('execute "normal! zz"')
+  end)
+end
+
+--- @param lines string[]
+--- @return {filename:string,lnum:integer,col:integer,text:string}[]
+M._make_setqflist_rg = function(lines)
+  local qfs = {}
+  for _, line in ipairs(lines) do
+    local parsed = parsers.parse_rg(line)
+    table.insert(qfs, {
+      filename = parsed.filename,
+      lnum = parsed.lineno,
+      col = parsed.column,
+      text = parsed.text,
+    })
+  end
+  return qfs
+end
+
+--- @param lines string[]
+M.setqflist_rg = function(lines)
+  local qfs = M._make_setqflist_rg(lines)
   local ok, result = pcall(vim.cmd --[[@as function]], ":copen")
   assert(ok, vim.inspect(result))
   ok, result = pcall(vim.fn.setqflist, {}, " ", {
@@ -92,51 +168,77 @@ M.setqflist_find = function(lines)
   assert(ok, vim.inspect(result))
 end
 
--- fd/find }
+-- rg }
 
--- Make `:edit!` and `:call setpos` commands for rg results.
+-- grep {
+
+-- Run `:edit!` commands for grep results.
 --- @param lines string[]
 --- @param context fzfx.PipelineContext
 --- @return string[]
-M._make_edit_rg = function(lines, context)
+M._make_edit_grep = function(lines, context)
   local results = {}
-  local last_parsed
   for i, line in ipairs(lines) do
-    if str.not_empty(line) then
-      local parsed = parsers.parse_rg(line)
-      local edit = string.format("edit! %s", parsed.filename)
-      table.insert(results, edit)
-      last_parsed = parsed
+    local parsed = parsers.parse_grep(line)
+    local edit = string.format("edit! %s", parsed.filename)
+    table.insert(results, edit)
+    if i == #lines and parsed.lineno ~= nil then
+      local column = 1
+      local setpos =
+        string.format("call setpos('.', [%d, %d, %d])", context.bufnr, parsed.lineno, column)
+      table.insert(results, setpos)
+      local center_cursor = string.format('execute "normal! zz"')
+      table.insert(results, center_cursor)
     end
   end
-
-  -- For the last position, move cursor to it.
-  if last_parsed and last_parsed.lineno ~= nil then
-    local column = last_parsed.column or 1
-    table.insert(
-      results,
-      string.format("call setpos('.', [%d, %d, %d])", context.bufnr, last_parsed.lineno, column)
-    )
-    local center_cursor = string.format('execute "normal! zz"')
-    table.insert(results, center_cursor)
-  end
-
   return results
 end
 
--- Run `:edit!` and `:call setpos` commands for rg results.
+-- Run `:edit!` commands for grep results.
 --- @param lines string[]
 --- @param context fzfx.PipelineContext
-M.edit_rg = function(lines, context)
-  local edits = M._make_edit_rg(lines, context)
+M.edit_grep = function(lines, context)
+  local edits = M._make_edit_grep(lines, context)
   M._confirm_discard_modified(context.bufnr, function()
     for i, edit in ipairs(edits) do
-      -- log.debug("|fzfx.helper.actions - edit_rg| [%d]:[%s]", i, edit)
+      -- log.debug("|fzfx.helper.actions - edit_grep| [%d]:[%s]", i, edit)
       local ok, result = pcall(vim.cmd --[[@as function]], edit)
       assert(ok, vim.inspect(result))
     end
   end)
 end
+
+--- @param lines string[]
+--- @return {filename:string,lnum:integer,col:integer,text:string}[]
+M._make_setqflist_grep = function(lines)
+  local qfs = {}
+  for _, line in ipairs(lines) do
+    local parsed = parsers.parse_grep(line)
+    table.insert(qfs, {
+      filename = parsed.filename,
+      lnum = parsed.lineno,
+      col = 1,
+      text = parsed.text,
+    })
+  end
+  return qfs
+end
+
+--- @param lines string[]
+M.setqflist_grep = function(lines)
+  local qfs = M._make_setqflist_grep(lines)
+  local ok, result = pcall(vim.cmd --[[@as function]], ":copen")
+  assert(ok, vim.inspect(result))
+  ok, result = pcall(vim.fn.setqflist, {}, " ", {
+    nr = "$",
+    items = qfs,
+  })
+  assert(ok, vim.inspect(result))
+end
+
+-- grep }
+
+-- rg no filename {
 
 --- @param lines string[]
 --- @param context fzfx.PipelineContext
@@ -188,34 +290,6 @@ M.set_cursor_rg_no_filename = function(lines, context)
 end
 
 --- @param lines string[]
---- @return {filename:string,lnum:integer,col:integer,text:string}[]
-M._make_setqflist_rg = function(lines)
-  local qfs = {}
-  for _, line in ipairs(lines) do
-    local parsed = parsers.parse_rg(line)
-    table.insert(qfs, {
-      filename = parsed.filename,
-      lnum = parsed.lineno,
-      col = parsed.column,
-      text = parsed.text,
-    })
-  end
-  return qfs
-end
-
---- @param lines string[]
-M.setqflist_rg = function(lines)
-  local qfs = M._make_setqflist_rg(lines)
-  local ok, result = pcall(vim.cmd --[[@as function]], ":copen")
-  assert(ok, vim.inspect(result))
-  ok, result = pcall(vim.fn.setqflist, {}, " ", {
-    nr = "$",
-    items = qfs,
-  })
-  assert(ok, vim.inspect(result))
-end
-
---- @param lines string[]
 --- @param context fzfx.PipelineContext?
 --- @return {filename:string,lnum:integer,col:integer,text:string}[]|nil
 M._make_setqflist_rg_no_filename = function(lines, context)
@@ -259,41 +333,9 @@ M.setqflist_rg_no_filename = function(lines, context)
   assert(ok, vim.inspect(result))
 end
 
--- Run `:edit!` commands for grep results.
---- @param lines string[]
---- @param context fzfx.PipelineContext
---- @return string[]
-M._make_edit_grep = function(lines, context)
-  local results = {}
-  for i, line in ipairs(lines) do
-    local parsed = parsers.parse_grep(line)
-    local edit = string.format("edit! %s", parsed.filename)
-    table.insert(results, edit)
-    if i == #lines and parsed.lineno ~= nil then
-      local column = 1
-      local setpos =
-        string.format("call setpos('.', [%d, %d, %d])", context.bufnr, parsed.lineno, column)
-      table.insert(results, setpos)
-      local center_cursor = string.format('execute "normal! zz"')
-      table.insert(results, center_cursor)
-    end
-  end
-  return results
-end
+-- rg no file name }
 
--- Run `:edit!` commands for grep results.
---- @param lines string[]
---- @param context fzfx.PipelineContext
-M.edit_grep = function(lines, context)
-  local edits = M._make_edit_grep(lines, context)
-  M._confirm_discard_modified(context.bufnr, function()
-    for i, edit in ipairs(edits) do
-      -- log.debug("|fzfx.helper.actions - edit_grep| [%d]:[%s]", i, edit)
-      local ok, result = pcall(vim.cmd --[[@as function]], edit)
-      assert(ok, vim.inspect(result))
-    end
-  end)
-end
+-- grep no filename {
 
 --- @package
 --- @param lines string[]
@@ -338,34 +380,6 @@ M.set_cursor_grep_no_filename = function(lines, context)
 end
 
 --- @param lines string[]
---- @return {filename:string,lnum:integer,col:integer,text:string}[]
-M._make_setqflist_grep = function(lines)
-  local qfs = {}
-  for _, line in ipairs(lines) do
-    local parsed = parsers.parse_grep(line)
-    table.insert(qfs, {
-      filename = parsed.filename,
-      lnum = parsed.lineno,
-      col = 1,
-      text = parsed.text,
-    })
-  end
-  return qfs
-end
-
---- @param lines string[]
-M.setqflist_grep = function(lines)
-  local qfs = M._make_setqflist_grep(lines)
-  local ok, result = pcall(vim.cmd --[[@as function]], ":copen")
-  assert(ok, vim.inspect(result))
-  ok, result = pcall(vim.fn.setqflist, {}, " ", {
-    nr = "$",
-    items = qfs,
-  })
-  assert(ok, vim.inspect(result))
-end
-
---- @param lines string[]
 --- @param context fzfx.PipelineContext?
 --- @return {filename:string,lnum:integer,col:integer,text:string}[]|nil
 M._make_setqflist_grep_no_filename = function(lines, context)
@@ -407,6 +421,8 @@ M.setqflist_grep_no_filename = function(lines, context)
   })
   assert(ok, vim.inspect(result))
 end
+
+-- grep no filename }
 
 --- @param lines string[]
 --- @param context fzfx.FileExplorerPipelineContext
