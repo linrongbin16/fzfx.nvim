@@ -98,23 +98,23 @@ end
 --- @param lines string[]
 --- @return {edits:string[],setpos:{lineno:integer,column:integer}?}
 M._make_edit_rg = function(lines)
-  local results = { edits = {} }
+  local results = {}
   local last_parsed
   for _, line in ipairs(lines) do
     if str.not_empty(line) then
       local parsed = parsers.parse_rg(line)
-      local edit = string.format("edit! %s", parsed.filename)
-      table.insert(results.edits, edit)
+      table.insert(results, string.format("edit! %s", parsed.filename))
       last_parsed = parsed
     end
   end
 
   -- For the last position, move cursor to it.
   if last_parsed ~= nil and last_parsed.lineno ~= nil then
-    results.setpos = {
-      lineno = last_parsed.lineno,
-      column = last_parsed.column or 1,
-    }
+    table.insert(
+      results,
+      string.format("call setpos('.', [0, %d, %d])", last_parsed.lineno, column)
+    )
+    table.insert(results, 'execute "normal! zz"')
   end
 
   return results
@@ -124,17 +124,11 @@ end
 --- @param lines string[]
 --- @param context fzfx.PipelineContext
 M.edit_rg = function(lines, context)
-  local results = M._make_edit_rg(lines)
-  local edits = results.edits
-  local setpos = results.setpos
+  local edits = M._make_edit_rg(lines)
   M._confirm_discard_modified(context.bufnr, function()
     for _, e in ipairs(edits) do
       vim.cmd(e)
     end
-    if setpos then
-      vim.fn.setpos(".", { 0, setpos.lineno, setpos.column })
-    end
-    vim.cmd('execute "normal! zz"')
   end)
 end
 
