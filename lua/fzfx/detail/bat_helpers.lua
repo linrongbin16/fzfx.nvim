@@ -336,7 +336,7 @@ M._render_scope = function(value)
   end
 
   -- value.font_style
-  if #value.font_style > 0 then
+  if type(value.font_style) == "table" and #value.font_style > 0 then
     table.insert(builder, "          <key>fontStyle</key>")
     table.insert(
       builder,
