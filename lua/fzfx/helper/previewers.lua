@@ -7,8 +7,8 @@ local constants = require("fzfx.lib.constants")
 local log = require("fzfx.lib.log")
 local LogLevels = require("fzfx.lib.log").LogLevels
 
-local bat_themes_helper = require("fzfx.helper.bat_themes")
 local parsers_helper = require("fzfx.helper.parsers")
+local bat_helpers = require("fzfx.detail.bat_helpers")
 
 local M = {}
 
@@ -29,17 +29,11 @@ M._bat_style_theme = function()
   if constants.HAS_BAT and vim.opt.termguicolors then
     local colorname = vim.g.colors_name --[[@as string]]
     if str.not_empty(colorname) then
-      local theme_config_file = bat_themes_helper.get_theme_config_filename(colorname)
-      if path.isfile(theme_config_file or "") then
-        -- print(string.format("bat previewer color:%s", vim.inspect(color)))
-        local custom_theme_name = bat_themes_helper.get_theme_name(colorname) --[[@as string]]
-        -- log.debug(
-        --   "|_bat_style_theme| theme_config_file:%s, custom_theme_name:%s",
-        --   vim.inspect(theme_config_file),
-        --   vim.inspect(custom_theme_name)
-        -- )
-        if str.not_empty(custom_theme_name) then
-          return style, custom_theme_name
+      local theme_config_file = bat_helpers.get_theme_config_filename(colorname) --[[@as string]]
+      if str.not_empty(theme_config_file) and path.isfile(theme_config_file) then
+        local theme_name = bat_helpers.get_theme_name(colorname) --[[@as string]]
+        if str.not_empty(theme_name) then
+          return style, theme_name
         end
       end
     end
