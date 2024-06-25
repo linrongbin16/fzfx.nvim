@@ -442,121 +442,134 @@ end
 
 -- ls }
 
+-- Make `:!git checkout` commands for git branch results.
 --- @param lines string[]
 --- @param context fzfx.GitBranchesPipelineContext
 --- @return string?
 M._make_git_checkout = function(lines, context)
-  log.debug(string.format("|_make_git_checkout| lines:%s", vim.inspect(lines)))
-
-  if tbl.list_not_empty(lines) then
-    local line = lines[#lines]
-    if str.not_empty(line) then
-      local parsed = parsers.parse_git_branch(line, context)
-      return string.format("!git checkout %s", parsed.local_branch)
-    end
+  if tbl.list_empty(lines) then
+    return nil
+  end
+  local line = lines[#lines]
+  if str.empty(line) then
+    return nil
   end
 
-  return nil
+  local parsed = parsers.parse_git_branch(line, context)
+  return string.format("!git checkout %s", parsed.local_branch)
 end
 
+-- Run `:!git checkout` commands for git branch results.
 --- @param lines string[]
 --- @param context fzfx.GitBranchesPipelineContext
 M.git_checkout = function(lines, context)
   local checkout = M._make_git_checkout(lines, context) --[[@as string]]
   if str.not_empty(checkout) then
-    local ok, result = pcall(vim.cmd --[[@as function]], checkout)
-    assert(ok, vim.inspect(result))
+    vim.cmd(checkout)
   end
 end
 
+-- Make `:let @+ =` commands (yank text) for git log/commit results.
 --- @param lines string[]
 --- @return string?
 M._make_yank_git_commit = function(lines)
-  if tbl.list_not_empty(lines) then
-    local line = lines[#lines]
-    local parsed = parsers.parse_git_commit(line)
-    return string.format("let @+ = '%s'", parsed.commit)
+  if tbl.list_empty(lines) then
+    return nil
   end
-  return nil
+  local line = lines[#lines]
+  if str.empty(line) then
+    return nil
+  end
+
+  local parsed = parsers.parse_git_commit(line)
+  return string.format("let @+ = '%s'", parsed.commit)
 end
 
+-- Run `:let @+ =` commands (yank text) for git log/commit results.
 --- @param lines string[]
 M.yank_git_commit = function(lines)
   local yank = M._make_yank_git_commit(lines)
-  if yank then
-    local ok, result = pcall(vim.cmd --[[@as function]], yank)
-    assert(ok, vim.inspect(result))
+  if str.not_empty(yank) then
+    vim.cmd(yank)
   end
 end
 
+-- Make `:feedkeys` commands for vim command results.
 --- @param lines string[]
 --- @param context fzfx.VimCommandsPipelineContext
 --- @return {input:string, mode:string}?
 M._make_feed_vim_command = function(lines, context)
-  if tbl.list_not_empty(lines) then
-    local line = lines[#lines]
-    local parsed = parsers.parse_vim_command(line, context)
-    return { input = string.format(":%s", parsed.command), mode = "n" }
+  if tbl.list_empty(lines) then
+    return nil
   end
-  return nil
+  local line = lines[#lines]
+  if str.empty(line) then
+    return nil
+  end
+
+  local parsed = parsers.parse_vim_command(line, context)
+  return { input = string.format(":%s", parsed.command), mode = "n" }
 end
 
+-- Run `:feedkeys` commands for vim command results.
 --- @param lines string[]
 --- @param context fzfx.VimCommandsPipelineContext
 M.feed_vim_command = function(lines, context)
   local feed = M._make_feed_vim_command(lines, context) --[[@as table]]
   if tbl.tbl_not_empty(feed) then
-    local ok, result = pcall(vim.fn.feedkeys, feed.input, feed.mode)
-    assert(ok, vim.inspect(result))
+    vim.fn.feedkeys(feed.input, feed.mode)
   end
 end
 
+-- Make `:feedkeys` or `:cmd` commands for vim key mapping results.
 --- @param lines string[]
 --- @param context fzfx.VimKeyMapsPipelineContext
 --- @return {fn:"cmd"|"feedkeys"|nil, input:string?, mode:string?}?
 M._make_feed_vim_key = function(lines, context)
-  if tbl.list_not_empty(lines) then
-    local line = lines[#lines]
-    local parsed = parsers.parse_vim_keymap(line, context)
-    if str.find(parsed.mode, "n") ~= nil then
-      if str.startswith(parsed.lhs, "<plug>", { ignorecase = true }) then
-        return {
-          fn = "cmd",
-          input = string.format('execute "normal %s"', parsed.lhs),
-          mode = "n",
-        }
-      elseif str.startswith(parsed.lhs, "<") and num.gt(str.rfind(parsed.lhs, ">"), 0) then
-        local tcodes = vim.api.nvim_replace_termcodes(parsed.lhs, true, false, true)
-        return { fn = "feedkeys", input = tcodes, mode = "n" }
-      else
-        return { fn = "feedkeys", input = parsed.lhs, mode = "n" }
-      end
-    else
-      log.echo(
-        LogLevels.INFO,
-        string.format("%s mode %s not support.", vim.inspect(parsed.mode), vim.inspect(parsed.lhs))
-      )
-      return nil
-    end
+  if tbl.list_empty(lines) then
+    return nil
   end
-  return nil
+  local line = lines[#lines]
+  if str.empty(line) then
+    return nil
+  end
+
+  local parsed = parsers.parse_vim_keymap(line, context)
+  if str.find(parsed.mode, "n") == nil then
+    log.echo(
+      LogLevels.INFO,
+      string.format("%s (%s mode) not support.", vim.inspect(parsed.lhs), vim.inspect(parsed.mode))
+    )
+    return nil
+  end
+
+  if str.startswith(parsed.lhs, "<plug>", { ignorecase = true }) then
+    return {
+      fn = "cmd",
+      input = string.format('execute "normal %s"', parsed.lhs),
+      mode = "n",
+    }
+  elseif str.startswith(parsed.lhs, "<") and str.rfind(parsed.lhs, ">") ~= nil then
+    local tcodes = vim.api.nvim_replace_termcodes(parsed.lhs, true, false, true)
+    return { fn = "feedkeys", input = tcodes, mode = "n" }
+  else
+    return { fn = "feedkeys", input = parsed.lhs, mode = "n" }
+  end
 end
 
+-- Make `:feedkeys` or `:cmd` commands for vim key mapping results.
 --- @param lines string[]
 --- @param context fzfx.VimKeyMapsPipelineContext
 M.feed_vim_key = function(lines, context)
-  local parsed = M._make_feed_vim_key(lines, context) --[[@as table]]
-  if tbl.tbl_not_empty(parsed) and parsed.fn == "cmd" and str.not_empty(parsed.input) then
-    local ok, result = pcall(vim.cmd --[[@as function]], parsed.input)
-    assert(ok, vim.inspect(result))
-  elseif
-    tbl.tbl_not_empty(parsed)
-    and parsed.fn == "feedkeys"
-    and str.not_empty(parsed.input)
-    and str.not_empty(parsed.mode)
-  then
-    local ok, result = pcall(vim.fn.feedkeys, parsed.input, parsed.mode)
-    assert(ok, vim.inspect(result))
+  local feed = M._make_feed_vim_key(lines, context) --[[@as table]]
+  if tbl.tbl_empty(feed) then
+    return
+  end
+
+  if feed.fn == "cmd" and str.not_empty(feed.input) then
+    vim.cmd(feed.input)
+  elseif feed.fn == "feedkeys" and str.not_empty(feed.input) and str.not_empty(feed.mode) then
+    vim.fn.feedkeys(feed.input, feed.mode)
   end
 end
 
