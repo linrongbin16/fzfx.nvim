@@ -31,7 +31,7 @@ local log = require("fzfx.lib.log")
 
 local M = {}
 
--- utility {
+-- Utilities {
 
 -- Create directory if it doesn't exist.
 -- Returns false if it's already existed, returns true if it's created.
@@ -159,7 +159,7 @@ M.get_theme_config_filename = function(colorname)
   return path.join(theme_dir, theme_name .. ".tmTheme")
 end
 
--- utility }
+-- Utilities }
 
 -- Render globals.
 --
