@@ -164,36 +164,34 @@ end
 
 -- Run `:edit!` commands for grep results.
 --- @param lines string[]
---- @param context fzfx.PipelineContext
 --- @return string[]
-M._make_edit_grep = function(lines, context)
+M._make_edit_grep = function(lines)
   local results = {}
-  for i, line in ipairs(lines) do
-    local parsed = parsers.parse_grep(line)
-    local edit = string.format("edit! %s", parsed.filename)
-    table.insert(results, edit)
-    if i == #lines and parsed.lineno ~= nil then
-      local column = 1
-      local setpos =
-        string.format("call setpos('.', [%d, %d, %d])", context.bufnr, parsed.lineno, column)
-      table.insert(results, setpos)
-      local center_cursor = string.format('execute "normal! zz"')
-      table.insert(results, center_cursor)
+  local last_parsed
+  for _, line in ipairs(lines) do
+    if str.not_empty(line) then
+      local parsed = parsers.parse_grep(line)
+      table.insert(results, string.format("edit! %s", parsed.filename))
+      last_parsed = parsed
     end
   end
+
+  if last_parsed ~= nil and last_parsed.lineno ~= nil then
+    table.insert(results, string.format("call setpos('.', [0, %d, %d])", last_parsed.lineno, 1))
+    table.insert(results, 'execute "normal! zz"')
+  end
+
   return results
 end
 
--- Run `:edit!` commands for grep results.
+-- Run `:edit!`, `:call setpos` and `:normal! zz` commands for grep results.
 --- @param lines string[]
 --- @param context fzfx.PipelineContext
 M.edit_grep = function(lines, context)
-  local edits = M._make_edit_grep(lines, context)
+  local edits = M._make_edit_grep(lines)
   M._confirm_discard_modified(context.bufnr, function()
-    for i, edit in ipairs(edits) do
-      -- log.debug("|fzfx.helper.actions - edit_grep| [%d]:[%s]", i, edit)
-      local ok, result = pcall(vim.cmd --[[@as function]], edit)
-      assert(ok, vim.inspect(result))
+    for _, e in ipairs(edits) do
+      vim.cmd(e)
     end
   end)
 end
