@@ -158,6 +158,20 @@ describe("detail.bat_helpers", function()
     end)
   end)
 
+  describe("[_BatThemeGlobalRenderer]", function()
+    it("render", function()
+      local r = bat_helpers._BatThemeGlobalRenderer:new(
+        { "Normal", "NormalFloat", "Search", "IncSearch" },
+        "foreground",
+        "fg"
+      )
+      local actual = r:render()
+      assert_eq(type(actual), "string")
+      assert_true(str.find(actual, "<key>") > 0)
+      assert_true(str.find(actual, "<string>") > 0)
+    end)
+  end)
+
   describe("[_BatThemeRenderer]", function()
     it("test", function()
       local r = bat_helpers._BatThemeRenderer:new()

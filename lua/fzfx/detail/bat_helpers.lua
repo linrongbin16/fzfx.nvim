@@ -196,6 +196,8 @@ function _BatThemeGlobalRenderer:render()
   return table.concat(builder, "\n")
 end
 
+M._BatThemeGlobalRenderer = _BatThemeGlobalRenderer
+
 -- Render scopes.
 --
 --- @alias fzfx._BatThemeScopeValue {hl:string,scope:string[],foreground:string?,background:string?,font_style:string[],bold:boolean?,italic:boolean?,is_empty:boolean}
