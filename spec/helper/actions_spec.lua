@@ -252,7 +252,11 @@ describe("helper.actions", function()
     end)
   end)
 
-  describe("[set_cursor_grep_no_filename]", function()
+  describe("[_make_set_cursor_grep_no_filename]", function()
+    it("empty", function()
+      local actual = actions._make_set_cursor_grep_no_filename({})
+      assert_eq(actual, nil)
+    end)
     it("make", function()
       local lines = {
         "73",
@@ -262,23 +266,17 @@ describe("helper.actions", function()
         "81:72:9129",
       }
 
-      local actual1 =
-        actions._make_set_cursor_grep_no_filename({}, contexts_helper.make_pipeline_context())
-      assert_eq(actual1, nil)
-      local actual2 = actions._make_set_cursor_grep_no_filename(lines, nil)
-      assert_eq(actual2, nil)
-
       for i, line in ipairs(lines) do
-        local ctx = contexts_helper.make_pipeline_context()
-        local actual = actions._make_set_cursor_grep_no_filename({ line }, ctx)
+        local actual = actions._make_set_cursor_grep_no_filename({ line })
         assert_eq(type(actual), "table")
-        assert_eq(#actual, 3)
-
-        assert_true(vim.is_callable(actual[1]))
-        assert_true(vim.is_callable(actual[2]))
-        assert_eq(actual[3], 'execute "normal! zz"')
+        assert_eq(#actual, 2)
+        assert_true(str.startswith(actual[1], "call setpos('.'"))
+        assert_eq(actual[2], 'execute "normal! zz"')
       end
     end)
+  end)
+
+  describe("[set_cursor_grep_no_filename]", function()
     it("run", function()
       vim.env._FZFX_NVIM_DEVICONS_PATH = nil
       local lines = {
@@ -529,7 +527,7 @@ describe("helper.actions", function()
         assert_eq(type(actual), "table")
         assert_eq(#actual, 2)
 
-        assert_true(str.startswith(actual[1]), "call setpos('.'")
+        assert_true(str.startswith(actual[1], "call setpos('.'"))
         assert_eq(actual[2], 'execute "normal! zz"')
       end
     end)
