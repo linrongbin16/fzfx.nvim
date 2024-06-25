@@ -1042,20 +1042,26 @@ describe("helper.actions", function()
       if consts.HAS_LSD then
         for _, line in ipairs(LSD_LINES) do
           local actual = actions._make_edit_ls({ line }, CONTEXT)
-          assert_eq(type(actual), "string")
-          assert_true(str.startswith(actual, "edit!"))
+          assert_eq(type(actual), "table")
+          for _, a in ipairs(actual) do
+            assert_true(str.startswith(a, "edit!"))
+          end
         end
       elseif consts.HAS_EZA then
         for _, line in ipairs(EZA_LINES) do
           local actual = actions._make_edit_ls({ line }, CONTEXT)
-          assert_eq(type(actual), "string")
-          assert_true(str.startswith(actual, "edit!"))
+          assert_eq(type(actual), "table")
+          for _, a in ipairs(actual) do
+            assert_true(str.startswith(a, "edit!"))
+          end
         end
       else
         for _, line in ipairs(LS_LINES) do
           local actual = actions._make_edit_ls({ line }, CONTEXT)
-          assert_eq(type(actual), "string")
-          assert_true(str.startswith(actual, "edit!"))
+          assert_eq(type(actual), "table")
+          for _, a in ipairs(actual) do
+            assert_true(str.startswith(a, "edit!"))
+          end
         end
       end
     end)
