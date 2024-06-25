@@ -11,8 +11,12 @@ local parsers = require("fzfx.helper.parsers")
 
 local M = {}
 
+-- No-operation {
+
 -- Do nothing, no-operation.
 M.nop = function() end
+
+-- No-operation }
 
 -- Confirm if discard current editing buffer when it's been modified.
 --- @param bufnr integer
@@ -33,6 +37,8 @@ M._confirm_discard_modified = function(bufnr, callback)
   end
 end
 
+-- fd/find {
+
 -- Make `:edit!` commands for fd/find results.
 --- @param lines string[]
 --- @return string[]
@@ -41,8 +47,7 @@ M._make_edit_find = function(lines)
   for i, line in ipairs(lines) do
     if str.not_empty(line) then
       local parsed = parsers.parse_find(line)
-      local edit = string.format("edit! %s", parsed.filename)
-      table.insert(results, edit)
+      table.insert(results, string.format("edit! %s", parsed.filename))
     end
   end
   return results
@@ -55,7 +60,6 @@ M.edit_find = function(lines, context)
   local edits = M._make_edit_find(lines)
   M._confirm_discard_modified(context.bufnr, function()
     for i, edit in ipairs(edits) do
-      -- log.debug(string.format("|edit_find| [%d]:[%s]", i, edit))
       local ok, result = pcall(vim.cmd --[[@as function]], edit)
       assert(ok, vim.inspect(result))
     end
@@ -87,6 +91,8 @@ M.setqflist_find = function(lines)
   })
   assert(ok, vim.inspect(result))
 end
+
+-- fd/find }
 
 -- Make `:edit!` and `:call setpos` commands for rg results.
 --- @param lines string[]
