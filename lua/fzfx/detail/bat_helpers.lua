@@ -3,8 +3,21 @@
 --  * Global: https://www.sublimetext.com/docs/color_schemes.html#global-settings
 --  * Scope: https://www.sublimetext.com/docs/scope_naming.html#minimal-scope-coverage
 --
--- Neovim highlight docs:
+-- Neovim Highlight docs:
 --  * Basic syntax: https://neovim.io/doc/user/syntax.html#group-name
+--
+-- Neovim Treesitter Highlight docs:
+--  * Basic syntax: https://neovim.io/doc/user/syntax.html#group-name
+--  * Treesitter: https://neovim.io/doc/user/treesitter.html#treesitter-highlight
+--
+-- Neovim Lsp Semantic Highlight docs:
+--  * Neovim semantic highlight: https://neovim.io/doc/user/lsp.html#lsp-semantic-highlight
+--  * Lsp semantic tokens: https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#textDocument_semanticTokens
+--  * Lsp nvim-lspconfig: https://github.com/neovim/neovim/blob/9f15a18fa57f540cb3d0d9d2f45d872038e6f990/src/nvim/highlight_group.c#L288
+--  * Detailed explanation: https://gist.github.com/swarn/fb37d9eefe1bc616c2a7e476c0bc0316
+--
+-- `@lsp.type` is mapping to `SemanticTokenTypes` in specification.
+-- `@lsp.mod` is mapping to `SemanticTokenModifiers` in specification.
 
 local str = require("fzfx.commons.str")
 local tbl = require("fzfx.commons.tbl")
@@ -142,9 +155,13 @@ function _BatThemeScopeRenderer:new(highlight, scope)
   return o
 end
 
---- @param value fzfx._BatThemeScopeValue
+--- @param value fzfx._BatThemeScopeValue?
 --- @return string?
 M._render_scope = function(value)
+  if tbl.tbl_empty(value) then
+    return nil
+  end
+
   local builder = {
     "      <dict>",
   }
@@ -204,16 +221,12 @@ end
 
 --- @return string?
 function _BatThemeScopeRenderer:render()
-  if tbl.tbl_empty(self.value) then
-    return nil
-  end
   return M._render_scope(self.value)
 end
 
 --- @return {globals:fzfx._BatThemeGlobalRenderer[],scopes:fzfx._BatThemeScopeRenderer[]}
-M._make_render_map = function()
-  --
-  -- syntax map
+M._make_renderers = function()
+  -- Basic syntax
   local GLOBAL_RENDERERS = {
     _BatThemeGlobalRenderer:new("Normal", "background", "bg"),
     _BatThemeGlobalRenderer:new("Normal", "foreground", "fg"),
@@ -244,20 +257,7 @@ M._make_render_map = function()
     }, "lineDiffDeleted", "fg"),
   }
 
-  -- Neovim Treesitter Highlight docs:
-  --  * Basic syntax: https://neovim.io/doc/user/syntax.html#group-name
-  --  * Treesitter: https://neovim.io/doc/user/treesitter.html#treesitter-highlight
-  --
-  -- Neovim Lsp Semantic Highlight docs:
-  --  * Neovim semantic highlight: https://neovim.io/doc/user/lsp.html#lsp-semantic-highlight
-  --  * Lsp semantic tokens: https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#textDocument_semanticTokens
-  --  * Lsp nvim-lspconfig: https://github.com/neovim/neovim/blob/9f15a18fa57f540cb3d0d9d2f45d872038e6f990/src/nvim/highlight_group.c#L288
-  --  * Detailed explanation: https://gist.github.com/swarn/fb37d9eefe1bc616c2a7e476c0bc0316
-  --
-  -- `@lsp.type` is mapping to `SemanticTokenTypes` in specification.
-  -- `@lsp.mod` is mapping to `SemanticTokenModifiers` in specification.
-  --
-  -- syntax and treesitter map
+  -- Treesitter syntax
   local SCOPE_RENDERERS = {
     -- comment {
     _BatThemeScopeRenderer:new({ "@comment", "Comment" }, "comment"),
@@ -397,7 +397,7 @@ M._make_render_map = function()
   }
 end
 
--- tmTheme renderer
+-- TextMate Theme (the `tmTheme` file) renderer.
 --
 --- @class fzfx._BatThemeRenderer
 --- @field template string
@@ -407,11 +407,12 @@ local _BatThemeRenderer = {}
 
 --- @return fzfx._BatThemeRenderer
 function _BatThemeRenderer:new()
-  -- there're 3 sections in below template:
-  -- {NAME}
-  -- {GLOBAL}
-  -- {SCOPE}
+  -- There're 3 sections:
   --
+  -- 1. {NAME}
+  -- 2. {GLOBAL}
+  -- 3. {SCOPE}
+
   local template = [[
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
@@ -429,14 +430,12 @@ function _BatThemeRenderer:new()
     <key>settings</key>
     <array>
       <dict>
-        <!-- globals -->
         <key>settings</key>
         <dict>
           {GLOBAL}
         </dict>
       </dict>
 
-      <!-- scope -->
       {SCOPE}
 
     </array>
@@ -446,18 +445,19 @@ function _BatThemeRenderer:new()
 </plist>
 ]]
 
-  local render_map = M._make_render_map()
+  local renderers = M._make_renderers()
 
   local o = {
     template = template,
-    globals = render_map.globals,
-    scopes = render_map.scopes,
+    globals = renderers.globals,
+    scopes = renderers.scopes,
   }
   setmetatable(o, self)
   self.__index = self
   return o
 end
 
+-- Render a TextMate theme file (.tmTheme) based on current vim's colorscheme highlighting groups.
 --- @param theme_name string
 --- @return {name:string,payload:string}
 function _BatThemeRenderer:render(theme_name)
@@ -466,14 +466,14 @@ function _BatThemeRenderer:render(theme_name)
   payload = str.replace(payload, "{NAME}", theme_name)
 
   local globals = {}
-  for i, r in ipairs(self.globals) do
+  for _, r in ipairs(self.globals) do
     local result = r:render()
     if result then
       table.insert(globals, result)
     end
   end
   local scopes = {}
-  for i, r in ipairs(self.scopes) do
+  for _, r in ipairs(self.scopes) do
     local result = r:render()
     if result then
       table.insert(scopes, result)
@@ -495,24 +495,26 @@ M._BatThemeRendererInstance = nil
 
 local building_bat_theme = false
 
+-- Build a bat theme (`.tmTheme`) file to user's local bat config directory, based on current vim's colorscheme highlighting groups.
 --- @param colorname string
 M._build_theme = function(colorname)
   log.ensure(str.not_empty(colorname), "|_build_theme| colorname is empty string!")
 
-  local theme_dir = bat_themes_helper.get_theme_dir()
+  local theme_dir = bat_themes_helper.get_theme_dir() --[[@as string]]
   if str.empty(theme_dir) then
     return
   end
 
   log.ensure(
-    path.isdir(theme_dir --[[@as string]]),
-    string.format("|_build_theme| bat theme dir:%s not exist", vim.inspect(theme_dir))
+    path.isdir(theme_dir),
+    string.format("|_build_theme| bat theme dir(%s) not exist", vim.inspect(theme_dir))
   )
 
   local theme_name = bat_themes_helper.get_theme_name(colorname)
   log.ensure(
     str.not_empty(theme_name),
-    "|_build_theme| failed to get theme_name from nvim colorscheme name: " .. vim.inspect(colorname)
+    "|_build_theme| failed to convert theme name from vim colorscheme name: "
+      .. vim.inspect(colorname)
   )
 
   M._BatThemeRendererInstance = _BatThemeRenderer:new()
@@ -525,8 +527,7 @@ M._build_theme = function(colorname)
       .. vim.inspect(theme_name)
   )
 
-  local theme_config_file = bat_themes_helper.get_theme_config_filename(colorname)
-  -- log.debug("|_build_theme| theme_config_file:%s", vim.inspect(theme_config_file))
+  local theme_config_file = bat_themes_helper.get_theme_config_filename(colorname) --[[@as string]]
   log.ensure(
     str.not_empty(theme_config_file),
     "|_build_theme| failed to get bat theme config file from nvim colorscheme name:"
@@ -538,7 +539,7 @@ M._build_theme = function(colorname)
   end
   building_bat_theme = true
 
-  fileio.asyncwritefile(theme_config_file --[[@as string]], rendered_result.payload, function()
+  fileio.asyncwritefile(theme_config_file, rendered_result.payload, function()
     vim.defer_fn(function()
       -- log.debug(
       --   "|_build_theme| dump theme payload, theme_template:%s",
@@ -562,16 +563,15 @@ M.setup = function()
   end
 
   bat_themes_helper.async_get_theme_dir(function()
-    if str.not_empty(vim.g.colors_name) then
-      vim.schedule(function()
+    vim.schedule(function()
+      if str.not_empty(vim.g.colors_name) then
         M._build_theme(vim.g.colors_name)
-      end)
-    end
+      end
+    end)
   end)
 
   vim.api.nvim_create_autocmd({ "ColorScheme" }, {
     callback = function(event)
-      -- log.debug("|setup| ColorScheme event:%s", vim.inspect(event))
       vim.schedule(function()
         if str.not_empty(vim.g.colors_name) then
           M._build_theme(vim.g.colors_name)
