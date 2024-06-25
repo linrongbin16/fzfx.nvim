@@ -112,7 +112,7 @@ M._make_edit_rg = function(lines)
   if last_parsed ~= nil and last_parsed.lineno ~= nil then
     table.insert(
       results,
-      string.format("call setpos('.', [0, %d, %d])", last_parsed.lineno, column)
+      string.format("call setpos('.', [0, %d, %d])", last_parsed.lineno, last_parsed.column or 1)
     )
     table.insert(results, 'execute "normal! zz"')
   end
@@ -573,136 +573,136 @@ M.feed_vim_key = function(lines, context)
   end
 end
 
---- @package
+-- Make `:edit!` commands for git status results.
 --- @param lines string[]
 --- @return string[]
 M._make_edit_git_status = function(lines)
   local edits = {}
-  for i, line in ipairs(lines) do
-    local parsed = parsers.parse_git_status(line)
-    local edit = string.format("edit! %s", parsed.filename)
-    table.insert(edits, edit)
+  for _, line in ipairs(lines) do
+    if str.not_empty(line) then
+      local parsed = parsers.parse_git_status(line)
+      table.insert(edits, string.format("edit! %s", parsed.filename))
+    end
   end
   return edits
 end
 
--- Run 'edit' command on gits status results.
+-- Run `:edit!` commands for gits status results.
 --- @param lines string[]
 --- @param context fzfx.PipelineContext
 M.edit_git_status = function(lines, context)
   local edits = M._make_edit_git_status(lines)
   M._confirm_discard_modified(context.bufnr, function()
-    for i, edit in ipairs(edits) do
-      -- log.debug("|fzfx.helper.actions - edit_git_status| [%d]:[%s]", i, edit)
-      local ok, result = pcall(vim.cmd --[[@as function]], edit)
-      assert(ok, vim.inspect(result))
+    for _, e in ipairs(edits) do
+      vim.cmd(e)
     end
   end)
 end
 
+-- Make `:setqflist` commands for git status results.
 --- @param lines string[]
 --- @return {filename:string,lnum:integer,col:integer}[]
 M._make_setqflist_git_status = function(lines)
   local qfs = {}
   for _, line in ipairs(lines) do
-    local parsed = parsers.parse_git_status(line)
-    table.insert(qfs, { filename = parsed.filename, lnum = 1, col = 1 })
+    if str.not_empty(line) then
+      local parsed = parsers.parse_git_status(line)
+      table.insert(qfs, { filename = parsed.filename, lnum = 1, col = 1 })
+    end
   end
   return qfs
 end
 
+-- Run `:setqflist` commands for git status results.
 --- @param lines string[]
 M.setqflist_git_status = function(lines)
-  local qfs = M._make_setqflist_git_status(lines --[[@as table]])
-  local ok, result = pcall(vim.cmd --[[@as function]], ":copen")
-  assert(ok, vim.inspect(result))
-  ok, result = pcall(vim.fn.setqflist, {}, " ", {
+  local qfs = M._make_setqflist_git_status(lines)
+  vim.cmd(":copen")
+  vim.fn.setqflist({}, " ", {
     nr = "$",
     items = qfs,
   })
-  assert(ok, vim.inspect(result))
 end
 
+-- Make `:edit!` commands for vim marks results.
 --- @param lines string[]
 --- @param context fzfx.VimMarksPipelineContext
 --- @return string[]
 M._make_edit_vim_mark = function(lines, context)
   local results = {}
-  local last_parsed = nil
-  for i, line in ipairs(lines) do
+  local last_parsed
+  for _, line in ipairs(lines) do
     if str.not_empty(line) then
       local parsed = parsers.parse_vim_mark(line, context)
-      last_parsed = parsed
       if str.not_empty(parsed.filename) then
         table.insert(results, string.format("edit! %s", parsed.filename))
       end
+      last_parsed = parsed
     end
   end
 
   if last_parsed then
+    local column = (last_parsed.col or 0) + 1
     table.insert(
       results,
-      string.format(
-        "call setpos('.', [%d, %d, %d])",
-        context.bufnr,
-        last_parsed.lineno or 1,
-        (last_parsed.col or 0) + 1
-      )
+      string.format("call setpos('.', [0, %d, %d])", last_parsed.lineno or 1, column)
     )
     table.insert(results, 'execute "normal! zz"')
   end
   return results
 end
 
+-- Run `:edit!` commands for vim marks results.
 --- @param lines string[]
 --- @param context fzfx.VimMarksPipelineContext
 M.edit_vim_mark = function(lines, context)
   local edits = M._make_edit_vim_mark(lines, context)
   M._confirm_discard_modified(context.bufnr, function()
-    for i, edit in ipairs(edits) do
-      -- log.debug("|edit_vim_mark| [%d]:%s", i, vim.inspect(edit))
-      local ok, result = pcall(vim.cmd --[[@as function]], edit)
-      assert(ok, vim.inspect(result))
+    for _, e in ipairs(edits) do
+      vim.cmd(e)
     end
   end)
 end
 
+-- Make `:setqflist` commands for vim marks results.
 --- @param lines string[]
 --- @param context fzfx.VimMarksPipelineContext
 --- @return {filename:string,lnum:integer,col:integer,text:string}[]
 M._make_setqflist_vim_mark = function(lines, context)
   local qfs = {}
   for _, line in ipairs(lines) do
-    local parsed = parsers.parse_vim_mark(line, context)
-    local filename = parsed.filename
-    if str.empty(filename) then
-      local bufnr = tbl.tbl_get(context, "bufnr")
-      if num.ge(bufnr, 0) and vim.api.nvim_buf_is_valid(bufnr) then
-        filename = vim.api.nvim_buf_get_name(bufnr)
-        filename = path.normalize(filename, { double_backslash = true, expand = true })
+    if str.not_empty(line) then
+      local parsed = parsers.parse_vim_mark(line, context)
+      local filename = parsed.filename
+      if str.empty(filename) then
+        local bufnr = tbl.tbl_get(context, "bufnr")
+        if type(bufnr) == "number" and vim.api.nvim_buf_is_valid(bufnr) then
+          filename = vim.api.nvim_buf_get_name(bufnr)
+          filename = path.normalize(filename, { double_backslash = true, expand = true })
+        end
       end
+      local column = (parsed.col or 0) + 1
+      table.insert(qfs, {
+        filename = filename or "",
+        lnum = parsed.lineno or 1,
+        col = column,
+        text = parsed.text or "",
+      })
     end
-    table.insert(qfs, {
-      filename = filename or "",
-      lnum = parsed.lineno or 1,
-      col = (parsed.col or 0) + 1,
-      text = parsed.text or "",
-    })
   end
   return qfs
 end
 
+-- Run `:setqflist` commands for vim marks results.
 --- @param lines string[]
 --- @param context fzfx.VimMarksPipelineContext
 M.setqflist_vim_mark = function(lines, context)
   local qfs = M._make_setqflist_vim_mark(lines, context)
-  local ok, result = pcall(vim.cmd --[[@as function]], ":copen")
-  assert(ok, vim.inspect(result))
-  ok, result = pcall(vim.fn.setqflist, {}, " ", {
+  vim.cmd(":copen")
+  vim.fn.setqflist({}, " ", {
     nr = "$",
     items = qfs,
   })
-  assert(ok, vim.inspect(result))
 end
 
 return M
