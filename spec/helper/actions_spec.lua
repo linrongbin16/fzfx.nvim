@@ -503,7 +503,11 @@ describe("helper.actions", function()
       assert_true(true)
     end)
   end)
-  describe("[set_cursor_rg_no_filename]", function()
+  describe("[_make_set_cursor_rg_no_filename]", function()
+    it("empty", function()
+      local actual = actions._make_set_cursor_rg_no_filename({})
+      assert_eq(actual, nil)
+    end)
     it("make", function()
       local lines = {
         "1:1:ok",
@@ -512,23 +516,25 @@ describe("helper.actions", function()
         "12:81: goodbye",
         "81:71:9129",
       }
-      local actual1 =
-        actions._make_set_cursor_rg_no_filename({}, contexts_helper.make_pipeline_context())
-      assert_eq(actual1, nil)
-      local actual2 = actions._make_set_cursor_rg_no_filename(lines, nil)
-      assert_eq(actual2, nil)
-
       for i, line in ipairs(lines) do
-        local ctx = contexts_helper.make_pipeline_context()
-        local actual = actions._make_set_cursor_rg_no_filename({ line }, ctx)
+        local actual = actions._make_set_cursor_rg_no_filename({ line })
+        print(
+          string.format(
+            "_make_set_cursor_rg_no_filename-%d, line:%s, actual:%s\n",
+            i,
+            vim.inspect(line),
+            vim.inspect(actual)
+          )
+        )
         assert_eq(type(actual), "table")
-        assert_eq(#actual, 3)
+        assert_eq(#actual, 2)
 
-        assert_true(vim.is_callable(actual[1]))
-        assert_true(vim.is_callable(actual[2]))
-        assert_eq(actual[3], 'execute "normal! zz"')
+        assert_true(str.startswith(actual[1]), "call setpos('.'")
+        assert_eq(actual[2], 'execute "normal! zz"')
       end
     end)
+  end)
+  describe("[set_cursor_rg_no_filename]", function()
     it("run", function()
       vim.env._FZFX_NVIM_DEVICONS_PATH = nil
       local lines = {
@@ -721,21 +727,14 @@ describe("helper.actions", function()
       -- assert_true(parsed.input == nil)
       -- assert_true(parsed.mode == nil)
     end)
-    it("make <plug>", function()
+    it("<plug>", function()
       local parsed = actions._make_feed_vim_key({
         "<Plug>(YankyCycleBackward)                   n   |Y      |N     |Y      ~/.config/nvim/lazy/yanky.nvim/lua/yanky.lua:290",
       }, CONTEXT)
-      -- print(
-      --   string.format(
-      --     "feed <plug> key:%s, %s, %s\n",
-      --     vim.inspect(parsed.fn),
-      --     vim.inspect(parsed.input),
-      --     vim.inspect(parsed.mode)
-      --   )
-      -- )
+      print(string.format("feed_vim_key <plug>, parsed:%s\n", vim.inspect(parsed)))
       assert_eq(parsed.fn, "cmd")
       assert_eq(type(parsed.input), "string")
-      assert_true(str.startswith(parsed.input, [[execute "normal \]]))
+      assert_true(str.startswith(parsed.input, 'execute "normal '))
       assert_eq(parsed.mode, "n")
     end)
   end)
