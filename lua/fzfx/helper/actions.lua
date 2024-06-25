@@ -442,6 +442,8 @@ end
 
 -- ls }
 
+-- git branch {
+
 -- Make `:!git checkout` commands for git branch results.
 --- @param lines string[]
 --- @param context fzfx.GitBranchesPipelineContext
@@ -469,6 +471,10 @@ M.git_checkout = function(lines, context)
   end
 end
 
+-- git branch }
+
+-- git commit {
+
 -- Make `:let @+ =` commands (yank text) for git log/commit results.
 --- @param lines string[]
 --- @return string?
@@ -493,6 +499,10 @@ M.yank_git_commit = function(lines)
     vim.cmd(yank)
   end
 end
+
+-- git commit }
+
+-- commands {
 
 -- Make `:feedkeys` commands for vim command results.
 --- @param lines string[]
@@ -520,6 +530,10 @@ M.feed_vim_command = function(lines, context)
     vim.fn.feedkeys(feed.input, feed.mode)
   end
 end
+
+-- commands }
+
+-- key mappings {
 
 -- Make `:feedkeys` or `:cmd` commands for vim key mapping results.
 --- @param lines string[]
@@ -573,6 +587,10 @@ M.feed_vim_key = function(lines, context)
   end
 end
 
+-- key mappings }
+
+-- git status {
+
 -- Make `:edit!` commands for git status results.
 --- @param lines string[]
 --- @return string[]
@@ -623,6 +641,10 @@ M.setqflist_git_status = function(lines)
     items = qfs,
   })
 end
+
+-- git status }
+
+-- marks {
 
 -- Make `:edit!` commands for vim marks results.
 --- @param lines string[]
@@ -704,5 +726,7 @@ M.setqflist_vim_mark = function(lines, context)
     items = qfs,
   })
 end
+
+-- marks }
 
 return M
