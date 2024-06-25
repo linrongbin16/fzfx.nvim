@@ -11,9 +11,24 @@ describe("helper.bat_themes", function()
   end)
 
   local str = require("fzfx.commons.str")
+  local path = require("fzfx.commons.path")
   local constants = require("fzfx.lib.constants")
+
   local bat_themes_helper = require("fzfx.helper.bat_themes")
   require("fzfx").setup()
+
+  describe("[_create_dir_if_not_exist]", function()
+    it("test", function()
+      local tmp = vim.fn.tempname()
+      assert_false(path.isdir(tmp))
+      assert_false(path.isfile(tmp))
+
+      local actual1 = bat_themes_helper._create_dir_if_not_exist(tmp)
+      assert_true(actual1)
+      local actual2 = bat_themes_helper._create_dir_if_not_exist(tmp)
+      assert_false(actual2)
+    end)
+  end)
 
   describe("[get_theme_dir]", function()
     it("test", function()

@@ -543,7 +543,7 @@ M.setup = function()
     return
   end
 
-  bat_themes_helper.get_theme_dir(function()
+  bat_themes_helper.async_get_theme_dir(function()
     if str.not_empty(vim.g.colors_name) then
       vim.schedule(function()
         M._build_theme(vim.g.colors_name)
