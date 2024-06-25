@@ -29,8 +29,6 @@ local spawn = require("fzfx.commons.spawn")
 local consts = require("fzfx.lib.constants")
 local log = require("fzfx.lib.log")
 
-local bat_themes_helper = require("fzfx.helper.bat_themes")
-
 local M = {}
 
 -- utility {
