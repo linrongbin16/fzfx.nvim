@@ -400,42 +400,47 @@ end
 
 -- grep no filename }
 
+-- ls {
+
+-- Make `:edit!` commands for lsd/eza/exa/ls results.
 --- @param lines string[]
 --- @param context fzfx.FileExplorerPipelineContext
 --- @return string[]
 M._make_edit_ls = function(lines, context)
   local results = {}
   for _, line in ipairs(lines) do
-    local parsed = nil
-    if consts.HAS_LSD then
-      -- lsd
-      parsed = parsers.parse_lsd(line, context)
-    elseif consts.HAS_EZA then
-      -- eza/exa
-      parsed = parsers.parse_eza(line, context)
-    else
-      -- ls
-      parsed = parsers.parse_ls(line, context)
+    if str.not_empty(line) then
+      local parsed = nil
+      if consts.HAS_LSD then
+        -- lsd
+        parsed = parsers.parse_lsd(line, context)
+      elseif consts.HAS_EZA then
+        -- eza/exa
+        parsed = parsers.parse_eza(line, context)
+      else
+        -- ls
+        parsed = parsers.parse_ls(line, context)
+      end
+      table.insert(results, string.format("edit! %s", parsed.filename))
     end
-    local edit = string.format("edit! %s", parsed.filename)
-    table.insert(results, edit)
   end
   return results
 end
 
--- Run `:edit!` commands for eza/exa/ls results.
+-- Run `:edit!` commands for lsd/eza/exa/ls results.
 --- @param lines string[]
 --- @param context fzfx.FileExplorerPipelineContext
 M.edit_ls = function(lines, context)
   local edits = M._make_edit_ls(lines, context)
+
   M._confirm_discard_modified(context.bufnr, function()
-    for i, edit in ipairs(edits) do
-      -- log.debug("|fzfx.helper.actions - edit_ls| [%d]:[%s]", i, edit)
-      local ok, result = pcall(vim.cmd --[[@as function]], edit)
-      assert(ok, vim.inspect(result))
+    for _, e in ipairs(edits) do
+      vim.cmd(e)
     end
   end)
 end
+
+-- ls }
 
 --- @param lines string[]
 --- @param context fzfx.GitBranchesPipelineContext
