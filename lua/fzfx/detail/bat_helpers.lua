@@ -288,7 +288,7 @@ end
 --- @param value fzfx._BatThemeScopeValue?
 --- @return string?
 M._render_scope = function(value)
-  if tbl.tbl_empty(value) then
+  if value == nil or tbl.tbl_empty(value) then
     return nil
   end
 
