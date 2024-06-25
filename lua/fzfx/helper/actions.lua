@@ -368,17 +368,21 @@ M._make_setqflist_grep_no_filename = function(lines, context)
 
   local qfs = {}
   for _, line in ipairs(lines) do
-    local parsed = parsers.parse_grep_no_filename(line)
-    table.insert(qfs, {
-      filename = filename,
-      lnum = parsed.lineno,
-      col = 1,
-      text = parsed.text,
-    })
+    if str.not_empty(line) then
+      local parsed = parsers.parse_grep_no_filename(line)
+      table.insert(qfs, {
+        filename = filename,
+        lnum = parsed.lineno,
+        col = 1,
+        text = parsed.text,
+      })
+    end
   end
+
   return qfs
 end
 
+-- Run `:setqflist` commands for grep results (no filename).
 --- @param lines string[]
 --- @param context fzfx.PipelineContext?
 M.setqflist_grep_no_filename = function(lines, context)
@@ -387,13 +391,11 @@ M.setqflist_grep_no_filename = function(lines, context)
     return
   end
 
-  local ok, result = pcall(vim.cmd --[[@as function]], ":copen")
-  assert(ok, vim.inspect(result))
-  ok, result = pcall(vim.fn.setqflist, {}, " ", {
+  vim.cmd(":copen")
+  vim.fn.setqflist({}, " ", {
     nr = "$",
     items = qfs,
   })
-  assert(ok, vim.inspect(result))
 end
 
 -- grep no filename }
