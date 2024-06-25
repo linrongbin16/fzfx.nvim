@@ -196,93 +196,85 @@ M.edit_grep = function(lines, context)
   end)
 end
 
+-- Make `:setqflist` commands for grep results.
 --- @param lines string[]
 --- @return {filename:string,lnum:integer,col:integer,text:string}[]
 M._make_setqflist_grep = function(lines)
   local qfs = {}
   for _, line in ipairs(lines) do
-    local parsed = parsers.parse_grep(line)
-    table.insert(qfs, {
-      filename = parsed.filename,
-      lnum = parsed.lineno,
-      col = 1,
-      text = parsed.text,
-    })
+    if str.not_empty(line) then
+      local parsed = parsers.parse_grep(line)
+      table.insert(qfs, {
+        filename = parsed.filename,
+        lnum = parsed.lineno,
+        col = 1,
+        text = parsed.text,
+      })
+    end
   end
   return qfs
 end
 
+-- Run `:call setqflist` commands for grep results.
 --- @param lines string[]
 M.setqflist_grep = function(lines)
   local qfs = M._make_setqflist_grep(lines)
-  local ok, result = pcall(vim.cmd --[[@as function]], ":copen")
-  assert(ok, vim.inspect(result))
-  ok, result = pcall(vim.fn.setqflist, {}, " ", {
+  vim.cmd(":copen")
+  vim.fn.setqflist({}, " ", {
     nr = "$",
     items = qfs,
   })
-  assert(ok, vim.inspect(result))
 end
 
 -- grep }
 
 -- rg no filename {
 
+-- Make `:call setpos` and `:normal! zz` commands for rg results (no filename).
 --- @param lines string[]
---- @param context fzfx.PipelineContext
 --- @return string[]|nil
-M._make_set_cursor_rg_no_filename = function(lines, context)
-  if lines == nil or #lines == 0 then
+M._make_set_cursor_rg_no_filename = function(lines)
+  if tbl.list_empty(lines) then
     return nil
   end
-
-  local winnr = tbl.tbl_get(context, "winnr")
-  if type(winnr) ~= "number" or not vim.api.nvim_win_is_valid(winnr) then
-    log.echo(LogLevels.INFO, string.format("invalid window(%s).", vim.inspect(winnr)))
+  local line = lines[#lines]
+  if str.empty(line) then
     return nil
   end
 
   local results = {}
-  local line = lines[#lines]
   local parsed = parsers.parse_rg_no_filename(line)
   table.insert(
     results,
-    string.format(
-      "call setpos('.', [%d, %d, %d])",
-      context.bufnr,
-      parsed.lineno,
-      parsed.column or 1
-    )
+    string.format("call setpos('.', [0, %d, %d])", parsed.lineno, parsed.column or 1)
   )
   table.insert(results, 'execute "normal! zz"')
   return results
 end
 
--- Run 'set_cursor' command on rg results.
+-- Run `:call setpos` and `:normal! zz` commands on rg results (no filename).
 --- @param lines string[]
 --- @param context fzfx.PipelineContext
 M.set_cursor_rg_no_filename = function(lines, context)
-  local moves = M._make_set_cursor_rg_no_filename(lines, context)
+  local moves = M._make_set_cursor_rg_no_filename(lines)
   if not moves then
     return
   end
+
   M._confirm_discard_modified(context.bufnr, function()
-    for i, move in ipairs(moves) do
-      -- log.debug("|set_cursor_rg_no_filename| [%d]:%s", i, vim.inspect(move))
-      local ok, result = pcall(vim.is_callable(move) and move --[[@as function]] or function()
-        vim.cmd(move --[[@as string]])
-      end)
-      assert(ok, vim.inspect(result))
+    for _, m in ipairs(moves) do
+      vim.cmd(m)
     end
   end)
 end
 
+-- Make `:setqflist` commands for rg results (no filename).
 --- @param lines string[]
 --- @param context fzfx.PipelineContext?
 --- @return {filename:string,lnum:integer,col:integer,text:string}[]|nil
 M._make_setqflist_rg_no_filename = function(lines, context)
   local bufnr = tbl.tbl_get(context, "bufnr")
-  if not num.ge(bufnr, 0) or not vim.api.nvim_buf_is_valid(bufnr) then
+  if type(bufnr) ~= "number" or not vim.api.nvim_buf_is_valid(bufnr) then
     log.echo(LogLevels.INFO, string.format("invalid buffer(%s).", vim.inspect(bufnr)))
     return nil
   end
@@ -292,18 +284,21 @@ M._make_setqflist_rg_no_filename = function(lines, context)
 
   local qfs = {}
   for _, line in ipairs(lines) do
-    local parsed = parsers.parse_rg_no_filename(line)
-    table.insert(qfs, {
-      filename = filename,
-      lnum = parsed.lineno,
-      col = parsed.column or 1,
-      text = parsed.text,
-    })
+    if str.not_empty(line) then
+      local parsed = parsers.parse_rg_no_filename(line)
+      table.insert(qfs, {
+        filename = filename,
+        lnum = parsed.lineno,
+        col = parsed.column or 1,
+        text = parsed.text,
+      })
+    end
   end
+
   return qfs
 end
 
--- Run `:setqflist` commands for rg/grep results with no filename.
+-- Run `:setqflist` commands for rg results (no filename).
 --- @param lines string[]
 --- @param context fzfx.PipelineContext?
 M.setqflist_rg_no_filename = function(lines, context)
@@ -312,61 +307,52 @@ M.setqflist_rg_no_filename = function(lines, context)
     return
   end
 
-  local ok, result = pcall(vim.cmd --[[@as function]], ":copen")
-  assert(ok, vim.inspect(result))
-  ok, result = pcall(vim.fn.setqflist, {}, " ", {
+  vim.cmd(":copen")
+  vim.fn.setqflist({}, " ", {
     nr = "$",
     items = qfs,
   })
-  assert(ok, vim.inspect(result))
 end
 
 -- rg no file name }
 
 -- grep no filename {
 
---- @package
 --- @param lines string[]
---- @param context fzfx.PipelineContext
 --- @return string[]|nil
-M._make_set_cursor_grep_no_filename = function(lines, context)
-  if #lines == 0 then
+M._make_set_cursor_grep_no_filename = function(lines)
+  if tbl.list_empty(lines) then
     return nil
   end
-  local winnr = tbl.tbl_get(context, "winnr")
-  if not num.ge(winnr, 0) or not vim.api.nvim_win_is_valid(winnr) then
-    log.echo(LogLevels.INFO, string.format("invalid window(%s).", vim.inspect(winnr)))
+  local line = lines[#lines]
+  if str.empty(line) then
     return nil
   end
 
   local results = {}
-  local line = lines[#lines]
   local parsed = parsers.parse_grep_no_filename(line)
-  table.insert(
-    results,
-    string.format("call setpos('.', [%d, %d, %d])", context.bufnr, parsed.lineno, 1)
-  )
+  table.insert(results, string.format("call setpos('.', [0, %d, %d])", parsed.lineno, 1))
   table.insert(results, 'execute "normal! zz"')
   return results
 end
 
--- Run 'set_cursor' command on grep results.
+-- Run `:call setpos` commands on grep results (no filename).
 --- @param lines string[]
 --- @param context fzfx.PipelineContext
 M.set_cursor_grep_no_filename = function(lines, context)
-  local moves = M._make_set_cursor_grep_no_filename(lines, context)
+  local moves = M._make_set_cursor_grep_no_filename(lines)
   if not moves then
     return
   end
+
   M._confirm_discard_modified(context.bufnr, function()
-    for i, move in ipairs(moves) do
-      -- log.debug("|set_cursor_grep_no_filename| [%d]:%s", i, vim.inspect(move))
-      local ok, result = pcall(vim.cmd --[[@as function]], move)
-      assert(ok, vim.inspect(result))
+    for _, m in ipairs(moves) do
+      vim.cmd(m)
     end
   end)
 end
 
+-- Make `:setqflist` commands for grep results (no filename).
 --- @param lines string[]
 --- @param context fzfx.PipelineContext?
 --- @return {filename:string,lnum:integer,col:integer,text:string}[]|nil
