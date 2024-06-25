@@ -9,9 +9,6 @@ local LogLevels = require("fzfx.lib.log").LogLevels
 
 local bat_themes_helper = require("fzfx.helper.bat_themes")
 local parsers_helper = require("fzfx.helper.parsers")
-local queries_helper = require("fzfx.helper.queries")
-local actions_helper = require("fzfx.helper.actions")
-local labels_helper = require("fzfx.helper.previewer_labels")
 
 local M = {}
 

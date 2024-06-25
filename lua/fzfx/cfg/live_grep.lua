@@ -4,11 +4,9 @@ local path = require("fzfx.commons.path")
 
 local constants = require("fzfx.lib.constants")
 local switches = require("fzfx.lib.switches")
-local bufs = require("fzfx.lib.bufs")
 local log = require("fzfx.lib.log")
 local LogLevels = require("fzfx.lib.log").LogLevels
 
-local queries_helper = require("fzfx.helper.queries")
 local actions_helper = require("fzfx.helper.actions")
 local labels_helper = require("fzfx.helper.previewer_labels")
 local previewers_helper = require("fzfx.helper.previewers")
@@ -117,7 +115,7 @@ M._make_provider_rg = function(opts)
   --- @param context fzfx.PipelineContext
   --- @return string[]|nil
   local function impl(query, context)
-    local parsed = queries_helper.parse_flagged(query or "")
+    local parsed = _grep.parse_query(query or "")
     local payload = parsed.payload
     local option = parsed.option
 
@@ -151,7 +149,7 @@ M._make_provider_grep = function(opts)
   --- @param context fzfx.PipelineContext
   --- @return string[]|nil
   local function impl(query, context)
-    local parsed = queries_helper.parse_flagged(query or "")
+    local parsed = _grep.parse_query(query or "")
     local payload = parsed.payload
     local option = parsed.option
 

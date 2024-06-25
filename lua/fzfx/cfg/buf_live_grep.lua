@@ -7,15 +7,15 @@ local bufs = require("fzfx.lib.bufs")
 local log = require("fzfx.lib.log")
 local LogLevels = require("fzfx.lib.log").LogLevels
 
-local queries_helper = require("fzfx.helper.queries")
 local actions_helper = require("fzfx.helper.actions")
 local labels_helper = require("fzfx.helper.previewer_labels")
-local _grep = require("fzfx.cfg._grep")
 local previewers_helper = require("fzfx.helper.previewers")
 
 local ProviderTypeEnum = require("fzfx.schema").ProviderTypeEnum
 local PreviewerTypeEnum = require("fzfx.schema").PreviewerTypeEnum
 local CommandFeedEnum = require("fzfx.schema").CommandFeedEnum
+
+local _grep = require("fzfx.cfg._grep")
 
 local M = {}
 
@@ -56,7 +56,7 @@ M.variants = {
 --- @param context fzfx.PipelineContext
 --- @return string[]|nil
 M._provider_rg = function(query, context)
-  local parsed = queries_helper.parse_flagged(query or "")
+  local parsed = _grep.parse_query(query or "")
   local payload = parsed.payload
   local option = parsed.option
 
@@ -78,7 +78,7 @@ end
 --- @param context fzfx.PipelineContext
 --- @return string[]|nil
 M._provider_grep = function(query, context)
-  local parsed = queries_helper.parse_flagged(query or "")
+  local parsed = _grep.parse_query(query or "")
   local payload = parsed.payload
   local option = parsed.option
 

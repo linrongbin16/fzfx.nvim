@@ -83,4 +83,26 @@ M.append_options = function(args, opts)
   return args
 end
 
+-- Parse the first `--` flag inside user query.
+-- Treat the payload before `--` flag as user query content, the payload after `--` flag as extra options for underlying `rg`/`grep`/`git grep` command.
+--- @param query string
+--- @param flag string?
+--- @return {payload:string,option:string?}
+M.parse_query = function(query, flag)
+  flag = flag or "--"
+  local payload = ""
+  local option
+
+  local flag_pos = str.find(query, flag)
+  if type(flag_pos) == "number" and flag_pos > 0 then
+    local truncated_payload = string.sub(query, 1, flag_pos - 1)
+    local truncated_option = string.sub(query, flag_pos + 2)
+    payload = str.trim(truncated_payload)
+    option = str.trim(truncated_option)
+  else
+    payload = str.trim(query)
+  end
+  return { payload = payload, option = option }
+end
+
 return M
