@@ -96,9 +96,8 @@ end
 
 -- Make `:edit!` and `:call setpos` commands for rg results.
 --- @param lines string[]
---- @param context fzfx.PipelineContext
---- @return {edits:string[],setpos:{bufnr:integer,lineno:integer,column:integer}?}
-M._make_edit_rg = function(lines, context)
+--- @return {edits:string[],setpos:{lineno:integer,column:integer}?}
+M._make_edit_rg = function(lines)
   local results = { edits = {} }
   local last_parsed
   for _, line in ipairs(lines) do
@@ -111,9 +110,8 @@ M._make_edit_rg = function(lines, context)
   end
 
   -- For the last position, move cursor to it.
-  if last_parsed and last_parsed.lineno ~= nil then
+  if last_parsed ~= nil and last_parsed.lineno ~= nil then
     results.setpos = {
-      bufnr = context.bufnr,
       lineno = last_parsed.lineno,
       column = last_parsed.column or 1,
     }
@@ -126,7 +124,7 @@ end
 --- @param lines string[]
 --- @param context fzfx.PipelineContext
 M.edit_rg = function(lines, context)
-  local results = M._make_edit_rg(lines, context)
+  local results = M._make_edit_rg(lines)
   local edits = results.edits
   local setpos = results.setpos
   M._confirm_discard_modified(context.bufnr, function()
@@ -134,7 +132,7 @@ M.edit_rg = function(lines, context)
       vim.cmd(e)
     end
     if setpos then
-      vim.fn.setpos(".", { setpos.bufnr, setpos.lineno, setpos.column })
+      vim.fn.setpos(".", { 0, setpos.lineno, setpos.column })
     end
     vim.cmd('execute "normal! zz"')
   end)
