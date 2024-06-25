@@ -16,9 +16,7 @@ describe("fzfx.cfg.git_files", function()
   local GITHUB_ACTIONS = os.getenv("GITHUB_ACTIONS") == "true"
 
   require("fzfx").setup()
-  local contexts = require("fzfx.helper.contexts")
   local fzf_helpers = require("fzfx.detail.fzf_helpers")
-
   local git_files_cfg = require("fzfx.cfg.git_files")
 
   describe("_make_provider", function()

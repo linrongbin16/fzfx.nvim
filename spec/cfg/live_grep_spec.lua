@@ -14,9 +14,17 @@ describe("fzfx.cfg.live_grep", function()
   require("fzfx").setup()
   local tbl = require("fzfx.commons.tbl")
   local consts = require("fzfx.lib.constants")
-  local contexts = require("fzfx.helper.contexts")
   local live_grep_cfg = require("fzfx.cfg.live_grep")
   local _grep = require("fzfx.cfg._grep")
+
+  --- @return fzfx.PipelineContext
+  local function make_context()
+    return {
+      bufnr = vim.api.nvim_get_current_buf(),
+      winnr = vim.api.nvim_get_current_win(),
+      tabnr = vim.api.nvim_get_current_tabpage(),
+    }
+  end
 
   describe("[_make_provider]", function()
     it("restricted", function()
@@ -59,7 +67,7 @@ describe("fzfx.cfg.live_grep", function()
     end)
     it("buffer", function()
       local f = live_grep_cfg._make_provider({ buffer = true })
-      local actual = f("hello", contexts.make_pipeline_context())
+      local actual = f("hello", make_context())
       -- print(string.format("live grep provider:%s\n", vim.inspect(actual)))
       assert_eq(type(actual), "table")
       if consts.HAS_RG then
