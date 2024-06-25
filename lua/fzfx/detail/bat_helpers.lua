@@ -507,7 +507,7 @@ M._build_theme = function(colorname)
       .. vim.inspect(theme_name)
   )
 
-  local theme_config_file = bat_themes_helper.get_theme_config_file(colorname)
+  local theme_config_file = bat_themes_helper.get_theme_config_filename(colorname)
   -- log.debug("|_build_theme| theme_config_file:%s", vim.inspect(theme_config_file))
   log.ensure(
     str.not_empty(theme_config_file),

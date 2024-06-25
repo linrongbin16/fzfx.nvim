@@ -82,35 +82,43 @@ end
 --- @param delimiter string
 --- @return string
 M._normalize_by = function(s, delimiter)
-  local splits = str.find(s, delimiter) and str.split(s, delimiter, { trimempty = true }) or { s }
+  local splits
+  if str.find(s, delimiter) then
+    splits = str.split(s, delimiter, { plain = true, trimempty = true })
+  else
+    splits = { s }
+  end
   splits = M._upper_first(splits)
   return table.concat(splits, "")
 end
 
---- @param name string
+-- Convert vim colorscheme name to bat theme (TextMate) name.
+--- @param colorname string
 --- @return string
-M.get_theme_name = function(name)
-  assert(type(name) == "string" and string.len(name) > 0)
-  if THEME_NAMES_MAP[name] == nil then
-    local result = name
+M.get_theme_name = function(colorname)
+  assert(type(colorname) == "string" and string.len(colorname) > 0)
+  if THEME_NAMES_MAP[colorname] == nil then
+    local result = colorname
     result = M._normalize_by(result, "-")
     result = M._normalize_by(result, "+")
     result = M._normalize_by(result, "_")
     result = M._normalize_by(result, ".")
     result = M._normalize_by(result, " ")
-    THEME_NAMES_MAP[name] = "FzfxNvim" .. result
+    THEME_NAMES_MAP[colorname] = "FzfxNvim" .. result
   end
 
-  return THEME_NAMES_MAP[name]
+  return THEME_NAMES_MAP[colorname]
 end
 
+-- Convert vim colorscheme name to bat theme's config file name.
 --- @param colorname string
 --- @return string?
-M.get_theme_config_file = function(colorname)
+M.get_theme_config_filename = function(colorname)
   local theme_dir = M.get_theme_dir()
   if str.empty(theme_dir) then
     return nil
   end
+
   local theme_name = M.get_theme_name(colorname)
   log.ensure(
     str.not_empty(theme_name),
