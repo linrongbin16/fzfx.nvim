@@ -151,13 +151,11 @@ end
 --- @param lines string[]
 M.setqflist_rg = function(lines)
   local qfs = M._make_setqflist_rg(lines)
-  local ok, result = pcall(vim.cmd --[[@as function]], ":copen")
-  assert(ok, vim.inspect(result))
-  ok, result = pcall(vim.fn.setqflist, {}, " ", {
+  vim.cmd(":copen")
+  vim.fn.setqflist({}, " ", {
     nr = "$",
     items = qfs,
   })
-  assert(ok, vim.inspect(result))
 end
 
 -- rg }
