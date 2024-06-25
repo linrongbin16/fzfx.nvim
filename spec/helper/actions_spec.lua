@@ -12,6 +12,8 @@ describe("helper.actions", function()
   end)
 
   local DEVICONS_PATH = "~/github/linrongbin16/.config/nvim/lazy/nvim-web-devicons"
+
+  local consts = require("fzfx.lib.constants")
   local str = require("fzfx.commons.str")
   local tbl = require("fzfx.commons.tbl")
   local path = require("fzfx.commons.path")
@@ -252,7 +254,11 @@ describe("helper.actions", function()
     end)
   end)
 
-  describe("[set_cursor_grep_no_filename]", function()
+  describe("[_make_set_cursor_grep_no_filename]", function()
+    it("empty", function()
+      local actual = actions._make_set_cursor_grep_no_filename({})
+      assert_eq(actual, nil)
+    end)
     it("make", function()
       local lines = {
         "73",
@@ -262,23 +268,17 @@ describe("helper.actions", function()
         "81:72:9129",
       }
 
-      local actual1 =
-        actions._make_set_cursor_grep_no_filename({}, contexts_helper.make_pipeline_context())
-      assert_eq(actual1, nil)
-      local actual2 = actions._make_set_cursor_grep_no_filename(lines, nil)
-      assert_eq(actual2, nil)
-
       for i, line in ipairs(lines) do
-        local ctx = contexts_helper.make_pipeline_context()
-        local actual = actions._make_set_cursor_grep_no_filename({ line }, ctx)
+        local actual = actions._make_set_cursor_grep_no_filename({ line })
         assert_eq(type(actual), "table")
-        assert_eq(#actual, 3)
-
-        assert_true(vim.is_callable(actual[1]))
-        assert_true(vim.is_callable(actual[2]))
-        assert_eq(actual[3], 'execute "normal! zz"')
+        assert_eq(#actual, 2)
+        assert_true(str.startswith(actual[1], "call setpos('.'"))
+        assert_eq(actual[2], 'execute "normal! zz"')
       end
     end)
+  end)
+
+  describe("[set_cursor_grep_no_filename]", function()
     it("run", function()
       vim.env._FZFX_NVIM_DEVICONS_PATH = nil
       local lines = {
@@ -503,7 +503,11 @@ describe("helper.actions", function()
       assert_true(true)
     end)
   end)
-  describe("[set_cursor_rg_no_filename]", function()
+  describe("[_make_set_cursor_rg_no_filename]", function()
+    it("empty", function()
+      local actual = actions._make_set_cursor_rg_no_filename({})
+      assert_eq(actual, nil)
+    end)
     it("make", function()
       local lines = {
         "1:1:ok",
@@ -512,23 +516,25 @@ describe("helper.actions", function()
         "12:81: goodbye",
         "81:71:9129",
       }
-      local actual1 =
-        actions._make_set_cursor_rg_no_filename({}, contexts_helper.make_pipeline_context())
-      assert_eq(actual1, nil)
-      local actual2 = actions._make_set_cursor_rg_no_filename(lines, nil)
-      assert_eq(actual2, nil)
-
       for i, line in ipairs(lines) do
-        local ctx = contexts_helper.make_pipeline_context()
-        local actual = actions._make_set_cursor_rg_no_filename({ line }, ctx)
+        local actual = actions._make_set_cursor_rg_no_filename({ line })
+        print(
+          string.format(
+            "_make_set_cursor_rg_no_filename-%d, line:%s, actual:%s\n",
+            i,
+            vim.inspect(line),
+            vim.inspect(actual)
+          )
+        )
         assert_eq(type(actual), "table")
-        assert_eq(#actual, 3)
+        assert_eq(#actual, 2)
 
-        assert_true(vim.is_callable(actual[1]))
-        assert_true(vim.is_callable(actual[2]))
-        assert_eq(actual[3], 'execute "normal! zz"')
+        assert_true(str.startswith(actual[1], "call setpos('.'"))
+        assert_eq(actual[2], 'execute "normal! zz"')
       end
     end)
+  end)
+  describe("[set_cursor_rg_no_filename]", function()
     it("run", function()
       vim.env._FZFX_NVIM_DEVICONS_PATH = nil
       local lines = {
@@ -721,21 +727,14 @@ describe("helper.actions", function()
       -- assert_true(parsed.input == nil)
       -- assert_true(parsed.mode == nil)
     end)
-    it("make <plug>", function()
+    it("<plug>", function()
       local parsed = actions._make_feed_vim_key({
         "<Plug>(YankyCycleBackward)                   n   |Y      |N     |Y      ~/.config/nvim/lazy/yanky.nvim/lua/yanky.lua:290",
       }, CONTEXT)
-      -- print(
-      --   string.format(
-      --     "feed <plug> key:%s, %s, %s\n",
-      --     vim.inspect(parsed.fn),
-      --     vim.inspect(parsed.input),
-      --     vim.inspect(parsed.mode)
-      --   )
-      -- )
+      print(string.format("feed_vim_key <plug>, parsed:%s\n", vim.inspect(parsed)))
       assert_eq(parsed.fn, "cmd")
       assert_eq(type(parsed.input), "string")
-      assert_true(str.startswith(parsed.input, [[execute "normal \]]))
+      assert_true(str.startswith(parsed.input, 'execute "normal '))
       assert_eq(parsed.mode, "n")
     end)
   end)
@@ -967,6 +966,104 @@ describe("helper.actions", function()
     it("run", function()
       local lines = CONTEXT.marks
       actions.setqflist_vim_mark(lines, CONTEXT)
+    end)
+  end)
+
+  describe("[_make_edit_ls]", function()
+    local CONTEXT = require("fzfx.cfg.file_explorer")._context_maker()
+
+    local LS_LINES = {
+      "-rw-r--r--   1 linrongbin Administrators 1.1K Jul  9 14:35 LICENSE",
+      "-rw-r--r--   1 linrongbin Administrators 6.2K Sep 28 22:26 README.md",
+      "drwxr-xr-x   2 linrongbin Administrators 4.0K Sep 30 21:55 deps",
+      "-rw-r--r--   1 linrongbin Administrators  585 Jul 22 14:26 init.vim",
+      "-rw-r--r--   1 linrongbin Administrators  585 Jul 22 14:26 'hello world.txt'",
+      "-rw-r--r--   1 rlin  staff   1.0K Aug 28 12:39 LICENSE",
+      "-rw-r--r--   1 rlin  staff    27K Oct  8 11:37 README.md",
+      "drwxr-xr-x   3 rlin  staff    96B Aug 28 12:39 autoload",
+      "drwxr-xr-x   4 rlin  staff   128B Sep 22 10:11 bin",
+      "-rw-r--r--   1 rlin  staff   120B Sep  5 14:14 codecov.yml",
+    }
+    local LS_EXPECTS = {
+      "LICENSE",
+      "README.md",
+      "deps",
+      "init.vim",
+      "hello world.txt",
+      "LICENSE",
+      "README.md",
+      "autoload",
+      "bin",
+      "codecov.yml",
+    }
+    local LSD_LINES = {
+      "drwxr-xr-x  rlin staff 160 B  Wed Oct 25 16:59:44 2023 bin",
+      ".rw-r--r--  rlin staff  54 KB Tue Oct 31 22:29:35 2023 CHANGELOG.md",
+      ".rw-r--r--  rlin staff 120 B  Tue Oct 10 14:47:43 2023 codecov.yml",
+      ".rw-r--r--  rlin staff 1.0 KB Mon Aug 28 12:39:24 2023 LICENSE",
+      "drwxr-xr-x  rlin staff 128 B  Tue Oct 31 21:55:28 2023 lua",
+      ".rw-r--r--  rlin staff  38 KB Wed Nov  1 10:29:19 2023 README.md",
+      "drwxr-xr-x  rlin staff 992 B  Wed Nov  1 11:16:13 2023 test",
+    }
+    local LSD_EXPECTS = {
+      "bin",
+      "CHANGELOG.md",
+      "codecov.yml",
+      "LICENSE",
+      "lua",
+      "README.md",
+      "test",
+    }
+    local EZA_LINES = {
+      -- Permissions Size User Date Modified Name
+      "drwxr-xr-x     - linrongbin 28 Aug 12:39  autoload",
+      "drwxr-xr-x     - linrongbin 22 Sep 10:11  bin",
+      ".rw-r--r--   120 linrongbin  5 Sep 14:14  codecov.yml",
+      ".rw-r--r--  1.1k linrongbin 28 Aug 12:39  LICENSE",
+      "drwxr-xr-x     - linrongbin  8 Oct 09:14  lua",
+      ".rw-r--r--   28k linrongbin  8 Oct 11:37  README.md",
+      "drwxr-xr-x     - linrongbin  8 Oct 11:44  test",
+      ".rw-r--r--   28k linrongbin  8 Oct 12:10  test1-README.md",
+      ".rw-r--r--   28k linrongbin  8 Oct 12:10  test2-README.md",
+    }
+    local EZA_EXPECTS = {
+      "autoload",
+      "bin",
+      "codecov.yml",
+      "LICENSE",
+      "lua",
+      "README.md",
+      "test",
+      "test1-README.md",
+      "test2-README.md",
+    }
+
+    it("make", function()
+      if consts.HAS_LSD then
+        for _, line in ipairs(LSD_LINES) do
+          local actual = actions._make_edit_ls({ line }, CONTEXT)
+          assert_eq(type(actual), "table")
+          for _, a in ipairs(actual) do
+            assert_true(str.startswith(a, "edit!"))
+          end
+        end
+      elseif consts.HAS_EZA then
+        for _, line in ipairs(EZA_LINES) do
+          local actual = actions._make_edit_ls({ line }, CONTEXT)
+          assert_eq(type(actual), "table")
+          for _, a in ipairs(actual) do
+            assert_true(str.startswith(a, "edit!"))
+          end
+        end
+      else
+        for _, line in ipairs(LS_LINES) do
+          local actual = actions._make_edit_ls({ line }, CONTEXT)
+          assert_eq(type(actual), "table")
+          for _, a in ipairs(actual) do
+            assert_true(str.startswith(a, "edit!"))
+          end
+        end
+      end
     end)
   end)
 end)

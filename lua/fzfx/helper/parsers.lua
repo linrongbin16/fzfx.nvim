@@ -693,6 +693,7 @@ M.parse_vim_mark = function(line, context)
       file_text = normalized_filename
     elseif type(context.bufnr) == "number" and vim.api.nvim_buf_is_valid(context.bufnr) then
       local bufname = vim.api.nvim_buf_get_name(context.bufnr)
+      bufname = path.normalize(bufname, { double_backslash = true, expand = true })
       if path.isfile(bufname) then
         file_text = bufname
       end
