@@ -21,7 +21,7 @@ M._create_dir_if_not_exist = function(dir)
   return true
 end
 
--- Cached `bat --config-dir` result.
+-- The cached `bat --config-dir` result.
 --- @type string?
 local CACHED_THEME_DIR = nil
 
@@ -36,6 +36,7 @@ M.get_theme_dir = function()
 end
 
 -- Async get bat theme directory, and invoke `callback` function to consume the value.
+-- This function will only be called when setup this plugin. Then you can just use `get_theme_dir` to get the cached result.
 --- @param callback fun(theme_dir:string?):nil
 M.async_get_theme_dir = function(callback)
   log.ensure(consts.HAS_BAT, string.format("|async_get_theme_dir| cannot find %s", consts.BAT))
