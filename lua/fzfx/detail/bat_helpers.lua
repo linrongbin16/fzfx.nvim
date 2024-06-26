@@ -29,7 +29,7 @@ local spawn = require("fzfx.commons.spawn")
 local consts = require("fzfx.lib.constants")
 local log = require("fzfx.lib.log")
 
-local bats_helper = require("fzfx.helper.bats")
+local bat_themes_helper = require("fzfx.helper.bat_themes")
 
 local M = {}
 
@@ -502,7 +502,7 @@ local building_bat_theme = false
 M._build_theme = function(colorname)
   log.ensure(str.not_empty(colorname), "|_build_theme| colorname is empty string!")
 
-  local theme_dir = bats_helper.get_theme_dir() --[[@as string]]
+  local theme_dir = bat_themes_helper.get_theme_dir() --[[@as string]]
   if str.empty(theme_dir) then
     return
   end
@@ -512,7 +512,7 @@ M._build_theme = function(colorname)
     string.format("|_build_theme| bat theme dir(%s) not exist", vim.inspect(theme_dir))
   )
 
-  local theme_name = bats_helper.get_theme_name(colorname)
+  local theme_name = bat_themes_helper.get_theme_name(colorname)
   log.ensure(
     str.not_empty(theme_name),
     "|_build_theme| failed to convert theme name from vim colorscheme name: "
@@ -529,7 +529,7 @@ M._build_theme = function(colorname)
       .. vim.inspect(theme_name)
   )
 
-  local theme_config_file = bats_helper.get_theme_config_filename(colorname) --[[@as string]]
+  local theme_config_file = bat_themes_helper.get_theme_config_filename(colorname) --[[@as string]]
   log.ensure(
     str.not_empty(theme_config_file),
     "|_build_theme| failed to get bat theme config file from nvim colorscheme name:"
@@ -564,7 +564,7 @@ M.setup = function()
     return
   end
 
-  bats_helper.async_get_theme_dir(function()
+  bat_themes_helper.async_get_theme_dir(function()
     vim.schedule(function()
       if str.not_empty(vim.g.colors_name) then
         M._build_theme(vim.g.colors_name)
