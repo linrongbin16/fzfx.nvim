@@ -68,11 +68,12 @@ end
 --- @type table<string, string>
 local THEME_NAMES_MAP = {}
 
+-- Set first character to upper case for all the strings in `names`.
 --- @param names string[]
 --- @return string[]
 M._upper_first = function(names)
   assert(
-    type(names) == "table" and #names > 0,
+    type(names) == "table",
     string.format("|_upper_firsts| invalid names:%s", vim.inspect(names))
   )
   local new_names = {}
