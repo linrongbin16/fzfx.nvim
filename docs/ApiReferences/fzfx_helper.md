@@ -11,9 +11,9 @@ And there're multiple sub-packages inside (sorted in alphabetical order):
 
 ## `parsers`
 
-!> Note: This package is the most package inside `fzfx.helper`, please read this section before other sections.
+!> Note: This module is the most important one among all the modules inside `fzfx.helper`, please read this section before other sections.
 
-This sub-package contains all the parsers used for parsing user inputs & query results. For example the `FzfxLiveGrep` runs `rg --column -n --no-heading --color=always -H -S 'fzfx'` command (suppose you have `rg` and search for text `'fzfx'`) as the underlying command, the query results look like:
+This module contains all the parsers used for parsing user inputs & query results. For example the `FzfxLiveGrep` runs `rg --column -n --no-heading --color=always -H -S 'fzfx'` command (suppose you have `rg` and search for text `'fzfx'`) as the underlying command, the query results look like:
 
 <img width="70%" alt="image" src="https://github.com/linrongbin16/fzfx.nvim/assets/6496887/033cd998-3b06-4846-8cff-d2794216ebc0">
 
@@ -129,7 +129,7 @@ It works for `FzfxMarks`.
 
 ## `actions`
 
-This sub-package contains all the actions. Press the key and quit the searching popup, if user selected multiple lines (with `--multi` option) or only current line (when no line is selected) will be be passed to the binded lua functions, i.e. the **actions** we're discussing here.
+This module contains all the actions. Press the key and quit the searching popup, if user selected multiple lines (with `--multi` option) or only current line (when no line is selected) will be be passed to the binded lua functions, i.e. the **actions** we're discussing here.
 
 ### `fd`/`find`
 
