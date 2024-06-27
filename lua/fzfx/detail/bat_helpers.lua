@@ -56,16 +56,18 @@ function _BatThemeGlobalRenderer:new(hls, key, attr)
 end
 
 -- Render this object into string.
---- @return string?
+--- @return string[]|nil
 function _BatThemeGlobalRenderer:render()
   if str.empty(self.key) or str.empty(self.value) then
     return nil
   end
-  local builder = {
-    string.format("          <key>%s</key>", self.key),
-    string.format("          <string>%s</string>", self.value),
-  }
-  return table.concat(builder, "\n")
+
+  return tbl.List
+    :of(string.format("<key>%s</key>", self.key), string.format("<string>%s</string>", self.value))
+    :map(function(item)
+      return string.format("%s%s", string.rep(" ", 10), item)
+    end)
+    :data()
 end
 
 M._BatThemeGlobalRenderer = _BatThemeGlobalRenderer
@@ -157,16 +159,28 @@ function _BatThemeScopeRenderer:new(highlight, scope)
   return o
 end
 
+--- @param ind integer
+--- @param fmt string
+--- @param ...
+--- @return string
+M._indent = function(ind, fmt, ...)
+  fmt = string.rep(" ", ind) .. fmt
+  return string.format(fmt, ...)
+end
+
 --- @param value fzfx._BatThemeScopeValue?
---- @return string?
+--- @return string[]|nil
 M._render_scope = function(value)
   if value == nil or tbl.tbl_empty(value) then
     return nil
   end
 
-  local builder = {
-    "      <dict>",
-  }
+  local indent6 = 6
+  local indent8 = 8
+  local indent10 = 10
+
+  local builder = tbl.List:of()
+  builder:push(M._indent(indent6, "<dict>"))
 
   -- value.scope
   local scope_str
@@ -176,52 +190,40 @@ M._render_scope = function(value)
     scope_str = value.scope --[[@as string]]
   end
 
-  table.insert(
-    builder,
-    string.format(
-      [[        <key>name</key>
-        <string>%s</string>]],
-      scope_str
-    )
-  )
-  table.insert(
-    builder,
-    string.format(
-      [[        <key>scope</key>
-        <string>%s</string>]],
-      scope_str
-    )
-  )
-  table.insert(builder, "        <key>settings</key>")
-  table.insert(builder, "        <dict>")
+  builder:push(M._indent(indent8, "<key>name</key>"))
+  builder:push(M._indent(indent8, "<string>%s</string>", scope_str))
+  builder:push(M._indent(indent8, "<key>scope</key>"))
+  builder:push(M._indent(indent8, "<string>%s</string>", scope_str))
+  builder:push(M._indent(indent8, "<key>settings</key>"))
+
+  builder:push(M._indent(indent8, "<key>settings</key>"))
+  builder:push(M._indent(indent8, "<dict>"))
 
   -- value.foreground
   if value.foreground then
-    table.insert(builder, "          <key>foreground</key>")
-    table.insert(builder, string.format("          <string>%s</string>", value.foreground))
+    builder:push(M._indent(indent10, "<key>foreground</key>"))
+    builder:push(M._indent(indent10, "<string>%s</string>", value.foreground))
   end
 
   -- value.background
   if value.background then
-    table.insert(builder, "          <key>background</key>")
-    table.insert(builder, string.format("          <string>%s</string>", value.background))
+    builder:push(M._indent(indent10, "<key>background</key>"))
+    builder:push(M._indent(indent10, "<string>%s</string>", value.background))
   end
 
   -- value.font_style
   if type(value.font_style) == "table" and #value.font_style > 0 then
-    table.insert(builder, "          <key>fontStyle</key>")
-    table.insert(
-      builder,
-      string.format("          <string>%s</string>", table.concat(value.font_style, ", "))
-    )
+    builder:push(M._indent(indent10, "<key>fontStyle</key>"))
+    builder:push(M._indent(indent10, "<string>%s</string>", table.concat(value.font_style, ", ")))
   end
-  table.insert(builder, "        </dict>")
-  table.insert(builder, "      </dict>\n")
 
-  return table.concat(builder, "\n")
+  builder:push(M._indent(indent8, "</dict>"))
+  builder:push(M._indent(indent6, "</dict>"))
+
+  return builder:data()
 end
 
---- @return string?
+--- @return string[]|nil
 function _BatThemeScopeRenderer:render()
   return M._render_scope(self.value)
 end
@@ -436,12 +438,12 @@ function _BatThemeRenderer:new()
       <dict>
         <key>settings</key>
         <dict>
-          {GLOBAL}
+{GLOBAL}
         </dict>
       </dict>
 
       <!-- scopes -->
-      {SCOPE}
+{SCOPE}
 
     </array>
     <key>uuid</key>
@@ -473,15 +475,19 @@ function _BatThemeRenderer:render(theme_name)
   local globals = {}
   for _, r in ipairs(self.globals) do
     local result = r:render()
-    if result then
-      table.insert(globals, result)
+    if type(result) == "table" then
+      for _, l in ipairs(result) do
+        table.insert(globals, l)
+      end
     end
   end
   local scopes = {}
   for _, r in ipairs(self.scopes) do
     local result = r:render()
-    if result then
-      table.insert(scopes, result)
+    if type(result) == "table" then
+      for _, l in ipairs(result) do
+        table.insert(scopes, l)
+      end
     end
   end
 
