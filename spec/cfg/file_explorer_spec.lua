@@ -12,19 +12,24 @@ describe("fzfx.cfg.file_explorer", function()
     vim.cmd([[noautocmd edit README.md]])
   end)
 
-  local github_actions = os.getenv("GITHUB_ACTIONS") == "true"
+  local GITHUB_ACTIONS = os.getenv("GITHUB_ACTIONS") == "true"
 
   local str = require("fzfx.commons.str")
   local path = require("fzfx.commons.path")
-
   local consts = require("fzfx.lib.constants")
-
-  local contexts = require("fzfx.helper.contexts")
   local fzf_helpers = require("fzfx.detail.fzf_helpers")
-
   local file_explorer_cfg = require("fzfx.cfg.file_explorer")
 
   require("fzfx").setup()
+
+  --- @return fzfx.PipelineContext
+  local function make_context()
+    return {
+      bufnr = vim.api.nvim_get_current_buf(),
+      winnr = vim.api.nvim_get_current_win(),
+      tabnr = vim.api.nvim_get_current_tabpage(),
+    }
+  end
 
   describe("[file_explorer]", function()
     local LS_LINES = {

@@ -16,10 +16,18 @@ describe("fzfx.cfg.git_commits", function()
 
   local str = require("fzfx.commons.str")
   local consts = require("fzfx.lib.constants")
-  local contexts = require("fzfx.helper.contexts")
   local fzf_helpers = require("fzfx.detail.fzf_helpers")
   local git_commits_cfg = require("fzfx.cfg.git_commits")
   require("fzfx").setup()
+
+  --- @return fzfx.PipelineContext
+  local function make_context()
+    return {
+      bufnr = vim.api.nvim_get_current_buf(),
+      winnr = vim.api.nvim_get_current_win(),
+      tabnr = vim.api.nvim_get_current_tabpage(),
+    }
+  end
 
   describe("[_make_provider]", function()
     it("workspace", function()
@@ -35,7 +43,7 @@ describe("fzfx.cfg.git_commits", function()
     end)
     it("current buffer", function()
       local f = git_commits_cfg._make_provider({ buffer = true })
-      local actual = f("", contexts.make_pipeline_context())
+      local actual = f("", make_context())
       if actual ~= nil then
         assert_eq(type(actual), "table")
         local n = #git_commits_cfg._GIT_LOG_CURRENT_BUFFER

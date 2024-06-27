@@ -1,6 +1,6 @@
 local cwd = vim.fn.getcwd()
 
-describe("helper.bat_themes", function()
+describe("detail.bats_helper", function()
   local assert_eq = assert.is_equal
   local assert_true = assert.is_true
   local assert_false = assert.is_false
@@ -8,21 +8,47 @@ describe("helper.bat_themes", function()
   before_each(function()
     vim.api.nvim_command("cd " .. cwd)
     vim.opt.swapfile = false
+    vim.cmd("noautocmd colorscheme darkblue")
   end)
 
   local str = require("fzfx.commons.str")
-  local constants = require("fzfx.lib.constants")
+  local path = require("fzfx.commons.path")
+  local consts = require("fzfx.lib.constants")
   local bat_themes_helper = require("fzfx.helper.bat_themes")
   require("fzfx").setup()
 
+  describe("[_create_dir_if_not_exist]", function()
+    it("test", function()
+      local tmp = vim.fn.tempname()
+      assert_false(path.isdir(tmp))
+      assert_false(path.isfile(tmp))
+
+      local actual1 = bat_themes_helper._create_dir_if_not_exist(tmp)
+      assert_true(actual1)
+      local actual2 = bat_themes_helper._create_dir_if_not_exist(tmp)
+      assert_false(actual2)
+    end)
+  end)
+
   describe("[get_theme_dir]", function()
     it("test", function()
-      if constants.HAS_BAT then
+      if consts.HAS_BAT then
         local actual = bat_themes_helper.get_theme_dir()
         assert_true(type(actual) == "string" or actual == nil)
       end
     end)
   end)
+
+  describe("[async_get_theme_dir]", function()
+    it("test", function()
+      if consts.HAS_BAT then
+        bat_themes_helper.async_get_theme_dir(function(theme_dir)
+          assert_true(type(theme_dir) == "string")
+        end)
+      end
+    end)
+  end)
+
   describe("[_upper_first]", function()
     it("test", function()
       local inputs = {
@@ -42,6 +68,7 @@ describe("helper.bat_themes", function()
       end
     end)
   end)
+
   describe("[_normalize_by]", function()
     it("rose-pine", function()
       assert_eq(bat_themes_helper._normalize_by("rose-pine", "-"), "RosePine")
@@ -58,6 +85,7 @@ describe("helper.bat_themes", function()
       assert_eq(bat_themes_helper._normalize_by("solarized8_high", "_"), "Solarized8High")
     end)
   end)
+
   describe("[get_theme_name]", function()
     it("test", function()
       local inputs = {
@@ -80,14 +108,14 @@ describe("helper.bat_themes", function()
         "FzfxNvimPaperColor",
         "FzfxNvimOceanicNext",
       }
-
       for i, v in ipairs(inputs) do
         local actual = bat_themes_helper.get_theme_name(v)
         assert_eq(actual, expects[i])
       end
     end)
   end)
-  describe("[get_theme_config_file]", function()
+
+  describe("[get_theme_config_filename]", function()
     it("test", function()
       local inputs = {
         "material-lighter",
@@ -109,20 +137,20 @@ describe("helper.bat_themes", function()
         "FzfxNvimPaperColor.tmTheme",
         "FzfxNvimOceanicNext.tmTheme",
       }
-
-      if constants.HAS_BAT then
+      if consts.HAS_BAT then
         for i, v in ipairs(inputs) do
-          local actual = bat_themes_helper.get_theme_config_file(v) --[[@as string]]
+          local actual = bat_themes_helper.get_theme_config_filename(v) --[[@as string]]
+          local expect = expects[i]
           print(
             string.format(
-              "get bat theme file, actual:%s, expects[%d]:%s\n",
+              "get_theme_config_filename-%d, actual:%s, expect:%s\n",
+              i,
               vim.inspect(actual),
-              vim.inspect(i),
-              vim.inspect(expects[i])
+              vim.inspect(expect)
             )
           )
           if actual then
-            assert_true(str.endswith(actual, expects[i]))
+            assert_true(str.endswith(actual, expect))
           end
         end
       end

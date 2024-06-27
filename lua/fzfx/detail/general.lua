@@ -20,7 +20,6 @@ local schema = require("fzfx.schema")
 local Popup = require("fzfx.detail.popup").Popup
 local rpcserver = require("fzfx.detail.rpcserver")
 local fzf_helpers = require("fzfx.detail.fzf_helpers")
-local context_helpers = require("fzfx.helper.contexts")
 
 local DEFAULT_PIPELINE = "default"
 
@@ -908,6 +907,15 @@ local function mock_non_buffer_previewer_fzf_border_opts(fzf_opts)
   return new_fzf_opts, border_opts
 end
 
+--- @return fzfx.PipelineContext
+local function _make_default_context()
+  return {
+    bufnr = vim.api.nvim_get_current_buf(),
+    winnr = vim.api.nvim_get_current_win(),
+    tabnr = vim.api.nvim_get_current_tabpage(),
+  }
+end
+
 --- @param name string
 --- @param query string
 --- @param bang boolean
@@ -959,13 +967,11 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
   local use_buffer_previewer = previewer_switch:current().previewer_type
     == PreviewerTypeEnum.BUFFER_FILE
 
-  local context_maker = (
-    type(pipeline_configs.other_opts) == "table"
-    and type(pipeline_configs.other_opts.context_maker) == "function"
-  )
-      and pipeline_configs.other_opts.context_maker
-    or context_helpers.make_pipeline_context
-
+  local context_maker = _make_default_context
+  local pipeline_context_maker = tbl.tbl_get(pipeline_configs, "other_opts", "context_maker")
+  if pipeline_context_maker ~= nil and vim.is_callable(pipeline_context_maker) then
+    context_maker = pipeline_context_maker
+  end
   local context = context_maker()
   local rpc_registries = {}
 

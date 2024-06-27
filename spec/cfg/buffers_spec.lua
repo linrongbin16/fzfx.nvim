@@ -13,17 +13,24 @@ describe("fzfx.cfg.buffers", function()
     vim.cmd([[noautocmd edit README.md]])
   end)
 
-  local github_actions = os.getenv("GITHUB_ACTIONS") == "true"
+  local GITHUB_ACTIONS = os.getenv("GITHUB_ACTIONS") == "true"
 
   require("fzfx").setup()
-  local contexts = require("fzfx.helper.contexts")
   local fzf_helpers = require("fzfx.detail.fzf_helpers")
-
   local buffers_cfg = require("fzfx.cfg.buffers")
+
+  --- @return fzfx.PipelineContext
+  local function make_context()
+    return {
+      bufnr = vim.api.nvim_get_current_buf(),
+      winnr = vim.api.nvim_get_current_win(),
+      tabnr = vim.api.nvim_get_current_tabpage(),
+    }
+  end
 
   describe("[buffers]", function()
     it("_provider", function()
-      local actual = buffers_cfg._provider("", contexts.make_pipeline_context())
+      local actual = buffers_cfg._provider("", make_context())
       assert_eq(type(actual), "table")
       assert_true(#actual >= 0)
     end)

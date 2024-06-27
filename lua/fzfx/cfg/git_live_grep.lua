@@ -5,7 +5,6 @@ local cmds = require("fzfx.lib.commands")
 local log = require("fzfx.lib.log")
 local LogLevels = require("fzfx.lib.log").LogLevels
 
-local queries_helper = require("fzfx.helper.queries")
 local actions_helper = require("fzfx.helper.actions")
 local labels_helper = require("fzfx.helper.previewer_labels")
 local previewers_helper = require("fzfx.helper.previewers")
@@ -64,7 +63,7 @@ M._provider = function(query, context)
     return nil
   end
 
-  local parsed = queries_helper.parse_flagged(query or "")
+  local parsed = _grep.parse_query(query or "")
   local payload = parsed.payload
   local option = parsed.option
 

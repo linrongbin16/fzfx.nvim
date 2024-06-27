@@ -11,12 +11,7 @@ describe("fzfx.cfg.lsp_diagnostics", function()
     vim.cmd([[noautocmd edit README.md]])
   end)
 
-  local github_actions = os.getenv("GITHUB_ACTIONS") == "true"
-
   local str = require("fzfx.commons.str")
-  local consts = require("fzfx.lib.constants")
-  local contexts = require("fzfx.helper.contexts")
-  local fzf_helpers = require("fzfx.detail.fzf_helpers")
   local lsp_diagnostics_cfg = require("fzfx.cfg.lsp_diagnostics")
   require("fzfx").setup()
 

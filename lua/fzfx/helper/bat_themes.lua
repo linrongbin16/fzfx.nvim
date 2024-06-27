@@ -1,62 +1,79 @@
+local str = require("fzfx.commons.str")
 local path = require("fzfx.commons.path")
 local spawn = require("fzfx.commons.spawn")
-local str = require("fzfx.commons.str")
 
-local constants = require("fzfx.lib.constants")
+local consts = require("fzfx.lib.constants")
 local log = require("fzfx.lib.log")
 
 local M = {}
 
---- @param theme_dir string
-M._create_theme_dir = function(theme_dir)
-  if path.isdir(theme_dir) then
-    return
+-- theme dir {
+
+-- Create directory if it doesn't exist.
+-- Returns false if it's already existed, returns true if it's created.
+--- @param dir string
+--- @return boolean
+M._create_dir_if_not_exist = function(dir)
+  if path.isdir(dir) then
+    return false
   end
-  vim.fn.mkdir(theme_dir, "p")
+  vim.fn.mkdir(dir, "p")
+  return true
 end
 
+-- The cached `bat --config-dir` result.
 --- @type string?
-local cached_theme_dir = nil
+local CACHED_THEME_DIR = nil
 
---- @param cb (fun(theme_dir:string?):nil)|nil
+-- Returns cached theme dir.
+-- Returns `nil` if the `async_get_theme_dir` is not been initialized.
 --- @return string?
-M.get_theme_dir = function(cb)
-  if str.empty(cached_theme_dir) then
-    log.ensure(constants.HAS_BAT, "|get_theme_dir| cannot find 'bat' executable")
-
-    local config_dir = ""
-    spawn.run({ constants.BAT, "--config-dir" }, {
-      on_stdout = function(line)
-        config_dir = config_dir .. line
-      end,
-      on_stderr = function() end,
-    }, function(completed)
-      -- log.debug("|get_theme_dir| config_dir:%s", vim.inspect(config_dir))
-      cached_theme_dir = path.join(config_dir, "themes")
-      vim.schedule(function()
-        M._create_theme_dir(cached_theme_dir)
-        if cb ~= nil and vim.is_callable(cb) then
-          cb(cached_theme_dir)
-        end
-      end)
-    end)
-
-    return nil
+M.get_theme_dir = function()
+  if str.not_empty(CACHED_THEME_DIR) then
+    M._create_dir_if_not_exist(CACHED_THEME_DIR --[[@as string]])
   end
-
-  M._create_theme_dir(cached_theme_dir --[[@as string]])
-  return cached_theme_dir
+  return CACHED_THEME_DIR
 end
+
+-- Async get bat theme directory, and invoke `callback` function to consume the value.
+-- This function will only be called when setup this plugin. Then you can just use `get_theme_dir` to get the cached result.
+--- @param callback fun(theme_dir:string?):nil
+M.async_get_theme_dir = function(callback)
+  log.ensure(consts.HAS_BAT, string.format("|async_get_theme_dir| cannot find %s", consts.BAT))
+  log.ensure(
+    type(callback) == "function",
+    string.format("|async_get_theme_dir| callback(%s) is not a function", vim.inspect(callback))
+  )
+
+  local theme_dir = ""
+  spawn.run({ consts.BAT, "--config-dir" }, {
+    on_stdout = function(line)
+      theme_dir = theme_dir .. line
+    end,
+    on_stderr = function() end,
+  }, function()
+    CACHED_THEME_DIR = path.join(theme_dir, "themes")
+    vim.schedule(function()
+      M._create_dir_if_not_exist(CACHED_THEME_DIR)
+      callback(CACHED_THEME_DIR)
+    end)
+  end)
+end
+
+-- theme dir }
+
+-- theme name {
 
 -- Vim colorscheme name => bat theme name
 --- @type table<string, string>
 local THEME_NAMES_MAP = {}
 
+-- Set first character to upper case for all the strings in `names`.
 --- @param names string[]
 --- @return string[]
 M._upper_first = function(names)
   assert(
-    type(names) == "table" and #names > 0,
+    type(names) == "table",
     string.format("|_upper_firsts| invalid names:%s", vim.inspect(names))
   )
   local new_names = {}
@@ -75,35 +92,43 @@ end
 --- @param delimiter string
 --- @return string
 M._normalize_by = function(s, delimiter)
-  local splits = str.find(s, delimiter) and str.split(s, delimiter, { trimempty = true }) or { s }
+  local splits
+  if str.find(s, delimiter) then
+    splits = str.split(s, delimiter, { plain = true, trimempty = true })
+  else
+    splits = { s }
+  end
   splits = M._upper_first(splits)
   return table.concat(splits, "")
 end
 
---- @param name string
+-- Convert vim colorscheme name to bat theme (TextMate) name.
+--- @param colorname string
 --- @return string
-M.get_theme_name = function(name)
-  assert(type(name) == "string" and string.len(name) > 0)
-  if THEME_NAMES_MAP[name] == nil then
-    local result = name
+M.get_theme_name = function(colorname)
+  assert(type(colorname) == "string" and string.len(colorname) > 0)
+  if THEME_NAMES_MAP[colorname] == nil then
+    local result = colorname
     result = M._normalize_by(result, "-")
     result = M._normalize_by(result, "+")
     result = M._normalize_by(result, "_")
     result = M._normalize_by(result, ".")
     result = M._normalize_by(result, " ")
-    THEME_NAMES_MAP[name] = "FzfxNvim" .. result
+    THEME_NAMES_MAP[colorname] = "FzfxNvim" .. result
   end
 
-  return THEME_NAMES_MAP[name]
+  return THEME_NAMES_MAP[colorname]
 end
 
+-- Convert vim colorscheme name to bat theme's config file name.
 --- @param colorname string
 --- @return string?
-M.get_theme_config_file = function(colorname)
+M.get_theme_config_filename = function(colorname)
   local theme_dir = M.get_theme_dir()
   if str.empty(theme_dir) then
     return nil
   end
+
   local theme_name = M.get_theme_name(colorname)
   log.ensure(
     str.not_empty(theme_name),
@@ -117,5 +142,7 @@ M.get_theme_config_file = function(colorname)
   -- )
   return path.join(theme_dir, theme_name .. ".tmTheme")
 end
+
+-- theme name }
 
 return M

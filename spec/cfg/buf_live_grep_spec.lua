@@ -13,14 +13,22 @@ describe("fzfx.cfg.buf_live_grep", function()
 
   local tbl = require("fzfx.commons.tbl")
   local consts = require("fzfx.lib.constants")
-  local contexts_help = require("fzfx.helper.contexts")
   local buf_live_grep_cfg = require("fzfx.cfg.buf_live_grep")
   local _grep = require("fzfx.cfg._grep")
   require("fzfx").setup()
 
+  --- @return fzfx.PipelineContext
+  local function make_context()
+    return {
+      bufnr = vim.api.nvim_get_current_buf(),
+      winnr = vim.api.nvim_get_current_win(),
+      tabnr = vim.api.nvim_get_current_tabpage(),
+    }
+  end
+
   describe("[_provider_rg]", function()
     it("test", function()
-      local ctx = contexts_help.make_pipeline_context()
+      local ctx = make_context()
       local n = #_grep.UNRESTRICTED_RG
 
       local actual1 = buf_live_grep_cfg._provider_rg("", ctx)
@@ -42,7 +50,7 @@ describe("fzfx.cfg.buf_live_grep", function()
   end)
   describe("[_provider_grep]", function()
     it("test", function()
-      local ctx = contexts_help.make_pipeline_context()
+      local ctx = make_context()
       local n = #_grep.UNRESTRICTED_GREP
 
       local actual1 = buf_live_grep_cfg._provider_grep("", ctx)
@@ -70,7 +78,7 @@ describe("fzfx.cfg.buf_live_grep", function()
       assert_eq(actual, nil)
     end)
     it("with context", function()
-      local ctx = contexts_help.make_pipeline_context()
+      local ctx = make_context()
       local f = buf_live_grep_cfg._make_provider()
       local actual = f("hello", ctx)
       print(string.format("_make_provider-1:%s\n", vim.inspect(actual)))
