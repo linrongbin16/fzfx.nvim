@@ -133,21 +133,13 @@ M._make_scope_value = function(hl, scope, hl_codes)
   return value
 end
 
---- @param highlight string|string[]
+--- @param hls string[]
 --- @param scope string|string[]
 --- @return fzfx._BatThemeScopeRenderer
-function _BatThemeScopeRenderer:new(highlight, scope)
-  local hls
-  if type(highlight) == "table" then
-    hls = highlight --[[@as string[] ]]
-  else
-    hls = {
-      highlight --[[@as string]],
-    }
-  end
+function _BatThemeScopeRenderer:new(hls, scope)
+  assert(type(hls) == "table")
 
   local value
-
   for _, hl in ipairs(hls) do
     local ok, hl_codes = pcall(color_hl.get_hl, hl)
     if ok and tbl.tbl_not_empty(hl_codes) then
