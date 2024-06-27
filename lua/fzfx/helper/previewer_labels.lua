@@ -139,6 +139,7 @@ M.label_ls = M._make_label_ls(parsers.parse_ls)
 M.label_lsd = M._make_label_ls(parsers.parse_lsd)
 M.label_eza = M._make_label_ls(parsers.parse_eza)
 
+-- Make label for vim mark.
 --- @param line string?
 --- @param context fzfx.VimMarksPipelineContext
 --- @return string
@@ -150,7 +151,9 @@ M.label_vim_mark = function(line, context)
   local filename = parsed.filename
   if str.empty(filename) then
     filename = vim.api.nvim_buf_get_name(context.bufnr)
+    filename = path.normalize(filename, { double_backslash = true, expand = true })
   end
+
   if
     str.not_empty(filename) and path.isfile(filename --[[@as string]])
   then
