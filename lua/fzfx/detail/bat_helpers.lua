@@ -33,6 +33,15 @@ local bat_themes_helper = require("fzfx.helper.bat_themes")
 
 local M = {}
 
+--- @param ind integer
+--- @param fmt string
+--- @param ...
+--- @return string
+M._indent = function(ind, fmt, ...)
+  fmt = string.rep(" ", ind) .. fmt
+  return string.format(fmt, ...)
+end
+
 -- Render globals.
 --
 --- @class fzfx._BatThemeGlobalRenderer
@@ -62,11 +71,12 @@ function _BatThemeGlobalRenderer:render()
     return nil
   end
 
+  local IND_10 = 10
   return tbl.List
-    :of(string.format("<key>%s</key>", self.key), string.format("<string>%s</string>", self.value))
-    :map(function(item)
-      return string.format("%s%s", string.rep(" ", 10), item)
-    end)
+    :of(
+      M._indent(IND_10, "<key>%s</key>", self.key),
+      M._indent(IND_10, "<string>%s</string>", self.value)
+    )
     :data()
 end
 
@@ -159,15 +169,6 @@ function _BatThemeScopeRenderer:new(highlight, scope)
   return o
 end
 
---- @param ind integer
---- @param fmt string
---- @param ...
---- @return string
-M._indent = function(ind, fmt, ...)
-  fmt = string.rep(" ", ind) .. fmt
-  return string.format(fmt, ...)
-end
-
 --- @param value fzfx._BatThemeScopeValue?
 --- @return string[]|nil
 M._render_scope = function(value)
@@ -175,12 +176,12 @@ M._render_scope = function(value)
     return nil
   end
 
-  local indent6 = 6
-  local indent8 = 8
-  local indent10 = 10
+  local IND_6 = 6
+  local IND_8 = 8
+  local IND_10 = 10
 
   local builder = tbl.List:of()
-  builder:push(M._indent(indent6, "<dict>"))
+  builder:push(M._indent(IND_6, "<dict>"))
 
   -- value.scope
   local scope_str
@@ -190,35 +191,35 @@ M._render_scope = function(value)
     scope_str = value.scope --[[@as string]]
   end
 
-  builder:push(M._indent(indent8, "<key>name</key>"))
-  builder:push(M._indent(indent8, "<string>%s</string>", scope_str))
-  builder:push(M._indent(indent8, "<key>scope</key>"))
-  builder:push(M._indent(indent8, "<string>%s</string>", scope_str))
-  builder:push(M._indent(indent8, "<key>settings</key>"))
+  builder:push(M._indent(IND_8, "<key>name</key>"))
+  builder:push(M._indent(IND_8, "<string>%s</string>", scope_str))
+  builder:push(M._indent(IND_8, "<key>scope</key>"))
+  builder:push(M._indent(IND_8, "<string>%s</string>", scope_str))
+  builder:push(M._indent(IND_8, "<key>settings</key>"))
 
-  builder:push(M._indent(indent8, "<key>settings</key>"))
-  builder:push(M._indent(indent8, "<dict>"))
+  builder:push(M._indent(IND_8, "<key>settings</key>"))
+  builder:push(M._indent(IND_8, "<dict>"))
 
   -- value.foreground
   if value.foreground then
-    builder:push(M._indent(indent10, "<key>foreground</key>"))
-    builder:push(M._indent(indent10, "<string>%s</string>", value.foreground))
+    builder:push(M._indent(IND_10, "<key>foreground</key>"))
+    builder:push(M._indent(IND_10, "<string>%s</string>", value.foreground))
   end
 
   -- value.background
   if value.background then
-    builder:push(M._indent(indent10, "<key>background</key>"))
-    builder:push(M._indent(indent10, "<string>%s</string>", value.background))
+    builder:push(M._indent(IND_10, "<key>background</key>"))
+    builder:push(M._indent(IND_10, "<string>%s</string>", value.background))
   end
 
   -- value.font_style
   if type(value.font_style) == "table" and #value.font_style > 0 then
-    builder:push(M._indent(indent10, "<key>fontStyle</key>"))
-    builder:push(M._indent(indent10, "<string>%s</string>", table.concat(value.font_style, ", ")))
+    builder:push(M._indent(IND_10, "<key>fontStyle</key>"))
+    builder:push(M._indent(IND_10, "<string>%s</string>", table.concat(value.font_style, ", ")))
   end
 
-  builder:push(M._indent(indent8, "</dict>"))
-  builder:push(M._indent(indent6, "</dict>"))
+  builder:push(M._indent(IND_8, "</dict>"))
+  builder:push(M._indent(IND_6, "</dict>"))
 
   return builder:data()
 end
