@@ -35,7 +35,7 @@ local M = {}
 
 --- @param ind integer
 --- @param fmt string
---- @param ...
+--- @param ... any
 --- @return string
 M._indent = function(ind, fmt, ...)
   fmt = string.rep(" ", ind) .. fmt
