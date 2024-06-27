@@ -420,6 +420,7 @@ function _BatThemeRenderer:new()
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
   <dict>
+    <!-- names -->
     <key>author</key>
     <string>Lin Rongbin(linrongbin16@outlook.com)</string>
     <key>name</key>
@@ -431,6 +432,7 @@ function _BatThemeRenderer:new()
 
     <key>settings</key>
     <array>
+      <!-- globals -->
       <dict>
         <key>settings</key>
         <dict>
@@ -438,6 +440,7 @@ function _BatThemeRenderer:new()
         </dict>
       </dict>
 
+      <!-- scopes -->
       {SCOPE}
 
     </array>
