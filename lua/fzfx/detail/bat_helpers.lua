@@ -195,7 +195,6 @@ M._render_scope = function(value)
   builder:push(M._indent(IND_8, "<string>%s</string>", scope_str))
   builder:push(M._indent(IND_8, "<key>scope</key>"))
   builder:push(M._indent(IND_8, "<string>%s</string>", scope_str))
-  builder:push(M._indent(IND_8, "<key>settings</key>"))
 
   builder:push(M._indent(IND_8, "<key>settings</key>"))
   builder:push(M._indent(IND_8, "<dict>"))
