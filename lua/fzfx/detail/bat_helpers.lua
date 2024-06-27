@@ -229,6 +229,8 @@ function _BatThemeScopeRenderer:render()
   return M._render_scope(self.value)
 end
 
+M._BatThemeScopeRenderer = _BatThemeScopeRenderer
+
 --- @return {globals:fzfx._BatThemeGlobalRenderer[],scopes:fzfx._BatThemeScopeRenderer[]}
 M._make_renderers = function()
   -- Basic syntax

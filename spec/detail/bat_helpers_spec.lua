@@ -17,6 +17,16 @@ describe("detail.bat_helpers", function()
   local bat_helpers = require("fzfx.detail.bat_helpers")
   require("fzfx").setup()
 
+  describe("[_indent]", function()
+    it("_indent", function()
+      for i = 1, 10 do
+        local actual = bat_helpers._indent(i, "abcd")
+        assert_true(str.startswith(actual, string.rep(" ", i)))
+        assert_true(str.endswith(actual, "abcd"))
+      end
+    end)
+  end)
+
   describe("[_BatThemeGlobalRenderer]", function()
     it("render", function()
       local r = bat_helpers._BatThemeGlobalRenderer:new(
@@ -24,7 +34,7 @@ describe("detail.bat_helpers", function()
         "foreground",
         "fg"
       )
-      local actual = r:render()
+      local actual = r:render() --[[@as string[] ]]
       assert_eq(type(actual), "table")
       assert_true(tbl.List:copy(actual):every(function(a)
         return type(a) == "string"
@@ -32,15 +42,16 @@ describe("detail.bat_helpers", function()
       assert_true(tbl.List:copy(actual):some(function(a)
         local p1 = string.find(a, "<key>")
         local p2 = str.find(a, "</key>")
-        return type(p1) == "number" and p1 > 0 and type(p2) == "number" and p2 > 0
+        return type(p1) == "number" and p1 > 0 and type(p2) == "number" and p2 > p1
       end))
       assert_true(tbl.List:copy(actual):some(function(a)
         local p1 = string.find(a, "<string>")
         local p2 = string.find(a, "</string>")
-        return type(p1) == "number" and p1 > 0 and string.find(a, "</string>") > 0
+        return type(p1) == "number" and p1 > 0 and type(p2) == "number" and p2 > p1
       end))
     end)
   end)
+
   describe("[_BatThemeScopeRenderer]", function()
     local RENDERERS = {
       bat_helpers._BatThemeScopeRenderer:new({ "@comment", "Comment" }, "comment"),
@@ -69,19 +80,26 @@ describe("detail.bat_helpers", function()
             return type(a) == "string"
           end))
           assert_true(tbl.List:copy(actual):some(function(a)
+            local p1 = string.find(a, "</dict>")
+            return type(p1) == "number" and p1 > 0
+          end))
+          assert_true(tbl.List:copy(actual):some(function(a)
             local p1 = string.find(a, "<dict>")
-            local p2 = str.find(a, "</dict>")
-            return type(p1) == "number" and p1 > 0 and type(p2) == "number" and p2 > 0
+            return type(p1) == "number" and p1 > 0
           end))
           assert_true(tbl.List:copy(actual):some(function(a)
             local p1 = string.find(a, "<key>")
             local p2 = str.find(a, "</key>")
-            return type(p1) == "number" and p1 > 0 and type(p2) == "number" and p2 > 0
+            return type(p1) == "number" and p1 > 0 and type(p2) == "number" and p2 > p1
           end))
           assert_true(tbl.List:copy(actual):some(function(a)
             local p1 = string.find(a, "<string>")
             local p2 = string.find(a, "</string>")
-            return type(p1) == "number" and p1 > 0 and string.find(a, "</string>") > 0
+            return type(p1) == "number" and p1 > 0 and type(p2) == "number" and p2 > p1
+          end))
+          assert_true(tbl.List:copy(actual):some(function(a)
+            local p1 = string.find(a, "<key>foreground</key>")
+            return type(p1) == "number" and p1 > 0
           end))
         end
       end
