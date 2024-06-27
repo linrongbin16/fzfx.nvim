@@ -20,16 +20,9 @@ describe("helper.previewer_labels", function()
 
   local str = require("fzfx.commons.str")
   local fileio = require("fzfx.commons.fileio")
-
-  local parsers = require("fzfx.helper.parsers")
-  local labels = require("fzfx.helper.previewer_labels")
-
-  require("fzfx").setup({
-    debug = {
-      enable = true,
-      file_log = true,
-    },
-  })
+  local parsers_helper = require("fzfx.helper.parsers")
+  local previewer_labels_helper = require("fzfx.helper.previewer_labels")
+  require("fzfx").setup()
 
   describe("[label_find]", function()
     it("test", function()
@@ -42,7 +35,7 @@ describe("helper.previewer_labels", function()
         "~/github/linrongbin16/fzfx.nvim/lua/fzfx/test/hello world.txt",
       }
       for _, line in ipairs(lines) do
-        local actual = labels.label_find(line)
+        local actual = previewer_labels_helper.label_find(line)
         assert_eq(type(actual), "string")
         assert_true(str.endswith(line, actual))
       end
@@ -60,7 +53,7 @@ describe("helper.previewer_labels", function()
         "~/github/linrongbin16/fzfx.nvim/lua/fzfx/test/hello world.txt:81:71:9129",
       }
       for _, line in ipairs(lines) do
-        local actual = labels.label_rg(line)
+        local actual = previewer_labels_helper.label_rg(line)
         assert_eq(type(actual), "string")
         assert_eq(type(str.find(line, actual)), "number")
         assert_true(str.find(line, actual) > 0)
@@ -79,7 +72,7 @@ describe("helper.previewer_labels", function()
       }
       for _, line in ipairs(lines) do
         local ctx = make_context()
-        local actual = labels.label_rg_no_filename(line, ctx)
+        local actual = previewer_labels_helper.label_rg_no_filename(line, ctx)
         local splits = str.split(line, ":")
         assert_eq(type(actual), "string")
         assert_true(str.endswith(actual, string.format("%s:%s", splits[1], splits[2])))
@@ -101,7 +94,7 @@ describe("helper.previewer_labels", function()
         "~/github/linrongbin16/fzfx.nvim/lua/fzfx/test/hello world.txt:81:72:9129",
       }
       for _, line in ipairs(lines) do
-        local actual = labels.label_grep(line)
+        local actual = previewer_labels_helper.label_grep(line)
         assert_eq(type(actual), "string")
         assert_eq(type(str.find(line, actual)), "number")
         assert_true(str.find(line, actual) > 0)
@@ -120,7 +113,7 @@ describe("helper.previewer_labels", function()
       }
       for _, line in ipairs(lines) do
         local ctx = make_context()
-        local actual = labels.label_grep_no_filename(line, ctx)
+        local actual = previewer_labels_helper.label_grep_no_filename(line, ctx)
         local splits = str.split(line, ":")
         assert_eq(type(actual), "string")
         assert_true(str.endswith(actual, splits[1]))
@@ -144,7 +137,7 @@ describe("helper.previewer_labels", function()
         ":Next             N   |Y  |N/A  |N/A  |N/A              /opt/homebrew/Cellar/neovim/0.9.4/share/nvim/runtime/doc/index.txt:1124",
       }
       for _, line in ipairs(lines) do
-        local actual = labels.label_vim_command(line, CONTEXT)
+        local actual = previewer_labels_helper.label_vim_command(line, CONTEXT)
         assert_eq(type(actual), "string")
         local actual_splits = str.split(actual, ":")
         assert_eq(#actual_splits, 2)
@@ -157,7 +150,7 @@ describe("helper.previewer_labels", function()
         ':bdelete          N   |Y  |N/A  |N/A  |N/A              "delete buffer"',
       }
       for _, line in ipairs(lines) do
-        local actual = labels.label_vim_command(line, CONTEXT)
+        local actual = previewer_labels_helper.label_vim_command(line, CONTEXT)
         assert_eq(type(actual), "string")
         assert_eq(actual, "Definition")
       end
@@ -177,7 +170,7 @@ describe("helper.previewer_labels", function()
         "<Plug>(YankyGPutAfterShiftRight)             n   |Y      |N     |Y      ~/.config/nvim/lazy/yanky.nvim/lua/yanky.lua:369",
       }
       for _, line in ipairs(lines) do
-        local actual = labels.label_vim_keymap(line, CONTEXT)
+        local actual = previewer_labels_helper.label_vim_keymap(line, CONTEXT)
         assert_eq(type(actual), "string")
         local actual_splits = str.split(actual, ":")
         assert_eq(#actual_splits, 2)
@@ -192,7 +185,7 @@ describe("helper.previewer_labels", function()
         '<2-LeftMouse>                                n   |N      |N     |Y      "<Plug>(matchup-double-click)"',
       }
       for _, line in ipairs(lines) do
-        local actual = labels.label_vim_keymap(line, CONTEXT)
+        local actual = previewer_labels_helper.label_vim_keymap(line, CONTEXT)
         assert_eq(type(actual), "string")
         assert_eq(actual, "Definition")
       end
@@ -234,7 +227,7 @@ describe("helper.previewer_labels", function()
         "codecov.yml",
       }
       for i, line in ipairs(lines) do
-        local actual = labels.label_ls(line, CONTEXT)
+        local actual = previewer_labels_helper.label_ls(line, CONTEXT)
         local expect = expects[i]
         assert_true(str.endswith(actual, expect))
       end
@@ -259,7 +252,7 @@ describe("helper.previewer_labels", function()
         "test",
       }
       for i, line in ipairs(lines) do
-        local actual = labels.label_lsd(line, CONTEXT)
+        local actual = previewer_labels_helper.label_lsd(line, CONTEXT)
         local expect = expects[i]
         assert_true(str.endswith(actual, expect))
       end
@@ -289,7 +282,7 @@ describe("helper.previewer_labels", function()
         "test2-README.md",
       }
       for i, line in ipairs(lines) do
-        local actual = labels.label_eza(line, CONTEXT)
+        local actual = previewer_labels_helper.label_eza(line, CONTEXT)
         local expect = expects[i]
         assert_true(str.endswith(actual, expect))
       end
@@ -302,7 +295,7 @@ describe("helper.previewer_labels", function()
       local n = #CONTEXT.marks
       for i = 2, n do
         local line = CONTEXT.marks[i]
-        local actual = labels.label_vim_mark(line, CONTEXT)
+        local actual = previewer_labels_helper.label_vim_mark(line, CONTEXT)
         local splits = str.split(actual, ":")
         print(
           string.format(
