@@ -277,7 +277,7 @@ end
 -- we cannot use options `--preview-window=+{2}-/2` and `--delimiter=':'` to tell fzf what is the line number.
 -- So we have to use bat option `--line-range` to truncate other parts of preview contents,
 -- leave only interested text contents around the target line number.
--- But this also introduce another limitation: it doesn't support scrolling in preview window.
+-- But this also introduce another limitation: it cannot scroll up in preview window.
 --
 -- When working on Neovim's buffer, this is no longer an issue, the internal buffer previewer engine will handle it.
 --
