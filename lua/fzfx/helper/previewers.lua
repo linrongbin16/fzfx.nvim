@@ -12,7 +12,7 @@ local bat_themes_helper = require("fzfx.helper.bat_themes")
 
 local M = {}
 
--- bat utils {
+-- utils {
 
 --- @return string
 M._bat_style = function()
@@ -47,9 +47,26 @@ M._bat_theme = function()
   return "--theme=" .. theme
 end
 
--- bat utils }
+-- The margin of fzf preview window
+local FZF_PREVIEW_WINDOW_MARGIN = 6
 
--- preview fd/find results with cat/bat {
+-- Calculate fzf's preview window width.
+--- @return integer
+M._fzf_preview_window_width = function()
+  local win_width = vim.api.nvim_win_get_width(0)
+  return math.floor(math.max(3, win_width / 2 - FZF_PREVIEW_WINDOW_MARGIN))
+end
+
+-- Calculate fzf's preview window centered line number.
+--- @return integer
+M._fzf_preview_window_center = function()
+  local win_height = vim.api.nvim_win_get_height(0)
+  return math.floor(math.max(3, win_height / 2 - FZF_PREVIEW_WINDOW_MARGIN))
+end
+
+-- utils }
+
+-- fd/find {
 
 --- @param filename string
 --- @return string[]
@@ -81,7 +98,7 @@ end
 
 -- This previewer works with fzf's builtin preview window.
 -- To enable this previewer, set feature flag `vim.g.fzfx_disable_buffer_previewer=1`.
--- Generate the cat/bat shell command in strings list, for previewing fd/find results.
+-- It generates the cat/bat shell command in strings list, for previewing fd/find results.
 --- @param line string
 --- @return string[]
 M.fzf_preview_find = function(line)
@@ -91,15 +108,76 @@ end
 
 -- This previewer works with Neovim's buffer, instead of fzf's builtin preview window.
 -- To enable this previewer, unset feature flag `vim.g.fzfx_disable_buffer_previewer`.
--- Generate buffer configurations for previewing fd/find results.
+-- It generates buffer configurations for previewing fd/find results.
 --- @param line string
 --- @return {filename:string}
-M.buf_preview_find = function(line)
+M.buffer_preview_find = function(line)
   local parsed = parsers_helper.parse_find(line)
   return { filename = parsed.filename }
 end
 
--- preview fd/find results with cat/bat }
+-- fd/find }
+
+-- rg/grep {
+
+-- When working with rg/grep results, this plugin mostly set `--preview-window=+{2}/2` and `--delimiter=':'` for fzf command.
+-- It tells fzf to split the lines by colon ':', and the 2nd part (indicated by the `+{2}`) is the line number that previewer should focus, and the `/2` tells fzf to put the focused line in the 1/2 of the preview window.
+-- Thus fzf's preview window will automatically scroll down to the focused line and put the focused line in the center of the preview window.
+--- @param filename string
+--- @param lineno string
+--- @return string[]
+M._fzf_preview_grep = function(filename, lineno)
+  if consts.HAS_BAT then
+    local style = M._bat_style()
+    local theme = M._bat_theme()
+
+    -- "bat --style=%s --theme=%s --color=always --pager=never --highlight-line=%s -- %s"
+    local bat_command = {
+      consts.BAT,
+      style,
+      theme,
+      "--color=always",
+      "--pager=never",
+    }
+    if type(lineno) == "number" then
+      table.insert(bat_command, "--highlight-line=" .. lineno)
+    end
+    table.insert(bat_command, "--")
+    table.insert(bat_command, filename)
+    return bat_command
+  else
+    -- When bat doesn't exist, we use cat.
+    -- But cat doesn't support highlight a specific line number.
+
+    -- "cat -n -- %s"
+    return {
+      consts.CAT,
+      "-n",
+      "--",
+      filename,
+    }
+  end
+end
+
+-- This previewer works with fzf's builtin preview window.
+-- To enable this previewer, set feature flag `vim.g.fzfx_disable_buffer_previewer=1`.
+-- It generates the cat/bat shell command in strings list, for previewing rg/grep results.
+M.fzf_preview_grep = function(line)
+  local parsed = parsers_helper.parse_grep(line)
+  return M.preview_files(parsed.filename, parsed.lineno)
+end
+
+-- This previewer works with Neovim's buffer, instead of fzf's builtin preview window.
+-- To enable this previewer, unset feature flag `vim.g.fzfx_disable_buffer_previewer`.
+-- It generates buffer configurations for previewing rg/grep results.
+--- @param line string
+--- @return {filename:string,lineno:integer?}
+M.buffer_preview_grep = function(line)
+  local parsed = parsers_helper.parse_grep(line)
+  return { filename = parsed.filename, lineno = parsed.lineno }
+end
+
+-- rg/grep }
 
 -- for rg/grep, the line number is the 2nd column split by colon ':'.
 -- so we set fzf's option '--preview-window=+{2}-/2' + '--delimiter=:' (see live_grep).
@@ -204,31 +282,13 @@ end
 
 -- live grep }
 
--- previewer window {
-
-local PREVIEW_WINDOW_OFFSET = 6
-
---- @return integer
-M.get_preview_window_width = function()
-  local win_width = vim.api.nvim_win_get_width(0)
-  return math.floor(math.max(3, win_width / 2 - PREVIEW_WINDOW_OFFSET))
-end
-
---- @return integer
-M.get_preview_window_center = function()
-  local win_height = vim.api.nvim_win_get_height(0)
-  return math.floor(math.max(3, win_height / 2 - PREVIEW_WINDOW_OFFSET))
-end
-
--- previewer window }
-
 -- git commits {
 
 --- @param commit string
 --- @return string?
 M._make_preview_git_commit = function(commit)
   if consts.HAS_DELTA then
-    local win_width = M.get_preview_window_width()
+    local win_width = M._fzf_preview_window_width()
     return string.format([[git show %s | delta -n --tabs 4 --width %d]], commit, win_width)
   else
     return string.format([[git show --color=always %s]], commit)
@@ -272,7 +332,7 @@ M.preview_files_with_line_range = function(filename, lineno)
     table.insert(bat_command, "--line-range")
     table.insert(
       bat_command,
-      string.format("%d:", math.max(lineno - M.get_preview_window_center(), 1))
+      string.format("%d:", math.max(lineno - M._fzf_preview_window_center(), 1))
     )
     table.insert(bat_command, "--")
     table.insert(bat_command, filename)
