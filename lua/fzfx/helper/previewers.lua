@@ -12,7 +12,7 @@ local bat_themes_helper = require("fzfx.helper.bat_themes")
 
 local M = {}
 
--- files {
+-- bat utils {
 
 --- @return string
 M._bat_style = function()
@@ -47,6 +47,47 @@ M._bat_theme = function()
   return "--theme=" .. theme
 end
 
+-- bat utils }
+
+-- preview fd/find results with cat/bat {
+
+-- Generate the cat/bat shell command in strings list, for previewing fd/find results.
+--- @param filename string
+--- @return string[]
+M._fzf_preview_find = function(filename)
+  if consts.HAS_BAT then
+    local style = M._bat_style()
+    local theme = M._bat_theme()
+    -- "bat --style=%s --theme=%s --color=always --pager=never -- %s"
+    local bat_command = {
+      consts.BAT,
+      style,
+      theme,
+      "--color=always",
+      "--pager=never",
+    }
+    table.insert(bat_command, "--")
+    table.insert(bat_command, filename)
+    return bat_command
+  else
+    -- "cat -n -- %s"
+    return {
+      consts.CAT,
+      "-n",
+      "--",
+      filename,
+    }
+  end
+end
+
+M.fzf_preview_find = function() end
+
+M._buf_preview_find = function() end
+
+M.buf_preview_find = function() end
+
+-- preview fd/find results with cat/bat }
+
 -- for rg/grep, the line number is the 2nd column split by colon ':'.
 -- so we set fzf's option '--preview-window=+{2}-/2' + '--delimiter=:' (see live_grep).
 -- the `+{2}-/2` indicates:
@@ -79,7 +120,9 @@ M.preview_files = function(filename, lineno)
   else
     -- "cat %s"
     return {
-      "cat",
+      consts.CAT,
+      "-n",
+      "--",
       filename,
     }
   end
