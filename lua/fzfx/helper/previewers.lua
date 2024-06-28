@@ -59,28 +59,23 @@ end
 --- @return string[]
 M.preview_files = function(filename, lineno)
   if consts.HAS_BAT then
-    local style, theme = M._bat_style_theme()
+    local style = M._bat_style()
+    local theme = M._bat_theme()
+
     -- "%s --style=%s --theme=%s --color=always --pager=never --highlight-line=%s -- %s"
-    return type(lineno) == "number"
-        and {
-          consts.BAT,
-          "--style=" .. style,
-          "--theme=" .. theme,
-          "--color=always",
-          "--pager=never",
-          "--highlight-line=" .. lineno,
-          "--",
-          filename,
-        }
-      or {
-        consts.BAT,
-        "--style=" .. style,
-        "--theme=" .. theme,
-        "--color=always",
-        "--pager=never",
-        "--",
-        filename,
-      }
+    local bat_command = {
+      consts.BAT,
+      style,
+      theme,
+      "--color=always",
+      "--pager=never",
+    }
+    if type(lineno) == "number" then
+      table.insert(bat_command, "--highlight-line=" .. lineno)
+    end
+    table.insert(bat_command, "--")
+    table.insert(bat_command, filename)
+    return bat_command
   else
     -- "cat %s"
     return {
@@ -206,19 +201,26 @@ end
 --- @return string[]
 M.preview_files_with_line_range = function(filename, lineno)
   if consts.HAS_BAT then
-    local style, theme = M._bat_style_theme()
-    return {
+    local style = M._bat_style()
+    local theme = M._bat_theme()
+
+    -- "%s --style=%s --theme=%s --color=always --pager=never --highlight-line=%s -- %s"
+    local bat_command = {
       consts.BAT,
-      "--style=" .. style,
-      "--theme=" .. theme,
+      style,
+      theme,
       "--color=always",
       "--pager=never",
-      "--highlight-line=" .. lineno,
-      "--line-range",
-      string.format("%d:", math.max(lineno - M.get_preview_window_center(), 1)),
-      "--",
-      filename,
     }
+    table.insert(bat_command, "--highlight-line=" .. lineno)
+    table.insert(bat_command, "--line-range")
+    table.insert(
+      bat_command,
+      string.format("%d:", math.max(lineno - M.get_preview_window_center(), 1))
+    )
+    table.insert(bat_command, "--")
+    table.insert(bat_command, filename)
+    return bat_command
   else
     -- "cat %s"
     return {
