@@ -291,7 +291,7 @@ M._previewer = function(line, context)
   local parsed = parser(line, context)
 
   if path.isfile(parsed.filename) then
-    return previewers_helper.preview_files(parsed.filename)
+    return previewers_helper._fzf_preview_find(parsed.filename)
   elseif path.isdir(parsed.filename) then
     return M._directory_previewer(parsed.filename)
   else

@@ -1,6 +1,9 @@
 -- Note:
 -- The previewers works with fzf's builtin preview window, are named with prefix `fzf_`.
+-- To enable them, set feature flag: `vim.g.fzfx_disable_buffer_previewer=1`.
+--
 -- The previewers works with Neovim's buffer, are named with prefix `buffer_`.
+-- To enable them, unset feature flag: `vim.g.fzfx_disable_buffer_previewer`.
 
 local str = require("fzfx.commons.str")
 local path = require("fzfx.commons.path")
@@ -100,8 +103,6 @@ M._fzf_preview_find = function(filename)
   end
 end
 
--- This previewer works with fzf's builtin preview window.
--- To enable this previewer, set feature flag `vim.g.fzfx_disable_buffer_previewer=1`.
 -- It generates the cat/bat shell command in strings list, for previewing fd/find results.
 --- @param line string
 --- @return string[]
@@ -110,8 +111,6 @@ M.fzf_preview_find = function(line)
   return M._fzf_preview_find(parsed.filename)
 end
 
--- This previewer works with Neovim's buffer, instead of fzf's builtin preview window.
--- To enable this previewer, unset feature flag `vim.g.fzfx_disable_buffer_previewer`.
 -- It generates buffer configurations for previewing fd/find results.
 --- @param line string
 --- @return {filename:string}
@@ -124,11 +123,23 @@ end
 
 -- rg/grep {
 
--- When working with rg/grep results, this plugin mostly set `--preview-window=+{2}/2` and `--delimiter=':'` for fzf command.
--- It tells fzf to split the lines by colon ':', and the 2nd part (indicated by the `+{2}`) is the line number that previewer should focus, and the `/2` tells fzf to put the focused line in the 1/2 of the preview window.
--- Thus fzf's preview window will automatically scroll down to the focused line and put the focused line in the center of the preview window.
+-- When working with rg/grep results,
+-- this plugin mostly set `--preview-window=+{2}/2` and `--delimiter=':'` for fzf command.
+--
+-- It tells fzf:
+--   1. Split the lines (on the left side of fzf) by colon ':'.
+--   2. The 2nd part (indicate by `+{2}`) is the line number that previewer should focus.
+--   3. The `/2` tells fzf to put the focused line in the 1/2 of the preview window.
+--
+-- Thus fzf's preview window will automatically scroll down to the focused line,
+-- and put the focused line in the center of the preview window.
+--
+-- When working with rg/grep no filename results,
+-- this plugin set `--preview-window=+{1}/2` and `--delimiter=':'` for fzf command.
+-- It tells fzf the 1st part (indicate by `+{1}`) is the line number that previewer should focus.
+--
 --- @param filename string
---- @param lineno string
+--- @param lineno integer?
 --- @return string[]
 M._fzf_preview_grep = function(filename, lineno)
   if consts.HAS_BAT then
@@ -163,16 +174,12 @@ M._fzf_preview_grep = function(filename, lineno)
   end
 end
 
--- This previewer works with fzf's builtin preview window.
--- To enable this previewer, set feature flag `vim.g.fzfx_disable_buffer_previewer=1`.
 -- It generates the cat/bat shell command in strings list, for previewing rg/grep results.
 M.fzf_preview_grep = function(line)
   local parsed = parsers_helper.parse_grep(line)
-  return M.preview_files(parsed.filename, parsed.lineno)
+  return M._fzf_preview_grep(parsed.filename, parsed.lineno)
 end
 
--- This previewer works with Neovim's buffer, instead of fzf's builtin preview window.
--- To enable this previewer, unset feature flag `vim.g.fzfx_disable_buffer_previewer`.
 -- It generates buffer configurations for previewing rg/grep results.
 --- @param line string
 --- @return {filename:string,lineno:integer?}
@@ -183,108 +190,43 @@ end
 
 -- rg/grep }
 
--- for rg/grep, the line number is the 2nd column split by colon ':'.
--- so we set fzf's option '--preview-window=+{2}-/2' + '--delimiter=:' (see live_grep).
--- the `+{2}-/2` indicates:
---   1. the 2nd column (split by colon ':') is the line number
---   2. set it as the highlight line
---   3. place it in the center (1/2) of the whole preview window
---
---- @param filename string
---- @param lineno integer?
---- @return string[]
-M.preview_files = function(filename, lineno)
-  if consts.HAS_BAT then
-    local style = M._bat_style()
-    local theme = M._bat_theme()
+-- rg/grep no filename {
 
-    -- "%s --style=%s --theme=%s --color=always --pager=never --highlight-line=%s -- %s"
-    local bat_command = {
-      consts.BAT,
-      style,
-      theme,
-      "--color=always",
-      "--pager=never",
-    }
-    if type(lineno) == "number" then
-      table.insert(bat_command, "--highlight-line=" .. lineno)
-    end
-    table.insert(bat_command, "--")
-    table.insert(bat_command, filename)
-    return bat_command
-  else
-    -- "cat %s"
-    return {
-      consts.CAT,
-      "-n",
-      "--",
-      filename,
-    }
-  end
-end
-
---- @param line string
---- @return string[]
-M.preview_files_find = function(line)
-  local parsed = parsers_helper.parse_find(line)
-  return M.preview_files(parsed.filename)
-end
-
--- preview files with nvim buffer.
---- @param line string
---- @return {filename:string}
-M.buffer_preview_files_find = function(line)
-  local parsed = parsers_helper.parse_find(line)
-  return { filename = parsed.filename }
-end
-
--- files }
-
--- live grep {
-
---- @param line string
---- @return string[]
-M.preview_files_grep = function(line)
-  local parsed = parsers_helper.parse_grep(line)
-  return M.preview_files(parsed.filename, parsed.lineno)
-end
-
---- @param line string
---- @return {filename:string,lineno:integer?}?
-M.buffer_preview_files_grep = function(line)
-  local parsed = parsers_helper.parse_grep(line)
-  return { filename = parsed.filename, lineno = parsed.lineno }
-end
-
+-- It generates the cat/bat shell command in strings list, for previewing rg/grep no filename results.
 --- @param line string
 --- @param context fzfx.PipelineContext
 --- @return string[]|nil
-M.preview_files_grep_no_filename = function(line, context)
+M.fzf_preview_grep_no_filename = function(line, context)
   local bufnr = tbl.tbl_get(context, "bufnr")
-  if not num.ge(bufnr, 0) or not vim.api.nvim_buf_is_valid(bufnr) then
+  if type(bufnr) ~= "number" or not vim.api.nvim_buf_is_valid(bufnr) then
     return nil
   end
+
   local filename = vim.api.nvim_buf_get_name(bufnr)
   filename = path.normalize(filename, { double_backslash = true, expand = true })
+
   local parsed = parsers_helper.parse_grep_no_filename(line)
-  return M.preview_files_with_line_range(filename, parsed.lineno)
+  return M._fzf_preview_grep(filename, parsed.lineno)
 end
 
+-- It generates buffer configurations for previewing rg/grep no filename results.
 --- @param line string
 --- @param context fzfx.PipelineContext
 --- @return {filename:string,lineno:integer?}?
-M.buffer_preview_files_grep_no_filename = function(line, context)
+M.buffer_preview_grep_no_filename = function(line, context)
   local bufnr = tbl.tbl_get(context, "bufnr")
-  if not num.ge(bufnr, 0) or not vim.api.nvim_buf_is_valid(bufnr) then
+  if type(bufnr) ~= "number" or not vim.api.nvim_buf_is_valid(bufnr) then
     return nil
   end
+
   local filename = vim.api.nvim_buf_get_name(bufnr)
   filename = path.normalize(filename, { double_backslash = true, expand = true })
+
   local parsed = parsers_helper.parse_grep_no_filename(line)
   return { filename = filename, lineno = parsed.lineno }
 end
 
--- live grep }
+-- rg/grep no filename }
 
 -- git commits {
 
