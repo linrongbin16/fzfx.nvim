@@ -229,7 +229,7 @@ end
 
 -- git commit {
 
--- It generates 'git show' or 'delta' shell command for git log/blame results.
+-- It generates 'git show' (with 'delta') shell command for git log/blame results.
 --- @param line string
 --- @return string?
 M.fzf_preview_git_commit = function(line)
@@ -251,7 +251,7 @@ end
 
 -- git diff {
 
--- It generates 'git show' or 'delta' shell command for git log/blame results.
+-- It generates 'git diff' (with 'delta') shell command for git status results.
 --- @param line string
 --- @return string
 M.fzf_preview_git_status = function(line)
