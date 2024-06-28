@@ -51,7 +51,6 @@ end
 
 -- preview fd/find results with cat/bat {
 
--- Generate the cat/bat shell command in strings list, for previewing fd/find results.
 --- @param filename string
 --- @return string[]
 M._fzf_preview_find = function(filename)
@@ -80,11 +79,25 @@ M._fzf_preview_find = function(filename)
   end
 end
 
-M.fzf_preview_find = function() end
+-- This previewer works with fzf's builtin preview window.
+-- To enable this previewer, set feature flag `vim.g.fzfx_disable_buffer_previewer=1`.
+-- Generate the cat/bat shell command in strings list, for previewing fd/find results.
+--- @param line string
+--- @return string[]
+M.fzf_preview_find = function(line)
+  local parsed = parsers_helper.parse_find(line)
+  return M._fzf_preview_find(parsed.filename)
+end
 
-M._buf_preview_find = function() end
-
-M.buf_preview_find = function() end
+-- This previewer works with Neovim's buffer, instead of fzf's builtin preview window.
+-- To enable this previewer, unset feature flag `vim.g.fzfx_disable_buffer_previewer`.
+-- Generate buffer configurations for previewing fd/find results.
+--- @param line string
+--- @return {filename:string}
+M.buf_preview_find = function(line)
+  local parsed = parsers_helper.parse_find(line)
+  return { filename = parsed.filename }
+end
 
 -- preview fd/find results with cat/bat }
 
