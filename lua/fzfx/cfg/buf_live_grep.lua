@@ -120,10 +120,10 @@ M.providers = {
 local previewer
 local previewer_type
 if switches.buffer_previewer_disabled() then
-  previewer = previewers_helper.fzf_preview_find
+  previewer = previewers_helper.fzf_preview_grep_no_filename
   previewer_type = PreviewerTypeEnum.COMMAND_LIST
 else
-  previewer = previewers_helper.buffer_preview_find
+  previewer = previewers_helper.buffer_preview_grep_no_filename
   previewer_type = PreviewerTypeEnum.BUFFER_FILE
 end
 
@@ -149,6 +149,8 @@ M.actions = {
 M.fzf_opts = {
   "--multi",
   "--disabled",
+  { "--delimiter", ":" },
+  { "--preview-window", "+{1}-/2" },
   { "--prompt", "Buffer Live Grep > " },
 }
 

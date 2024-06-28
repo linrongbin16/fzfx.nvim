@@ -12,7 +12,6 @@ local tbl = require("fzfx.commons.tbl")
 local consts = require("fzfx.lib.constants")
 local shells = require("fzfx.lib.shells")
 local log = require("fzfx.lib.log")
-local LogLevels = require("fzfx.lib.log").LogLevels
 
 local parsers_helper = require("fzfx.helper.parsers")
 local bat_themes_helper = require("fzfx.helper.bat_themes")
