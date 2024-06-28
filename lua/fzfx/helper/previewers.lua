@@ -3,7 +3,7 @@ local path = require("fzfx.commons.path")
 local tbl = require("fzfx.commons.tbl")
 local num = require("fzfx.commons.num")
 
-local constants = require("fzfx.lib.constants")
+local consts = require("fzfx.lib.constants")
 local log = require("fzfx.lib.log")
 local LogLevels = require("fzfx.lib.log").LogLevels
 
@@ -14,32 +14,37 @@ local M = {}
 
 -- files {
 
---- @return string, string
-M._bat_style_theme = function()
+--- @return string
+M._bat_style = function()
   local style = "numbers,changes"
-  if type(vim.env["BAT_STYLE"]) == "string" and string.len(vim.env["BAT_STYLE"]) > 0 then
+  if str.not_empty(vim.env["BAT_STYLE"]) then
     style = vim.env["BAT_STYLE"]
   end
+  return "--style=" .. style
+end
+
+--- @return string
+M._bat_theme = function()
   local theme = "base16"
-  if type(vim.env["BAT_THEME"]) == "string" and string.len(vim.env["BAT_THEME"]) > 0 then
+  if str.not_empty(vim.env["BAT_THEME"]) then
     theme = vim.env["BAT_THEME"]
-    return style, theme
+    return "--theme=" .. theme
   end
 
-  if constants.HAS_BAT and vim.opt.termguicolors then
+  if consts.HAS_BAT and vim.opt.termguicolors then
     local colorname = vim.g.colors_name --[[@as string]]
     if str.not_empty(colorname) then
       local theme_config_file = bat_themes_helper.get_theme_config_filename(colorname) --[[@as string]]
       if str.not_empty(theme_config_file) and path.isfile(theme_config_file) then
         local theme_name = bat_themes_helper.get_theme_name(colorname) --[[@as string]]
         if str.not_empty(theme_name) then
-          return style, theme_name
+          return "--theme=" .. theme_name
         end
       end
     end
   end
 
-  return style, theme
+  return "--theme=" .. theme
 end
 
 -- for rg/grep, the line number is the 2nd column split by colon ':'.
@@ -53,12 +58,12 @@ end
 --- @param lineno integer?
 --- @return string[]
 M.preview_files = function(filename, lineno)
-  if constants.HAS_BAT then
+  if consts.HAS_BAT then
     local style, theme = M._bat_style_theme()
     -- "%s --style=%s --theme=%s --color=always --pager=never --highlight-line=%s -- %s"
     return type(lineno) == "number"
         and {
-          constants.BAT,
+          consts.BAT,
           "--style=" .. style,
           "--theme=" .. theme,
           "--color=always",
@@ -68,7 +73,7 @@ M.preview_files = function(filename, lineno)
           filename,
         }
       or {
-        constants.BAT,
+        consts.BAT,
         "--style=" .. style,
         "--theme=" .. theme,
         "--color=always",
@@ -171,7 +176,7 @@ end
 --- @param commit string
 --- @return string?
 M._make_preview_git_commit = function(commit)
-  if constants.HAS_DELTA then
+  if consts.HAS_DELTA then
     local win_width = M.get_preview_window_width()
     return string.format([[git show %s | delta -n --tabs 4 --width %d]], commit, win_width)
   else
@@ -200,10 +205,10 @@ end
 --- @param lineno integer
 --- @return string[]
 M.preview_files_with_line_range = function(filename, lineno)
-  if constants.HAS_BAT then
+  if consts.HAS_BAT then
     local style, theme = M._bat_style_theme()
     return {
-      constants.BAT,
+      consts.BAT,
       "--style=" .. style,
       "--theme=" .. theme,
       "--color=always",
