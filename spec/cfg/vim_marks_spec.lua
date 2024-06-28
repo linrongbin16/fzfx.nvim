@@ -80,14 +80,46 @@ describe("fzfx.cfg.vim_marks", function()
           else
             assert_true(actual[1] == constants.BAT or actual[1] == constants.CAT)
             if constants.HAS_BAT then
-              assert_true(str.startswith(actual[2], "--style="))
-              assert_true(str.startswith(actual[3], "--theme="))
-              assert_eq(actual[4], "--color=always")
-              assert_eq(actual[5], "--pager=never")
-              assert_true(str.startswith(actual[6], "--highlight-line="))
-              assert_eq(actual[7], "--line-range")
+              assert_true(tbl.List:copy(actual):some(function(a)
+                return str.startswith(a, "--style=")
+              end))
+              assert_true(tbl.List:copy(actual):some(function(a)
+                return str.startswith(a, "--theme=")
+              end))
+              assert_true(tbl.List:copy(actual):some(function(a)
+                return str.startswith(a, "--highlight-line=")
+              end))
+              assert_true(tbl.List:copy(actual):some(function(a)
+                return a == "--line-range"
+              end))
+              assert_true(tbl.List:copy(actual):some(function(a)
+                return a == "--color=always"
+              end))
+              assert_true(tbl.List:copy(actual):some(function(a)
+                return a == "--pager=never"
+              end))
             elseif constants.HAS_CAT then
-              assert_eq(type(actual[2]), "string")
+              assert_true(tbl.List:copy(actual):none(function(a)
+                return str.startswith(a, "--style=")
+              end))
+              assert_true(tbl.List:copy(actual):none(function(a)
+                return str.startswith(a, "--theme=")
+              end))
+              assert_true(tbl.List:copy(actual):none(function(a)
+                return str.startswith(a, "--highlight-line=")
+              end))
+              assert_true(tbl.List:copy(actual):none(function(a)
+                return a == "--line-range"
+              end))
+              assert_true(tbl.List:copy(actual):none(function(a)
+                return a == "--color=always"
+              end))
+              assert_true(tbl.List:copy(actual):none(function(a)
+                return a == "--pager=never"
+              end))
+              assert_true(tbl.List:copy(actual):some(function(a)
+                return a == "-n"
+              end))
             end
           end
         end
