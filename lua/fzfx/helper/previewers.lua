@@ -8,9 +8,9 @@
 local str = require("fzfx.commons.str")
 local path = require("fzfx.commons.path")
 local tbl = require("fzfx.commons.tbl")
-local num = require("fzfx.commons.num")
 
 local consts = require("fzfx.lib.constants")
+local shells = require("fzfx.lib.shells")
 local log = require("fzfx.lib.log")
 local LogLevels = require("fzfx.lib.log").LogLevels
 
@@ -64,9 +64,9 @@ M._fzf_preview_window_width = function()
   return math.floor(math.max(3, win_width / 2 - FZF_PREVIEW_WINDOW_MARGIN))
 end
 
--- Calculate fzf's preview window centered line number.
+-- Calculate fzf's preview window half height.
 --- @return integer
-M._fzf_preview_window_center = function()
+M._fzf_preview_window_half_height = function()
   local win_height = vim.api.nvim_win_get_height(0)
   return math.floor(math.max(3, win_height / 2 - FZF_PREVIEW_WINDOW_MARGIN))
 end
@@ -75,31 +75,37 @@ end
 
 -- fd/find {
 
+M._FZF_PREVIEW_BAT = {
+  consts.BAT,
+  "--color=always",
+  "--pager=never",
+}
+
+M._FZF_PREVIEW_CAT = {
+  consts.CAT,
+  "-n",
+}
+
 --- @param filename string
 --- @return string[]
 M._fzf_preview_find = function(filename)
   if consts.HAS_BAT then
+    -- "bat --style=%s --theme=%s --color=always --pager=never -- %s"
+    local results = vim.deepcopy(M._FZF_PREVIEW_BAT)
+
     local style = M._bat_style()
     local theme = M._bat_theme()
-    -- "bat --style=%s --theme=%s --color=always --pager=never -- %s"
-    local bat_command = {
-      consts.BAT,
-      style,
-      theme,
-      "--color=always",
-      "--pager=never",
-    }
-    table.insert(bat_command, "--")
-    table.insert(bat_command, filename)
-    return bat_command
+    table.insert(results, style)
+    table.insert(results, theme)
+    table.insert(results, "--")
+    table.insert(results, filename)
+    return results
   else
     -- "cat -n -- %s"
-    return {
-      consts.CAT,
-      "-n",
-      "--",
-      filename,
-    }
+    local results = vim.deepcopy(M._FZF_PREVIEW_CAT)
+    table.insert(results, "--")
+    table.insert(results, filename)
+    return results
   end
 end
 
@@ -143,34 +149,28 @@ end
 --- @return string[]
 M._fzf_preview_grep = function(filename, lineno)
   if consts.HAS_BAT then
+    -- "bat --style=%s --theme=%s --color=always --pager=never --highlight-line=%s -- %s"
+    local results = vim.deepcopy(M._FZF_PREVIEW_BAT)
+
     local style = M._bat_style()
     local theme = M._bat_theme()
-
-    -- "bat --style=%s --theme=%s --color=always --pager=never --highlight-line=%s -- %s"
-    local bat_command = {
-      consts.BAT,
-      style,
-      theme,
-      "--color=always",
-      "--pager=never",
-    }
     if type(lineno) == "number" then
-      table.insert(bat_command, "--highlight-line=" .. lineno)
+      table.insert(results, "--highlight-line=" .. lineno)
     end
-    table.insert(bat_command, "--")
-    table.insert(bat_command, filename)
-    return bat_command
+    table.insert(results, style)
+    table.insert(results, theme)
+    table.insert(results, "--")
+    table.insert(results, filename)
+    return results
   else
     -- When bat doesn't exist, we use cat.
     -- But cat doesn't support highlight a specific line number.
 
     -- "cat -n -- %s"
-    return {
-      consts.CAT,
-      "-n",
-      "--",
-      filename,
-    }
+    local results = vim.deepcopy(M._FZF_PREVIEW_CAT)
+    table.insert(results, "--")
+    table.insert(results, filename)
+    return results
   end
 end
 
@@ -228,70 +228,94 @@ end
 
 -- rg/grep no filename }
 
--- git commits {
+-- git commit {
 
---- @param commit string
+-- It generates 'git show' or 'delta' shell command for git log/blame results.
+--- @param line string
 --- @return string?
-M._make_preview_git_commit = function(commit)
-  if consts.HAS_DELTA then
-    local win_width = M._fzf_preview_window_width()
-    return string.format([[git show %s | delta -n --tabs 4 --width %d]], commit, win_width)
-  else
-    return string.format([[git show --color=always %s]], commit)
-  end
-end
-
-M.preview_git_commit = function(line)
+M.fzf_preview_git_commit = function(line)
+  -- If the first character is whitespace, return `nil` shell command.
   if str.isspace(line:sub(1, 1)) then
     return nil
   end
+
   local first_space_pos = str.find(line, " ")
-  local commit = line:sub(1, first_space_pos - 1)
-  return M._make_preview_git_commit(commit)
+  local commit_id = line:sub(1, first_space_pos - 1) --[[@as string]]
+  if consts.HAS_DELTA then
+    return string.format("git show %s | delta -n --tabs 4 --width $FZF_PREVIEW_COLUMNS", commit_id)
+  else
+    return string.format("git show --color=always %s", commit_id)
+  end
 end
 
--- git commits }
+-- git commit }
 
--- vim commands/keymaps {
+-- git diff {
 
--- for self-rendered lines (unlike rg/grep), we don't have the line number split by colon ':'.
--- thus we cannot set fzf's option '--preview-window=+{2}-/2' or '--delimiter=:' (see `preview_files`).
--- so we set `--line-range=40:` (in bat) to place the highlight line in the center of the preview window.
+-- It generates 'git show' or 'delta' shell command for git log/blame results.
+--- @param line string
+--- @return string
+M.fzf_preview_git_status = function(line)
+  local parsed = parsers_helper.parse_git_status(line)
+  if consts.HAS_DELTA then
+    return string.format(
+      "git diff %s | delta -n --tabs 4 --width $FZF_PREVIEW_COLUMNS",
+      shells.shellescape(parsed.filename)
+    )
+  else
+    return string.format("git diff --color=always %s", shells.shellescape(parsed.filename))
+  end
+end
+
+-- git diff }
+
+-- vim command/keymap/mark {
+
+-- For self-rendering lines, i.e. commands/keymaps/marks, since we're rendering them as a table aligned with whitespaces.
+-- Unlike rg/grep, we don't have the colon ':' to separate filenames and line numbers (see `fzf_preview_grep`).
+--
+-- When working on fzf's builtin preview window, with bat/cat,
+-- we cannot use options `--preview-window=+{2}-/2` and `--delimiter=':'` to tell fzf what is the line number.
+-- So we have to use bat option `--line-range` to truncate other parts of preview contents,
+-- leave only interested text contents around the target line number.
+-- But this also introduce another limitation: it doesn't support scrolling in preview window.
+--
+-- When working on Neovim's buffer, this is no longer an issue, the internal buffer previewer engine will handle it.
 --
 --- @param filename string
 --- @param lineno integer
 --- @return string[]
-M.preview_files_with_line_range = function(filename, lineno)
+M.fzf_preview_grep_with_line_range = function(filename, lineno)
   if consts.HAS_BAT then
+    -- "%s --style=%s --theme=%s --color=always --pager=never --highlight-line=%s -- %s"
+    local results = vim.deepcopy(M._FZF_PREVIEW_BAT)
+
     local style = M._bat_style()
     local theme = M._bat_theme()
+    table.insert(results, style)
+    table.insert(results, theme)
+    table.insert(results, "--highlight-line=" .. lineno)
 
-    -- "%s --style=%s --theme=%s --color=always --pager=never --highlight-line=%s -- %s"
-    local bat_command = {
-      consts.BAT,
-      style,
-      theme,
-      "--color=always",
-      "--pager=never",
-    }
-    table.insert(bat_command, "--highlight-line=" .. lineno)
-    table.insert(bat_command, "--line-range")
-    table.insert(
-      bat_command,
-      string.format("%d:", math.max(lineno - M._fzf_preview_window_center(), 1))
-    )
-    table.insert(bat_command, "--")
-    table.insert(bat_command, filename)
-    return bat_command
+    local win_height = vim.api.nvim_win_get_height(0)
+    local half_height = math.floor(math.max(3, win_height / 2 - FZF_PREVIEW_WINDOW_MARGIN))
+    local start_lineno = math.max(lineno - half_height, 1)
+
+    table.insert(results, "--line-range")
+    table.insert(results, string.format("%d:", start_lineno))
+    table.insert(results, "--")
+    table.insert(results, filename)
+    return results
   else
-    -- "cat %s"
+    -- "cat -n -- %s"
     return {
       "cat",
+      "-n",
+      "--",
       filename,
     }
   end
 end
 
--- vim commands/keymaps }
+-- vim command/keymap/mark }
 
 return M

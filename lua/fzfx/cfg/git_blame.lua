@@ -85,7 +85,7 @@ M.providers = {
 
 M.previewers = {
   default = {
-    previewer = previewers_helper.preview_git_commit,
+    previewer = previewers_helper.fzf_preview_git_commit,
   },
 }
 
