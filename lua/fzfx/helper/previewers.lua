@@ -249,7 +249,7 @@ end
 
 -- git commit }
 
--- git diff {
+-- git status {
 
 -- It generates 'git diff' (with 'delta') shell command for git status results.
 --- @param line string
@@ -266,7 +266,7 @@ M.fzf_preview_git_status = function(line)
   end
 end
 
--- git diff }
+-- git status }
 
 -- vim command/keymap/mark {
 
