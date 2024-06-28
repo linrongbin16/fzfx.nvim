@@ -1,3 +1,7 @@
+-- Note:
+-- The previewers works with fzf's builtin preview window, are named with prefix `fzf_`.
+-- The previewers works with Neovim's buffer, are named with prefix `buffer_`.
+
 local str = require("fzfx.commons.str")
 local path = require("fzfx.commons.path")
 local tbl = require("fzfx.commons.tbl")
