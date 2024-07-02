@@ -561,7 +561,7 @@ M._previewer = function(line, context)
     --   "|_previewer| loc:%s",
     --   vim.inspect(parsed)
     -- )
-    return previewers_helper.preview_files_with_line_range(parsed.filename, parsed.lineno)
+    return previewers_helper._fzf_preview_grep_with_line_range(parsed.filename, parsed.lineno)
   elseif consts.HAS_ECHO and tbl.tbl_not_empty(parsed) then
     -- log.debug(
     --   "|_previewer| desc:%s",

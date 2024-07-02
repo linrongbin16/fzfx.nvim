@@ -17,25 +17,6 @@ describe("fzfx.cfg.git_status", function()
   require("fzfx").setup()
 
   describe("[git_status]", function()
-    it("_previewer", function()
-      local lines = {
-        " M fzfx/config.lua",
-        " D fzfx/constants.lua",
-        " M fzfx/line_helpers.lua",
-        " M ../test/line_helpers_spec.lua",
-        "?? ../hello",
-      }
-      for _, line in ipairs(lines) do
-        local actual = git_status_cfg._previewer(line, nil)
-        assert_eq(type(actual), "string")
-        assert_true(str.find(actual, "git diff") > 0)
-        if consts.HAS_DELTA then
-          assert_true(str.find(actual, "delta") > 0)
-        else
-          assert_true(str.find(actual, "delta") == nil)
-        end
-      end
-    end)
     it("_make_provider", function()
       local actual1 = git_status_cfg._make_provider()("", nil)
       local n1 = #git_status_cfg._GIT_STATUS_WORKSPACE

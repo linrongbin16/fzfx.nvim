@@ -256,24 +256,15 @@ M.providers = {
   },
 }
 
--- If you want to use fzf-builtin previewer with bat, please use below configs:
---
--- ```
--- previewer = previewers_helper.preview_files_grep
--- previewer_type = PreviewerTypeEnum.COMMAND_LIST
--- ```
---
--- If you want to use nvim buffer previewer, please use below configs:
---
--- ```
--- previewer = previewers_helper.buffer_preview_files_grep
--- previewer_type = PreviewerTypeEnum.BUFFER_FILE
--- ```
-
-local previewer = switches.buffer_previewer_disabled() and previewers_helper.preview_files_grep
-  or previewers_helper.buffer_preview_files_grep
-local previewer_type = switches.buffer_previewer_disabled() and PreviewerTypeEnum.COMMAND_LIST
-  or PreviewerTypeEnum.BUFFER_FILE
+local previewer
+local previewer_type
+if switches.buffer_previewer_disabled() then
+  previewer = previewers_helper.fzf_preview_grep
+  previewer_type = PreviewerTypeEnum.COMMAND_LIST
+else
+  previewer = previewers_helper.buffer_preview_grep
+  previewer_type = PreviewerTypeEnum.BUFFER_FILE
+end
 
 M.previewers = {
   workspace_diagnostics = {

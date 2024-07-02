@@ -7,6 +7,7 @@ And there're multiple sub-packages inside (sorted in alphabetical order):
 - [`fzfx.helper.parsers`](#parsers)
 - [`fzfx.helper.actions`](#actions)
 - [`fzfx.helper.provider_decorators`](#provider_decorators)
+- [`fzfx.helper.previewers`](#previewers)
 - [`fzfx.helper.previewer_labels`](#previewer_labels)
 
 ## `parsers`
@@ -156,7 +157,7 @@ This module contains all the actions. Press the key and quit the searching popup
 
 ### `git log`/`git blame`
 
-- [`yank_git_commit`](https://github.com/linrongbin16/fzfx.nvim/blob/8309f62a3ad02b2634ac0fe2885ef1fed83c70f0/lua/fzfx/helper/actions.lua?plain=1#L496): It yanks git commit ID (via `:let @+ = `) for `git log` or `git blame` query results.
+- [`yank_git_commit`](https://github.com/linrongbin16/fzfx.nvim/blob/8309f62a3ad02b2634ac0fe2885ef1fed83c70f0/lua/fzfx/helper/actions.lua?plain=1#L496): It yanks git commit ID (via `:let @+ =`) for `git log` or `git blame` query results.
 
 ### `git status --short`
 
@@ -178,4 +179,63 @@ This module contains all the actions. Press the key and quit the searching popup
 
 ## `provider_decorators`
 
+This module contains decorators for providers, which beautifies provider's query results. A most common case is prepending file type icons (with RGB color) for `fd`/`find` or `rg`/`grep` query results.
+
+### [`prepend_icon_find`](https://github.com/linrongbin16/fzfx.nvim/blob/971a1b6bd25c300465aa0c906a971c5efef8d8ea/lua/fzfx/helper/provider_decorators/prepend_icon_find.lua?plain=1#L11)
+
+It prepends file type icons for `fd`/`find` results.
+
+### [`prepend_icon_grep`](https://github.com/linrongbin16/fzfx.nvim/blob/971a1b6bd25c300465aa0c906a971c5efef8d8ea/lua/fzfx/helper/provider_decorators/prepend_icon_grep.lua?plain=1#L11)
+
+It prepends file type icons for `rg`/`grep`/`git grep` results.
+
+## `previewers`
+
+This module contains most all the shared previewers used by different configurations in `fzfx.cfg` package.
+
+There're two kinds of previewer implementations: fzf's builtin preview window, and Neovim's buffer.
+
+- fzf's builtin preview window are named with prefix `fzf_`.
+- Neovim's buffer are named with prefix `buffer_`.
+
+To enable fzf's builtin preview window, set feature flag: `vim.g.fzfx_disable_buffer_previewer=1`. To enable Neovim's buffer, unset it.
+
+The fzf's builtin preview window is natively supported by the fzf command, it has the best performance. But we have to use `bat` or `cat` to preview file contents, which doesn't support a compatible colorscheme with the nvim editor.
+
+On the other hand, the Neovim buffer natively uses the nvim editor's colorscheme. But there's a huge gap between it and the fzf command, thus brings more development effort and architectural fragmentation, also limits some flexibility of the engine. But anyway, people love their colorschemes.
+
+### [`fzf_preview_find`](https://github.com/linrongbin16/fzfx.nvim/blob/f99404575d7af6a54a6274a3edb9fc9d77905ed5/lua/fzfx/helper/previewers.lua?plain=1#L114)/[`buffer_preview_find`](https://github.com/linrongbin16/fzfx.nvim/blob/f99404575d7af6a54a6274a3edb9fc9d77905ed5/lua/fzfx/helper/previewers.lua?plain=1#L122)
+
+`fzf_preview_find` generates
+
 ## `previewer_labels`
+
+This module contains labels for previewers, which introduces/summaries previewer's contents.
+
+### [`label_find`](https://github.com/linrongbin16/fzfx.nvim/blob/971a1b6bd25c300465aa0c906a971c5efef8d8ea/lua/fzfx/helper/previewer_labels.lua?plain=1#L13)
+
+It works for `fd`/`find` query results.
+
+### [`label_rg`](https://github.com/linrongbin16/fzfx.nvim/blob/971a1b6bd25c300465aa0c906a971c5efef8d8ea/lua/fzfx/helper/previewer_labels.lua?plain=1#L24)/[`label_grep`](https://github.com/linrongbin16/fzfx.nvim/blob/971a1b6bd25c300465aa0c906a971c5efef8d8ea/lua/fzfx/helper/previewer_labels.lua?plain=1#L65)
+
+`label_rg` works for `rg` query results, `label_grep` works for `grep`/`git grep` query results.
+
+### [`label_rg_no_filename`](https://github.com/linrongbin16/fzfx.nvim/blob/971a1b6bd25c300465aa0c906a971c5efef8d8ea/lua/fzfx/helper/previewer_labels.lua?plain=1#L41)/[`label_grep_no_filename`](https://github.com/linrongbin16/fzfx.nvim/blob/971a1b6bd25c300465aa0c906a971c5efef8d8ea/lua/fzfx/helper/previewer_labels.lua?plain=1#L77)
+
+They're the same with `label_rg`/`label_grep`, but work for `FzfxBufLiveGrep` command.
+
+### [`label_lsd`](https://github.com/linrongbin16/fzfx.nvim/blob/971a1b6bd25c300465aa0c906a971c5efef8d8ea/lua/fzfx/helper/previewer_labels.lua?plain=1#L139)/[`label_eza`](https://github.com/linrongbin16/fzfx.nvim/blob/971a1b6bd25c300465aa0c906a971c5efef8d8ea/lua/fzfx/helper/previewer_labels.lua?plain=1#L140)/[`label_ls`](https://github.com/linrongbin16/fzfx.nvim/blob/971a1b6bd25c300465aa0c906a971c5efef8d8ea/lua/fzfx/helper/previewer_labels.lua?plain=1#L138)
+
+It works for `FzfxFileExplorer` command.
+
+### [`label_vim_command`](https://github.com/linrongbin16/fzfx.nvim/blob/971a1b6bd25c300465aa0c906a971c5efef8d8ea/lua/fzfx/helper/previewer_labels.lua?plain=1#L118)
+
+It works for `FzfxCommands` command.
+
+### [`label_vim_keymap`](https://github.com/linrongbin16/fzfx.nvim/blob/971a1b6bd25c300465aa0c906a971c5efef8d8ea/lua/fzfx/helper/previewer_labels.lua?plain=1#L119)
+
+It works for `FzfxKeyMaps` command.
+
+### [`label_vim_mark`](https://github.com/linrongbin16/fzfx.nvim/blob/971a1b6bd25c300465aa0c906a971c5efef8d8ea/lua/fzfx/helper/previewer_labels.lua?plain=1#L146)
+
+It works for `FzfxMarks` command.

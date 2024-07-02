@@ -143,10 +143,10 @@ M.providers = {
 
 M.previewers = {
   all_commits = {
-    previewer = previewers_helper.preview_git_commit,
+    previewer = previewers_helper.fzf_preview_git_commit,
   },
   buffer_commits = {
-    previewer = previewers_helper.preview_git_commit,
+    previewer = previewers_helper.fzf_preview_git_commit,
   },
 }
 

@@ -1,12 +1,9 @@
 local tbl = require("fzfx.commons.tbl")
 
-local constants = require("fzfx.lib.constants")
-local shells = require("fzfx.lib.shells")
 local cmds = require("fzfx.lib.commands")
 local log = require("fzfx.lib.log")
 local LogLevels = require("fzfx.lib.log").LogLevels
 
-local parsers_helper = require("fzfx.helper.parsers")
 local actions_helper = require("fzfx.helper.actions")
 local previewers_helper = require("fzfx.helper.previewers")
 
@@ -135,29 +132,12 @@ M.providers = {
   },
 }
 
---- @param line string
---- @param context fzfx.PipelineContext
---- @return string?
-M._previewer = function(line, context)
-  local parsed = parsers_helper.parse_git_status(line)
-  if constants.HAS_DELTA then
-    local win_width = previewers_helper.get_preview_window_width()
-    return string.format(
-      [[git diff %s | delta -n --tabs 4 --width %d]],
-      shells.shellescape(parsed.filename),
-      win_width
-    )
-  else
-    return string.format([[git diff --color=always %s]], shells.shellescape(parsed.filename))
-  end
-end
-
 M.previewers = {
   current_folder = {
-    previewer = M._previewer,
+    previewer = previewers_helper.fzf_preview_git_status,
   },
   workspace = {
-    previewer = M._previewer,
+    previewer = previewers_helper.fzf_preview_git_status,
   },
 }
 
