@@ -267,11 +267,11 @@ describe("helper.previewers", function()
     end)
   end)
 
-  describe("[fzf_preview_grep_with_line_range]", function()
+  describe("[_fzf_preview_grep_with_line_range]", function()
     it("test", function()
       local filename = "lua/fzfx/config.lua"
       local lineno = 135
-      local actual = previewers_helper.fzf_preview_grep_with_line_range(filename, lineno)
+      local actual = previewers_helper._fzf_preview_grep_with_line_range(filename, lineno)
       print(string.format("fzf_preview_grep_with_line_range:%s\n", vim.inspect(actual)))
       assert_eq(type(actual), "table")
       if consts.HAS_BAT then

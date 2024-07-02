@@ -284,7 +284,7 @@ end
 --- @param filename string
 --- @param lineno integer
 --- @return string[]
-M.fzf_preview_grep_with_line_range = function(filename, lineno)
+M._fzf_preview_grep_with_line_range = function(filename, lineno)
   if consts.HAS_BAT then
     -- "%s --style=%s --theme=%s --color=always --pager=never --highlight-line=%s -- %s"
     local results = vim.deepcopy(M._FZF_PREVIEW_BAT)
