@@ -196,30 +196,39 @@ M.readfile = function(filename, opts)
   return opts.trim and vim.trim(content) or content
 end
 
+--- @alias commons.AsyncReadFileOnOpenCompleteErr fun(err:string?,filename:string?,fd:any?):nil
 --- @param filename string
 --- @param on_complete fun(data:string?):any
---- @param opts {trim:boolean?}?
+--- @param opts {trim:boolean?,on_open_complete_err:commons.AsyncReadFileOnOpenCompleteErr?}?
 M.asyncreadfile = function(filename, on_complete, opts)
   opts = opts or { trim = false }
   opts.trim = type(opts.trim) == "boolean" and opts.trim or false
 
-  local open_result, open_err = uv.fs_open(filename, "r", 438, function(open_complete_err, fd)
-    if open_complete_err then
+  if type(opts.on_open_complete_err) ~= "function" then
+    opts.on_open_complete_err = function(err1, filename1, fd1)
       error(
         string.format(
-          "failed to complete open(r) file %s: %s",
-          vim.inspect(filename),
-          vim.inspect(open_complete_err)
+          "failed to complete open(r) file %s(%s): %s",
+          vim.inspect(filename1),
+          vim.inspect(fd1),
+          vim.inspect(err1)
         )
       )
+    end
+  end
+
+  local open_result, open_err = uv.fs_open(filename, "r", 438, function(open_complete_err, fd)
+    if open_complete_err then
+      opts.on_open_complete_err(open_complete_err, filename, fd)
       return
     end
     uv.fs_fstat(fd --[[@as integer]], function(fstat_err, stat)
       if fstat_err then
         error(
           string.format(
-            "failed to fstat file %s: %s",
+            "failed to fstat(r) file %s(%s): %s",
             vim.inspect(filename),
+            vim.inspect(fd),
             vim.inspect(fstat_err)
           )
         )
@@ -228,8 +237,10 @@ M.asyncreadfile = function(filename, on_complete, opts)
       if not stat then
         error(
           string.format(
-            "failed to fstat file %s (empty stat): %s",
+            "failed to fstat(r) file %s(%s, empty fstat): %s (%s)",
             vim.inspect(filename),
+            vim.inspect(fd),
+            vim.inspect(stat),
             vim.inspect(fstat_err)
           )
         )
