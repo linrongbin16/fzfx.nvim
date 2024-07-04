@@ -1,7 +1,8 @@
-<!-- markdownlint-disable MD001 MD013 MD034 MD033 MD051 MD026 -->
+<!-- markdownlint-disable -->
 
 # Welcome to fzfx.nvim's Documentation!
 
+- [Demo](/Demo.md)
 - [Known Issues](/KnownIssues.md)
 - [A Generic Schema for Creating FZF Command](/GenericSchema.md)
 - API References
