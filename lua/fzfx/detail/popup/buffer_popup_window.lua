@@ -507,8 +507,7 @@ function BufferPopupWindow:preview_file(job_id, previewer_result, previewer_labe
       return
     end
 
-    -- read file content
-    fileio.asyncreadfile(last_job.previewer_result.filename, function(contents)
+    local function async_read_file_handler(contents)
       if not self:is_last_previewing_file_job_id(last_job.job_id) then
         return
       end
@@ -567,7 +566,15 @@ function BufferPopupWindow:preview_file(job_id, previewer_result, previewer_labe
         local view = self:_make_view(last_content)
         self:preview_file_contents(last_content, view)
       end, 10)
-    end)
+    end
+
+    -- read file content
+    fileio.asyncreadfile(last_job.previewer_result.filename, async_read_file_handler, {
+      on_open_complete_err = function()
+        -- When failed to open the file, simply treats it as an empty file with empty text contents.
+        async_read_file_handler("")
+      end,
+    })
   end, 20)
 end
 
