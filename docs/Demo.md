@@ -10,38 +10,52 @@
 
 ## Grep
 
-- Live Grep: search `fzfx` with rg's `-g *spec.lua` option.
+- `FzfxLiveGrep`
 
-<https://github.com/linrongbin16/fzfx.nvim/assets/6496887/47b03150-14e3-479a-b1af-1b2995659403>
+  <video width="80%" controls>
+    <source src="https://github.com/linrongbin16/fzfx.nvim/assets/6496887/47b03150-14e3-479a-b1af-1b2995659403" type="video/mp4">
+  </video>
 
-## Lsp
+## Lsp & Diagnostics
 
-- Symbols: jump between definitions and references.
+- `FzfxLspDefinitions`/`FzfxLspTypeDefinitions`/`FzfxLspImplementations`/`FzfxLspReferences`
 
-<https://github.com/linrongbin16/fzfx.nvim/assets/6496887/3933f5f3-f45b-4772-a8e1-6cf8e97ca5be>
+  <video width="80%" controls>
+    <source src="https://github.com/linrongbin16/fzfx.nvim/assets/6496887/3933f5f3-f45b-4772-a8e1-6cf8e97ca5be" type="video/mp4">
+  </video>
 
 ## Git
 
-- Git Commits: whole git repo commits or only current buffer.
+- `FzfxGCommits`
 
-<https://github.com/linrongbin16/fzfx.nvim/assets/6496887/5c33eef8-382e-4325-9d56-9bcf8f6bac05>
+  <video width="80%" controls>
+    <source src="https://github.com/linrongbin16/fzfx.nvim/assets/6496887/5c33eef8-382e-4325-9d56-9bcf8f6bac05" type="video/mp4">
+  </video>
 
-- Git Blame: view git logs & diffs with delta support.
+- `FzfxGBlame`
 
-<https://github.com/linrongbin16/fzfx.nvim/assets/6496887/2e6343a5-7a5e-4683-b57b-6d6ef4173e0e>
+  <video width="80%" controls>
+    <source src="https://github.com/linrongbin16/fzfx.nvim/assets/6496887/2e6343a5-7a5e-4683-b57b-6d6ef4173e0e" type="video/mp4">
+  </video>
 
 ## Vim
 
-- Vim Commands: search commands and preview if there's a source file location.
+- `FzfxCommands`
 
-<https://github.com/linrongbin16/fzfx.nvim/assets/6496887/ed739170-3aba-4e44-9b4b-bb5263694cf8>
+  <video width="80%" controls>
+    <source src="https://github.com/linrongbin16/fzfx.nvim/assets/6496887/ed739170-3aba-4e44-9b4b-bb5263694cf8" type="video/mp4">
+  </video>
 
-- Vim Key Maps: search key mappings and preview if there's a source file location.
+- `FzfxKeyMaps`
 
-<https://github.com/linrongbin16/fzfx.nvim/assets/6496887/1cf345a4-1d14-43cb-a387-047b811ec176>
+  <video width="80%" controls>
+    <source src="https://github.com/linrongbin16/fzfx.nvim/assets/6496887/1cf345a4-1d14-43cb-a387-047b811ec176" type="video/mp4">
+  </video>
 
-## File Explorer
+## Misc
 
-View directories like `ls -lh`, and navigate like `cd`.
+- `FzfxFileExplorer`
 
-<https://github.com/linrongbin16/fzfx.nvim/assets/6496887/65108eb2-632a-47c5-9f16-9ddb34f87353>
+  <video width="80%" controls>
+    <source src="https://github.com/linrongbin16/fzfx.nvim/assets/6496887/65108eb2-632a-47c5-9f16-9ddb34f87353" type="video/mp4">
+  </video>
