@@ -12,3 +12,4 @@
   - [`fzfx.cfg`](/ApiReferences/fzfx_cfg.md)
   - [`fzfx.helper`](/ApiReferences/fzfx_helper.md)
   - [`fzfx.lib`](/ApiReferences/fzfx_lib.md)
+- [Sponsor](/Sponsor.md)
