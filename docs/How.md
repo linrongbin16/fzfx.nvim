@@ -19,7 +19,7 @@ It has several benefits:
 
 ## Setup RPC connections
 
-When the plugin initialize, it starts a RPC server on `127.0.0.1`. When start searching, the `nvim` lua interpreter is been launched by fzf command, as a query command and a child process, and it connects the RPC server as a RPC client. This allows it works as if it's still running inside the Neovim editor we're using.
+When the plugin initialize, it starts a RPC server on `127.0.0.1`. When start searching, the `nvim` lua interpreter is been launched by fzf command, as a query command and a child process, it connects to the RPC server as a RPC client. This allows it works as if it's still running inside the Neovim editor we're using.
 
 For example, when we start the `FzfxBuffers` command, the `nvim` lua interpreter connects to Neovim editor to ask for the opened buffers list via a RPC call. The Neovim editor handles the query logic and send the query results to the lua interpreter, and the interpreter renders them and prints them to `stdout`, and we can see the output in fzf, i.e. the left side of popup window.
 
