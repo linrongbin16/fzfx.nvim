@@ -17,7 +17,7 @@ It has several benefits:
 1. It avoid to run the raw shell command (for example `rg --column -n --no-heading -S -- {q}`), thus avoid the shell escaping characters.
 2. It avoid to develop the shell scripts or Windows Batch/PowerShell scripts, which makes the project development and maintenance easier.
 
-## Setup RPC connection between Neovim editor (the one you're editing files) and the `nvim` lua interpreter launched by fzf
+## Setup RPC connections
 
 When the plugin initialize, it starts a RPC server on `127.0.0.1`. When start searching, the `nvim` lua interpreter is been launched by fzf command, as a query command and a child process, and it connects the RPC server as a RPC client. This allows it works as if it's still running inside the Neovim editor we're using.
 
