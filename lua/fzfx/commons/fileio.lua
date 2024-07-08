@@ -196,21 +196,22 @@ M.readfile = function(filename, opts)
   return opts.trim and vim.trim(content) or content
 end
 
---- @alias commons.AsyncReadFileOnOpenCompleteErr fun(err:string?,filename:string?,fd:any?):nil
+--- @alias commons.AsyncReadFileOnComplete fun(data:string?):any
+--- @alias commons.AsyncReadFileOnError fun(step:string?,err:string?):any
 --- @param filename string
---- @param on_complete fun(data:string?):any
---- @param opts {trim:boolean?,on_open_complete_err:commons.AsyncReadFileOnOpenCompleteErr?}?
+--- @param on_complete commons.AsyncReadFileOnComplete
+--- @param opts {trim:boolean?,on_error:commons.AsyncReadFileOnError?}?
 M.asyncreadfile = function(filename, on_complete, opts)
   opts = opts or { trim = false }
   opts.trim = type(opts.trim) == "boolean" and opts.trim or false
 
-  if type(opts.on_open_complete_err) ~= "function" then
-    opts.on_open_complete_err = function(err1, filename1, fd1)
+  if type(opts.on_error) ~= "function" then
+    opts.on_error = function(step1, err1)
       error(
         string.format(
-          "failed to complete open(r) file %s(%s): %s",
-          vim.inspect(filename1),
-          vim.inspect(fd1),
+          "failed to read file(%s), filename:%s, error:%s",
+          vim.inspect(step1),
+          vim.inspect(filename),
           vim.inspect(err1)
         )
       )
@@ -219,67 +220,41 @@ M.asyncreadfile = function(filename, on_complete, opts)
 
   local open_result, open_err = uv.fs_open(filename, "r", 438, function(open_complete_err, fd)
     if open_complete_err then
-      opts.on_open_complete_err(open_complete_err, filename, fd)
+      opts.on_error("fs_open complete", open_complete_err)
       return
     end
-    uv.fs_fstat(fd --[[@as integer]], function(fstat_err, stat)
-      if fstat_err then
-        error(
-          string.format(
-            "failed to fstat(r) file %s(%s): %s",
-            vim.inspect(filename),
-            vim.inspect(fd),
-            vim.inspect(fstat_err)
-          )
-        )
+    uv.fs_fstat(fd --[[@as integer]], function(fstat_complete_err, stat)
+      if fstat_complete_err then
+        opts.on_error("fs_fstat complete", fstat_complete_err)
         return
       end
       if not stat then
-        error(
-          string.format(
-            "failed to fstat(r) file %s(%s, empty fstat): %s (%s)",
-            vim.inspect(filename),
-            vim.inspect(fd),
-            vim.inspect(stat),
-            vim.inspect(fstat_err)
-          )
-        )
+        opts.on_error("fs_fstat returns nil", fstat_complete_err)
         return
       end
-      uv.fs_read(fd --[[@as integer]], stat.size, 0, function(read_err, data)
-        if read_err then
-          error(
-            string.format(
-              "failed to read file %s: %s",
-              vim.inspect(filename),
-              vim.inspect(read_err)
-            )
-          )
+      uv.fs_read(fd --[[@as integer]], stat.size, 0, function(read_complete_err, data)
+        if read_complete_err then
+          opts.on_error("fs_read complete", read_complete_err)
           return
         end
-        uv.fs_close(fd --[[@as integer]], function(close_err)
-          on_complete((opts.trim and type(data) == "string") and vim.trim(data) or data)
-          if close_err then
-            error(
-              string.format(
-                "failed to close file %s: %s",
-                vim.inspect(filename),
-                vim.inspect(close_err)
-              )
-            )
+        uv.fs_close(fd --[[@as integer]], function(close_complete_err)
+          if opts.trim and type(data) == "string" then
+            local trimmed_data = vim.trim(data)
+            on_complete(trimmed_data)
+          else
+            on_complete(data)
+          end
+
+          if close_complete_err then
+            opts.on_error("fs_close complete", close_complete_err)
           end
         end)
       end)
     end)
   end)
-  assert(
-    open_result ~= nil,
-    string.format(
-      "failed to open(read) file: %s, error: %s",
-      vim.inspect(filename),
-      vim.inspect(open_err)
-    )
-  )
+  if open_result == nil then
+    opts.on_error("fs_open", open_err)
+  end
 end
 
 --- @param filename string
@@ -297,26 +272,24 @@ M.readlines = function(filename)
   return results
 end
 
+--- @alias commons.AsyncReadLinesOnLine fun(line:string):any
+--- @alias commons.AsyncReadLinesOnComplete fun(bytes:integer):any
+--- @alias commons.AsyncReadLinesOnError fun(step:string?,err:string?):any
 --- @param filename string
---- @param opts {on_line:fun(line:string):any,on_complete:fun(bytes:integer):any,on_error:fun(err:string?):any,batchsize:integer?}
+--- @param opts {on_line:commons.AsyncReadLinesOnLine,on_complete:commons.AsyncReadLinesOnComplete,on_error:commons.AsyncReadLinesOnError?,batchsize:integer?}
 M.asyncreadlines = function(filename, opts)
   assert(type(opts) == "table")
   assert(type(opts.on_line) == "function")
-  ---@diagnostic disable-next-line: undefined-field
   local batchsize = opts.batchsize or 4096
 
-  local function _handle_error(err, msg)
-    ---@diagnostic disable-next-line: undefined-field
-    if type(opts.on_error) == "function" then
-      ---@diagnostic disable-next-line: undefined-field
-      opts.on_error(err)
-    else
+  if type(opts.on_error) ~= "function" then
+    opts.on_error = function(step1, err1)
       error(
         string.format(
-          "failed to async read file(%s): %s, error: %s",
-          vim.inspect(msg),
+          "failed to async read file by lines(%s), filename:%s, error:%s",
+          vim.inspect(step1),
           vim.inspect(filename),
-          vim.inspect(err)
+          vim.inspect(err1)
         )
       )
     end
@@ -324,18 +297,18 @@ M.asyncreadlines = function(filename, opts)
 
   local open_result, open_err = uv.fs_open(filename, "r", 438, function(open_complete_err, fd)
     if open_complete_err then
-      _handle_error(open_complete_err, "fs_open complete")
+      opts.on_error("fs_open complete", open_complete_err)
       return
     end
     local fstat_result, fstat_err = uv.fs_fstat(
       fd --[[@as integer]],
       function(fstat_complete_err, stat)
         if fstat_complete_err then
-          _handle_error(fstat_complete_err, "fs_fstat complete")
+          opts.on_error("fs_fstat complete", fstat_complete_err)
           return
         end
         if stat == nil then
-          _handle_error("stat is nil", "fs_fstat complete")
+          opts.on_error("fs_fstat returns nil", fstat_complete_err)
           return
         end
 
@@ -366,7 +339,7 @@ M.asyncreadlines = function(filename, opts)
             offset,
             function(read_complete_err, data)
               if read_complete_err then
-                _handle_error(read_complete_err, "fs_read complete")
+                opts.on_error("fs_read complete", read_complete_err)
                 return
               end
 
@@ -397,23 +370,21 @@ M.asyncreadlines = function(filename, opts)
                   fd --[[@as integer]],
                   function(close_complete_err)
                     if close_complete_err then
-                      _handle_error(close_complete_err, "fs_close complete")
+                      opts.on_error("fs_close complete", close_complete_err)
                     end
-                    ---@diagnostic disable-next-line: undefined-field
                     if type(opts.on_complete) == "function" then
-                      ---@diagnostic disable-next-line: undefined-field
                       opts.on_complete(fsize)
                     end
                   end
                 )
                 if close_result == nil then
-                  _handle_error(close_err, "fs_close")
+                  opts.on_error("fs_close", close_err)
                 end
               end
             end
           )
           if read_result == nil then
-            _handle_error(read_err, "fs_read")
+            opts.on_error("fs_read", read_err)
           end
         end
 
@@ -422,11 +393,11 @@ M.asyncreadlines = function(filename, opts)
     )
 
     if fstat_result == nil then
-      _handle_error(fstat_err, "fs_fstat")
+      opts.on_error("fs_fstat", fstat_err)
     end
   end)
   if open_result == nil then
-    _handle_error(open_err, "fs_open")
+    opts.on_error("fs_open", open_err)
   end
 end
 
