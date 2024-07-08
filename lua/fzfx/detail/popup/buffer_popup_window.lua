@@ -570,8 +570,8 @@ function BufferPopupWindow:preview_file(job_id, previewer_result, previewer_labe
 
     -- read file content
     fileio.asyncreadfile(last_job.previewer_result.filename, async_read_file_handler, {
-      on_open_complete_err = function()
-        -- When failed to open the file, simply treats it as an empty file with empty text contents.
+      on_error = function()
+        -- When failed to open/read the file, simply treats it as an empty file with empty text contents.
         async_read_file_handler("")
       end,
     })
