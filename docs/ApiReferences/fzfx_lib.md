@@ -75,3 +75,15 @@ Logging APIs, helpful for debugging and development.
 - [`debug`](https://github.com/linrongbin16/fzfx.nvim/blob/6cde87c522460d4da2a9c657ce4615ce619cca45/lua/fzfx/lib/log.lua?plain=1#L68)/[`info`](https://github.com/linrongbin16/fzfx.nvim/blob/6cde87c522460d4da2a9c657ce4615ce619cca45/lua/fzfx/lib/log.lua?plain=1#L82)/[`warn`](https://github.com/linrongbin16/fzfx.nvim/blob/6cde87c522460d4da2a9c657ce4615ce619cca45/lua/fzfx/lib/log.lua?plain=1#L96)/[`err`](https://github.com/linrongbin16/fzfx.nvim/blob/6cde87c522460d4da2a9c657ce4615ce619cca45/lua/fzfx/lib/log.lua?plain=1#L110): Log the message.
 - [`throw`](https://github.com/linrongbin16/fzfx.nvim/blob/6cde87c522460d4da2a9c657ce4615ce619cca45/lua/fzfx/lib/log.lua?plain=1#L124): Logs the message and throw an error to Neovim, equivalent to Neovim's `error` API.
 - [`ensure`](https://github.com/linrongbin16/fzfx.nvim/blob/6cde87c522460d4da2a9c657ce4615ce619cca45/lua/fzfx/lib/log.lua?plain=1#L140): Assert if the `condition` is true. When it's `false`, logs the message and throw an error to Neovim, equivalent to Neovim's `assert` API.
+
+## [`fzfx.lib.lsp`](https://github.com/linrongbin16/fzfx.nvim/blob/e136dc76a691a5c6a79d25a8f87d677d41952ea1/lua/fzfx/lib/lsp.lua)
+
+LSP compatible APIs, working across different Neovim versions.
+
+- [`get_clients`](https://github.com/linrongbin16/fzfx.nvim/blob/e136dc76a691a5c6a79d25a8f87d677d41952ea1/lua/fzfx/lib/lsp.lua#L6): Get LSP clients. For Neovim &ge; 0.10 use `vim.lsp.get_clients`, for Neovim &lt; 0.10 use `vim.lsp.get_active_clients`.
+
+## [`fzfx.lib.shells`](https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/lib/shells.lua)
+
+Shell related APIs, working on cross-platform: Windows & \*NIX.
+
+- [`shellescape`](https://github.com/linrongbin16/fzfx.nvim/blob/e136dc76a691a5c6a79d25a8f87d677d41952ea1/lua/fzfx/lib/shells.lua#L8): Escape shell parameters, on \*NIX it's simply wrapped around with single quotes `'`, on Windows it's wrapped around with double quotes `"`.
