@@ -43,7 +43,10 @@ end
 -- https://learn.microsoft.com/en-us/archive/blogs/twistylittlepassagesallalike/everyone-quotes-command-line-arguments-the-wrong-way
 -- https://ss64.com/nt/syntax-esc.html
 --
--- Make a shell command from arguments list, that works for both Windows and *NIX.
+-- Make a shell command string from arguments list, that works for both Windows and *NIX.
+--
+--- @param args string[]
+--- @return string
 M.shellcommand = function(args) end
 
 return M
