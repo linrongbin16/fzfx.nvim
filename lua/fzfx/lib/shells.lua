@@ -7,10 +7,10 @@ local M = {}
 --- @return string
 M._sh_shellescape = function(s)
   -- Force use 'sh' when escaping
-  local shell = vim.o.shell
+  local saved_shell = vim.o.shell
   vim.o.shell = "sh"
   local result = vim.fn.shellescape(s)
-  vim.o.shell = shell
+  vim.o.shell = saved_shell
   return result
 end
 
