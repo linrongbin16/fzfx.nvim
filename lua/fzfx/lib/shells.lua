@@ -2,7 +2,7 @@ local constants = require("fzfx.lib.constants")
 
 local M = {}
 
--- `shellescape` implementation for sh.
+-- `shellescape` implementation for `sh`.
 --- @param s string
 --- @return string
 M._sh_shellescape = function(s)
@@ -18,10 +18,10 @@ end
 -- https://learn.microsoft.com/en-us/archive/blogs/twistylittlepassagesallalike/everyone-quotes-command-line-arguments-the-wrong-way
 -- https://stackoverflow.com/questions/6714165/powershell-stripping-double-quotes-from-command-line-arguments
 --
--- `shellescape` implementation for Windows cmd.exe.
+-- `shellescape` implementation for Windows `cmd.exe`.
 --- @param s string
 --- @return string
-M._win_shellescape = function(s) end
+M._cmd_shellescape = function(s) end
 
 -- Compatible version of `vim.fn.shellescape` that works for both Windows and *NIX.
 --- @param s string
