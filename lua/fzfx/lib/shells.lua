@@ -47,6 +47,6 @@ end
 --
 --- @param args string[]
 --- @return string
-M.shellcommand = function(args) end
+M.shellcmdstr = function(args) end
 
 return M
