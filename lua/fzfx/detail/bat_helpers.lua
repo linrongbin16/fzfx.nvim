@@ -27,6 +27,7 @@ local fileio = require("fzfx.commons.fileio")
 local spawn = require("fzfx.commons.spawn")
 
 local consts = require("fzfx.lib.constants")
+local switches = require("fzfx.lib.switches")
 local log = require("fzfx.lib.log")
 
 local bat_themes_helper = require("fzfx.helper.bat_themes")
@@ -563,6 +564,10 @@ M._build_theme = function(colorname)
 end
 
 M.setup = function()
+  if not switches.bat_theme_autogen_enabled() then
+    return
+  end
+
   if not consts.HAS_BAT then
     return
   end
