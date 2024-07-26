@@ -27,6 +27,7 @@ local fileio = require("fzfx.commons.fileio")
 local spawn = require("fzfx.commons.spawn")
 
 local consts = require("fzfx.lib.constants")
+local switches = require("fzfx.lib.switches")
 local log = require("fzfx.lib.log")
 
 local bat_themes_helper = require("fzfx.helper.bat_themes")
@@ -563,14 +564,19 @@ M._build_theme = function(colorname)
 end
 
 M.setup = function()
+  if not switches.bat_theme_autogen_enabled() then
+    return
+  end
+
   if not consts.HAS_BAT then
     return
   end
 
   bat_themes_helper.async_get_theme_dir(function()
     vim.schedule(function()
-      if str.not_empty(vim.g.colors_name) then
-        M._build_theme(vim.g.colors_name)
+      local colorname = bat_themes_helper.get_color_name()
+      if str.not_empty(colorname) then
+        M._build_theme(colorname)
       end
     end)
   end)
@@ -578,8 +584,9 @@ M.setup = function()
   vim.api.nvim_create_autocmd({ "ColorScheme" }, {
     callback = function(event)
       vim.schedule(function()
-        if str.not_empty(vim.g.colors_name) then
-          M._build_theme(vim.g.colors_name)
+        local colorname = bat_themes_helper.get_color_name()
+        if str.not_empty(colorname) then
+          M._build_theme(colorname)
         end
       end)
     end,
