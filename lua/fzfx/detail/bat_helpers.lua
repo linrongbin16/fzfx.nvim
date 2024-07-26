@@ -574,8 +574,9 @@ M.setup = function()
 
   bat_themes_helper.async_get_theme_dir(function()
     vim.schedule(function()
-      if str.not_empty(vim.g.colors_name) then
-        M._build_theme(vim.g.colors_name)
+      local colorname = bat_themes_helper.get_color_name()
+      if str.not_empty(colorname) then
+        M._build_theme(colorname)
       end
     end)
   end)
@@ -583,8 +584,9 @@ M.setup = function()
   vim.api.nvim_create_autocmd({ "ColorScheme" }, {
     callback = function(event)
       vim.schedule(function()
-        if str.not_empty(vim.g.colors_name) then
-          M._build_theme(vim.g.colors_name)
+        local colorname = bat_themes_helper.get_color_name()
+        if str.not_empty(colorname) then
+          M._build_theme(colorname)
         end
       end)
     end,

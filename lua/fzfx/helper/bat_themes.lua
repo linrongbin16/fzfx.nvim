@@ -7,6 +7,11 @@ local log = require("fzfx.lib.log")
 
 local M = {}
 
+--- @return string
+M.get_color_name = function()
+  return vim.g.colors_name or "default"
+end
+
 -- theme dir {
 
 -- Create directory if it doesn't exist.

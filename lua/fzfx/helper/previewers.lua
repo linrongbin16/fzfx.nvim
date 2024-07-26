@@ -12,6 +12,7 @@ local tbl = require("fzfx.commons.tbl")
 local consts = require("fzfx.lib.constants")
 local shells = require("fzfx.lib.shells")
 local log = require("fzfx.lib.log")
+local switches = require("fzfx.lib.switches")
 
 local parsers_helper = require("fzfx.helper.parsers")
 local bat_themes_helper = require("fzfx.helper.bat_themes")
@@ -37,8 +38,8 @@ M._bat_theme = function()
     return "--theme=" .. theme
   end
 
-  if consts.HAS_BAT and vim.opt.termguicolors then
-    local colorname = vim.g.colors_name --[[@as string]]
+  if switches.bat_theme_autogen_enabled() and consts.HAS_BAT and vim.opt.termguicolors then
+    local colorname = bat_themes_helper.get_color_name()
     if str.not_empty(colorname) then
       local theme_config_file = bat_themes_helper.get_theme_config_filename(colorname) --[[@as string]]
       if str.not_empty(theme_config_file) and path.isfile(theme_config_file) then
