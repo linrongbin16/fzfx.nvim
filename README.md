@@ -36,7 +36,7 @@ https://github.com/linrongbin16/fzfx.nvim/assets/6496887/b5e2b0dc-4dd6-4c18-b1da
   - [API References](#api-references)
 - [Known Issues](#-known-issues)
 - [Alternatives](#-alternatives)
-- [Development](#-development)
+- [Development](#%EF%B8%8F-development)
 - [Contribute](#-contribute)
 
 ## ✨ Features
