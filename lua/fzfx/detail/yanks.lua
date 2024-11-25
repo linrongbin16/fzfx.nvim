@@ -54,7 +54,6 @@ function YankHistory:new(maxsize)
 end
 
 --- @param y fzfx.Yank
---- @return integer
 function YankHistory:push(y)
   return self.ring_buffer:push(y)
 end
