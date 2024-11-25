@@ -1,6 +1,9 @@
 ---@diagnostic disable
 local M = {}
 
+local function dummy_on_output(line)
+end
+
 --- @alias commons.SpawnLineProcessor fun(line:string):any
 --- @alias commons.SpawnOpts {on_stdout:commons.SpawnLineProcessor, on_stderr:commons.SpawnLineProcessor, [string]:any}
 --- @alias commons.SpawnOnExit fun(completed:vim.SystemCompleted):nil
@@ -11,6 +14,8 @@ local M = {}
 M.run = function(cmd, opts, on_exit)
   opts = opts or {}
   opts.text = type(opts.text) == "boolean" and opts.text or true
+  opts.on_stdout = type(opts.on_stdout) == "function" and opts.on_stdout or dummy_on_output
+  opts.on_stderr = type(opts.on_stderr) == "function" and opts.on_stderr or dummy_on_output
 
   assert(type(opts.on_stdout) == "function")
   assert(type(opts.on_stderr) == "function")
