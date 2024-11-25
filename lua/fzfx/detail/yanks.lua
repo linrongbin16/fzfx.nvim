@@ -1,4 +1,3 @@
-local ringbuf = require("fzfx.commons.ringbuf")
 local path = require("fzfx.commons.path")
 
 local env = require("fzfx.lib.env")
@@ -47,7 +46,7 @@ local YankHistory = {}
 --- @return fzfx.YankHistory
 function YankHistory:new(maxsize)
   local o = {
-    ring_buffer = ringbuf.RingBuffer:new(maxsize),
+    ring_buffer = vim.ringbuf(maxsize),
   }
   setmetatable(o, self)
   self.__index = self
@@ -61,8 +60,13 @@ function YankHistory:push(y)
 end
 
 --- @return fzfx.Yank?
-function YankHistory:get()
+function YankHistory:peek()
   return self.ring_buffer:peek()
+end
+
+--- @return fzfx.Yank?
+function YankHistory:pop()
+  return self.ring_buffer:pop()
 end
 
 M.YankHistory = YankHistory
@@ -106,7 +110,7 @@ end
 M.get_yank = function()
   log.ensure(M._YankHistoryInstance ~= nil, "|get_yank| YankHistoryInstance must not be nil!")
   ---@diagnostic disable-next-line: need-check-nil
-  return M._YankHistoryInstance:get()
+  return M._YankHistoryInstance:pop()
 end
 
 --- @return fzfx.YankHistory?
