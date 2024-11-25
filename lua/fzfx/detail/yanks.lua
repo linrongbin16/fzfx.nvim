@@ -39,7 +39,7 @@ end
 M.Yank = Yank
 
 --- @class fzfx.YankHistory
---- @field ring_buffer commons.RingBuffer
+--- @field ring_buffer vim.Ringbuf
 local YankHistory = {}
 
 --- @param maxsize integer
