@@ -101,7 +101,7 @@ describe("fzfx.cfg.vim_keymaps", function()
       assert_eq(type(actual), "table")
       assert_true(#actual >= 0)
       for i, act in ipairs(actual) do
-        print(string.format("vim keymaps, actual[%s]:%s\n", vim.inspect(i), vim.inspect(actual)))
+        print(string.format("vim keymaps, actual[%s]:%s\n", vim.inspect(i), vim.inspect(act)))
         assert_eq(type(act), "table")
         assert_eq(type(act.lhs), "string")
         assert_true(string.len(act.lhs) > 0)
