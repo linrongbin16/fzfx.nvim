@@ -97,7 +97,7 @@ describe("fzfx.cfg.vim_keymaps", function()
     end)
     it("_get_keymaps", function()
       local actual = vim_keymaps_cfg._get_keymaps(CONTEXT.output_lines)
-      print(string.format("vim keymaps, actual(all):%s\n", vim.inspect(actual)))
+      -- print(string.format("vim keymaps, actual(all):%s\n", vim.inspect(actual)))
       assert_eq(type(actual), "table")
       assert_true(#actual >= 0)
       for i, act in ipairs(actual) do
