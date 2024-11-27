@@ -1,5 +1,49 @@
 # Changelog
 
+## [7.0.0](https://github.com/linrongbin16/fzfx.nvim/compare/v6.4.0...v7.0.0) (2024-11-27)
+
+
+### ⚠ BREAKING CHANGES
+
+* part 17 - remove 'deprecates' module ([#744](https://github.com/linrongbin16/fzfx.nvim/issues/744))
+* **bat:** add bat theme autogen switch, by default disabled ([#743](https://github.com/linrongbin16/fzfx.nvim/issues/743))
+* **decorators:** part 11 - remove 'builtin' option ([#724](https://github.com/linrongbin16/fzfx.nvim/issues/724))
+* **support:** only support nightly/stable/last legacy version, drop support for earlier versions ([#706](https://github.com/linrongbin16/fzfx.nvim/issues/706))
+* **configs:** drop 'users' option, only allow 'register' api ([#706](https://github.com/linrongbin16/fzfx.nvim/issues/706))
+
+### Features
+
+* **bat:** add bat theme autogen switch, by default disabled ([#743](https://github.com/linrongbin16/fzfx.nvim/issues/743)) ([8675bf8](https://github.com/linrongbin16/fzfx.nvim/commit/8675bf8545411cbd0837277c37b8bb220d2111f0))
+* **health:** add health check ([#697](https://github.com/linrongbin16/fzfx.nvim/issues/697)) ([f386d84](https://github.com/linrongbin16/fzfx.nvim/commit/f386d84e979a8f5e098c86aa65a12a41bc2ab527))
+* **health:** add version info ([#698](https://github.com/linrongbin16/fzfx.nvim/issues/698)) ([f7f2ca1](https://github.com/linrongbin16/fzfx.nvim/commit/f7f2ca15b6affef8ae7b36be591a5743ca6eba5e))
+* **health:** check whether 'fzf' exists ([#698](https://github.com/linrongbin16/fzfx.nvim/issues/698)) ([f7f2ca1](https://github.com/linrongbin16/fzfx.nvim/commit/f7f2ca15b6affef8ae7b36be591a5743ca6eba5e))
+* **popup:** move to upper side if bottom has not enough space ([#695](https://github.com/linrongbin16/fzfx.nvim/issues/695)) ([0ba3ed8](https://github.com/linrongbin16/fzfx.nvim/commit/0ba3ed8ea82f3add6c9b08591926820c22ec21b0))
+
+
+### Bug Fixes
+
+* **buf_live_grep:** fix extra provided options after '--' flag ([#716](https://github.com/linrongbin16/fzfx.nvim/issues/716)) ([b0025fb](https://github.com/linrongbin16/fzfx.nvim/commit/b0025fb4f83b8cd16f68a2ebeda88ac46203cceb))
+* **git_live_grep:** fix extra provided options after '--' flag ([#716](https://github.com/linrongbin16/fzfx.nvim/issues/716)) ([b0025fb](https://github.com/linrongbin16/fzfx.nvim/commit/b0025fb4f83b8cd16f68a2ebeda88ac46203cceb))
+* **health:** use warning message when missing 'delta' ([#699](https://github.com/linrongbin16/fzfx.nvim/issues/699)) ([c165556](https://github.com/linrongbin16/fzfx.nvim/commit/c16555686efd6000d14f0f15ad9ca695377b445c))
+* **live_grep:** fix extra provided options after '--' flag ([#716](https://github.com/linrongbin16/fzfx.nvim/issues/716)) ([b0025fb](https://github.com/linrongbin16/fzfx.nvim/commit/b0025fb4f83b8cd16f68a2ebeda88ac46203cceb))
+* **lsp_locations:** expand filename when rendering lsp locations ([#700](https://github.com/linrongbin16/fzfx.nvim/issues/700)) ([2e8991e](https://github.com/linrongbin16/fzfx.nvim/commit/2e8991e0fe25bab8f19cc7a6933751719606f8fe))
+* **previewer:** avoid preview window flush ([#693](https://github.com/linrongbin16/fzfx.nvim/issues/693)) ([38d16a8](https://github.com/linrongbin16/fzfx.nvim/commit/38d16a8ecb2ce240bad3420e957c2e4efb51448b))
+* **preview:** fix failed to open/read directory ([#739](https://github.com/linrongbin16/fzfx.nvim/issues/739)) ([e136dc7](https://github.com/linrongbin16/fzfx.nvim/commit/e136dc76a691a5c6a79d25a8f87d677d41952ea1))
+* **preview:** handle invalid filename when previewing file contents ([#735](https://github.com/linrongbin16/fzfx.nvim/issues/735)) ([1629243](https://github.com/linrongbin16/fzfx.nvim/commit/1629243407497c0f24d2e59988df049d1df5adea))
+
+
+### Performance Improvements
+
+* **commands:** reduce duplicated ':command' redirect on tmp files ([#723](https://github.com/linrongbin16/fzfx.nvim/issues/723)) ([24594c3](https://github.com/linrongbin16/fzfx.nvim/commit/24594c3710863488f6dcccd44c25e00746885304))
+
+
+### Code Refactoring
+
+* **configs:** drop 'users' option, only allow 'register' api ([#706](https://github.com/linrongbin16/fzfx.nvim/issues/706)) ([9e13997](https://github.com/linrongbin16/fzfx.nvim/commit/9e13997db342475fe7eac85a2ec512d61368a322))
+* **decorators:** part 11 - remove 'builtin' option ([#724](https://github.com/linrongbin16/fzfx.nvim/issues/724)) ([dea313c](https://github.com/linrongbin16/fzfx.nvim/commit/dea313cf637160b521de410421a018b43cc71f95))
+* part 17 - remove 'deprecates' module ([#744](https://github.com/linrongbin16/fzfx.nvim/issues/744)) ([084f860](https://github.com/linrongbin16/fzfx.nvim/commit/084f860c32f617be5513adcee961993435a2e5f3))
+* **support:** only support nightly/stable/last legacy version, drop support for earlier versions ([#706](https://github.com/linrongbin16/fzfx.nvim/issues/706)) ([9e13997](https://github.com/linrongbin16/fzfx.nvim/commit/9e13997db342475fe7eac85a2ec512d61368a322))
+
 ## [6.4.0](https://github.com/linrongbin16/fzfx.nvim/compare/v6.3.0...v6.4.0) (2024-05-09)
 
 
