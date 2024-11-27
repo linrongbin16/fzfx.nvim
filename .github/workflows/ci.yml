@@ -60,7 +60,7 @@ jobs:
       - lint
     strategy:
       matrix:
-        nvim_version: [stable, nightly, v0.9.0]
+        nvim_version: [stable, nightly]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -71,7 +71,7 @@ jobs:
           version: ${{ matrix.nvim_version }}
       - uses: leafo/gh-actions-lua@v10
         with:
-          luaVersion: "luajit-2.1.0-beta3"
+          luaVersion: "luajit-openresty"
       - uses: leafo/gh-actions-luarocks@v4
       - name: Run Tests
         run: |
@@ -81,17 +81,16 @@ jobs:
           luarocks install luacov-reporter-lcov
           luarocks --lua-version=5.1 install vusted
           vusted --coverage ./spec
+          echo "ls -l ."
+          ls -l .
       - name: Generate Reports
         run: |
-          echo "ls ."
-          ls -l .
-          echo "run luacov"
+          echo "luacov -r lcov"
           luacov -r lcov
-          echo "ls ."
+          echo "ls -l ."
           ls -l .
           echo "tail ./luacov.report.out"
-          tail -n 50 ./luacov.report.out
-          # cp luacov.report.out luacov.report.txt
+          tail -n 20 ./luacov.report.out
       - uses: codecov/codecov-action@v4
         with:
           files: luacov.report.out

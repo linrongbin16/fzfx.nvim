@@ -4,7 +4,6 @@ local str = require("fzfx.commons.str")
 local num = require("fzfx.commons.num")
 local color_term = require("fzfx.commons.color.term")
 local fileio = require("fzfx.commons.fileio")
-local spawn = require("fzfx.commons.spawn")
 local uv = require("fzfx.commons.uv")
 
 local constants = require("fzfx.lib.constants")
@@ -570,7 +569,7 @@ end
 --- @param port string
 --- @param body string
 local function _send_http_post(port, body)
-  spawn.system({
+  vim.system({
     "curl",
     "-s",
     "-S",
@@ -1138,7 +1137,7 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
       end
 
       -- local fzf_status_data = {}
-      spawn.system({
+      vim.system({
         "curl",
         "-s",
         "-S",

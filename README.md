@@ -1,7 +1,7 @@
 # fzfx.nvim
 
 <p>
-<a href="https://github.com/neovim/neovim/releases/v0.9.0"><img alt="require" src="https://img.shields.io/badge/require-0.9+-blue" /></a>
+<a href="https://github.com/neovim/neovim/releases/"><img alt="require" src="https://img.shields.io/badge/require-stable-blue" /></a>
 <a href="https://github.com/linrongbin16/commons.nvim"><img alt="commons.nvim" src="https://img.shields.io/badge/power_by-commons.nvim-pink" /></a>
 <a href="https://luarocks.org/modules/linrongbin16/fzfx.nvim"><img alt="luarocks" src="https://img.shields.io/luarocks/v/linrongbin16/fzfx.nvim" /></a>
 <a href="https://github.com/linrongbin16/fzfx.nvim/actions/workflows/ci.yml"><img alt="ci.yml" src="https://img.shields.io/github/actions/workflow/status/linrongbin16/fzfx.nvim/ci.yml?label=ci" /></a>
@@ -61,11 +61,9 @@ https://github.com/linrongbin16/fzfx.nvim/assets/6496887/b5e2b0dc-4dd6-4c18-b1da
 
 > [!NOTE]
 >
-> This plugin keeps up with the latest Neovim stable version, supports until the last legacy version, while earlier versions are dropped to reduce maintenance effort.
->
-> For example, at the time of writing (2024-06-11), stable is 0.10, last legacy is 0.9, nightly is 0.11, thus this plugin supports 0.9+.
+> This plugins supports latest stable and (possibly) nightly Neovim version.
 
-- Neovim &ge; 0.9.
+- Neovim &ge; 0.10.
 - [fzf](https://github.com/junegunn/fzf).
 - [curl](https://man7.org/linux/man-pages/man1/curl.1.html) (for query fzf status or update preview label).
 - [nerd-fonts](https://www.nerdfonts.com/) (**optional** for icons).
