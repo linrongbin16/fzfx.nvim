@@ -15,13 +15,13 @@
 --- @alias fzfx.ProviderType "plain"|"command"|"list"|"plain_list"|"command_list"
 --- @enum fzfx.ProviderTypeEnum
 local ProviderTypeEnum = {
-  -- A lua string or strings list.
+  -- For fzfx.PlainProvider
   PLAIN = "plain",
   PLAIN_LIST = "plain_list",
-  -- A lua function, that returns a string or strings list.
+  -- For fzfx.CommandProvider
   COMMAND = "command",
   COMMAND_LIST = "command_list",
-  -- A lua function, that directly returns lines.
+  -- For fzfx.ListProvider
   LIST = "list",
 }
 --
@@ -34,7 +34,7 @@ local ProviderTypeEnum = {
 -- ========== Previewer ==========
 --
 -- Note: The 1st parameter 'line' is the current selected line in (the left side of) the fzf binary.
---- @alias fzfx.CommandPreviewer fun(line:string?,context:fzfx.PipelineContext?):string?
+--- @alias fzfx.CommandPreviewer fun(line:string?,context:fzfx.PipelineContext?):string?|string[]?
 --- @alias fzfx.ListPreviewer fun(line:string?,context:fzfx.PipelineContext?):string[]?
 --- @alias fzfx.BufferFilePreviewerResult {filename:string,lineno:integer?,column:integer?}
 --- @alias fzfx.BufferFilePreviewer fun(line:string?,context:fzfx.PipelineContext?):fzfx.BufferFilePreviewerResult?
@@ -43,9 +43,12 @@ local ProviderTypeEnum = {
 --- @alias fzfx.PreviewerType "command"|"command_list"|"list"|"buffer_file"
 --- @enum fzfx.PreviewerTypeEnum
 local PreviewerTypeEnum = {
+  -- For fzfx.CommandPreviewer
   COMMAND = "command",
   COMMAND_LIST = "command_list",
+  -- For fzfx.ListPreviewer
   LIST = "list",
+  -- For fzfx.BufferFilePreviewer
   BUFFER_FILE = "buffer_file",
 }
 --

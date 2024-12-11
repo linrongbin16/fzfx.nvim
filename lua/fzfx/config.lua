@@ -68,6 +68,11 @@ local Defaults = {
   --- @type fzfx.GroupConfig
   vim_marks = require("fzfx.cfg.vim_marks"),
 
+  -- Search vim command history, i.e. the 'FzfxCommandHistory' command.
+  --
+  --- @type fzfx.GroupConfig
+  vim_command_history = require("fzfx.cfg.vim_command_history"),
+
   -- Search (LSP) diagnostics, i.e. the 'FzfxLspDiagnostics' command.
   --
   --- @type fzfx.GroupConfig
