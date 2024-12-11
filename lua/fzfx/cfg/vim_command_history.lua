@@ -53,13 +53,14 @@ M.variants = {
 
 --- @param query string
 --- @param context fzfx.PipelineContext
---- @return string[]
+--- @return string[]|nil
 M._provider = function(query, context)
   local n = vim.fn.histnr(":")
   if type(n) ~= "number" or n <= 0 then
     log.echo(LogLevels.INFO, "no command history.")
+    return nil
   end
-  local index_fmt = " %" .. tostring(n) .. "d"
+  local index_fmt = " %" .. string.len(tostring(n)) .. "d"
   local results = {}
   for i = 1, n do
     local value = vim.fn.histget(":", -i)
@@ -73,7 +74,7 @@ end
 M.providers = {
   key = "default",
   provider = M._provider,
-  previewer_type = ProviderTypeEnum.COMMAND_LIST,
+  provider_type = ProviderTypeEnum.LIST,
 }
 
 --- @param line string
@@ -97,8 +98,8 @@ M.actions = {
 
 M.fzf_opts = {
   "--no-multi",
-  "--header-lines=1",
-  { "--preview-window", "~1" },
+  -- "--header-lines=1",
+  -- { "--preview-window", "~1" },
   { "--prompt", "Command History (:) > " },
 }
 
