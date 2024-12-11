@@ -1,5 +1,12 @@
 # Changelog
 
+## [7.1.0](https://github.com/linrongbin16/fzfx.nvim/compare/v7.0.0...v7.1.0) (2024-12-11)
+
+
+### Features
+
+* add "command history", i.e. the ":History:" in fzf.vim ([#747](https://github.com/linrongbin16/fzfx.nvim/issues/747)) ([5b6dab6](https://github.com/linrongbin16/fzfx.nvim/commit/5b6dab654f87ce50380260cfb13ddba8266a0691))
+
 ## [7.0.0](https://github.com/linrongbin16/fzfx.nvim/compare/v6.4.0...v7.0.0) (2024-11-27)
 
 
