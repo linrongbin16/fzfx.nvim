@@ -99,7 +99,7 @@ M.actions = {
 M.fzf_opts = {
   "--no-multi",
   -- "--header-lines=1",
-  -- { "--preview-window", "~1" },
+  { "--preview-window", "hidden" },
   { "--prompt", "Command History(:) > " },
 }
 
