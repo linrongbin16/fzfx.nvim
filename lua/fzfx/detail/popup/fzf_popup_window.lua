@@ -62,7 +62,7 @@ M._make_center_opts = function(
   win_opts.relative = win_opts.relative or "editor"
 
   local layout = popup_helpers.make_center_layout(relative_winnr, relative_win_first_line, win_opts)
-  log.debug("|_make_center_opts| layout:%s" .. vim.inspect(layout))
+  -- log.debug("|_make_center_opts| layout:%s" .. vim.inspect(layout))
   local border = fzf_helpers.FZF_BORDER_OPTS_MAP[buffer_previewer_opts.fzf_border_opts]
     or fzf_helpers.FZF_DEFAULT_BORDER_OPTS
 

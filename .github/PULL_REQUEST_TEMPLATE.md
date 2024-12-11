@@ -81,6 +81,10 @@
   - Press `CTRL-U`/`CTRL-E`/`CTRL-A` to switch between user/ex/all vim commands.
   - Use `V`/`W`/`P`/`R` variants (visual selection, cursor word, yank text, resume last).
   - Press `ESC` to quit, `ENTER` to feed vim command.
+- [ ] FzfxCommandHistory
+  - Press `CTRL-J`/`CTRL-K` to move down/up.
+  - Use `V`/`W`/`P`/`R` variants (visual selection, cursor word, yank text, resume last).
+  - Press `ESC` to quit, `ENTER` to feed vim historical command.
 - [ ] FzfxKeyMaps
   - Press `CTRL-J`/`CTRL-K` to move down/up and preview contents.
   - Press `CTRL-O`/`CTRL-I`/`CTRL-A`/`CTRL-V` to switch between normal/insert/visual/all vim key mappings.

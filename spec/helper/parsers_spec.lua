@@ -588,6 +588,42 @@ describe("helper.parsers", function()
     end)
   end)
 
+  describe("[parse_vim_historical_command]", function()
+    local HOME_DIR = uv.os_homedir() --[[@as string]]
+    it("test", function()
+      local lines = {
+        " 999  FzfxCommands",
+        " 998  FzfxCommandHistory",
+        " 997  History:",
+      }
+      local expects = {
+        {
+          command = "FzfxCommands",
+        },
+        {
+          command = "FzfxCommandHistory",
+        },
+        {
+          command = "History:",
+        },
+      }
+      for i, line in ipairs(lines) do
+        local expect = expects[i]
+        local actual = parsers_helper.parse_vim_historical_command(line, nil)
+        print(
+          string.format(
+            "parse_vim_historical_command-%d, actual:%s, expect:%s\n",
+            i,
+            vim.inspect(actual),
+            vim.inspect(expect)
+          )
+        )
+        assert_eq(type(actual), "table")
+        assert_eq(actual.command, expect.command)
+      end
+    end)
+  end)
+
   describe("[parse_vim_keymap]", function()
     local HOME_DIR = uv.os_homedir() --[[@as string]]
     --- @type fzfx.VimKeyMapsPipelineContext

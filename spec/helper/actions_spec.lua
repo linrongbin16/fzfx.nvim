@@ -692,6 +692,18 @@ describe("helper.actions", function()
     end)
   end)
 
+  describe("[feed_vim_historical_command]", function()
+    it("make", function()
+      local actual = actions._make_feed_vim_historical_command({
+        " 998  FzfxCommands",
+      }, nil)
+      print(string.format("feed vim historical comman:%s\n", vim.inspect(actual)))
+      assert_eq(type(actual), "table")
+      assert_eq(actual.input, ":FzfxCommands")
+      assert_eq(actual.mode, "n")
+    end)
+  end)
+
   describe("[feed_vim_key]", function()
     --- @type fzfx.VimKeyMapsPipelineContext
     local CONTEXT = {
