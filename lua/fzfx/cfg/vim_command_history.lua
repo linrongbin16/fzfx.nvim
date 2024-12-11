@@ -65,7 +65,7 @@ M._provider = function(query, context)
   for i = 1, n do
     local value = vim.fn.histget(":", -i)
     if str.not_blank(value) then
-      table.insert(results, string.format(index_fmt, i) .. "  " .. value)
+      table.insert(results, string.format(index_fmt, n - i) .. "  " .. value)
     end
   end
   return results
@@ -87,7 +87,7 @@ end
 M.previewers = {
   key = "default",
   previewer = M._previewer,
-  previewer_type = PreviewerTypeEnum.COMMAND,
+  previewer_type = PreviewerTypeEnum.COMMAND_LIST,
 }
 
 M.actions = {
@@ -100,7 +100,7 @@ M.fzf_opts = {
   "--no-multi",
   -- "--header-lines=1",
   -- { "--preview-window", "~1" },
-  { "--prompt", "Command History (:) > " },
+  { "--prompt", "Command History(:) > " },
 }
 
 return M
