@@ -51,10 +51,8 @@ M.variants = {
   },
 }
 
---- @param query string
---- @param context fzfx.PipelineContext
 --- @return string[]|nil
-M._provider = function(query, context)
+M._provider = function()
   local n = vim.fn.histnr(":")
   if type(n) ~= "number" or n <= 0 then
     log.echo(LogLevels.INFO, "no command history.")
@@ -77,12 +75,7 @@ M.providers = {
   provider_type = ProviderTypeEnum.LIST,
 }
 
---- @param line string
---- @param context fzfx.PipelineContext
---- @return string|nil
-M._previewer = function(line, context)
-  return nil
-end
+M._previewer = function() end
 
 M.previewers = {
   key = "default",
