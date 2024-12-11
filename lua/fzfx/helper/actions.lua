@@ -729,4 +729,35 @@ end
 
 -- marks }
 
+-- command history {
+
+-- Make `:feedkeys` commands for vim command history results.
+--- @param lines string[]
+--- @param context fzfx.PipelineContext
+--- @return {input:string, mode:string}?
+M._make_feed_vim_historical_command = function(lines, context)
+  if tbl.list_empty(lines) then
+    return nil
+  end
+  local line = lines[#lines]
+  if str.empty(line) then
+    return nil
+  end
+
+  local parsed = parsers.parse_vim_historical_command(line, context)
+  return { input = string.format(":%s", parsed.command), mode = "n" }
+end
+
+-- Run `:feedkeys` commands for vim command results.
+--- @param lines string[]
+--- @param context fzfx.PipelineContext
+M.feed_vim_historical_command = function(lines, context)
+  local feed = M._make_feed_vim_historical_command(lines, context) --[[@as table]]
+  if tbl.tbl_not_empty(feed) then
+    vim.fn.feedkeys(feed.input, feed.mode)
+  end
+end
+
+-- command history }
+
 return M

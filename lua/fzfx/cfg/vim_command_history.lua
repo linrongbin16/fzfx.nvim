@@ -85,8 +85,8 @@ M.previewers = {
 
 M.actions = {
   ["esc"] = actions_helper.nop,
-  ["enter"] = actions_helper.feed_vim_command,
-  ["double-click"] = actions_helper.feed_vim_command,
+  ["enter"] = actions_helper.feed_vim_historical_command,
+  ["double-click"] = actions_helper.feed_vim_historical_command,
 }
 
 M.fzf_opts = {

@@ -590,6 +590,34 @@ M.parse_vim_command = function(line, context)
   end
 end
 
+-- Parse vim command history, it looks like:
+--
+-- ```
+-- 998  FzfxCommandHistory
+-- 998  FzfxFiles
+-- 998  FzfxLiveGrep
+-- ```
+--
+-- It removes extra prefix index number, returns only the command name.
+--
+--- @param line string
+--- @param context fzfx.PipelineContext
+--- @return {command:string}
+M.parse_vim_historical_command = function(line, context)
+  local trimmed_line = str.trim(line)
+  local first_space_pos = str.find(trimmed_line, " ") --[[@as integer]]
+  assert(
+    num.gt(first_space_pos, 0),
+    string.format("failed to parse vim historical command:%s", vim.inspect(line))
+  )
+  local command = str.trim(trimmed_line:sub(first_space_pos)) --[[@as string]]
+  assert(
+    str.not_blank(command),
+    string.format("failed to parse vim historical command:%s", vim.inspect(line))
+  )
+  return { command = command }
+end
+
 -- Parse vim keymap, which looks like:
 --
 -- ```
