@@ -1322,6 +1322,50 @@ Below keys are binded by default:
         </details>
       </td>
     </tr>
+    <tr>
+      <td><code>FzfxCommandHistory</code></td>
+      <td>
+        <details>
+          <summary>Search vim command history.</summary>
+          <small>
+            <table>
+              <thead>
+                <tr>
+                  <th>Variant</th>
+                  <th>Mode</th>
+                  <th>Select Keys</th>
+                  <th>Preview Keys</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>args</code></td>
+                  <td>N</td>
+                  <td rowspan="5">No</td>
+                  <td rowspan="5">No</td>
+                </tr>
+                <tr>
+                  <td><code>visual</code></td>
+                  <td>V</td>
+                </tr>
+                <tr>
+                  <td><code>cword</code></td>
+                  <td>N</td>
+                </tr>
+                <tr>
+                  <td><code>put</code></td>
+                  <td>N</td>
+                </tr>
+                <tr>
+                  <td><code>resume</code></td>
+                  <td>N</td>
+                </tr>
+              </tbody>
+            </table>
+          </small>
+        </details>
+      </td>
+    </tr>
   </tbody>
 </table>
 
