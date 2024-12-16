@@ -200,13 +200,31 @@ There're two kinds of previewer implementations: fzf's builtin preview window, a
 
 To enable fzf's builtin preview window, set feature flag: `vim.g.fzfx_disable_buffer_previewer=1`. To enable Neovim's buffer, unset it.
 
-The fzf's builtin preview window is natively supported by the fzf command, it has the best performance. But we have to use `bat` or `cat` to preview file contents, which doesn't support a compatible colorscheme with the nvim editor.
+The fzf's builtin preview window is natively supported by the fzf command via `--preview-window` option, it has the best performance. But we have to use `bat` or `cat` when previewing file contents, which doesn't support a compatible colorscheme with the nvim editor.
 
-On the other hand, the Neovim buffer natively uses the nvim editor's colorscheme. But there's a huge gap between it and the fzf command, thus brings more development effort and architectural fragmentation, also limits some flexibility of the engine. But anyway, people love their colorschemes.
+On the other hand, the Neovim buffer natively supports colorscheme, and it's only needed when previewing the files. Since there's a huge gap between it and the fzf command, thus brings more development effort and architectural fragmentation, also limits some flexibility of the engine. But anyway, people love their colorschemes.
 
 ### [`fzf_preview_find`](https://github.com/linrongbin16/fzfx.nvim/blob/f99404575d7af6a54a6274a3edb9fc9d77905ed5/lua/fzfx/helper/previewers.lua?plain=1#L114)/[`buffer_preview_find`](https://github.com/linrongbin16/fzfx.nvim/blob/f99404575d7af6a54a6274a3edb9fc9d77905ed5/lua/fzfx/helper/previewers.lua?plain=1#L122)
 
-`fzf_preview_find` generates
+They preview the current line's text content for `fd`/`find` query results. `fzf_preview_find` works with fzf builtin preview window, `buffer_preview_find` works with Neovim buffer.
+
+### [`fzf_preview_grep`](https://github.com/linrongbin16/fzfx.nvim/blob/f99404575d7af6a54a6274a3edb9fc9d77905ed5/lua/fzfx/helper/previewers.lua?plain=1#L177)/[`buffer_preview_grep`](https://github.com/linrongbin16/fzfx.nvim/blob/f99404575d7af6a54a6274a3edb9fc9d77905ed5/lua/fzfx/helper/previewers.lua?plain=1#L185)
+
+They preview the current line's text content for `rg`/`grep`/`git grep` query results, `fzf_preview_grep` works with fzf builtin preview window, `buffer_preview_grep` works with Neovim buffer.
+
+### [`fzf_preview_grep_no_filename`](https://github.com/linrongbin16/fzfx.nvim/blob/f99404575d7af6a54a6274a3edb9fc9d77905ed5/lua/fzfx/helper/previewers.lua?plain=1#L198)/[`buffer_preview_grep_no_filename`](https://github.com/linrongbin16/fzfx.nvim/blob/f99404575d7af6a54a6274a3edb9fc9d77905ed5/lua/fzfx/helper/previewers.lua?plain=1#L215)
+
+They preview the current line's text content for `rg`/`grep`/`git grep` no filename query results (with `-I` option), `fzf_preview_grep_no_filename` works with fzf builtin preview window, `buffer_preview_grep_no_filename` works with Neovim buffer.
+
+### [`fzf_preview_git_commit`](https://github.com/linrongbin16/fzfx.nvim/blob/f99404575d7af6a54a6274a3edb9fc9d77905ed5/lua/fzfx/helper/previewers.lua?plain=1#L235)
+
+It previews the current line's git commit changes for `git log`/`git blame` query results.
+
+> There's no Neovim buffer previewer implementation.
+
+### [`fzf_preview_git_status`](https://github.com/linrongbin16/fzfx.nvim/blob/f99404575d7af6a54a6274a3edb9fc9d77905ed5/lua/fzfx/helper/previewers.lua?plain=1#L257)
+
+It previews the current line's git status (changed files) for `git status --short` query results.
 
 ## `previewer_labels`
 
