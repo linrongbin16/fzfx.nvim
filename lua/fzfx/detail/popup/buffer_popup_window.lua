@@ -10,6 +10,11 @@ local buffer_popup_window_helpers = require("fzfx.detail.popup.buffer_popup_wind
 
 local M = {}
 
+--- @return integer
+local function minimal_line_step()
+  return math.max(30, vim.o.lines)
+end
+
 --- @alias fzfx.BufferPreviewerOpts  {fzf_preview_window_opts:fzfx.FzfPreviewWindowOpts,fzf_border_opts:string}
 --- @param win_opts fzfx.WindowOpts
 --- @param buffer_previewer_opts fzfx.BufferPreviewerOpts
@@ -688,14 +693,12 @@ function BufferPopupWindow:render_file_contents(file_content, content_view, on_c
 
     local LINES = file_content.contents
     local LINES_COUNT = #LINES
-    local LARGE_FILE = LINES_COUNT > 50
-    -- local TOP_LINE = content_view
-    -- local BOTTOM_LINE = math.min(WIN_HEIGHT + TOP_LINE, LINES_COUNT)
+    local IS_LARGE_FILE = LINES_COUNT > 500
     local FIRST_LINE = 1
     local LAST_LINE = LINES_COUNT
     local line_index = FIRST_LINE
     if line_step == nil then
-      line_step = LARGE_FILE and math.max(math.ceil(math.sqrt(LINES_COUNT)), 10) or 10
+      line_step = math.max(math.ceil(math.sqrt(LINES_COUNT)), minimal_line_step())
     end
     -- log.debug(
     --   string.format(
@@ -761,10 +764,10 @@ function BufferPopupWindow:render_file_contents(file_content, content_view, on_c
         --   )
         -- )
 
-        if not lines_been_cleared then
-          vim.api.nvim_buf_set_lines(self.previewer_bufnr, 0, -1, false, {})
-          lines_been_cleared = true
-        end
+        -- if not lines_been_cleared then
+        --   vim.api.nvim_buf_set_lines(self.previewer_bufnr, 0, -1, false, {})
+        --   lines_been_cleared = true
+        -- end
 
         vim.api.nvim_buf_set_lines(self.previewer_bufnr, set_start, set_end, false, buf_lines)
         if hi_line then
@@ -808,7 +811,7 @@ function BufferPopupWindow:render_file_contents(file_content, content_view, on_c
           do_complete(true)
           falsy_rendering()
         end
-      end, LARGE_FILE and math.max(10 - string.len(tostring(LINES_COUNT)) * 2, 1) or 10)
+      end, IS_LARGE_FILE and math.max(10 - string.len(tostring(LINES_COUNT)) * 2, 1) or 10)
     end
     set_buf_lines()
   end, 10)
@@ -1055,7 +1058,12 @@ function BufferPopupWindow:scroll_by(percent, up)
     return
   end
 
-  self:render_file_contents(file_content, view, falsy_scrolling, math.max(LINES_COUNT, 30))
+  self:render_file_contents(
+    file_content,
+    view,
+    falsy_scrolling,
+    math.max(LINES_COUNT, minimal_line_step())
+  )
 end
 
 function BufferPopupWindow:preview_page_down()
