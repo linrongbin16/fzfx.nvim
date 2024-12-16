@@ -315,7 +315,7 @@ describe("detail.general", function()
           previewer_type = PreviewerTypeEnum.FUNCTIONAL_COMMAND_ARRAY,
         },
       }, FZFPORTFILE)
-      assert_eq(ps:preview("hello", {}), "command")
+      assert_eq(ps:preview("hello", {}), PreviewerTypeEnum.FUNCTIONAL_COMMAND_STRING)
       if not github_actions then
         local meta1 = fileio.readfile(general._previewer_metafile(), { trim = true })
         local result1 = fileio.readfile(general._previewer_resultfile(), { trim = true })
@@ -328,7 +328,7 @@ describe("detail.general", function()
         assert_eq(result1, "ls -lh")
       end
       ps:switch("p2")
-      assert_eq(ps:preview("world", {}), "command_list")
+      assert_eq(ps:preview("world", {}), PreviewerTypeEnum.FUNCTIONAL_COMMAND_ARRAY)
       if not github_actions then
         local meta2 = fileio.readfile(general._previewer_metafile(), { trim = true })
         local result2 = fileio.readfile(general._previewer_resultfile(), { trim = true })
