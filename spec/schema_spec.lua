@@ -12,7 +12,6 @@ describe("schema", function()
   local schema = require("fzfx.schema")
   local ProviderTypeEnum = schema.ProviderTypeEnum
   local PreviewerTypeEnum = schema.PreviewerTypeEnum
-  local PreviewerLabelTypeEnum = schema.PreviewerLabelTypeEnum
 
   describe("[ProviderConfig]", function()
     it("makes a plain provider", function()
@@ -223,14 +222,6 @@ describe("schema", function()
       )
       assert_eq(
         schema.get_provider_type_or_default({
-          key = "p3",
-          provider = "ls",
-          provider_type = "plain_list",
-        }),
-        "plain_list"
-      )
-      assert_eq(
-        schema.get_provider_type_or_default({
           key = "p4",
           provider = { "ls" },
           provider_type = ProviderTypeEnum.PLAIN_COMMAND_STRING,
@@ -265,66 +256,18 @@ describe("schema", function()
           previewer = function()
             return "ls"
           end,
-          previewer_type = "command",
+          previewer_type = PreviewerTypeEnum.FUNCTIONAL_COMMAND_STRING,
         }),
-        "command"
+        PreviewerTypeEnum.FUNCTIONAL_COMMAND_STRING
       )
       assert_eq(
         schema.get_previewer_type_or_default({
           previewer = function()
             return { "ls" }
           end,
-          previewer_type = "command_list",
+          previewer_type = PreviewerTypeEnum.FUNCTIONAL_COMMAND_ARRAY,
         }),
-        "command_list"
-      )
-      assert_eq(
-        schema.get_previewer_type_or_default({
-          previewer = function()
-            return "ls"
-          end,
-          previewer_type = "command_list",
-        }),
-        "command_list"
-      )
-      assert_eq(
-        schema.get_previewer_type_or_default({
-          previewer = function()
-            return { "ls" }
-          end,
-          previewer_type = "command",
-        }),
-        "command"
-      )
-    end)
-  end)
-  describe("[get_previewer_label_type_or_default]", function()
-    it("default", function()
-      assert_eq(
-        schema.get_previewer_label_type_or_default({
-          previewer_label = function() end,
-        }),
-        "function"
-      )
-      assert_eq(
-        schema.get_previewer_label_type_or_default({
-          previewer_label = "Files Previewer",
-        }),
-        "plain"
-      )
-    end)
-    it("existed", function()
-      assert_eq(
-        schema.get_previewer_label_type_or_default({
-          previewer_label_type = schema.PreviewerLabelTypeEnum.FUNCTION,
-        }),
-        "function"
-      )
-      assert_eq(
-        schema.get_previewer_label_type_or_default({
-          previewer_label_type = schema.PreviewerLabelTypeEnum.PLAIN,
-        }),
-        PreviewerLabelTypeEnum.PLAIN
+        PreviewerTypeEnum.FUNCTIONAL_COMMAND_ARRAY
       )
     end)
   end)
