@@ -81,77 +81,45 @@ We have several types of provider decorators:
 
 ## Previewer
 
-A **previewer** is a shell command that uses current line as input, and generates contents for the fzf binary preview window (in the right side).
+A **previewer** is a component that uses current line as input, and generates data contents for the fzf command preview window (in the right side).
 
-Similar to provider, previewer also runs the `nvim --headless -l` shell command to generate preview contents.
+Similar to provider, previewer also prepares the data contents for the fzf command, and then launch a child process to feed these data contents to the fzf command.
 
-We have below types of previewers:
+We have several types of previewers:
 
 - Command previewer: A lua function that runs and returns a shell command (as a string or a string list), then executes and generates the contents for fzf's preview window.
 - List previewer: A lua function that runs and directly returns the preview contents (in lines) for fzf.
 - Buffer file previewer: A nvim buffer to show the file contents, which enables support for nvim current colorscheme.
 
-```lua
---- @alias fzfx.CommandPreviewer fun(line:string?,context:fzfx.PipelineContext?):string?
---- @alias fzfx.ListPreviewer fun(line:string?,context:fzfx.PipelineContext?):string[]?
---- @alias fzfx.BufferFilePreviewerResult {filename:string,lineno:integer?,column:integer?}
---- @alias fzfx.BufferFilePreviewer fun(line:string?,context:fzfx.PipelineContext?):fzfx.BufferFilePreviewerResult?
---- @alias fzfx.Previewer fzfx.CommandPreviewer|fzfx.ListPreviewer|fzfx.BufferFilePreviewer
----
---- @alias fzfx.PreviewerType "command"|"command_list"|"list"|"buffer_file"
---
--- Note: the 1st parameter 'line' is the current line in (the left side of) the fzf binary.
-```
-
 ### Previewer Label
 
-Sometimes we want to add summary/hint for the preview window, for example we want to add a file name when previewing the file content. Here comes the **previewer label**, it's a lua function that runs with the current line as parameter, and returns the label string.
+Sometimes we want to give a name to the preview window, for example we want to set the title of the preview window to the file name when we preview the file content. Here comes the **previewer label**, it's a lua function that runs with a line as parameter, and returns the label string.
 
-We have 2 types of previewers:
+We have several types of previewers:
 
-- Plain label: a static string value which is the label for the preview window.
-- Function label: a lua function to run and returns the string value for the preview window.
-
-```lua
---- @alias fzfx.PlainPreviewerLabel string
---- @alias fzfx.FunctionPreviewerLabel fun(line:string?,context:fzfx.PipelineContext?):string?
---- @alias fzfx.PreviewerLabel fzfx.PlainPreviewerLabel|fzfx.FunctionPreviewerLabel
----
---- @alias fzfx.PreviewerLabelType "plain"|"function"
---- @enum PreviewerLabelTypeEnum
-local PreviewerLabelTypeEnum = {
-  PLAIN = "plain",
-  FUNCTION = "function",
-}
---
--- Note: the 1st parameter 'line' is the current selected line.
-```
+- Plain label: A static lua string value which is the label for the preview window.
+- Function label: A lua function to run and returns the string value for the preview window.
+  > Note: The lua function will be invoke on every keystroke to archive the real-time updates.
 
 ## Command Feed
 
-A **command feed** defines how to feed the query content to the search commands, i.e. the multiple variants (arguments, visual selected, yanked text, last searching contents) of a searching command.
+A **command feed** defines how to feed the query content to the search commands, i.e. the multiple variants of a searching command.
 
-```lua
---- @alias fzfx.CommandFeed "args"|"visual"|"cword"|"put"|"resume"
-```
+- Argument: User can pass their query contents via the command line arguments.
+- Cursor word: User can pass their query contents by the word under cursor.
+- Visual select: User can pass their query contents by visual select.
+- Yanked text: User can pass their query contents by yanked text.
+- Resume last search: User can pass their query contents by resume last search.
 
 ## Fzf Option
 
-A **fzf option** is a simple string or a pair of two strings, that directly passes to the fzf binary. For example `--multi`, `--bind=ctrl-e:toggle`, `--layout=reverse`.
+A **fzf option** is a simple string or a pair of two strings, that directly passes to the fzf command. For example `--multi`, `--bind=ctrl-e:toggle`, `--layout=reverse`.
 
-We have 3 types of fzf options:
+We have several types of fzf options:
 
 - Plain option: A plain option as a simple string. For example `--multi`.
 - Pair option: A plain option as a pair of two strings. For example `{ '--bind', 'ctrl-e:toggle' }`.
 - Function option: A lua function that runs and returns above two types of fzf options.
-
-```lua
---- @alias fzfx.PlainFzfOpt string
---- @alias fzfx.PairFzfOpt string[]
---- @alias fzfx.FunctionFzfOpt fun():fzfx.PlainFzfOpt|fzfx.PairFzfOpt
----
---- @alias fzfx.FzfOpt fzfx.PlainFzfOpt|fzfx.PairFzfOpt|fzfx.FunctionFzfOpt
-```
 
 ## Interaction/Action
 
@@ -161,15 +129,6 @@ We have 2 types of (inter)actions:
 
 - Interaction: When user presses, it invokes the binded lua function with current line as parameter, without quitting popup window.
 - Action: When user presses, it quits the popup window, then invokes the binded lua function with selected lines.
-
-```lua
---- @alias fzfx.ActionKey string
---- @alias fzfx.Interaction fun(line:string?,context:fzfx.PipelineContext):any
---- @alias fzfx.Action fun(line:string[]|nil,context:fzfx.PipelineContext):any
---
--- Note: the 1st parameter in `Interaction` is the current line.
--- Note: the 1st parameter in `Action` is the selected line(s).
-```
 
 ## Pipeline
 
