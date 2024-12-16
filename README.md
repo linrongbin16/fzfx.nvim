@@ -1939,14 +1939,14 @@ require("fzfx").register("ls", {
         return vim.fn.isdirectory(line) > 0 and { "ls", "--color=always", "-lha", line }
           or { "cat", line }
       end,
-      previewer_type = "command_list",
+      previewer_type = "FUNCTIONAL_COMMAND_ARRAY",
     },
     include_hiddens = {
       previewer = function(line)
         return vim.fn.isdirectory(line) > 0 and { "ls", "--color=always", "-lha", line }
           or { "cat", line }
       end,
-      previewer_type = "command_list",
+      previewer_type = "FUNCTIONAL_COMMAND_ARRAY",
     },
   },
   actions = {
