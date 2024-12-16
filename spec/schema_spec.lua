@@ -11,6 +11,8 @@ describe("schema", function()
 
   local schema = require("fzfx.schema")
   local ProviderTypeEnum = schema.ProviderTypeEnum
+  local PreviewerTypeEnum = schema.PreviewerTypeEnum
+  local PreviewerLabelTypeEnum = schema.PreviewerLabelTypeEnum
 
   describe("[ProviderConfig]", function()
     it("makes a plain provider", function()
@@ -245,7 +247,7 @@ describe("schema", function()
             return "ls"
           end,
         }),
-        "command"
+        PreviewerTypeEnum.FUNCTIONAL_COMMAND_STRING
       )
       assert_eq(
         schema.get_previewer_type_or_default({
@@ -254,7 +256,7 @@ describe("schema", function()
             return { "ls" }
           end,
         }),
-        "command"
+        PreviewerTypeEnum.FUNCTIONAL_COMMAND_STRING
       )
     end)
     it("use existed", function()
@@ -322,7 +324,7 @@ describe("schema", function()
         schema.get_previewer_label_type_or_default({
           previewer_label_type = schema.PreviewerLabelTypeEnum.PLAIN,
         }),
-        "plain"
+        PreviewerLabelTypeEnum.PLAIN
       )
     end)
   end)
