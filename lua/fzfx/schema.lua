@@ -21,23 +21,15 @@ local ProviderTypeEnum = {
   FUNCTIONAL_COMMAND_STRING = "FUNCTIONAL_COMMAND_STRING",
   FUNCTIONAL_COMMAND_ARRAY = "FUNCTIONAL_COMMAND_ARRAY",
   DIRECT = "DIRECT",
-
-  -- PLAIN = "plain",
-  -- PLAIN_LIST = "plain_list",
-  -- COMMAND = "command",
-  -- COMMAND_LIST = "command_list",
-  -- LIST = "list",
 }
 --
 -- ========== Provider Decorator ==========
 --
--- Note: In `fzfx._FunctionProviderDecorator`, the 1st parameter `line` is the raw generated line from providers.
---- @alias fzfx._FunctionProviderDecorator fun(line:string?):string?
+--- @alias fzfx._FunctionalProviderDecorator fun(line:string?):string?
 --- @alias fzfx.ProviderDecorator {module:string,rtp:string?}
 --
 -- ========== Previewer ==========
 --
--- Note: The 1st parameter 'line' is the current selected line in (the left side of) the fzf binary.
 --- @alias fzfx.CommandPreviewer fun(line:string?,context:fzfx.PipelineContext?):string|string[]|nil
 --- @alias fzfx.ListPreviewer fun(line:string?,context:fzfx.PipelineContext?):string[]?
 --- @alias fzfx.BufferFilePreviewerResult {filename:string,lineno:integer?,column:integer?}
