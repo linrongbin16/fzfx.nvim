@@ -33,17 +33,12 @@ local ProviderTypeEnum = {
 --- @alias fzfx.FunctionalCommandStringPreviewer fun(line:string?,context:fzfx.PipelineContext?):string?
 --- @alias fzfx.FunctionalCommandArrayPreviewer fun(line:string?,context:fzfx.PipelineContext?):string[]?
 --- @alias fzfx.BufferPreviewerResult  {filename:string,lineno:integer?,column:integer?}
---- @alias fzfx.BufferPreviewer    fun(line:string?,context:fzfx.PipelineContext?):fzfx.BufferPreviewerResult ?
+--- @alias fzfx.BufferPreviewer    fun(line:string?,context:fzfx.PipelineContext?):fzfx.BufferPreviewerResult?
 --- @alias fzfx.Previewer fzfx.FunctionalCommandStringPreviewer|fzfx.FunctionalCommandArrayPreviewer|fzfx.BufferPreviewer
 ---
 --- @alias fzfx.PreviewerType "FUNCTIONAL_COMMAND_STRING"|"FUNCTIONAL_COMMAND_ARRAY"|"BUFFER"
 --- @enum fzfx.PreviewerTypeEnum
 local PreviewerTypeEnum = {
-  -- COMMAND = "command",
-  -- COMMAND_LIST = "command_list",
-  -- LIST = "list",
-  -- BUFFER_FILE = "buffer_file",
-
   FUNCTIONAL_COMMAND_STRING = "FUNCTIONAL_COMMAND_STRING",
   FUNCTIONAL_COMMAND_ARRAY = "FUNCTIONAL_COMMAND_ARRAY",
   BUFFER = "BUFFER",
@@ -51,17 +46,7 @@ local PreviewerTypeEnum = {
 --
 -- ========== Previewer Label ==========
 --
---- @alias fzfx.PlainPreviewerLabel string
--- Note: The 1st parameter 'line' is the current selected line in (the left side of) the fzf binary.
---- @alias fzfx.FunctionPreviewerLabel fun(line:string?,context:fzfx.PipelineContext?):string?
---- @alias fzfx.PreviewerLabel fzfx.PlainPreviewerLabel|fzfx.FunctionPreviewerLabel
----
---- @alias fzfx.PreviewerLabelType "plain"|"function"
---- @enum PreviewerLabelTypeEnum
-local PreviewerLabelTypeEnum = {
-  PLAIN = "plain",
-  FUNCTION = "function",
-}
+--- @alias fzfx.PreviewerLabel fun(line:string?,context:fzfx.PipelineContext?):string?
 --
 -- ========== Command Feed ==========
 --
@@ -104,8 +89,7 @@ local CommandFeedEnum = {
 -- 1. The "previewer" option is the **previewer** we mentioned above, that previews the content of the current line, i.e. generates lines (in the right side) of fzf binary.
 -- 2. The "previewer_type" option by default "command". Also see "get_previewer_type_or_default" function in below.
 -- 3. The "previewer_label" option is optional.
--- 4. The "previewer_label_type" option by default is "plain" or "function". Also see "get_previewer_label_type_or_default" function in below.
---- @alias fzfx.PreviewerConfig {previewer:fzfx.Previewer,previewer_type:fzfx.PreviewerType?,previewer_label:fzfx.PreviewerLabel?,previewer_label_type:fzfx.PreviewerLabelType?}
+--- @alias fzfx.PreviewerConfig {previewer:fzfx.Previewer,previewer_type:fzfx.PreviewerType?,previewer_label:fzfx.PreviewerLabel?}
 ---
 --
 -- Note: A pipeline name is the same with the provider name.
@@ -185,21 +169,9 @@ local function get_previewer_type_or_default(previewer_config)
   return previewer_config.previewer_type or PreviewerTypeEnum.FUNCTIONAL_COMMAND_STRING
 end
 
--- Get previewer label type or default.
---- @param previewer_config fzfx.PreviewerConfig
---- @return fzfx.PreviewerLabelType
-local function get_previewer_label_type_or_default(previewer_config)
-  return previewer_config.previewer_label_type
-    or (
-      type(previewer_config.previewer_label) == "function" and PreviewerLabelTypeEnum.FUNCTION
-      or PreviewerLabelTypeEnum.PLAIN
-    )
-end
-
 local M = {
   ProviderTypeEnum = ProviderTypeEnum,
   PreviewerTypeEnum = PreviewerTypeEnum,
-  PreviewerLabelTypeEnum = PreviewerLabelTypeEnum,
   CommandFeedEnum = CommandFeedEnum,
 
   is_variant_config = is_variant_config,
@@ -208,7 +180,6 @@ local M = {
 
   get_provider_type_or_default = get_provider_type_or_default,
   get_previewer_type_or_default = get_previewer_type_or_default,
-  get_previewer_label_type_or_default = get_previewer_label_type_or_default,
 }
 
 return M

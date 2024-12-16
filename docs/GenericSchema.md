@@ -95,11 +95,7 @@ We have several types of previewers:
 
 Sometimes we want to give a name to the preview window, for example we want to set the title of the preview window to the file name when we preview the file content. Here comes the **previewer label**, it's a lua function that runs with a line as parameter, and returns the label string.
 
-We have several types of previewers:
-
-- Plain label: A static lua string value which is the label for the preview window.
-- Function label: A lua function to run and returns the string value for the preview window.
-  > Note: The lua function will be invoke on every keystroke to archive the real-time updates.
+> Note: The lua function will be invoke on every keystroke to archive the real-time updates.
 
 ## Command Feed
 
