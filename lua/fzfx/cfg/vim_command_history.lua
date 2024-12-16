@@ -80,7 +80,7 @@ M._previewer = function() end
 M.previewers = {
   key = "default",
   previewer = M._previewer,
-  previewer_type = PreviewerTypeEnum.COMMAND_LIST,
+  previewer_type = PreviewerTypeEnum.FUNCTIONAL_COMMAND_ARRAY,
 }
 
 M.actions = {

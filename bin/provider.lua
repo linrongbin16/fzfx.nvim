@@ -149,7 +149,7 @@ then
     return
   end
 
-  local sp = spawn.run(cmd_splits, { on_stdout = println, on_stderr = function() end }) --[[@as vim.SystemObj]]
+  local sp = spawn.run(cmd_splits, { on_stdout = println, on_stderr = function() end })
   shell_helpers.log_ensure(sp ~= nil, "failed to run command:" .. vim.inspect(cmd_splits))
   sp:wait()
 elseif metaopts.provider_type == ProviderTypeEnum.DIRECT then

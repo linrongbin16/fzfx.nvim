@@ -84,10 +84,10 @@ local previewer
 local previewer_type
 if switches.buffer_previewer_disabled() then
   previewer = previewers_helper.fzf_preview_find
-  previewer_type = PreviewerTypeEnum.COMMAND_LIST
+  previewer_type = PreviewerTypeEnum.FUNCTIONAL_COMMAND_ARRAY
 else
   previewer = previewers_helper.buffer_preview_find
-  previewer_type = PreviewerTypeEnum.BUFFER_FILE
+  previewer_type = PreviewerTypeEnum.BUFFER
 end
 
 M.previewers = {

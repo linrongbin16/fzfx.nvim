@@ -311,12 +311,12 @@ end
 M.previewers = {
   filter_hidden = {
     previewer = M._previewer,
-    previewer_type = PreviewerTypeEnum.COMMAND_LIST,
+    previewer_type = PreviewerTypeEnum.FUNCTIONAL_COMMAND_ARRAY,
     previewer_label = previewer_label,
   },
   include_hidden = {
     previewer = M._previewer,
-    previewer_type = PreviewerTypeEnum.COMMAND_LIST,
+    previewer_type = PreviewerTypeEnum.FUNCTIONAL_COMMAND_ARRAY,
     previewer_label = previewer_label,
   },
 }

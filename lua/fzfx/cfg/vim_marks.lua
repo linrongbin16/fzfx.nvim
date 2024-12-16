@@ -286,7 +286,7 @@ end
 
 M.previewers = {
   previewer = M._previewer,
-  previewer_type = PreviewerTypeEnum.COMMAND_LIST,
+  previewer_type = PreviewerTypeEnum.FUNCTIONAL_COMMAND_ARRAY,
   previewer_label = labels_helper.label_vim_mark,
 }
 

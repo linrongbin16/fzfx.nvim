@@ -8,6 +8,7 @@ local str = require("fzfx.commons.str")
 local tbl = require("fzfx.commons.tbl")
 local fileio = require("fzfx.commons.fileio")
 local spawn = require("fzfx.commons.spawn")
+local schema = require("fzfx.schema")
 local shell_helpers = require("fzfx.detail.shell_helpers")
 shell_helpers.setup("previewer")
 
@@ -66,7 +67,8 @@ local function println(l)
   end
 end
 
-if metaopts.previewer_type == "command" then
+local PreviewerTypeEnum = schema.PreviewerTypeEnum
+if metaopts.previewer_type == PreviewerTypeEnum.FUNCTIONAL_COMMAND_STRING then
   local cmd = fileio.readfile(resultfile, { trim = true })
   shell_helpers.log_debug("cmd:" .. vim.inspect(cmd))
   if str.empty(cmd) then
@@ -74,7 +76,7 @@ if metaopts.previewer_type == "command" then
   else
     os.execute(cmd)
   end
-elseif metaopts.previewer_type == "command_list" then
+elseif metaopts.previewer_type == PreviewerTypeEnum.FUNCTIONAL_COMMAND_ARRAY then
   local cmd = fileio.readfile(resultfile, { trim = true })
   shell_helpers.log_debug("cmd:" .. vim.inspect(cmd))
   if str.empty(cmd) then
@@ -90,16 +92,6 @@ elseif metaopts.previewer_type == "command_list" then
   local sp = spawn.run(cmd_splits, { on_stdout = println, on_stderr = function() end })
   shell_helpers.log_ensure(sp ~= nil, "failed to run command:" .. vim.inspect(cmd_splits))
   sp:wait()
-elseif metaopts.previewer_type == "list" then
-  local f = io.open(resultfile, "r")
-  shell_helpers.log_ensure(f ~= nil, "failed to open resultfile:" .. vim.inspect(resultfile))
-  --- @diagnostic disable-next-line: need-check-nil
-  for l in f:lines("*line") do
-    shell_helpers.log_debug("line:" .. l)
-    io.write(string.format("%s\n", l))
-  end
-  --- @diagnostic disable-next-line: need-check-nil
-  f:close()
 else
   shell_helpers.log_throw("unknown previewer meta:" .. vim.inspect(metajsonstring))
 end

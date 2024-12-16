@@ -21,6 +21,7 @@ describe("detail.general", function()
 
   local schema = require("fzfx.schema")
   local ProviderTypeEnum = schema.ProviderTypeEnum
+  local PreviewerTypeEnum = schema.PreviewerTypeEnum
 
   local config = require("fzfx.config")
   require("fzfx").setup({
@@ -264,11 +265,11 @@ describe("detail.general", function()
           previewer = function()
             return { "ls", "-lha", "~" }
           end,
-          previewer_type = "command_list",
+          previewer_type = PreviewerTypeEnum.FUNCTIONAL_COMMAND_ARRAY,
         },
       }, FZFPORTFILE)
       print(string.format("GITHUB_ACTIONS:%s\n", os.getenv("GITHUB_ACTIONS")))
-      assert_eq(ps:preview("hello", {}), "command")
+      assert_eq(ps:preview("hello", {}), PreviewerTypeEnum.FUNCTIONAL_COMMAND_STRING)
       if not github_actions then
         local meta1 = fileio.readfile(general._previewer_metafile(), { trim = true })
         local result1 = fileio.readfile(general._previewer_resultfile(), { trim = true })
@@ -276,12 +277,12 @@ describe("detail.general", function()
         local metajson1 = vim.json.decode(meta1) --[[@as table]]
         assert_eq(type(metajson1), "table")
         assert_eq(metajson1.pipeline, "p1")
-        assert_eq(metajson1.previewer_type, "command")
+        assert_eq(metajson1.previewer_type, PreviewerTypeEnum.FUNCTIONAL_COMMAND_STRING)
         print(string.format("resultfile1:%s\n", result1))
         assert_eq(result1, "ls -lh")
       end
       ps:switch("p2")
-      assert_eq(ps:preview("world", {}), "command_list")
+      assert_eq(ps:preview("world", {}), PreviewerTypeEnum.FUNCTIONAL_COMMAND_ARRAY)
       if not github_actions then
         local meta2 = fileio.readfile(general._previewer_metafile(), { trim = true })
         local result2 = fileio.readfile(general._previewer_resultfile(), { trim = true })
@@ -289,7 +290,7 @@ describe("detail.general", function()
         local metajson2 = vim.json.decode(meta2) --[[@as table]]
         assert_eq(type(metajson2), "table")
         assert_eq(metajson2.pipeline, "p2")
-        assert_eq(metajson2.previewer_type, "command_list")
+        assert_eq(metajson2.previewer_type, PreviewerTypeEnum.FUNCTIONAL_COMMAND_ARRAY)
         print(string.format("resultfile2:%s\n", result2))
         local resultjson2 = vim.json.decode(result2) --[[@as table]]
         assert_eq(type(resultjson2), "table")
@@ -305,16 +306,16 @@ describe("detail.general", function()
           previewer = function()
             return "ls -lh"
           end,
-          previewer_type = schema.PreviewerTypeEnum.COMMAND,
+          previewer_type = PreviewerTypeEnum.FUNCTIONAL_COMMAND_STRING,
         },
         p2 = {
           previewer = function()
             return { "ls", "-lha", "~" }
           end,
-          previewer_type = schema.PreviewerTypeEnum.COMMAND_LIST,
+          previewer_type = PreviewerTypeEnum.FUNCTIONAL_COMMAND_ARRAY,
         },
       }, FZFPORTFILE)
-      assert_eq(ps:preview("hello", {}), "command")
+      assert_eq(ps:preview("hello", {}), PreviewerTypeEnum.FUNCTIONAL_COMMAND_STRING)
       if not github_actions then
         local meta1 = fileio.readfile(general._previewer_metafile(), { trim = true })
         local result1 = fileio.readfile(general._previewer_resultfile(), { trim = true })
@@ -322,12 +323,12 @@ describe("detail.general", function()
         local metajson1 = vim.json.decode(meta1) --[[@as table]]
         assert_eq(type(metajson1), "table")
         assert_eq(metajson1.pipeline, "p1")
-        assert_eq(metajson1.previewer_type, "command")
+        assert_eq(metajson1.previewer_type, PreviewerTypeEnum.FUNCTIONAL_COMMAND_STRING)
         print(string.format("resultfile:%s\n", result1))
         assert_eq(result1, "ls -lh")
       end
       ps:switch("p2")
-      assert_eq(ps:preview("world", {}), "command_list")
+      assert_eq(ps:preview("world", {}), PreviewerTypeEnum.FUNCTIONAL_COMMAND_ARRAY)
       if not github_actions then
         local meta2 = fileio.readfile(general._previewer_metafile(), { trim = true })
         local result2 = fileio.readfile(general._previewer_resultfile(), { trim = true })
@@ -335,7 +336,7 @@ describe("detail.general", function()
         local metajson2 = vim.json.decode(meta2) --[[@as table]]
         assert_eq(type(metajson2), "table")
         assert_eq(metajson2.pipeline, "p2")
-        assert_eq(metajson2.previewer_type, "command_list")
+        assert_eq(metajson2.previewer_type, PreviewerTypeEnum.FUNCTIONAL_COMMAND_ARRAY)
         print(string.format("resultfile:%s\n", result2))
         local resultjson2 = vim.json.decode(result2) --[[@as table]]
         assert_eq(type(resultjson2), "table")
@@ -360,7 +361,10 @@ describe("detail.general", function()
       assert_false(tbl.tbl_empty(ps.previewer_configs))
       assert_eq(type(ps.previewer_configs.default.previewer), "function")
       assert_eq(ps.previewer_configs.default.previewer(), "ls -1")
-      assert_eq(ps.previewer_configs.default.previewer_type, "command")
+      assert_eq(
+        ps.previewer_configs.default.previewer_type,
+        PreviewerTypeEnum.FUNCTIONAL_COMMAND_STRING
+      )
       assert_eq(ps.fzf_port_reader.filename, FZFPORTFILE)
       assert_eq(ps:switch("default"), nil)
     end)
@@ -383,14 +387,14 @@ describe("detail.general", function()
       assert_false(tbl.tbl_empty(ps.previewer_configs))
       assert_eq(type(ps.previewer_configs.p1.previewer), "function")
       assert_eq(ps.previewer_configs.p1.previewer(), "p1")
-      assert_eq(ps.previewer_configs.p1.previewer_type, "command")
+      assert_eq(ps.previewer_configs.p1.previewer_type, PreviewerTypeEnum.FUNCTIONAL_COMMAND_STRING)
       assert_eq(ps:switch("p1"), nil)
 
       assert_eq(type(ps.previewer_configs), "table")
       assert_false(tbl.tbl_empty(ps.previewer_configs))
       assert_eq(type(ps.previewer_configs.p2.previewer), "function")
       assert_eq(ps.previewer_configs.p2.previewer(), "p2")
-      assert_eq(ps.previewer_configs.p2.previewer_type, "command")
+      assert_eq(ps.previewer_configs.p2.previewer_type, PreviewerTypeEnum.FUNCTIONAL_COMMAND_STRING)
       assert_eq(ps:switch("p2"), nil)
     end)
   end)
@@ -409,7 +413,7 @@ describe("detail.general", function()
           previewer = function()
             return { "ls", "-lha", "~" }
           end,
-          previewer_type = "command_list",
+          previewer_type = PreviewerTypeEnum.FUNCTIONAL_COMMAND_ARRAY,
         },
       }, FZFPORTFILE)
       print(string.format("GITHUB_ACTIONS:%s\n", os.getenv("GITHUB_ACTIONS")))
@@ -433,7 +437,7 @@ describe("detail.general", function()
           previewer = function()
             return { "ls", "-lha", "~" }
           end,
-          previewer_type = "command_list",
+          previewer_type = PreviewerTypeEnum.FUNCTIONAL_COMMAND_ARRAY,
           previewer_label = function(line)
             return nil
           end,
@@ -460,7 +464,7 @@ describe("detail.general", function()
           previewer = function()
             return { "ls", "-lha", "~" }
           end,
-          previewer_type = "command_list",
+          previewer_type = PreviewerTypeEnum.FUNCTIONAL_COMMAND_ARRAY,
         },
       }, FZFPORTFILE)
       local actual = ps:current()
@@ -591,27 +595,18 @@ describe("detail.general", function()
     it("makes without icon", function()
       local actual1 = general.make_previewer_meta_opts("test1", {
         previewer = function() end,
-        previewer_type = "command",
+        previewer_type = PreviewerTypeEnum.FUNCTIONAL_COMMAND_STRING,
       })
       assert_eq(type(actual1), "table")
       assert_eq(actual1.pipeline, "test1")
-      assert_eq(actual1.previewer_type, "command")
+      assert_eq(actual1.previewer_type, PreviewerTypeEnum.FUNCTIONAL_COMMAND_STRING)
       local actual2 = general.make_previewer_meta_opts("test2", {
         previewer = function() end,
-        previewer_type = "command_list",
+        previewer_type = PreviewerTypeEnum.FUNCTIONAL_COMMAND_ARRAY,
       })
       assert_eq(type(actual2), "table")
       assert_eq(actual2.pipeline, "test2")
-      assert_eq(actual2.previewer_type, "command_list")
-    end)
-    it("makes with icon", function()
-      local actual = general.make_previewer_meta_opts("test3", {
-        previewer = function() end,
-        previewer_type = "list",
-      })
-      assert_eq(type(actual), "table")
-      assert_eq(actual.pipeline, "test3")
-      assert_eq(actual.previewer_type, "list")
+      assert_eq(actual2.previewer_type, PreviewerTypeEnum.FUNCTIONAL_COMMAND_ARRAY)
     end)
   end)
   describe("[_make_user_command]", function()
@@ -720,16 +715,4 @@ describe("detail.general", function()
       assert_eq(actual12.fzf_border_opts, "double")
     end)
   end)
-  -- describe("[decode_fzf_status_current_text]", function()
-  --   it("test", function()
-  --     local input1 =
-  --       '{"reading":false,"progress":100,"query":"f","position":0,"sort":true,"totalCount":148,"matchCount":100,"current":{"index":92,"text":" lua/fzfx.lua"},"matches":[{"index":93,"text":" lua/config.lua"}]}'
-  --     local actual1 = general.decode_fzf_status_current_text(input1)
-  --     assert_eq(actual1, " lua/fzfx.lua")
-  --     local input2 =
-  --       [[{"reading":false,"progress":100,"query":"f","position":0,"sort":true,"totalCount":148,"matchCount":100,"current":{"index":92,"text":" \"lua/fzfx.lua"},"matches":[{"index":93,"text":" lua/config.lua"}]}]]
-  --     local actual2 = general.decode_fzf_status_current_text(input2)
-  --     assert_eq(actual2, [[ \"lua/fzfx.lua]])
-  --   end)
-  -- end)
 end)

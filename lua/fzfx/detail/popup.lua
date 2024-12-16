@@ -21,7 +21,7 @@ local PopupWindow = {}
 --- @package
 --- @param win_opts fzfx.WindowOpts
 --- @param window_type "fzf"|"buffer"
---- @param buffer_previewer_opts fzfx.BufferFilePreviewerOpts
+--- @param buffer_previewer_opts fzfx.BufferPreviewerOpts
 --- @return fzfx.PopupWindow
 function PopupWindow:new(win_opts, window_type, buffer_previewer_opts)
   -- check executables
@@ -64,7 +64,7 @@ function PopupWindow:resize()
 end
 
 --- @param job_id integer
---- @param previewer_result fzfx.BufferFilePreviewerResult
+--- @param previewer_result fzfx.BufferPreviewerResult
 --- @param previewer_label_result string?
 function PopupWindow:preview_file(job_id, previewer_result, previewer_label_result)
   self.instance:preview_file(job_id, previewer_result, previewer_label_result)
@@ -153,7 +153,7 @@ end
 --- @param context fzfx.PipelineContext
 --- @param on_close fzfx.OnPopupExit?
 --- @param use_buffer_previewer boolean?
---- @param buffer_previewer_opts fzfx.BufferFilePreviewerOpts
+--- @param buffer_previewer_opts fzfx.BufferPreviewerOpts
 --- @return fzfx.Popup
 function Popup:new(
   win_opts,

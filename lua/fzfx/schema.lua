@@ -21,39 +21,32 @@ local ProviderTypeEnum = {
   FUNCTIONAL_COMMAND_STRING = "FUNCTIONAL_COMMAND_STRING",
   FUNCTIONAL_COMMAND_ARRAY = "FUNCTIONAL_COMMAND_ARRAY",
   DIRECT = "DIRECT",
-
-  -- PLAIN = "plain",
-  -- PLAIN_LIST = "plain_list",
-  -- COMMAND = "command",
-  -- COMMAND_LIST = "command_list",
-  -- LIST = "list",
 }
 --
 -- ========== Provider Decorator ==========
 --
--- Note: In `fzfx._FunctionProviderDecorator`, the 1st parameter `line` is the raw generated line from providers.
---- @alias fzfx._FunctionProviderDecorator fun(line:string?):string?
+--- @alias fzfx._FunctionalProviderDecorator fun(line:string?):string?
 --- @alias fzfx.ProviderDecorator {module:string,rtp:string?}
 --
 -- ========== Previewer ==========
 --
--- Note: The 1st parameter 'line' is the current selected line in (the left side of) the fzf binary.
---- @alias fzfx.CommandPreviewer fun(line:string?,context:fzfx.PipelineContext?):string|string[]|nil
---- @alias fzfx.ListPreviewer fun(line:string?,context:fzfx.PipelineContext?):string[]?
---- @alias fzfx.BufferFilePreviewerResult {filename:string,lineno:integer?,column:integer?}
---- @alias fzfx.BufferFilePreviewer fun(line:string?,context:fzfx.PipelineContext?):fzfx.BufferFilePreviewerResult?
---- @alias fzfx.Previewer fzfx.CommandPreviewer|fzfx.ListPreviewer|fzfx.BufferFilePreviewer
+--- @alias fzfx.FunctionalCommandStringPreviewer fun(line:string?,context:fzfx.PipelineContext?):string?
+--- @alias fzfx.FunctionalCommandArrayPreviewer fun(line:string?,context:fzfx.PipelineContext?):string[]?
+--- @alias fzfx.BufferPreviewerResult  {filename:string,lineno:integer?,column:integer?}
+--- @alias fzfx.BufferPreviewer    fun(line:string?,context:fzfx.PipelineContext?):fzfx.BufferPreviewerResult ?
+--- @alias fzfx.Previewer fzfx.FunctionalCommandStringPreviewer|fzfx.FunctionalCommandArrayPreviewer|fzfx.BufferPreviewer
 ---
---- @alias fzfx.PreviewerType "command"|"command_list"|"list"|"buffer_file"
+--- @alias fzfx.PreviewerType "FUNCTIONAL_COMMAND_STRING"|"FUNCTIONAL_COMMAND_ARRAY"|"BUFFER"
 --- @enum fzfx.PreviewerTypeEnum
 local PreviewerTypeEnum = {
-  -- For fzfx.CommandPreviewer
-  COMMAND = "command",
-  COMMAND_LIST = "command_list",
-  -- For fzfx.ListPreviewer
-  LIST = "list",
-  -- For fzfx.BufferFilePreviewer
-  BUFFER_FILE = "buffer_file",
+  -- COMMAND = "command",
+  -- COMMAND_LIST = "command_list",
+  -- LIST = "list",
+  -- BUFFER_FILE = "buffer_file",
+
+  FUNCTIONAL_COMMAND_STRING = "FUNCTIONAL_COMMAND_STRING",
+  FUNCTIONAL_COMMAND_ARRAY = "FUNCTIONAL_COMMAND_ARRAY",
+  BUFFER = "BUFFER",
 }
 --
 -- ========== Previewer Label ==========
@@ -189,7 +182,7 @@ end
 --- @param previewer_config fzfx.PreviewerConfig
 --- @return fzfx.PreviewerType
 local function get_previewer_type_or_default(previewer_config)
-  return previewer_config.previewer_type or PreviewerTypeEnum.COMMAND
+  return previewer_config.previewer_type or PreviewerTypeEnum.FUNCTIONAL_COMMAND_STRING
 end
 
 -- Get previewer label type or default.

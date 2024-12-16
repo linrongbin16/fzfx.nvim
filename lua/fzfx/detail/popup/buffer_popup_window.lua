@@ -10,9 +10,9 @@ local buffer_popup_window_helpers = require("fzfx.detail.popup.buffer_popup_wind
 
 local M = {}
 
---- @alias fzfx.BufferFilePreviewerOpts {fzf_preview_window_opts:fzfx.FzfPreviewWindowOpts,fzf_border_opts:string}
+--- @alias fzfx.BufferPreviewerOpts  {fzf_preview_window_opts:fzfx.FzfPreviewWindowOpts,fzf_border_opts:string}
 --- @param win_opts fzfx.WindowOpts
---- @param buffer_previewer_opts fzfx.BufferFilePreviewerOpts
+--- @param buffer_previewer_opts fzfx.BufferPreviewerOpts
 --- @param relative_winnr integer
 --- @param relative_win_first_line integer
 --- @return {provider:fzfx.NvimFloatWinOpts,previewer:fzfx.NvimFloatWinOpts}
@@ -82,7 +82,7 @@ M._make_cursor_opts = function(
 end
 
 --- @param win_opts fzfx.WindowOpts
---- @param buffer_previewer_opts fzfx.BufferFilePreviewerOpts
+--- @param buffer_previewer_opts fzfx.BufferPreviewerOpts
 --- @param relative_winnr integer
 --- @param relative_win_first_line integer
 --- @return {provider:fzfx.NvimFloatWinOpts,previewer:fzfx.NvimFloatWinOpts}
@@ -151,7 +151,7 @@ M._make_center_opts = function(
 end
 
 --- @param win_opts fzfx.WindowOpts
---- @param buffer_previewer_opts fzfx.BufferFilePreviewerOpts
+--- @param buffer_previewer_opts fzfx.BufferPreviewerOpts
 --- @param relative_winnr integer
 --- @param relative_win_first_line integer
 --- @return {provider:fzfx.NvimFloatWinOpts,previewer:fzfx.NvimFloatWinOpts}
@@ -186,7 +186,7 @@ end
 --- @field _saved_current_winnr integer
 --- @field _saved_current_win_first_line integer
 --- @field _saved_win_opts fzfx.WindowOpts
---- @field _saved_buffer_previewer_opts fzfx.BufferFilePreviewerOpts
+--- @field _saved_buffer_previewer_opts fzfx.BufferPreviewerOpts
 --- @field _saved_previewing_file_content_job fzfx.BufferPopupWindowPreviewFileContentJob
 --- @field _saved_previewing_file_content_view fzfx.BufferPopupWindowPreviewFileContentView
 --- @field _current_previewing_file_job_id integer?
@@ -233,7 +233,7 @@ end
 
 --- @package
 --- @param win_opts fzfx.WindowOpts
---- @param buffer_previewer_opts fzfx.BufferFilePreviewerOpts
+--- @param buffer_previewer_opts fzfx.BufferPreviewerOpts
 --- @return fzfx.BufferPopupWindow
 function BufferPopupWindow:new(win_opts, buffer_previewer_opts)
   local current_winnr = vim.api.nvim_get_current_win()
@@ -464,9 +464,9 @@ function BufferPopupWindow:_make_view(preview_file_content)
   return view
 end
 
---- @alias fzfx.BufferPopupWindowPreviewFileJob {job_id:integer,previewer_result:fzfx.BufferFilePreviewerResult,previewer_label_result:string?}
+--- @alias fzfx.BufferPopupWindowPreviewFileJob {job_id:integer,previewer_result:fzfx.BufferPreviewerResult ,previewer_label_result:string?}
 --- @param job_id integer
---- @param previewer_result fzfx.BufferFilePreviewerResult
+--- @param previewer_result fzfx.BufferPreviewerResult
 --- @param previewer_label_result string?
 function BufferPopupWindow:preview_file(job_id, previewer_result, previewer_label_result)
   if str.empty(tbl.tbl_get(previewer_result, "filename")) then
@@ -578,7 +578,7 @@ function BufferPopupWindow:preview_file(job_id, previewer_result, previewer_labe
   end, 20)
 end
 
---- @alias fzfx.BufferPopupWindowPreviewFileContentJob {contents:string[],job_id:integer,previewer_result:fzfx.BufferFilePreviewerResult,previewer_label_result:string?}
+--- @alias fzfx.BufferPopupWindowPreviewFileContentJob {contents:string[],job_id:integer,previewer_result:fzfx.BufferPreviewerResult ,previewer_label_result:string?}
 --- @param file_content fzfx.BufferPopupWindowPreviewFileContentJob
 --- @param content_view fzfx.BufferPopupWindowPreviewFileContentView
 --- @param on_complete (fun(done:boolean):any)|nil

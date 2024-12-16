@@ -5,7 +5,7 @@ local popup_helpers = require("fzfx.detail.popup.popup_helpers")
 local M = {}
 
 --- @param win_opts fzfx.WindowOpts
---- @param buffer_previewer_opts fzfx.BufferFilePreviewerOpts
+--- @param buffer_previewer_opts fzfx.BufferPreviewerOpts
 --- @param relative_winnr integer
 --- @param relative_win_first_line integer
 --- @return fzfx.NvimFloatWinOpts
@@ -46,7 +46,7 @@ M._make_cursor_opts = function(
 end
 
 --- @param win_opts fzfx.WindowOpts
---- @param buffer_previewer_opts fzfx.BufferFilePreviewerOpts
+--- @param buffer_previewer_opts fzfx.BufferPreviewerOpts
 --- @param relative_winnr integer
 --- @param relative_win_first_line integer
 --- @return fzfx.NvimFloatWinOpts
@@ -86,7 +86,7 @@ M._make_center_opts = function(
 end
 
 --- @param win_opts fzfx.WindowOpts
---- @param buffer_previewer_opts fzfx.BufferFilePreviewerOpts
+--- @param buffer_previewer_opts fzfx.BufferPreviewerOpts
 --- @param relative_winnr integer
 --- @param relative_win_first_line integer
 --- @return fzfx.NvimFloatWinOpts
@@ -119,13 +119,13 @@ end
 --- @field _saved_current_winnr integer
 --- @field _saved_current_win_first_line integer
 --- @field _saved_win_opts fzfx.WindowOpts
---- @field _saved_buffer_previewer_opts fzfx.BufferFilePreviewerOpts
+--- @field _saved_buffer_previewer_opts fzfx.BufferPreviewerOpts
 --- @field _resizing boolean
 local FzfPopupWindow = {}
 
 --- @package
 --- @param win_opts fzfx.WindowOpts
---- @param buffer_previewer_opts fzfx.BufferFilePreviewerOpts
+--- @param buffer_previewer_opts fzfx.BufferPreviewerOpts
 --- @return fzfx.FzfPopupWindow
 function FzfPopupWindow:new(win_opts, buffer_previewer_opts)
   local current_winnr = vim.api.nvim_get_current_win()
