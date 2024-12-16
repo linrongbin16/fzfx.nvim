@@ -710,7 +710,7 @@ function BufferPopupWindow:render_file_contents(file_content, content_view, on_c
     --   )
     -- )
 
-    local lines_been_cleared = false
+    -- local lines_been_cleared = false
 
     local function set_buf_lines()
       vim.defer_fn(function()
