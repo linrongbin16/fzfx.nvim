@@ -245,13 +245,13 @@ M.providers = {
   workspace_diagnostics = {
     key = "ctrl-w",
     provider = M._make_provider(),
-    provider_type = ProviderTypeEnum.LIST,
+    provider_type = ProviderTypeEnum.DIRECT,
     provider_decorator = { module = _decorator.PREPEND_ICON_GREP },
   },
   buffer_diagnostics = {
     key = "ctrl-u",
     provider = M._make_provider({ buffer = true }),
-    provider_type = ProviderTypeEnum.LIST,
+    provider_type = ProviderTypeEnum.DIRECT,
     provider_decorator = { module = _decorator.PREPEND_ICON_GREP },
   },
 }

@@ -76,7 +76,7 @@ end
 M.providers = {
   key = "default",
   provider = M._provider,
-  provider_type = ProviderTypeEnum.LIST,
+  provider_type = ProviderTypeEnum.DIRECT,
   provider_decorator = { module = _decorator.PREPEND_ICON_FIND },
 }
 

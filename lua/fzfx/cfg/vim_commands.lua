@@ -527,17 +527,17 @@ M.providers = {
   all_commands = {
     key = "ctrl-a",
     provider = _provider,
-    provider_type = ProviderTypeEnum.LIST,
+    provider_type = ProviderTypeEnum.DIRECT,
   },
   ex_commands = {
     key = "ctrl-e",
     provider = _ex_provider,
-    provider_type = ProviderTypeEnum.LIST,
+    provider_type = ProviderTypeEnum.DIRECT,
   },
   user_commands = {
     key = "ctrl-u",
     provider = _user_provider,
-    provider_type = ProviderTypeEnum.LIST,
+    provider_type = ProviderTypeEnum.DIRECT,
   },
 }
 

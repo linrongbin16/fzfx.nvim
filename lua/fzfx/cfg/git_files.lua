@@ -107,13 +107,13 @@ M.providers = {
   current_folder = {
     key = "ctrl-u",
     provider = current_folder_provider,
-    provider_type = ProviderTypeEnum.COMMAND_LIST,
+    provider_type = ProviderTypeEnum.FUNCTIONAL_COMMAND_ARRAY,
     provider_decorator = { module = _decorator.PREPEND_ICON_FIND },
   },
   workspace = {
     key = "ctrl-w",
     provider = workspace_provider,
-    provider_type = ProviderTypeEnum.COMMAND_LIST,
+    provider_type = ProviderTypeEnum.FUNCTIONAL_COMMAND_ARRAY,
     provider_decorator = { module = _decorator.PREPEND_ICON_FIND },
   },
 }

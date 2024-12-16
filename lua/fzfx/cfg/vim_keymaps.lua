@@ -475,22 +475,22 @@ M.providers = {
   all_mode = {
     key = "ctrl-a",
     provider = M._make_provider("a"),
-    provider_type = ProviderTypeEnum.LIST,
+    provider_type = ProviderTypeEnum.DIRECT,
   },
   n_mode = {
     key = "ctrl-o",
     provider = M._make_provider("n"),
-    provider_type = ProviderTypeEnum.LIST,
+    provider_type = ProviderTypeEnum.DIRECT,
   },
   i_mode = {
     key = "ctrl-i",
     provider = M._make_provider("i"),
-    provider_type = ProviderTypeEnum.LIST,
+    provider_type = ProviderTypeEnum.DIRECT,
   },
   v_mode = {
     key = "ctrl-v",
     provider = M._make_provider("v"),
-    provider_type = ProviderTypeEnum.LIST,
+    provider_type = ProviderTypeEnum.DIRECT,
   },
 }
 

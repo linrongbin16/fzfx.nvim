@@ -8,6 +8,7 @@ local str = require("fzfx.commons.str")
 local tbl = require("fzfx.commons.tbl")
 local fileio = require("fzfx.commons.fileio")
 local spawn = require("fzfx.commons.spawn")
+local schema = require("fzfx.schema")
 local shell_helpers = require("fzfx.detail.shell_helpers")
 shell_helpers.setup("provider")
 
@@ -110,7 +111,11 @@ local function println(line)
   end
 end
 
-if metaopts.provider_type == "plain" or metaopts.provider_type == "command" then
+local ProviderTypeEnum = schema.ProviderTypeEnum
+if
+  metaopts.provider_type == ProviderTypeEnum.PLAIN_COMMAND_STRING
+  or metaopts.provider_type == ProviderTypeEnum.FUNCTIONAL_COMMAND_STRING
+then
   --- @type string
   local cmd = fileio.readfile(resultfile, { trim = true }) --[[@as string]]
   -- shell_helpers.log_debug("plain/command cmd:%s", vim.inspect(cmd))
@@ -127,7 +132,10 @@ if metaopts.provider_type == "plain" or metaopts.provider_type == "command" then
   end
   ---@diagnostic disable-next-line: need-check-nil
   p:close()
-elseif metaopts.provider_type == "plain_list" or metaopts.provider_type == "command_list" then
+elseif
+  metaopts.provider_type == ProviderTypeEnum.PLAIN_COMMAND_ARRAY
+  or metaopts.provider_type == ProviderTypeEnum.FUNCTIONAL_COMMAND_ARRAY
+then
   local cmd = fileio.readfile(resultfile, { trim = true }) --[[@as string]]
   -- shell_helpers.log_debug("plain_list/command_list cmd:%s", vim.inspect(cmd))
   if str.empty(cmd) then
@@ -141,10 +149,10 @@ elseif metaopts.provider_type == "plain_list" or metaopts.provider_type == "comm
     return
   end
 
-  local sp = spawn.run(cmd_splits, { on_stdout = println, on_stderr = function() end })
+  local sp = spawn.run(cmd_splits, { on_stdout = println, on_stderr = function() end }) --[[@as vim.SystemObj]]
   shell_helpers.log_ensure(sp ~= nil, "failed to run command:" .. vim.inspect(cmd_splits))
   sp:wait()
-elseif metaopts.provider_type == "list" then
+elseif metaopts.provider_type == ProviderTypeEnum.DIRECT then
   local reader = fileio.FileLineReader:open(resultfile) --[[@as commons.FileLineReader ]]
   shell_helpers.log_ensure(reader ~= nil, "failed to open resultfile:" .. vim.inspect(resultfile))
 
