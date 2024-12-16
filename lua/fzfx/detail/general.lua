@@ -489,9 +489,8 @@ function PreviewerSwitch:preview(line, context)
     )
   )
   log.ensure(
-    previewer_config.previewer_type == PreviewerTypeEnum.COMMAND
-      or previewer_config.previewer_type == PreviewerTypeEnum.COMMAND_LIST
-      or previewer_config.previewer_type == PreviewerTypeEnum.LIST,
+    previewer_config.previewer_type == PreviewerTypeEnum.FUNCTIONAL_COMMAND_STRING
+      or previewer_config.previewer_type == PreviewerTypeEnum.FUNCTIONAL_COMMAND_ARRAY,
     string.format(
       "invalid previewer type in %s! previewer type: %s",
       vim.inspect(self.pipeline),
@@ -503,13 +502,8 @@ function PreviewerSwitch:preview(line, context)
   local metajson = vim.json.encode(metaopts) --[[@as string]]
   fileio.writefile(self.metafile, metajson)
 
-  if previewer_config.previewer_type == PreviewerTypeEnum.COMMAND then
+  if previewer_config.previewer_type == PreviewerTypeEnum.FUNCTIONAL_COMMAND_STRING then
     local ok, result = pcall(previewer_config.previewer, line, context)
-    -- log.debug(
-    --     "|fzfx.general - PreviewerSwitch:preview| pcall command previewer, ok:%s, result:%s",
-    --     vim.inspect(ok),
-    --     vim.inspect(result)
-    -- )
     if not ok then
       fileio.writefile(self.resultfile, "")
       log.err(
@@ -537,13 +531,8 @@ function PreviewerSwitch:preview(line, context)
         fileio.writefile(self.resultfile, result --[[@as string]])
       end
     end
-  elseif previewer_config.previewer_type == PreviewerTypeEnum.COMMAND_LIST then
+  elseif previewer_config.previewer_type == PreviewerTypeEnum.FUNCTIONAL_COMMAND_ARRAY then
     local ok, result = pcall(previewer_config.previewer, line, context)
-    -- log.debug(
-    --     "|fzfx.general - PreviewerSwitch:preview| pcall command_list previewer, ok:%s, result:%s",
-    --     vim.inspect(ok),
-    --     vim.inspect(result)
-    -- )
     if not ok then
       fileio.writefile(self.resultfile, "")
       log.err(
@@ -570,36 +559,6 @@ function PreviewerSwitch:preview(line, context)
       else
         fileio.writefile(self.resultfile, vim.json.encode(result --[[@as table]]) --[[@as string]])
       end
-    end
-  elseif previewer_config.previewer_type == PreviewerTypeEnum.LIST then
-    local ok, result = pcall(previewer_config.previewer, line, context)
-    -- log.debug(
-    --     "|fzfx.general - PreviewerSwitch:preview| pcall list previewer, ok:%s, result:%s",
-    --     vim.inspect(ok),
-    --     vim.inspect(result)
-    -- )
-    if not ok then
-      fileio.writefile(self.resultfile, "")
-      log.err(
-        string.format(
-          "failed to call pipeline %s list previewer %s! line:%s, context:%s, error:%s",
-          vim.inspect(self.pipeline),
-          vim.inspect(previewer_config.previewer),
-          vim.inspect(line),
-          vim.inspect(context),
-          vim.inspect(result)
-        )
-      )
-    else
-      log.ensure(
-        type(result) == "table",
-        string.format(
-          "|PreviewerSwitch:preview| list previewer result must be array! self:%s, result:%s",
-          vim.inspect(self),
-          vim.inspect(result)
-        )
-      )
-      fileio.writelines(self.resultfile, result --[[@as table]])
     end
   else
     log.throw(
@@ -831,7 +790,7 @@ end
 
 --- @param fzf_opts fzfx.FzfOpt[]
 --- @param fzf_action_file string
---- @return fzfx.FzfOpt[], fzfx.BufferFilePreviewerOpts
+--- @return fzfx.FzfOpt[], fzfx.BufferPreviewerOpts
 local function mock_buffer_previewer_fzf_opts(fzf_opts, fzf_action_file)
   local new_fzf_opts = {}
   local border_opts = fzf_helpers.FZF_DEFAULT_BORDER_OPTS
@@ -1009,8 +968,7 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
   --- @type fzfx.PreviewerSwitch
   local previewer_switch =
     PreviewerSwitch:new(name, default_pipeline, pipeline_configs.previewers, fzf_port_file)
-  local use_buffer_previewer = previewer_switch:current().previewer_type
-    == PreviewerTypeEnum.BUFFER_FILE
+  local use_buffer_previewer = previewer_switch:current().previewer_type == PreviewerTypeEnum.BUFFER
 
   local context_maker = _make_default_context
   local pipeline_context_maker = tbl.tbl_get(pipeline_configs, "other_opts", "context_maker")
@@ -1285,7 +1243,7 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
                 if preview_result then
                   popup.popup_window:preview_file(
                     buffer_previewer_file_job_id,
-                    preview_result --[[@as fzfx.BufferFilePreviewerResult]],
+                    preview_result --[[@as fzfx.BufferPreviewerResult]],
                     previewer_label_result --[[@as string?]]
                   )
                 end

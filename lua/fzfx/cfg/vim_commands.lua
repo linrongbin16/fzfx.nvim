@@ -577,17 +577,17 @@ end
 M.previewers = {
   all_commands = {
     previewer = M._previewer,
-    previewer_type = PreviewerTypeEnum.COMMAND_LIST,
+    previewer_type = PreviewerTypeEnum.FUNCTIONAL_COMMAND_ARRAY,
     previewer_label = labels_helper.label_vim_command,
   },
   ex_commands = {
     previewer = M._previewer,
-    previewer_type = PreviewerTypeEnum.COMMAND_LIST,
+    previewer_type = PreviewerTypeEnum.FUNCTIONAL_COMMAND_ARRAY,
     previewer_label = labels_helper.label_vim_command,
   },
   user_commands = {
     previewer = M._previewer,
-    previewer_type = PreviewerTypeEnum.COMMAND_LIST,
+    previewer_type = PreviewerTypeEnum.FUNCTIONAL_COMMAND_ARRAY,
     previewer_label = labels_helper.label_vim_command,
   },
 }
