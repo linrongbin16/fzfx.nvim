@@ -10,15 +10,17 @@ describe("schema", function()
   end)
 
   local schema = require("fzfx.schema")
+  local ProviderTypeEnum = schema.ProviderTypeEnum
+
   describe("[ProviderConfig]", function()
     it("makes a plain provider", function()
       local plain_key = "plain"
       local plain_provider = "ls -la"
-      local plain_provider_type = "plain"
+      local plain_provider_type = ProviderTypeEnum.PLAIN_COMMAND_STRING
       local plain = {
         key = plain_key,
         provider = plain_provider,
-        provider_type = plain_provider_type,
+        provider_type = ProviderTypeEnum.PLAIN_COMMAND_STRING,
       }
       assert_eq(type(plain), "table")
       assert_true(schema.is_provider_config(plain))
@@ -38,7 +40,7 @@ describe("schema", function()
       assert_eq(plain.key, plain_key)
       assert_eq(plain.provider, plain_provider)
       assert_true(plain.provider_type == nil)
-      assert_eq(schema.get_provider_type_or_default(plain), "plain_list")
+      assert_eq(schema.get_provider_type_or_default(plain), ProviderTypeEnum.PLAIN_COMMAND_ARRAY)
     end)
   end)
   describe("[PreviewerConfig]", function()
@@ -190,14 +192,14 @@ describe("schema", function()
           key = "p1",
           provider = "ls",
         }),
-        "plain"
+        ProviderTypeEnum.PLAIN_COMMAND_STRING
       )
       assert_eq(
         schema.get_provider_type_or_default({
           key = "p2",
           provider = { "ls" },
         }),
-        "plain_list"
+        ProviderTypeEnum.PLAIN_COMMAND_ARRAY
       )
     end)
     it("use existed", function()
@@ -205,17 +207,17 @@ describe("schema", function()
         schema.get_provider_type_or_default({
           key = "p1",
           provider = "ls",
-          provider_type = "plain",
+          provider_type = ProviderTypeEnum.PLAIN_COMMAND_STRING,
         }),
-        "plain"
+        ProviderTypeEnum.PLAIN_COMMAND_STRING
       )
       assert_eq(
         schema.get_provider_type_or_default({
           key = "p2",
           provider = { "ls" },
-          provider_type = "plain_list",
+          provider_type = ProviderTypeEnum.PLAIN_COMMAND_ARRAY,
         }),
-        "plain_list"
+        ProviderTypeEnum.PLAIN_COMMAND_ARRAY
       )
       assert_eq(
         schema.get_provider_type_or_default({
@@ -229,9 +231,9 @@ describe("schema", function()
         schema.get_provider_type_or_default({
           key = "p4",
           provider = { "ls" },
-          provider_type = "plain",
+          provider_type = ProviderTypeEnum.PLAIN_COMMAND_STRING,
         }),
-        "plain"
+        ProviderTypeEnum.PLAIN_COMMAND_STRING
       )
     end)
   end)

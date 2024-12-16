@@ -6,23 +6,27 @@
 --
 -- ========== Provider ==========
 --
---- @alias fzfx.PlainProvider string|string[]
--- Note: The 1st parameter 'query' is the user input query in fzf prompt.
---- @alias fzfx.CommandProvider fun(query:string?,context:fzfx.PipelineContext?):string?|string[]?
---- @alias fzfx.ListProvider fun(query:string?,context:fzfx.PipelineContext?):string[]?
---- @alias fzfx.Provider fzfx.PlainProvider|fzfx.CommandProvider|fzfx.ListProvider
+--- @alias fzfx.PlainCommandStringProvider string?
+--- @alias fzfx.PlainCommandArrayProvider string[]?
+--- @alias fzfx.FunctionalCommandStringProvider fun(query:string?,context:fzfx.PipelineContext?):string?
+--- @alias fzfx.FunctionalCommandArrayProvider fun(query:string?,context:fzfx.PipelineContext?):string[]?
+--- @alias fzfx.DirectProvider fun(query:string?,context:fzfx.PipelineContext?):string[]?
+--- @alias fzfx.Provider fzfx.PlainCommandStringProvider|fzfx.PlainCommandArrayProvider|fzfx.FunctionalCommandStringProvider|fzfx.FunctionalCommandArrayProvider|fzfx.DirectProvider
 ---
---- @alias fzfx.ProviderType "plain"|"command"|"list"|"plain_list"|"command_list"
+--- @alias fzfx.ProviderType "PLAIN_COMMAND_STRING"|"PLAIN_COMMAND_ARRAY"|"FUNCTIONAL_COMMAND_STRING"|"FUNCTIONAL_COMMAND_ARRAY"|"DIRECT"
 --- @enum fzfx.ProviderTypeEnum
 local ProviderTypeEnum = {
-  -- For fzfx.PlainProvider
-  PLAIN = "plain",
-  PLAIN_LIST = "plain_list",
-  -- For fzfx.CommandProvider
-  COMMAND = "command",
-  COMMAND_LIST = "command_list",
-  -- For fzfx.ListProvider
-  LIST = "list",
+  PLAIN_COMMAND_STRING = "PLAIN_COMMAND_STRING",
+  PLAIN_COMMAND_ARRAY = "PLAIN_COMMAND_ARRAY",
+  FUNCTIONAL_COMMAND_STRING = "FUNCTIONAL_COMMAND_STRING",
+  FUNCTIONAL_COMMAND_ARRAY = "FUNCTIONAL_COMMAND_ARRAY",
+  DIRECT = "DIRECT",
+
+  -- PLAIN = "plain",
+  -- PLAIN_LIST = "plain_list",
+  -- COMMAND = "command",
+  -- COMMAND_LIST = "command_list",
+  -- LIST = "list",
 }
 --
 -- ========== Provider Decorator ==========
@@ -176,8 +180,8 @@ end
 local function get_provider_type_or_default(provider_config)
   return provider_config.provider_type
     or (
-      type(provider_config.provider) == "string" and ProviderTypeEnum.PLAIN
-      or ProviderTypeEnum.PLAIN_LIST
+      type(provider_config.provider) == "string" and ProviderTypeEnum.PLAIN_COMMAND_STRING
+      or ProviderTypeEnum.PLAIN_COMMAND_ARRAY
     )
 end
 

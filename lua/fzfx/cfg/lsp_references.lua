@@ -22,7 +22,7 @@ M.providers = {
     method = "textDocument/references",
     capability = "referencesProvider",
   }),
-  provider_type = ProviderTypeEnum.LIST,
+  provider_type = ProviderTypeEnum.DIRECT,
   provider_decorator = { module = _decorator.PREPEND_ICON_GREP },
 }
 

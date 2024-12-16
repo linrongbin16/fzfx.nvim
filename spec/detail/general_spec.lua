@@ -20,6 +20,8 @@ describe("detail.general", function()
   local path = require("fzfx.commons.path")
 
   local schema = require("fzfx.schema")
+  local ProviderTypeEnum = schema.ProviderTypeEnum
+
   local config = require("fzfx.config")
   require("fzfx").setup({
     debug = {
@@ -31,7 +33,7 @@ describe("detail.general", function()
   local general = require("fzfx.detail.general")
 
   describe("[ProviderSwitch:new]", function()
-    it("creates single plain provider", function()
+    it("creates PLAIN_COMMAND_STRING provider", function()
       local ps = general.ProviderSwitch:new("single_test", "pipeline", {
         key = "ctrl-k",
         provider = "ls -1",
@@ -42,9 +44,9 @@ describe("detail.general", function()
       assert_false(tbl.tbl_empty(ps.provider_configs.default))
       assert_eq(ps.provider_configs.default.key, "ctrl-k")
       assert_eq(ps.provider_configs.default.provider, "ls -1")
-      assert_eq(ps.provider_configs.default.provider_type, "plain")
+      assert_eq(ps.provider_configs.default.provider_type, ProviderTypeEnum.PLAIN_COMMAND_STRING)
       assert_eq(ps:switch("default"), nil)
-      assert_eq(ps:provide("hello", {}), "plain")
+      assert_eq(ps:provide("hello", {}), ProviderTypeEnum.PLAIN_COMMAND_STRING)
       if not github_actions then
         local meta1 = fileio.readfile(general._provider_metafile(), { trim = true })
         local result1 = fileio.readfile(general._provider_resultfile(), { trim = true })
@@ -52,12 +54,12 @@ describe("detail.general", function()
         local metajson1 = vim.json.decode(meta1) --[[@as table]]
         assert_eq(type(metajson1), "table")
         assert_eq(metajson1.pipeline, "default")
-        assert_eq(metajson1.provider_type, "plain")
+        assert_eq(metajson1.provider_type, ProviderTypeEnum.PLAIN_COMMAND_STRING)
         print(string.format("resultfile1:%s\n", result1))
         assert_eq(result1, "ls -1")
       end
     end)
-    it("creates single plain_list provider", function()
+    it("creates PLAIN_COMMAND_ARRAY provider", function()
       local ps = general.ProviderSwitch:new("single_plain_list_test", "pipeline", {
         key = "ctrl-k",
         provider = { "ls", "-lh", "~" },
@@ -72,9 +74,9 @@ describe("detail.general", function()
       assert_eq(ps.provider_configs.default.provider[1], "ls")
       assert_eq(ps.provider_configs.default.provider[2], "-lh")
       assert_eq(ps.provider_configs.default.provider[3], "~")
-      assert_eq(ps.provider_configs.default.provider_type, "plain_list")
+      assert_eq(ps.provider_configs.default.provider_type, ProviderTypeEnum.PLAIN_COMMAND_ARRAY)
       assert_eq(ps:switch("default"), nil)
-      assert_eq(ps:provide("hello", {}), "plain_list")
+      assert_eq(ps:provide("hello", {}), ProviderTypeEnum.PLAIN_COMMAND_ARRAY)
       if not github_actions then
         local meta2 = fileio.readfile(general._provider_metafile(), { trim = true })
         local result2 = fileio.readfile(general._provider_resultfile(), { trim = true })
@@ -82,7 +84,7 @@ describe("detail.general", function()
         local metajson1 = vim.json.decode(meta2) --[[@as table]]
         assert_eq(type(metajson1), "table")
         assert_eq(metajson1.pipeline, "default")
-        assert_eq(metajson1.provider_type, "plain_list")
+        assert_eq(metajson1.provider_type, ProviderTypeEnum.PLAIN_COMMAND_ARRAY)
         print(string.format("resultfile2:%s\n", result2))
         local resultjson2 = vim.json.decode(result2) --[[@as table]]
         assert_eq(type(resultjson2), "table")
@@ -92,7 +94,7 @@ describe("detail.general", function()
         assert_eq(resultjson2[3], "~")
       end
     end)
-    it("creates multiple plain providers", function()
+    it("creates multiple PLAIN_COMMAND_STRING providers", function()
       local ps = general.ProviderSwitch:new("multiple_test", "pipeline", {
         p1 = {
           key = "ctrl-p",
@@ -111,9 +113,9 @@ describe("detail.general", function()
       assert_eq(ps.provider_configs.p1.key, "ctrl-p")
       assert_eq(type(ps.provider_configs.p1.provider), "string")
       assert_eq(ps.provider_configs.p1.provider, "p1")
-      assert_eq(ps.provider_configs.p1.provider_type, "plain")
+      assert_eq(ps.provider_configs.p1.provider_type, ProviderTypeEnum.PLAIN_COMMAND_STRING)
       assert_eq(ps:switch("p1"), nil)
-      assert_eq(ps:provide("hello", {}), "plain")
+      assert_eq(ps:provide("hello", {}), ProviderTypeEnum.PLAIN_COMMAND_STRING)
       if not github_actions then
         local meta3 = fileio.readfile(general._provider_metafile(), { trim = true })
         local result3 = fileio.readfile(general._provider_resultfile(), { trim = true })
@@ -121,7 +123,7 @@ describe("detail.general", function()
         local metajson1 = vim.json.decode(meta3) --[[@as table]]
         assert_eq(type(metajson1), "table")
         assert_eq(metajson1.pipeline, "p1")
-        assert_eq(metajson1.provider_type, "plain")
+        assert_eq(metajson1.provider_type, ProviderTypeEnum.PLAIN_COMMAND_STRING)
         print(string.format("resultfile3:%s\n", result3))
         assert_eq(result3, "p1")
       end
@@ -135,9 +137,9 @@ describe("detail.general", function()
       assert_eq(ps.provider_configs.p2.provider[1], "p2")
       assert_eq(ps.provider_configs.p2.provider[2], "p3")
       assert_eq(ps.provider_configs.p2.provider[3], "p4")
-      assert_eq(ps.provider_configs.p2.provider_type, "plain_list")
+      assert_eq(ps.provider_configs.p2.provider_type, ProviderTypeEnum.PLAIN_COMMAND_ARRAY)
       assert_eq(ps:switch("p2"), nil)
-      assert_eq(ps:provide("hello", {}), "plain_list")
+      assert_eq(ps:provide("hello", {}), ProviderTypeEnum.PLAIN_COMMAND_ARRAY)
       if not github_actions then
         local meta4 = fileio.readfile(general._provider_metafile(), { trim = true })
         local result4 = fileio.readfile(general._provider_resultfile(), { trim = true })
@@ -145,7 +147,7 @@ describe("detail.general", function()
         local metajson1 = vim.json.decode(meta4) --[[@as table]]
         assert_eq(type(metajson1), "table")
         assert_eq(metajson1.pipeline, "p2")
-        assert_eq(metajson1.provider_type, "plain_list")
+        assert_eq(metajson1.provider_type, ProviderTypeEnum.PLAIN_COMMAND_ARRAY)
         print(string.format("resultfile4:%s\n", result4))
         local resultjson4 = vim.json.decode(result4) --[[@as table]]
         assert_eq(type(resultjson4), "table")
@@ -155,13 +157,13 @@ describe("detail.general", function()
         assert_eq(resultjson4[3], "p4")
       end
     end)
-    it("creates command provider", function()
+    it("creates FUNCTIONAL_COMMAND_STRING provider", function()
       local ps = general.ProviderSwitch:new("single_test", "pipeline", {
         key = "ctrl-k",
         provider = function()
           return "ls -1"
         end,
-        provider_type = "command",
+        provider_type = ProviderTypeEnum.FUNCTIONAL_COMMAND_STRING,
       })
       assert_eq(type(ps), "table")
       assert_false(tbl.tbl_empty(ps))
@@ -169,9 +171,12 @@ describe("detail.general", function()
       assert_false(tbl.tbl_empty(ps.provider_configs.default))
       assert_eq(ps.provider_configs.default.key, "ctrl-k")
       assert_eq(ps.provider_configs.default.provider(), "ls -1")
-      assert_eq(ps.provider_configs.default.provider_type, "command")
+      assert_eq(
+        ps.provider_configs.default.provider_type,
+        ProviderTypeEnum.FUNCTIONAL_COMMAND_STRING
+      )
       assert_eq(ps:switch("default"), nil)
-      assert_eq(ps:provide("hello", {}), "command")
+      assert_eq(ps:provide("hello", {}), ProviderTypeEnum.FUNCTIONAL_COMMAND_STRING)
       if not github_actions then
         local meta1 = fileio.readfile(general._provider_metafile(), { trim = true })
         local result1 = fileio.readfile(general._provider_resultfile(), { trim = true })
@@ -179,18 +184,18 @@ describe("detail.general", function()
         local metajson1 = vim.json.decode(meta1) --[[@as table]]
         assert_eq(type(metajson1), "table")
         assert_eq(metajson1.pipeline, "default")
-        assert_eq(metajson1.provider_type, "command")
+        assert_eq(metajson1.provider_type, ProviderTypeEnum.FUNCTIONAL_COMMAND_STRING)
         print(string.format("resultfile1:%s\n", result1))
         assert_eq(result1, "ls -1")
       end
     end)
-    it("creates command list provider", function()
+    it("creates FUNCTIONAL_COMMAND_ARRAY provider", function()
       local ps = general.ProviderSwitch:new("single_test", "pipeline", {
         key = "ctrl-k",
         provider = function()
           return { "ls", "-1" }
         end,
-        provider_type = "command_list",
+        provider_type = ProviderTypeEnum.FUNCTIONAL_COMMAND_ARRAY,
       })
       assert_eq(type(ps), "table")
       assert_false(tbl.tbl_empty(ps))
@@ -198,9 +203,12 @@ describe("detail.general", function()
       assert_false(tbl.tbl_empty(ps.provider_configs.default))
       assert_eq(ps.provider_configs.default.key, "ctrl-k")
       assert_true(vim.deep_equal(ps.provider_configs.default.provider(), { "ls", "-1" }))
-      assert_eq(ps.provider_configs.default.provider_type, "command_list")
+      assert_eq(
+        ps.provider_configs.default.provider_type,
+        ProviderTypeEnum.FUNCTIONAL_COMMAND_ARRAY
+      )
       assert_eq(ps:switch("default"), nil)
-      assert_eq(ps:provide("hello", {}), "command_list")
+      assert_eq(ps:provide("hello", {}), ProviderTypeEnum.FUNCTIONAL_COMMAND_ARRAY)
       if not github_actions then
         local meta1 = fileio.readfile(general._provider_metafile(), { trim = true })
         local result1 = fileio.readfile(general._provider_resultfile(), { trim = true })
@@ -208,18 +216,18 @@ describe("detail.general", function()
         local metajson1 = vim.json.decode(meta1) --[[@as table]]
         assert_eq(type(metajson1), "table")
         assert_eq(metajson1.pipeline, "default")
-        assert_eq(metajson1.provider_type, "command_list")
+        assert_eq(metajson1.provider_type, ProviderTypeEnum.FUNCTIONAL_COMMAND_ARRAY)
         print(string.format("resultfile1:%s\n", result1))
         assert_eq(result1, vim.json.encode({ "ls", "-1" }))
       end
     end)
-    it("creates list provider", function()
+    it("creates DIRECT provider", function()
       local ps = general.ProviderSwitch:new("single_test", "pipeline", {
         key = "ctrl-k",
         provider = function()
           return { "ls", "-1" }
         end,
-        provider_type = "list",
+        provider_type = ProviderTypeEnum.DIRECT,
       })
       assert_eq(type(ps), "table")
       assert_false(tbl.tbl_empty(ps))
@@ -227,9 +235,9 @@ describe("detail.general", function()
       assert_false(tbl.tbl_empty(ps.provider_configs.default))
       assert_eq(ps.provider_configs.default.key, "ctrl-k")
       assert_true(vim.deep_equal(ps.provider_configs.default.provider(), { "ls", "-1" }))
-      assert_eq(ps.provider_configs.default.provider_type, "list")
+      assert_eq(ps.provider_configs.default.provider_type, ProviderTypeEnum.DIRECT)
       assert_eq(ps:switch("default"), nil)
-      assert_eq(ps:provide("hello", {}), "list")
+      assert_eq(ps:provide("hello", {}), ProviderTypeEnum.DIRECT)
       if not github_actions then
         local meta1 = fileio.readfile(general._provider_metafile(), { trim = true })
         local result1 = fileio.readfile(general._provider_resultfile(), { trim = true })
@@ -237,7 +245,7 @@ describe("detail.general", function()
         local metajson1 = vim.json.decode(meta1) --[[@as table]]
         assert_eq(type(metajson1), "table")
         assert_eq(metajson1.pipeline, "default")
-        assert_eq(metajson1.provider_type, "list")
+        assert_eq(metajson1.provider_type, ProviderTypeEnum.DIRECT)
         print(string.format("resultfile1:%s\n", result1))
         assert_eq(result1, "ls\n-1")
       end
@@ -291,19 +299,19 @@ describe("detail.general", function()
         assert_eq(resultjson2[3], "~")
       end
     end)
-    it("is a command/command_list provider", function()
+    it("is a command/command_list previewer", function()
       local ps = general.PreviewerSwitch:new("command_test", "p1", {
         p1 = {
           previewer = function()
             return "ls -lh"
           end,
-          previewer_type = schema.ProviderTypeEnum.COMMAND,
+          previewer_type = schema.PreviewerTypeEnum.COMMAND,
         },
         p2 = {
           previewer = function()
             return { "ls", "-lha", "~" }
           end,
-          previewer_type = schema.ProviderTypeEnum.COMMAND_LIST,
+          previewer_type = schema.PreviewerTypeEnum.COMMAND_LIST,
         },
       }, FZFPORTFILE)
       assert_eq(ps:preview("hello", {}), "command")
@@ -556,27 +564,27 @@ describe("detail.general", function()
     it("makes without icon", function()
       local actual1 = general.make_provider_meta_opts("test1", {
         key = "test1",
-        provider_type = "command",
+        provider_type = ProviderTypeEnum.FUNCTIONAL_COMMAND_STRING,
       })
       assert_eq(type(actual1), "table")
       assert_eq(actual1.pipeline, "test1")
-      assert_eq(actual1.provider_type, "command")
+      assert_eq(actual1.provider_type, ProviderTypeEnum.FUNCTIONAL_COMMAND_STRING)
       local actual2 = general.make_provider_meta_opts("test2", {
         key = "test2",
-        provider_type = "command_list",
+        provider_type = ProviderTypeEnum.FUNCTIONAL_COMMAND_ARRAY,
       })
       assert_eq(type(actual2), "table")
       assert_eq(actual2.pipeline, "test2")
-      assert_eq(actual1.provider_type, "command")
+      assert_eq(actual2.provider_type, ProviderTypeEnum.FUNCTIONAL_COMMAND_ARRAY)
     end)
     it("makes with icon", function()
       local actual = general.make_provider_meta_opts("test3", {
         key = "test3",
-        provider_type = "list",
+        provider_type = ProviderTypeEnum.DIRECT,
       })
       assert_eq(type(actual), "table")
       assert_eq(actual.pipeline, "test3")
-      assert_eq(actual.provider_type, "list")
+      assert_eq(actual.provider_type, ProviderTypeEnum.DIRECT)
     end)
   end)
   describe("[make_previewer_meta_opts]", function()

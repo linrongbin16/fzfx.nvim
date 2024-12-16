@@ -79,7 +79,7 @@ M.providers = {
   default = {
     key = "default",
     provider = M._provider,
-    provider_type = ProviderTypeEnum.COMMAND,
+    provider_type = ProviderTypeEnum.FUNCTIONAL_COMMAND_STRING,
   },
 }
 

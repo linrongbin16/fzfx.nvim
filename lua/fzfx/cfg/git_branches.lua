@@ -122,12 +122,12 @@ M.providers = {
   local_branch = {
     key = "ctrl-o",
     provider = local_branch_provider,
-    provider_type = ProviderTypeEnum.LIST,
+    provider_type = ProviderTypeEnum.DIRECT,
   },
   remote_branch = {
     key = "ctrl-r",
     provider = remote_branch_provider,
-    provider_type = ProviderTypeEnum.LIST,
+    provider_type = ProviderTypeEnum.DIRECT,
   },
 }
 

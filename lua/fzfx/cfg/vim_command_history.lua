@@ -72,7 +72,7 @@ end
 M.providers = {
   key = "default",
   provider = M._provider,
-  provider_type = ProviderTypeEnum.LIST,
+  provider_type = ProviderTypeEnum.DIRECT,
 }
 
 M._previewer = function() end

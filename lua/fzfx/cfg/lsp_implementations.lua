@@ -22,7 +22,7 @@ M.providers = {
     method = "textDocument/implementation",
     capability = "implementationProvider",
   }),
-  provider_type = ProviderTypeEnum.LIST,
+  provider_type = ProviderTypeEnum.DIRECT,
   provider_decorator = { module = _decorator.PREPEND_ICON_GREP },
 }
 
