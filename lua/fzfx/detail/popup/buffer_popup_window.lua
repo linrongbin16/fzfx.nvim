@@ -806,6 +806,8 @@ function BufferPopupWindow:render_file_contents(file_content, content_view, on_c
         if line_index <= content_view.bottom then
           set_buf_lines()
         else
+          -- Render complete, removes other bottom lines in the buffer.
+          vim.api.nvim_buf_set_lines(self.previewer_bufnr, set_end, -1, false, {})
           self:_do_view(content_view)
           self._saved_previewing_file_content_view = content_view
           do_complete(true)
