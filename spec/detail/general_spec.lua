@@ -291,19 +291,19 @@ describe("detail.general", function()
         assert_eq(resultjson2[3], "~")
       end
     end)
-    it("is a command/command_list provider", function()
+    it("is a command/command_list previewer", function()
       local ps = general.PreviewerSwitch:new("command_test", "p1", {
         p1 = {
           previewer = function()
             return "ls -lh"
           end,
-          previewer_type = schema.ProviderTypeEnum.COMMAND,
+          previewer_type = schema.PreviewerTypeEnum.COMMAND,
         },
         p2 = {
           previewer = function()
             return { "ls", "-lha", "~" }
           end,
-          previewer_type = schema.ProviderTypeEnum.COMMAND_LIST,
+          previewer_type = schema.PreviewerTypeEnum.COMMAND_LIST,
         },
       }, FZFPORTFILE)
       assert_eq(ps:preview("hello", {}), "command")
