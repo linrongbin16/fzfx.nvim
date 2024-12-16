@@ -49,18 +49,13 @@ Starting a searching command is actually creating a popup window and a terminal,
 
 So we need a way to store the **_current_** buffer/window info in somewhere, so we need to create a context before creating the popup window and launching the shell command.
 
-```lua
---- @alias fzfx.PipelineContext {bufnr:integer,winnr:integer,tabnr:integer}
---- @alias fzfx.PipelineContextMaker fun():fzfx.PipelineContext
-```
-
 ## Provider
 
 A **provider** is a component that can generate data sources (the lines) for (the left side of) the fzf command.
 
 When this plugin starts, it prepares data sources for the fzf command, and then launch a child process to feed these data sources to the fzf command. Since the `nvim` can be used as a lua interpreter, a headless Neovim editor, we could leverage it as a Neovim-editor-as-a-VM runtime and archives a lot of functions, including running a shell command, send GRPC call to the Neovim editor (users are using), etc.
 
-> Also see: [fzfx's architecture](https://github.com/linrongbin16/fzfx.nvim/wiki/How%3F).
+> Also see: [fzfx's architecture](https://linrongbin16.github.io/fzfx.nvim/#/How).
 
 We have several types of providers:
 
