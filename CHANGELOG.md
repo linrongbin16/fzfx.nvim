@@ -1,5 +1,12 @@
 # Changelog
 
+## [7.1.1](https://github.com/linrongbin16/fzfx.nvim/compare/v7.1.0...v7.1.1) (2024-12-17)
+
+
+### Bug Fixes
+
+* **previewer:** avoid buffer previewer rendering flicker when scrolling up/down ([#756](https://github.com/linrongbin16/fzfx.nvim/issues/756)) ([136b2ed](https://github.com/linrongbin16/fzfx.nvim/commit/136b2ed42c22e9694acbdd51aa5ab26b3198a402))
+
 ## [7.1.0](https://github.com/linrongbin16/fzfx.nvim/compare/v7.0.0...v7.1.0) (2024-12-11)
 
 
