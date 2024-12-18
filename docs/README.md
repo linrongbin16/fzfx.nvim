@@ -2,15 +2,14 @@
 
 # Welcome to fzfx.nvim's Documentation!
 
-- Design & Technologies
+- [Features](/Features.md)
+- [Known Issues](/KnownIssues.md)
+- Technologies
   - [Why?](/Why.md)
   - [How?](/How.md)
   - [A Generic Schema for Creating FZF Command](/GenericSchema.md)
-- Features
-  - [Demo](/Demo.md)
-- [Known Issues](/KnownIssues.md)
 - API References
-  - [`fzfx.cfg`](/ApiReferences/fzfx_cfg.md)
-  - [`fzfx.helper`](/ApiReferences/fzfx_helper.md)
-  - [`fzfx.lib`](/ApiReferences/fzfx_lib.md)
+  - Module [`fzfx.cfg`](/ApiReferences/fzfx_cfg.md)
+  - Module [`fzfx.helper`](/ApiReferences/fzfx_helper.md)
+  - Module [`fzfx.lib`](/ApiReferences/fzfx_lib.md)
 - [Sponsor](/Sponsor.md)
