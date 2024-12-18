@@ -4,7 +4,7 @@
 
 - [Features](/Features.md)
 - [Known Issues](/KnownIssues.md)
-- Design & Technologies
+- Technologies
   - [Why?](/Why.md)
   - [How?](/How.md)
   - [A Generic Schema for Creating FZF Command](/GenericSchema.md)
