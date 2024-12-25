@@ -91,6 +91,52 @@ M.Command = Command
 
 -- Command }
 
+-- AsyncCommand {
+
+--- @class fzfx.AsyncCommand
+--- @field source string[]
+--- @field spawn_obj vim.SystemObj
+local AsyncCommand = {}
+
+--- @param source string[]
+--- @param on_complete fun(result: fzfx.CommandResult):nil
+--- @return fzfx.AsyncCommand
+function AsyncCommand:run(source, on_complete)
+  assert(type(on_complete) == "function")
+
+  local result = CommandResult:new()
+  local spawn_obj = spawn.run(source, {
+    on_stdout = function(line)
+      if str.not_empty(line) then
+        table.insert(result.stdout, line)
+      end
+    end,
+    on_stderr = function(line)
+      if str.not_empty(line) then
+        table.insert(result.stderr, line)
+      end
+    end,
+  }, function(completed)
+    if tbl.tbl_not_empty(completed) and completed.code then
+      result.code = completed.code
+    end
+    if tbl.tbl_not_empty(completed) and completed.signal then
+      result.signal = completed.signal
+    end
+    on_complete(result)
+  end)
+
+  local o = {
+    source = source,
+    spawn_obj = spawn_obj,
+  }
+  setmetatable(o, self)
+  self.__index = self
+  return o
+end
+
+-- AsyncCommand }
+
 -- GitRootCommand {
 
 --- @class fzfx.GitRootCommand
