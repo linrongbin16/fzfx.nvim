@@ -53,7 +53,7 @@ local Command = {}
 --- @return fzfx.Command
 function Command:run(source)
   local result = CommandResult:new()
-  local sp = spawn.run(source, {
+  local spawn_obj = spawn.run(source, {
     on_stdout = function(line)
       if str.not_empty(line) then
         table.insert(result.stdout, line)
@@ -65,7 +65,7 @@ function Command:run(source)
       end
     end,
   })
-  local completed = sp:wait()
+  local completed = spawn_obj:wait()
   if tbl.tbl_not_empty(completed) and completed.code then
     result.code = completed.code
   end
