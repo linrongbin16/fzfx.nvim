@@ -1,10 +1,10 @@
-## Platforms
+## Test Platforms
 
 - [ ] windows
 - [ ] macOS
 - [ ] linux
 
-## Tasks
+## Test Tasks
 
 - [ ] FzfxFiles
 - [ ] FzfxLiveGrep
