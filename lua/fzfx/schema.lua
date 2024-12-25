@@ -11,9 +11,10 @@
 --- @alias fzfx.FunctionalCommandStringProvider fun(query:string?,context:fzfx.PipelineContext?):string?
 --- @alias fzfx.FunctionalCommandArrayProvider fun(query:string?,context:fzfx.PipelineContext?):string[]?
 --- @alias fzfx.DirectProvider fun(query:string?,context:fzfx.PipelineContext?):string[]?
+--- @alias fzfx.AsyncDirectProvider fun(query:string?,context:fzfx.PipelineContext?,on_complete:fun(data:string[]|nil):nil):nil
 --- @alias fzfx.Provider fzfx.PlainCommandStringProvider|fzfx.PlainCommandArrayProvider|fzfx.FunctionalCommandStringProvider|fzfx.FunctionalCommandArrayProvider|fzfx.DirectProvider
 ---
---- @alias fzfx.ProviderType "PLAIN_COMMAND_STRING"|"PLAIN_COMMAND_ARRAY"|"FUNCTIONAL_COMMAND_STRING"|"FUNCTIONAL_COMMAND_ARRAY"|"DIRECT"
+--- @alias fzfx.ProviderType "PLAIN_COMMAND_STRING"|"PLAIN_COMMAND_ARRAY"|"FUNCTIONAL_COMMAND_STRING"|"FUNCTIONAL_COMMAND_ARRAY"|"DIRECT"|"ASYNC_DIRECT"
 --- @enum fzfx.ProviderTypeEnum
 local ProviderTypeEnum = {
   PLAIN_COMMAND_STRING = "PLAIN_COMMAND_STRING",
@@ -21,6 +22,7 @@ local ProviderTypeEnum = {
   FUNCTIONAL_COMMAND_STRING = "FUNCTIONAL_COMMAND_STRING",
   FUNCTIONAL_COMMAND_ARRAY = "FUNCTIONAL_COMMAND_ARRAY",
   DIRECT = "DIRECT",
+  ASYNC_DIRECT = "ASYNC_DIRECT",
 }
 --
 -- ========== Provider Decorator ==========
