@@ -18,6 +18,9 @@
 --
 -- `@lsp.type` is mapping to `SemanticTokenTypes` in specification.
 -- `@lsp.mod` is mapping to `SemanticTokenModifiers` in specification.
+--
+-- Referenced Projects:
+--  * https://github.com/viniciusmuller/djanho
 
 local str = require("fzfx.commons.str")
 local tbl = require("fzfx.commons.tbl")
@@ -236,14 +239,12 @@ M._make_renderers = function()
       "GitGutterAdd",
       "DiffAdd",
       "DiffAdded",
-      "@diff.plus",
       "Added",
     }, "lineDiffAdded", "fg"),
     _BatThemeGlobalRenderer:new({
       "GitSignsChange",
       "GitGutterChange",
       "DiffChange",
-      "@diff.delta",
       "Changed",
     }, "lineDiffModified", "fg"),
     _BatThemeGlobalRenderer:new({
@@ -251,64 +252,72 @@ M._make_renderers = function()
       "GitGutterDelete",
       "DiffDelete",
       "DiffRemoved",
-      "@diff.minus",
       "Removed",
     }, "lineDiffDeleted", "fg"),
   }
 
   -- Treesitter syntax
   local SCOPE_RENDERERS = {
-    -- comment {
-    _BatThemeScopeRenderer:new({ "@comment", "Comment" }, "comment"),
-    -- comment }
+    -- Vim highlights
+    _BatThemeScopeRenderer:new({ "Comment" }, "comment"),
+    _BatThemeScopeRenderer:new({ "Macro" }, { "macro" }),
+    _BatThemeScopeRenderer:new({ "Macro" }, "entity.name.function.macro"),
+    _BatThemeScopeRenderer:new({ "Constant" }, "constant"),
+    _BatThemeScopeRenderer:new({ "Keyword" }, "keyword"),
+    _BatThemeScopeRenderer:new({ "String" }, { "string", "string.quoted" }),
+    _BatThemeScopeRenderer:new({ "Error" }, { "invalid" }),
+    _BatThemeScopeRenderer:new({ "parens" }, { "brace" }),
+    _BatThemeScopeRenderer:new({ "Number" }, "constant.numeric"),
+    _BatThemeScopeRenderer:new({ "Number" }, "number"),
+    _BatThemeScopeRenderer:new({ "Function" }, "entity.name.function"),
+    _BatThemeScopeRenderer:new({ "Function" }, "function"),
+    _BatThemeScopeRenderer:new({ "Operator" }, "keyword.operator"),
+    _BatThemeScopeRenderer:new({ "Operator" }, "operator"),
+    _BatThemeScopeRenderer:new({ "Label" }, "label"),
+    _BatThemeScopeRenderer:new({ "Conditional", "Repeat" }, "keyword.control"),
+    _BatThemeScopeRenderer:new({ "Conditional" }, "conditional"),
+    _BatThemeScopeRenderer:new({ "Conditional" }, "keyword.control.conditional"),
+    _BatThemeScopeRenderer:new({ "Structure" }, "struct"),
+    _BatThemeScopeRenderer:new({ "Structure" }, "enum"),
+    _BatThemeScopeRenderer:new({ "Identifier" }, "variable"),
+    _BatThemeScopeRenderer:new({ "Type" }, { "entity.name.type" }),
+    _BatThemeScopeRenderer:new({ "Type" }, { "entity.type.name" }),
+    _BatThemeScopeRenderer:new({ "Type" }, { "meta.type.name" }),
+    _BatThemeScopeRenderer:new({ "Type" }, "type"),
+    _BatThemeScopeRenderer:new({ "Type" }, "typeParameter"),
+    _BatThemeScopeRenderer:new({ "Type" }, { "storage" }),
 
-    -- constant {
-    _BatThemeScopeRenderer:new({ "@number", "Number" }, "constant.numeric"),
-    _BatThemeScopeRenderer:new({ "@number.float", "Float" }, "constant.numeric.float"),
-    _BatThemeScopeRenderer:new({ "@boolean", "Boolean" }, "constant.language"),
+    -- Treesitter highlights
     _BatThemeScopeRenderer:new({ "@character", "Character" }, { "constant.character" }),
+    _BatThemeScopeRenderer:new({ "@function.builtin" }, "function.defaultLibrary"),
+    _BatThemeScopeRenderer:new({ "@keyword.function" }, "keyword.declaration"),
+    _BatThemeScopeRenderer:new({ "@method" }, "method"),
+    _BatThemeScopeRenderer:new({ "@namespace" }, "namespace"),
+    _BatThemeScopeRenderer:new({ "@field" }, "property"),
+    _BatThemeScopeRenderer:new({ "@parameter" }, "parameter"),
+    _BatThemeScopeRenderer:new({ "@string.regexp" }, "regex"),
+    _BatThemeScopeRenderer:new({ "@type.builtin" }, "type.defaultLibrary"),
+    _BatThemeScopeRenderer:new({ "@variable.builtin" }, "variable.readonly.defaultLibrary"),
     _BatThemeScopeRenderer:new(
       { "@string.escape" },
       { "constant.character.escaped", "constant.character.escape" }
     ),
-    -- constant }
 
-    -- entity {
-    _BatThemeScopeRenderer:new({ "@function", "Function" }, "entity.name.function"),
-    _BatThemeScopeRenderer:new({ "@function.call" }, "entity.name.function.call"),
-    _BatThemeScopeRenderer:new({ "@constructor" }, "entity.name.function.constructor"),
-    _BatThemeScopeRenderer:new({ "@type", "Type" }, { "entity.name.type" }),
-    _BatThemeScopeRenderer:new({ "@tag" }, "entity.name.tag"),
-    _BatThemeScopeRenderer:new({ "@tag.attribute" }, "entity.other.attribute-name"),
-    _BatThemeScopeRenderer:new({ "Structure" }, { "entity.name.union" }),
-    _BatThemeScopeRenderer:new({ "Structure" }, { "entity.name.enum" }),
-    _BatThemeScopeRenderer:new({ "@markup.heading" }, "entity.name.section"),
-    _BatThemeScopeRenderer:new({ "@label", "Label" }, "entity.name.label"),
-    _BatThemeScopeRenderer:new({ "@constant", "Constant" }, "entity.name.constant"),
-    _BatThemeScopeRenderer:new({ "@type", "Type" }, "entity.other.inherited-class"),
-    -- entity }
-
-    -- keyword {
-    _BatThemeScopeRenderer:new({ "@keyword", "Keyword" }, "keyword"),
-    _BatThemeScopeRenderer:new({ "@keyword.conditional", "Conditional" }, "keyword.control"),
-    _BatThemeScopeRenderer:new({ "@keyword.import" }, "keyword.control.import"),
-    _BatThemeScopeRenderer:new({ "@operator", "Operator" }, "keyword.operator"),
-    _BatThemeScopeRenderer:new({ "@keyword.operator" }, "keyword.operator.word"),
-    _BatThemeScopeRenderer:new({ "@keyword.conditional.ternary" }, "keyword.operator.ternary"),
-    -- keyword }
-
-    -- markup {
+    -- Markdown/HTML
     _BatThemeScopeRenderer:new({
       "@markup.link.url",
-    }, "markup.underline.link"),
+    }, "markup.underline.link.markdown"),
     _BatThemeScopeRenderer:new({
       "@markup.underline",
+      "htmlUnderline",
     }, "markup.underline"),
     _BatThemeScopeRenderer:new({
       "@markup.strong",
+      "htmlBold",
     }, "markup.bold"),
     _BatThemeScopeRenderer:new({
       "@markup.italic",
+      "htmlItalic",
     }, "markup.italic"),
     _BatThemeScopeRenderer:new({
       "@markup.heading",
@@ -318,16 +327,23 @@ M._make_renderers = function()
     }, "markup.list"),
     _BatThemeScopeRenderer:new({
       "@markup.raw",
-    }, "markup.raw"),
+    }, "markup.raw.inline"),
+    _BatThemeScopeRenderer:new({
+      "@markup.raw.block",
+    }, "markup.raw.block"),
     _BatThemeScopeRenderer:new({
       "@markup.quote",
     }, "markup.quote"),
+    _BatThemeScopeRenderer:new({
+      "@tag",
+    }, "meta.tag"),
+
+    -- Markup Add/Diff/Remove
     _BatThemeScopeRenderer:new({
       "GitSignsAdd",
       "GitGutterAdd",
       "DiffAdd",
       "DiffAdded",
-      "@diff.plus",
       "Added",
     }, { "markup.inserted" }),
     _BatThemeScopeRenderer:new({
@@ -335,59 +351,14 @@ M._make_renderers = function()
       "GitGutterDelete",
       "DiffDelete",
       "DiffRemoved",
-      "@diff.minus",
       "Removed",
     }, { "markup.deleted" }),
     _BatThemeScopeRenderer:new({
       "GitGutterChange",
       "GitSignsChange",
       "DiffChange",
-      "@diff.delta",
       "Changed",
     }, { "markup.changed" }),
-    -- markup }
-
-    -- meta {
-    _BatThemeScopeRenderer:new({ "@attribute" }, { "meta.annotation" }),
-    _BatThemeScopeRenderer:new({ "@constant.macro", "Macro" }, { "meta.preprocessor" }),
-    -- meta }
-
-    -- storage {
-    _BatThemeScopeRenderer:new(
-      { "@keyword.function", "Keyword" },
-      { "storage.type.function", "keyword.declaration.function" }
-    ),
-    _BatThemeScopeRenderer:new({ "Structure" }, {
-      "storage.type.enum",
-      "keyword.declaration.enum",
-    }),
-    _BatThemeScopeRenderer:new({ "Structure" }, {
-      "storage.type.struct",
-      "keyword.declaration.struct",
-    }),
-    _BatThemeScopeRenderer:new({ "@type", "Type" }, { "storage.type", "keyword.declaration.type" }),
-    _BatThemeScopeRenderer:new({ "@keyword.storage", "StorageClass" }, "storage.modifier"),
-    -- storage }
-
-    -- string {
-    _BatThemeScopeRenderer:new({ "@string", "String" }, { "string", "string.quoted" }),
-    _BatThemeScopeRenderer:new({ "@string.regexp" }, { "string.regexp" }),
-    -- string }
-
-    -- support {
-    _BatThemeScopeRenderer:new({ "@function.builtin", "Function" }, "support.function"),
-    _BatThemeScopeRenderer:new({ "@constant.builtin", "Constant" }, "support.constant"),
-    _BatThemeScopeRenderer:new({ "@type.builtin", "Type" }, "support.type"),
-    _BatThemeScopeRenderer:new({ "@type.builtin", "Type" }, "support.class"),
-    _BatThemeScopeRenderer:new({ "@module.builtin" }, "support.module"),
-    -- support }
-
-    -- variable {
-    _BatThemeScopeRenderer:new({ "@function", "Function" }, "variable.function"),
-    _BatThemeScopeRenderer:new({ "@variable", "Identifier" }, "variable"),
-    _BatThemeScopeRenderer:new({ "@variable.parameter" }, { "variable.parameter" }),
-    _BatThemeScopeRenderer:new({ "@variable.builtin" }, { "variable.language" }),
-    -- variable }
   }
 
   return {
