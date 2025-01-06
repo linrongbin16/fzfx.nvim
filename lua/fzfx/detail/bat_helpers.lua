@@ -283,13 +283,12 @@ M._make_renderers = function()
     -- constant }
 
     -- entity {
-    _BatThemeScopeRenderer:new({ "@function.call", "Function" }, "entity.name.function"),
-    _BatThemeScopeRenderer:new({ "@function.macro", "Function" }, { "entity.name.function.macro" }),
+    _BatThemeScopeRenderer:new({ "@constant", "Constant" }, "entity.name.constant"),
+    _BatThemeScopeRenderer:new({ "@function.call", "Function" }, "variable.function"),
+    _BatThemeScopeRenderer:new({ "@function.macro", "Function" }, { "support.macro" }),
     _BatThemeScopeRenderer:new({ "@function.builtin" }, { "support.function" }),
-    _BatThemeScopeRenderer:new({ "@type", "Type" }, { "entity.name.type" }),
-    _BatThemeScopeRenderer:new({ "@module", "Structure" }, { "entity.name.type.struct" }),
-    _BatThemeScopeRenderer:new({ "@module", "Structure" }, { "entity.name.namespace" }),
-    _BatThemeScopeRenderer:new({ "@type.builtin", "Special" }, { "entity.name.type.numeric" }),
+    _BatThemeScopeRenderer:new({ "@type", "Type" }, { "storage.type", "support.type" }),
+    _BatThemeScopeRenderer:new({ "@module", "Structure" }, { "meta.path" }),
     _BatThemeScopeRenderer:new({ "@tag" }, "entity.name.tag"),
     _BatThemeScopeRenderer:new({ "@label", "Label" }, "entity.name.label"),
     -- entity }
@@ -308,11 +307,11 @@ M._make_renderers = function()
 
     -- keyword {
     _BatThemeScopeRenderer:new({ "@keyword", "Keyword" }, "keyword"),
-    _BatThemeScopeRenderer:new({ "@keyword.modifier", "Keyword" }, "storage.modifier"),
+    _BatThemeScopeRenderer:new({ "@keyword.modifier" }, "keyword.declaration"),
     _BatThemeScopeRenderer:new({ "@keyword.function" }, "storage.modifier"),
     _BatThemeScopeRenderer:new({ "@operator", "Operator" }, "keyword.operator"),
     _BatThemeScopeRenderer:new({ "@keyword.conditional", "Conditional" }, "keyword.control"),
-    _BatThemeScopeRenderer:new({ "@keyword.import" }, "keyword.control.import"),
+    _BatThemeScopeRenderer:new({ "@keyword.import", "PreProc" }, "keyword.declaration.import"),
     -- keyword }
 
     -- markup {
