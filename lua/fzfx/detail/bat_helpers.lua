@@ -18,9 +18,6 @@
 --
 -- `@lsp.type` is mapping to `SemanticTokenTypes` in specification.
 -- `@lsp.mod` is mapping to `SemanticTokenModifiers` in specification.
---
--- Other Resources:
---  * https://github.com/viniciusmuller/djanho
 
 local str = require("fzfx.commons.str")
 local tbl = require("fzfx.commons.tbl")
