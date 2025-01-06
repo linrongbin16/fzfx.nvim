@@ -18,6 +18,9 @@
 --
 -- `@lsp.type` is mapping to `SemanticTokenTypes` in specification.
 -- `@lsp.mod` is mapping to `SemanticTokenModifiers` in specification.
+--
+-- Other Resources:
+--  * https://github.com/viniciusmuller/djanho
 
 local str = require("fzfx.commons.str")
 local tbl = require("fzfx.commons.tbl")
@@ -552,8 +555,12 @@ M._build_theme = function(colorname)
       --   vim.inspect(theme_config_file)
       -- )
       spawn.run({ consts.BAT, "cache", "--build" }, {
-        on_stdout = function(line) end,
-        on_stderr = function(line) end,
+        on_stdout = function(line)
+          log.debug(string.format("Build bat theme cache(stdout):[%s]", line))
+        end,
+        on_stderr = function(line)
+          log.debug(string.format("Build bat theme cache(stderr):[%s]", line))
+        end,
       }, function()
         vim.schedule(function()
           building_bat_theme = false
