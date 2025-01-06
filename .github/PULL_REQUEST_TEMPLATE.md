@@ -1,5 +1,3 @@
-<!-- Please describe what does this PR do here -->
-
 ## Test Platforms
 
 - [ ] windows
