@@ -306,7 +306,7 @@ M._make_renderers = function()
     _BatThemeScopeRenderer:new({ "@keyword", "Keyword" }, "keyword"),
     _BatThemeScopeRenderer:new({ "@keyword.modifier", "Keyword" }, "storage.modifier"),
     _BatThemeScopeRenderer:new({ "@operator", "Operator" }, "keyword.operator"),
-    _BatThemeScopeRenderer:new({ "@keyword.coroutine", "@keyword" }, "keyword.control"),
+    _BatThemeScopeRenderer:new({ "@keyword.coroutine" }, "keyword.control"),
     -- keyword }
 
     -- Before / After
