@@ -19,29 +19,29 @@ jobs:
               repo: context.repo.repo,
               body: `Thanks for your contribution!
 
-              Please select your testing platforms:
-                - [ ] windows
-                - [ ] macOS
-                - [ ] linux
+            Please select your testing platforms:
+              - [ ] windows
+              - [ ] macOS
+              - [ ] linux
 
-              Please select your testing commands:
-                - [ ] FzfxFiles
-                - [ ] FzfxLiveGrep
-                - [ ] FzfxBufLiveGrep
-                - [ ] FzfxBuffers
-                - [ ] FzfxGFiles
-                - [ ] FzfxGLiveGrep
-                - [ ] FzfxGStatus 
-                - [ ] FzfxGBranches
-                - [ ] FzfxGCommits
-                - [ ] FzfxGBlame
-                - [ ] FzfxLspDiagnostics
-                - [ ] FzfxLspDefinitions, FzfxLspTypeDefinitions, FzfxLspReferences, FzfxLspImplementations
-                - [ ] FzfxLspIncomingCalls, FzfxLspOutgoingCalls
-                - [ ] FzfxCommands
-                - [ ] FzfxCommandHistory
-                - [ ] FzfxKeyMaps
-                - [ ] FzfxMarks
-                - [ ] FzfxFileExplorer
-              `
+            Please select your testing commands:
+              - [ ] FzfxFiles
+              - [ ] FzfxLiveGrep
+              - [ ] FzfxBufLiveGrep
+              - [ ] FzfxBuffers
+              - [ ] FzfxGFiles
+              - [ ] FzfxGLiveGrep
+              - [ ] FzfxGStatus 
+              - [ ] FzfxGBranches
+              - [ ] FzfxGCommits
+              - [ ] FzfxGBlame
+              - [ ] FzfxLspDiagnostics
+              - [ ] FzfxLspDefinitions, FzfxLspTypeDefinitions, FzfxLspReferences, FzfxLspImplementations
+              - [ ] FzfxLspIncomingCalls, FzfxLspOutgoingCalls
+              - [ ] FzfxCommands
+              - [ ] FzfxCommandHistory
+              - [ ] FzfxKeyMaps
+              - [ ] FzfxMarks
+              - [ ] FzfxFileExplorer
+            `
             })
