@@ -316,16 +316,13 @@ M._make_renderers = function()
 
     -- markup {
     _BatThemeScopeRenderer:new({ "@markup.link" }, "markup.underline.link"),
-    _BatThemeScopeRenderer:new(
-      { "@markup.link.label" },
-      { "string.other.link", "meta.link.inline" }
-    ),
+    _BatThemeScopeRenderer:new({ "@markup.link.label" }, { "meta.link.inline" }),
     _BatThemeScopeRenderer:new({ "@markup.strong" }, "markup.bold"),
     _BatThemeScopeRenderer:new({ "@markup.italic" }, "markup.italic"),
     _BatThemeScopeRenderer:new({ "@markup.list" }, "markup.list"),
     _BatThemeScopeRenderer:new({ "@markup.underline" }, "markup.underline"),
-    _BatThemeScopeRenderer:new({ "@markup.heading" }, { "markup.heading", "entity.name.section" }),
-    _BatThemeScopeRenderer:new({ "@markup.raw" }, "markup.raw"),
+    _BatThemeScopeRenderer:new({ "@markup.heading" }, { "markup.heading" }),
+    -- _BatThemeScopeRenderer:new({ "@markup.raw" }, "meta.code-fence"),
     _BatThemeScopeRenderer:new({ "@markup.quote" }, "markup.quote"),
     _BatThemeScopeRenderer:new({
       "GitSignsAdd",
