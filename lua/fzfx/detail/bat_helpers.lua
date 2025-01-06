@@ -311,7 +311,7 @@ M._make_renderers = function()
     _BatThemeScopeRenderer:new({ "@keyword.function" }, "storage.modifier"),
     _BatThemeScopeRenderer:new({ "@operator", "Operator" }, "keyword.operator"),
     _BatThemeScopeRenderer:new({ "@keyword.conditional", "Conditional" }, "keyword.control"),
-    _BatThemeScopeRenderer:new({ "@keyword.import", "PreProc" }, "keyword.declaration.import"),
+    _BatThemeScopeRenderer:new({ "@keyword.import" }, "keyword.declaration.import"),
     -- keyword }
 
     -- markup {
