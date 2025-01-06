@@ -285,16 +285,20 @@ M._make_renderers = function()
     -- entity {
     _BatThemeScopeRenderer:new({ "@function.call", "Function" }, "entity.name.function"),
     _BatThemeScopeRenderer:new({ "@function.macro", "Function" }, { "entity.name.function.macro" }),
+    _BatThemeScopeRenderer:new({ "@function.builtin" }, { "support.function" }),
     _BatThemeScopeRenderer:new({ "@type", "Type" }, { "entity.name.type" }),
     _BatThemeScopeRenderer:new({ "@module", "Structure" }, { "entity.name.type.struct" }),
     _BatThemeScopeRenderer:new({ "@module", "Structure" }, { "entity.name.namespace" }),
     _BatThemeScopeRenderer:new({ "@type.builtin", "Special" }, { "entity.name.type.numeric" }),
+    _BatThemeScopeRenderer:new({ "@tag" }, "entity.name.tag"),
+    _BatThemeScopeRenderer:new({ "@label", "Label" }, "entity.name.label"),
     -- entity }
 
     -- variable {
     _BatThemeScopeRenderer:new({ "@variable" }, "variable"),
     _BatThemeScopeRenderer:new({ "@variable.parameter" }, { "variable.parameter" }),
     _BatThemeScopeRenderer:new({ "@variable.builtin" }, { "variable.language" }),
+    _BatThemeScopeRenderer:new({ "@variable.member" }, { "variable.other.member" }),
     -- variable }
 
     -- Puncuation {
@@ -305,60 +309,25 @@ M._make_renderers = function()
     -- keyword {
     _BatThemeScopeRenderer:new({ "@keyword", "Keyword" }, "keyword"),
     _BatThemeScopeRenderer:new({ "@keyword.modifier", "Keyword" }, "storage.modifier"),
+    _BatThemeScopeRenderer:new({ "@keyword.function" }, "storage.modifier"),
     _BatThemeScopeRenderer:new({ "@operator", "Operator" }, "keyword.operator"),
-    _BatThemeScopeRenderer:new({ "@keyword.coroutine" }, "keyword.control"),
-    -- keyword }
-
-    -- Before / After
-
-    -- entity {
-    -- _BatThemeScopeRenderer:new({ "@function", "Function" }, "entity.name.function"),
-    _BatThemeScopeRenderer:new({ "@constructor" }, "entity.name.function.constructor"),
-    _BatThemeScopeRenderer:new({ "@type", "Type" }, { "entity.name.type" }),
-    _BatThemeScopeRenderer:new({ "@tag" }, "entity.name.tag"),
-    _BatThemeScopeRenderer:new({ "@tag.attribute" }, "entity.other.attribute-name"),
-    _BatThemeScopeRenderer:new({ "Structure" }, { "entity.name.union" }),
-    _BatThemeScopeRenderer:new({ "Structure" }, { "entity.name.enum" }),
-    _BatThemeScopeRenderer:new({ "@markup.heading" }, "entity.name.section"),
-    _BatThemeScopeRenderer:new({ "@label", "Label" }, "entity.name.label"),
-    _BatThemeScopeRenderer:new({ "@constant", "Constant" }, "entity.name.constant"),
-    _BatThemeScopeRenderer:new({ "@type", "Type" }, "entity.other.inherited-class"),
-    -- entity }
-
-    -- keyword {
-    _BatThemeScopeRenderer:new({ "@keyword", "Keyword" }, "keyword"),
     _BatThemeScopeRenderer:new({ "@keyword.conditional", "Conditional" }, "keyword.control"),
     _BatThemeScopeRenderer:new({ "@keyword.import" }, "keyword.control.import"),
-    _BatThemeScopeRenderer:new({ "@operator", "Operator" }, "keyword.operator"),
-    _BatThemeScopeRenderer:new({ "@keyword.operator" }, "keyword.operator.word"),
-    _BatThemeScopeRenderer:new({ "@keyword.conditional.ternary" }, "keyword.operator.ternary"),
     -- keyword }
 
     -- markup {
-    _BatThemeScopeRenderer:new({
-      "@markup.link.url",
-    }, "markup.underline.link"),
-    _BatThemeScopeRenderer:new({
-      "@markup.underline",
-    }, "markup.underline"),
-    _BatThemeScopeRenderer:new({
-      "@markup.strong",
-    }, "markup.bold"),
-    _BatThemeScopeRenderer:new({
-      "@markup.italic",
-    }, "markup.italic"),
-    _BatThemeScopeRenderer:new({
-      "@markup.heading",
-    }, "markup.heading"),
-    _BatThemeScopeRenderer:new({
-      "@markup.list",
-    }, "markup.list"),
-    _BatThemeScopeRenderer:new({
-      "@markup.raw",
-    }, "markup.raw"),
-    _BatThemeScopeRenderer:new({
-      "@markup.quote",
-    }, "markup.quote"),
+    _BatThemeScopeRenderer:new({ "@markup.link" }, "markup.underline.link"),
+    _BatThemeScopeRenderer:new(
+      { "@markup.link.label" },
+      { "string.other.link", "meta.link.inline" }
+    ),
+    _BatThemeScopeRenderer:new({ "@markup.strong" }, "markup.bold"),
+    _BatThemeScopeRenderer:new({ "@markup.italic" }, "markup.italic"),
+    _BatThemeScopeRenderer:new({ "@markup.list" }, "markup.list"),
+    _BatThemeScopeRenderer:new({ "@markup.underline" }, "markup.underline"),
+    _BatThemeScopeRenderer:new({ "@markup.heading" }, { "markup.heading", "entity.name.section" }),
+    _BatThemeScopeRenderer:new({ "@markup.raw" }, "markup.raw"),
+    _BatThemeScopeRenderer:new({ "@markup.quote" }, "markup.quote"),
     _BatThemeScopeRenderer:new({
       "GitSignsAdd",
       "GitGutterAdd",
@@ -383,40 +352,6 @@ M._make_renderers = function()
       "Changed",
     }, { "markup.changed" }),
     -- markup }
-
-    -- meta {
-    _BatThemeScopeRenderer:new({ "@attribute" }, { "meta.annotation" }),
-    _BatThemeScopeRenderer:new({ "@constant.macro", "Macro" }, { "meta.preprocessor" }),
-    -- meta }
-
-    -- storage {
-    _BatThemeScopeRenderer:new(
-      { "@keyword.function", "Keyword" },
-      { "storage.type.function", "keyword.declaration.function" }
-    ),
-    _BatThemeScopeRenderer:new({ "Structure" }, {
-      "storage.type.enum",
-      "keyword.declaration.enum",
-    }),
-    _BatThemeScopeRenderer:new({ "Structure" }, {
-      "storage.type.struct",
-      "keyword.declaration.struct",
-    }),
-    _BatThemeScopeRenderer:new({ "@type", "Type" }, { "storage.type", "keyword.declaration.type" }),
-    _BatThemeScopeRenderer:new({ "@keyword.storage", "StorageClass" }, "storage.modifier"),
-    -- storage }
-
-    -- support {
-    _BatThemeScopeRenderer:new({ "@function.builtin", "Function" }, "support.function"),
-    _BatThemeScopeRenderer:new({ "@constant.builtin", "Constant" }, "support.constant"),
-    _BatThemeScopeRenderer:new({ "@type.builtin", "Type" }, "support.type"),
-    _BatThemeScopeRenderer:new({ "@type.builtin", "Type" }, "support.class"),
-    _BatThemeScopeRenderer:new({ "@module.builtin" }, "support.module"),
-    -- support }
-
-    -- variable {
-    _BatThemeScopeRenderer:new({ "@function", "Function" }, "variable.function"),
-    -- variable }
   }
 
   return {
