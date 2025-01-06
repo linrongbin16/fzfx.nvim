@@ -288,7 +288,7 @@ M._make_renderers = function()
     _BatThemeScopeRenderer:new({ "@function.macro", "Function" }, { "support.macro" }),
     _BatThemeScopeRenderer:new({ "@function.builtin" }, { "support.function" }),
     _BatThemeScopeRenderer:new({ "@type", "Type" }, { "storage.type", "support.type" }),
-    _BatThemeScopeRenderer:new({ "@module", "Structure" }, { "meta.path" }),
+    _BatThemeScopeRenderer:new({ "@module" }, { "meta.path" }),
     _BatThemeScopeRenderer:new({ "@tag" }, "entity.name.tag"),
     _BatThemeScopeRenderer:new({ "@label", "Label" }, "entity.name.label"),
     -- entity }
