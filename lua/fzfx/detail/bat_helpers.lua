@@ -266,6 +266,7 @@ M._make_renderers = function()
     -- comment }
 
     -- constant {
+    _BatThemeScopeRenderer:new({ "@constant", "Constant" }, "constant"),
     _BatThemeScopeRenderer:new({ "@number", "Number" }, "constant.numeric"),
     _BatThemeScopeRenderer:new({ "@number.float", "Float" }, "constant.numeric.float"),
     _BatThemeScopeRenderer:new({ "@boolean", "Boolean" }, "constant.language"),
@@ -282,8 +283,35 @@ M._make_renderers = function()
     -- constant }
 
     -- entity {
-    _BatThemeScopeRenderer:new({ "@function", "Function" }, "entity.name.function"),
-    _BatThemeScopeRenderer:new({ "@function.call" }, "entity.name.function.call"),
+    _BatThemeScopeRenderer:new({ "@function.call", "Function" }, "entity.name.function"),
+    _BatThemeScopeRenderer:new({ "@function.macro", "Function" }, { "entity.name.function.macro" }),
+    _BatThemeScopeRenderer:new({ "@type", "Type" }, { "entity.name.type" }),
+    _BatThemeScopeRenderer:new({ "@module", "Structure" }, { "entity.name.type.struct" }),
+    _BatThemeScopeRenderer:new({ "@module", "Structure" }, { "entity.name.namespace" }),
+    _BatThemeScopeRenderer:new({ "@type.builtin", "Special" }, { "entity.name.type.numeric" }),
+    -- entity }
+
+    -- variable {
+    _BatThemeScopeRenderer:new({ "@variable" }, "variable"),
+    _BatThemeScopeRenderer:new({ "@variable.parameter" }, { "variable.parameter" }),
+    _BatThemeScopeRenderer:new({ "@variable.builtin", "@type", "Type" }, { "variable.language" }),
+    -- variable }
+
+    -- Puncuation {
+    _BatThemeScopeRenderer:new({ "@puncuation.bracket", "Delimiter" }, "puncuation.brackets"),
+    _BatThemeScopeRenderer:new({ "@puncuation.delimiter", "Delimiter" }, "puncuation.semi"),
+    -- Puncuation }
+
+    -- keyword {
+    _BatThemeScopeRenderer:new({ "@keyword", "Keyword" }, "keyword"),
+    _BatThemeScopeRenderer:new({ "@keyword.modifier", "Keyword" }, "storage.modifier"),
+    _BatThemeScopeRenderer:new({ "@operator", "Operator" }, "keyword.operator"),
+    -- keyword }
+
+    -- Before / After
+
+    -- entity {
+    -- _BatThemeScopeRenderer:new({ "@function", "Function" }, "entity.name.function"),
     _BatThemeScopeRenderer:new({ "@constructor" }, "entity.name.function.constructor"),
     _BatThemeScopeRenderer:new({ "@type", "Type" }, { "entity.name.type" }),
     _BatThemeScopeRenderer:new({ "@tag" }, "entity.name.tag"),
@@ -387,8 +415,6 @@ M._make_renderers = function()
 
     -- variable {
     _BatThemeScopeRenderer:new({ "@function", "Function" }, "variable.function"),
-    _BatThemeScopeRenderer:new({ "@variable", "Identifier" }, "variable"),
-    _BatThemeScopeRenderer:new({ "@variable.parameter" }, { "variable.parameter" }),
     _BatThemeScopeRenderer:new({ "@variable.builtin" }, { "variable.language" }),
     -- variable }
   }
