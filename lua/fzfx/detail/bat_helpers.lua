@@ -228,7 +228,7 @@ M._BatThemeScopeRenderer = _BatThemeScopeRenderer
 
 --- @return {globals:fzfx._BatThemeGlobalRenderer[],scopes:fzfx._BatThemeScopeRenderer[]}
 M._make_renderers = function()
-  -- Basic syntax
+  -- Global theme
   local GLOBAL_RENDERERS = {
     _BatThemeGlobalRenderer:new("Normal", "background", "bg"),
     _BatThemeGlobalRenderer:new("Normal", "foreground", "fg"),
@@ -259,7 +259,7 @@ M._make_renderers = function()
     }, "lineDiffDeleted", "fg"),
   }
 
-  -- Treesitter syntax
+  -- Scope theme
   local SCOPE_RENDERERS = {
     -- comment {
     _BatThemeScopeRenderer:new({ "@comment", "Comment" }, "comment"),
@@ -269,9 +269,14 @@ M._make_renderers = function()
     _BatThemeScopeRenderer:new({ "@number", "Number" }, "constant.numeric"),
     _BatThemeScopeRenderer:new({ "@number.float", "Float" }, "constant.numeric.float"),
     _BatThemeScopeRenderer:new({ "@boolean", "Boolean" }, "constant.language"),
-    _BatThemeScopeRenderer:new({ "@character", "Character" }, { "constant.character" }),
     _BatThemeScopeRenderer:new(
-      { "@string.escape" },
+      { "@character", "Character" },
+      { "constant.character", "character" }
+    ),
+    _BatThemeScopeRenderer:new({ "@string", "String" }, { "string", "string.quoted" }),
+    _BatThemeScopeRenderer:new({ "@string.regexp" }, { "string.regexp" }),
+    _BatThemeScopeRenderer:new(
+      { "@string.escape", "SpecialChar" },
       { "constant.character.escaped", "constant.character.escape" }
     ),
     -- constant }
@@ -371,11 +376,6 @@ M._make_renderers = function()
     _BatThemeScopeRenderer:new({ "@type", "Type" }, { "storage.type", "keyword.declaration.type" }),
     _BatThemeScopeRenderer:new({ "@keyword.storage", "StorageClass" }, "storage.modifier"),
     -- storage }
-
-    -- string {
-    _BatThemeScopeRenderer:new({ "@string", "String" }, { "string", "string.quoted" }),
-    _BatThemeScopeRenderer:new({ "@string.regexp" }, { "string.regexp" }),
-    -- string }
 
     -- support {
     _BatThemeScopeRenderer:new({ "@function.builtin", "Function" }, "support.function"),
