@@ -1,5 +1,12 @@
 # Changelog
 
+## [7.1.2](https://github.com/linrongbin16/fzfx.nvim/compare/v7.1.1...v7.1.2) (2025-01-06)
+
+
+### Bug Fixes
+
+* **bat:** fix bat theme colors retrive mappings ([#763](https://github.com/linrongbin16/fzfx.nvim/issues/763)) ([a96505b](https://github.com/linrongbin16/fzfx.nvim/commit/a96505bc9cf0a7c1766b1b7b87dd746134b038fa))
+
 ## [7.1.1](https://github.com/linrongbin16/fzfx.nvim/compare/v7.1.0...v7.1.1) (2024-12-17)
 
 
