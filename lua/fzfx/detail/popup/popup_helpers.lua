@@ -328,7 +328,7 @@ M.make_cursor_layout = function(
   local total_width = vim.api.nvim_win_get_width(relative_winnr)
   local total_height = vim.api.nvim_win_get_height(relative_winnr)
   local cursor_pos = vim.api.nvim_win_get_cursor(relative_winnr)
-  local cursor_relative_row = cursor_pos[1] - relative_win_first_line + 1
+  local cursor_relative_row = cursor_pos[1] - relative_win_first_line
   local cursor_relative_col = cursor_pos[2]
   log.debug(
     string.format(
