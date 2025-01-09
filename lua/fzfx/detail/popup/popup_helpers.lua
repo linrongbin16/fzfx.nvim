@@ -308,7 +308,7 @@ M.make_cursor_layout = function(
   relative_winnr,
   relative_win_first_line,
   win_opts,
-  fzf_preview_window_opts
+  fzf_preview_window_opts,
 )
   log.ensure(
     type(relative_winnr) == "number" and vim.api.nvim_win_is_valid(relative_winnr),
@@ -354,7 +354,6 @@ M.make_cursor_layout = function(
   )
 
   local start_row
-
   if win_opts.row > -1 and win_opts.row < 1 then
     start_row = math.floor(total_height * win_opts.row) + cursor_relative_row
   else
