@@ -69,14 +69,14 @@ end
 local function _remove_temp_file(filename, on_complete)
   if type(on_complete) ~= "function" then
     on_complete = function(err, success)
-      log.debug(
-        string.format(
-          "Remove tempfile:%s, err:%s, success:%s",
-          filename,
-          vim.inspect(err),
-          vim.inspect(success)
-        )
-      )
+      -- log.debug(
+      --   string.format(
+      --     "Remove tempfile:%s, err:%s, success:%s",
+      --     filename,
+      --     vim.inspect(err),
+      --     vim.inspect(success)
+      --   )
+      -- )
     end
   end
 
@@ -169,24 +169,24 @@ end
 
 function ProviderSwitch:close()
   _remove_temp_file(self.metafile, function(err, success)
-    log.debug(
-      string.format(
-        "Remove provider switch metafile:%s, err:%s, success:%s",
-        self.metafile,
-        vim.inspect(err),
-        vim.inspect(success)
-      )
-    )
+    -- log.debug(
+    --   string.format(
+    --     "Remove provider switch metafile:%s, err:%s, success:%s",
+    --     self.metafile,
+    --     vim.inspect(err),
+    --     vim.inspect(success)
+    --   )
+    -- )
   end)
   _remove_temp_file(self.resultfile, function(err, success)
-    log.debug(
-      string.format(
-        "Remove provider switch resultfile:%s, err:%s, success:%s",
-        self.resultfile,
-        vim.inspect(err),
-        vim.inspect(success)
-      )
-    )
+    -- log.debug(
+    --   string.format(
+    --     "Remove provider switch resultfile:%s, err:%s, success:%s",
+    --     self.resultfile,
+    --     vim.inspect(err),
+    --     vim.inspect(success)
+    --   )
+    -- )
   end)
 end
 
@@ -487,24 +487,24 @@ end
 
 function PreviewerSwitch:close()
   _remove_temp_file(self.metafile, function(err, success)
-    log.debug(
-      string.format(
-        "Remove provider switch metafile:%s, err:%s, success:%s",
-        self.metafile,
-        vim.inspect(err),
-        vim.inspect(success)
-      )
-    )
+    -- log.debug(
+    --   string.format(
+    --     "Remove provider switch metafile:%s, err:%s, success:%s",
+    --     self.metafile,
+    --     vim.inspect(err),
+    --     vim.inspect(success)
+    --   )
+    -- )
   end)
   _remove_temp_file(self.resultfile, function(err, success)
-    log.debug(
-      string.format(
-        "Remove provider switch resultfile:%s, err:%s, success:%s",
-        self.resultfile,
-        vim.inspect(err),
-        vim.inspect(success)
-      )
-    )
+    -- log.debug(
+    --   string.format(
+    --     "Remove provider switch resultfile:%s, err:%s, success:%s",
+    --     self.resultfile,
+    --     vim.inspect(err),
+    --     vim.inspect(success)
+    --   )
+    -- )
   end)
 end
 
@@ -1491,24 +1491,24 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
     provider_switch:close()
     previewer_switch:close()
     _remove_temp_file(fzf_port_file, function(err, success)
-      log.debug(
-        string.format(
-          "Remove fzf_port_file:%s, err:%s, success:%s",
-          fzf_port_file,
-          vim.inspect(err),
-          vim.inspect(success)
-        )
-      )
+      -- log.debug(
+      --   string.format(
+      --     "Remove fzf_port_file:%s, err:%s, success:%s",
+      --     fzf_port_file,
+      --     vim.inspect(err),
+      --     vim.inspect(success)
+      --   )
+      -- )
     end)
     _remove_temp_file(buffer_previewer_actions_file, function(err, success)
-      log.debug(
-        string.format(
-          "Remove buffer_previewer_actions_file:%s, err:%s, success:%s",
-          buffer_previewer_actions_file,
-          vim.inspect(err),
-          vim.inspect(success)
-        )
-      )
+      -- log.debug(
+      --   string.format(
+      --     "Remove buffer_previewer_actions_file:%s, err:%s, success:%s",
+      --     buffer_previewer_actions_file,
+      --     vim.inspect(err),
+      --     vim.inspect(success)
+      --   )
+      -- )
     end)
   end, use_buffer_previewer, previewer_opts)
 end

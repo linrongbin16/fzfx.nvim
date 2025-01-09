@@ -253,14 +253,14 @@ function Popup:new(
       -- Clean up temp files
       if uv.fs_stat(result) then
         uv.fs_unlink(result, function(err, success)
-          log.debug(
-            string.format(
-              "Remove popup result:%s, err:%s, success:%s",
-              result,
-              vim.inspect(err),
-              vim.inspect(success)
-            )
-          )
+          -- log.debug(
+          --   string.format(
+          --     "Remove popup result:%s, err:%s, success:%s",
+          --     result,
+          --     vim.inspect(err),
+          --     vim.inspect(success)
+          --   )
+          -- )
         end)
       end
 
