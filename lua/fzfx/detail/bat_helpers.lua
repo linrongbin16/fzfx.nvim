@@ -510,7 +510,7 @@ M._build_theme = function(colorname)
       -- )
       spawn.run({ consts.BAT, "cache", "--build" }, {
         on_stdout = function(line)
-          log.debug(string.format("Build bat theme cache(stdout):[%s]", line))
+          -- log.debug(string.format("Build bat theme cache(stdout):[%s]", line))
         end,
         on_stderr = function(line)
           log.debug(string.format("Build bat theme cache(stderr):[%s]", line))

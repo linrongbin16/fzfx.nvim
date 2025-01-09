@@ -18,7 +18,8 @@ M._make_cursor_opts = function(
   win_opts = vim.deepcopy(win_opts)
   buffer_previewer_opts = vim.deepcopy(buffer_previewer_opts)
 
-  win_opts.relative = win_opts.relative or "win"
+  assert(win_opts.relative == "cursor")
+  -- win_opts.relative = win_opts.relative or "win"
 
   local layout = popup_helpers.make_cursor_layout(relative_winnr, relative_win_first_line, win_opts)
   log.debug("|_make_cursor_opts| layout:" .. vim.inspect(layout))
@@ -27,7 +28,7 @@ M._make_cursor_opts = function(
 
   local result = {
     anchor = "NW",
-    relative = win_opts.relative,
+    relative = "win", -- Even for cursor related popup, we still create popup based on 'win'.
     width = layout.width,
     height = layout.height,
     row = layout.start_row,
@@ -37,9 +38,9 @@ M._make_cursor_opts = function(
     zindex = popup_helpers.FLOAT_WIN_ZINDEX,
   }
 
-  if win_opts.relative == "win" then
-    result.win = relative_winnr
-  end
+  -- if win_opts.relative == "win" then
+  result.win = relative_winnr
+  -- end
 
   log.debug("|_make_cursor_opts| result:" .. vim.inspect(result))
   return result
@@ -60,6 +61,7 @@ M._make_center_opts = function(
   buffer_previewer_opts = vim.deepcopy(buffer_previewer_opts)
 
   win_opts.relative = win_opts.relative or "editor"
+  assert(win_opts.relative == "editor" or win_opts.relative == "win")
 
   local layout = popup_helpers.make_center_layout(relative_winnr, relative_win_first_line, win_opts)
   -- log.debug("|_make_center_opts| layout:%s" .. vim.inspect(layout))

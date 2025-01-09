@@ -161,6 +161,34 @@ M._adjust_layout_bound = function(total_height, total_width, layout)
   return { start_row = start_row, end_row = end_row, start_col = start_col, end_col = end_col }
 end
 
+--- @param win_opts {relative:"editor"|"win"|"cursor",height:number,width:number,row:number,col:number}
+--- @param total_height integer
+--- @return integer
+M._get_center_row = function(win_opts, total_height)
+  local center_row
+  if win_opts.row >= -0.5 and win_opts.row <= 0.5 then
+    center_row = win_opts.row + 0.5
+    center_row = total_height * center_row
+  else
+    center_row = total_height * 0.5 + win_opts.row
+  end
+  return center_row
+end
+
+--- @param win_opts {relative:"editor"|"win"|"cursor",height:number,width:number,row:number,col:number}
+--- @param total_width integer
+--- @return integer
+M._get_center_col = function(win_opts, total_width)
+  local center_col
+  if win_opts.col >= -0.5 and win_opts.col <= 0.5 then
+    center_col = win_opts.col + 0.5
+    center_col = total_width * center_col
+  else
+    center_col = total_width * 0.5 + win_opts.col
+  end
+  return center_col
+end
+
 --- @param relative_winnr integer
 --- @param relative_win_first_line integer the first line number of window (e.g. the view), from `vim.fn.line("w0")`
 --- @param win_opts {relative:"editor"|"win"|"cursor",height:number,width:number,row:number,col:number}
@@ -219,20 +247,8 @@ M.make_center_layout = function(
     )
   )
 
-  local center_row
-  local center_col
-  if win_opts.row >= -0.5 and win_opts.row <= 0.5 then
-    center_row = win_opts.row + 0.5
-    center_row = total_height * center_row
-  else
-    center_row = total_height * 0.5 + win_opts.row
-  end
-  if win_opts.col >= -0.5 and win_opts.col <= 0.5 then
-    center_col = win_opts.col + 0.5
-    center_col = total_width * center_col
-  else
-    center_col = total_width * 0.5 + win_opts.col
-  end
+  local center_row = M._get_center_row(win_opts, total_height)
+  local center_col = M._get_center_col(win_opts, total_width)
   -- log.debug(
   --   "|get_layout| win_opts:%s, center(row/col):%s/%s, height/width:%s/%s, total(height/width):%s/%s, row(start/end):%s/%s, col(start/end):%s/%s",
   --   vim.inspect(win_opts),
@@ -338,8 +354,6 @@ M.make_cursor_layout = function(
   )
 
   local start_row
-  local start_col
-
   if win_opts.row > -1 and win_opts.row < 1 then
     start_row = math.floor(total_height * win_opts.row) + cursor_relative_row
   else
@@ -368,12 +382,9 @@ M.make_cursor_layout = function(
   end
   local end_row = start_row + height
 
-  if win_opts.col > -1 and win_opts.col < 1 then
-    start_col = math.floor(total_width * win_opts.col) + cursor_relative_col
-  else
-    start_col = win_opts.col + cursor_relative_col
-  end
-  local end_col = start_col + width
+  local center_col = M._get_center_col(win_opts, total_width)
+  local start_col = math.floor(center_col - (width / 2)) - 1
+  local end_col = math.floor(center_col + (width / 2)) - 1
 
   local adjust_layout = M._adjust_layout_bound(
     total_height,
