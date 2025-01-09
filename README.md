@@ -127,10 +127,6 @@ Windows actually already provide some builtin commands (`find.exe`, `bash.exe`) 
 
 ## 📦 Install
 
-> [!NOTE]
->
-> You can specify the plugin version/tag (i.e. `v5.*`) to avoid break changes between major versions!
-
 <details>
 <summary><b>With <a href="https://github.com/folke/lazy.nvim">lazy.nvim</a></b></summary>
 
@@ -150,10 +146,6 @@ require("lazy").setup({
   {
     "linrongbin16/fzfx.nvim",
     dependencies = { "nvim-tree/nvim-web-devicons", 'junegunn/fzf' },
-
-    -- specify version to avoid break changes
-    -- version = 'v5.*',
-
     config = function()
       require("fzfx").setup()
     end,
@@ -181,10 +173,6 @@ return require("packer").startup(function(use)
 
   use({
     "linrongbin16/fzfx.nvim",
-
-    -- specify version to avoid break changes
-    -- version = 'v5.0.0',
-
     config = function()
       require("fzfx").setup()
     end,
@@ -207,7 +195,7 @@ Plug 'nvim-tree/nvim-web-devicons'
 Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 
 " specify version to avoid break changes
-Plug 'linrongbin16/fzfx.nvim' ", { 'tag': 'v5.0.0' }
+Plug 'linrongbin16/fzfx.nvim'
 
 call plug#end()
 
