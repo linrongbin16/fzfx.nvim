@@ -3,6 +3,7 @@
 local fileio = require("fzfx.commons.fileio")
 local path = require("fzfx.commons.path")
 local version = require("fzfx.commons.version")
+local uv = require("fzfx.commons.uv")
 
 local log = require("fzfx.lib.log")
 local fzf_helpers = require("fzfx.detail.fzf_helpers")
@@ -248,13 +249,28 @@ function Popup:new(
           vim.inspect(cb_err)
         )
       )
+
+      -- Clean up temp files
+      if uv.fs_stat(result) then
+        uv.fs_unlink(result, function(err, success)
+          log.debug(
+            string.format(
+              "Remove popup result:%s, err:%s, success:%s",
+              result,
+              vim.inspect(err),
+              vim.inspect(success)
+            )
+          )
+        end)
+      end
+
       if type(on_close) == "function" then
         vim.schedule(function()
           on_close(last_query)
         end)
       end
     end)
-  end
+  end -- on_fzf_exit
 
   -- save fzf/shell context
   local saved_shell_opts_context = popup_helpers.ShellOptsContext:save()
@@ -288,9 +304,7 @@ function Popup:new(
   return o
 end
 
-function Popup:close()
-  -- log.debug("|fzfx.popup - Popup:close| self:%s", vim.inspect(self))
-end
+-- function Popup:close() end
 
 function Popup:previewer_is_valid()
   return self.popup_window ~= nil and self.popup_window:previewer_is_valid()

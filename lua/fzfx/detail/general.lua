@@ -64,6 +64,27 @@ local function _buffer_previewer_actions_file()
   return _make_cache_filename("buffer", "previewer", "actions", "file")
 end
 
+--- @param filename string
+--- @param on_complete function(string?, boolean?):nil
+local function _remove_temp_file(filename, on_complete)
+  if type(on_complete) ~= "function" then
+    on_complete = function(err, success)
+      log.debug(
+        string.format(
+          "Remove tempfile:%s, err:%s, success:%s",
+          filename,
+          vim.inspect(err),
+          vim.inspect(success)
+        )
+      )
+    end
+  end
+
+  if uv.fs_stat(filename) then
+    uv.fs_unlink(filename, on_complete)
+  end
+end
+
 --- @class fzfx.ProviderMetaOpts
 --- @field pipeline fzfx.PipelineName
 --- @field provider_type fzfx.ProviderType
@@ -144,6 +165,29 @@ function ProviderSwitch:new(name, pipeline, provider_configs)
   setmetatable(o, self)
   self.__index = self
   return o
+end
+
+function ProviderSwitch:close()
+  _remove_temp_file(self.metafile, function(err, success)
+    log.debug(
+      string.format(
+        "Remove provider switch metafile:%s, err:%s, success:%s",
+        self.metafile,
+        vim.inspect(err),
+        vim.inspect(success)
+      )
+    )
+  end)
+  _remove_temp_file(self.resultfile, function(err, success)
+    log.debug(
+      string.format(
+        "Remove provider switch resultfile:%s, err:%s, success:%s",
+        self.resultfile,
+        vim.inspect(err),
+        vim.inspect(success)
+      )
+    )
+  end)
 end
 
 --- @param next_pipeline fzfx.PipelineName
@@ -439,6 +483,29 @@ function PreviewerSwitch:new(name, pipeline, previewer_configs, fzf_port_file)
   setmetatable(o, self)
   self.__index = self
   return o
+end
+
+function PreviewerSwitch:close()
+  _remove_temp_file(self.metafile, function(err, success)
+    log.debug(
+      string.format(
+        "Remove provider switch metafile:%s, err:%s, success:%s",
+        self.metafile,
+        vim.inspect(err),
+        vim.inspect(success)
+      )
+    )
+  end)
+  _remove_temp_file(self.resultfile, function(err, success)
+    log.debug(
+      string.format(
+        "Remove provider switch resultfile:%s, err:%s, success:%s",
+        self.resultfile,
+        vim.inspect(err),
+        vim.inspect(success)
+      )
+    )
+  end)
 end
 
 --- @return fzfx.PreviewerConfig
@@ -1395,9 +1462,14 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
   end
 
   popup = Popup:new(win_opts or {}, query_command, fzf_opts, actions, context, function(last_query)
+    -- On popup exit
+
+    -- Unregister RPC calls
     for _, rpc_id in ipairs(rpc_registries) do
       rpcserver.get_instance():unregister(rpc_id)
     end
+
+    -- Save last query cache
     local last_query_cache = fzf_helpers.last_query_cache_name(name)
     fzf_helpers.save_last_query_cache(name, last_query, provider_switch.pipeline)
     local content = vim.json.encode({
@@ -1407,11 +1479,37 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
     fileio.asyncwritefile(last_query_cache, content, function(bytes)
       -- log.debug("|general| dump last query:%s", vim.inspect(bytes))
     end)
+
+    -- Stop buffer previewer fsevent
     if buffer_previewer_actions_fsevent then
       buffer_previewer_actions_fsevent:stop()
       buffer_previewer_actions_fsevent = nil
     end
     buffer_previewer_query_fzf_status_start = false
+
+    -- Clean up temp files
+    provider_switch:close()
+    previewer_switch:close()
+    _remove_temp_file(fzf_port_file, function(err, success)
+      log.debug(
+        string.format(
+          "Remove fzf_port_file:%s, err:%s, success:%s",
+          fzf_port_file,
+          vim.inspect(err),
+          vim.inspect(success)
+        )
+      )
+    end)
+    _remove_temp_file(buffer_previewer_actions_file, function(err, success)
+      log.debug(
+        string.format(
+          "Remove buffer_previewer_actions_file:%s, err:%s, success:%s",
+          buffer_previewer_actions_file,
+          vim.inspect(err),
+          vim.inspect(success)
+        )
+      )
+    end)
   end, use_buffer_previewer, previewer_opts)
 end
 
