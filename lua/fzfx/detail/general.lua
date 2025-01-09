@@ -1487,7 +1487,7 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
     end
     buffer_previewer_query_fzf_status_start = false
 
-    -- Delete temp files
+    -- Clean up temp files
     provider_switch:close()
     previewer_switch:close()
     _remove_temp_file(fzf_port_file, function(err, success)
