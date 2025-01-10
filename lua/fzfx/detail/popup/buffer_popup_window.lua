@@ -501,11 +501,47 @@ function BufferPopupWindow:preview_file(job_id, previewer_result, previewer_labe
   if type(previewer_result.lineno) == 'number' and previewer_result.lineno > 0 then
     vim.api.nvim_win_call(self.previewer_winnr, function()
       if type(previewer_result.lineno) == 'number' and previewer_result.lineno > 0 then
+        -- Set the interested `lineno` to the center of the preview window.
+        -- Just like executing `normal! zz`.
         local height = vim.api.nvim_win_get_height(self.previewer_winnr)
         local topline = math.max(1, previewer_result.lineno - math.floor(height / 2))
         vim.api.nvim_command(string.format([[call winrestview({'topline':%d})]], topline))
         -- vim.api.nvim_win_set_cursor(self.previewer_winnr, { previewer_result.lineno, 0 })
         -- vim.cmd.execute("normal! zz")
+
+        -- -- Set the `lineno` highlight to `CursorLineNr`
+        -- local extmark_ns = vim.api.nvim_create_namespace(string.format("fzfx-buffer-previewer-%s", tostring(job_id)))
+        -- local old_extmarks = vim.api.nvim_buf_get_extmarks(
+        --   self.previewer_bufnr,
+        --   extmark_ns,
+        --   { 0, 0 },
+        --   { -1, -1 },
+        --   {}
+        -- )
+        -- if tbl.list_not_empty(old_extmarks) then
+        --   for i, m in ipairs(old_extmarks) do
+        --     pcall(vim.api.nvim_buf_del_extmark, self.previewer_bufnr, extmark_ns, m[1])
+        --   end
+        -- end
+        --
+        -- local opts = {
+        --   end_row = end_row,
+        --   end_col = end_col,
+        --   strict = false,
+        --   sign_hl_group = "CursorLineSign",
+        --   number_hl_group = "CursorLineNr",
+        --   line_hl_group = "Visual",
+        -- }
+        --
+        -- ---@diagnostic disable-next-line: unused-local
+        -- local extmark_ok, extmark_result = pcall(
+        --   vim.api.nvim_buf_set_extmark,
+        --   self.previewer_bufnr,
+        --   extmark_ns,
+        --   start_row,
+        --   start_col,
+        --   opts
+        -- )
       end
     end)
   end
