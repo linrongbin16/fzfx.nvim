@@ -99,6 +99,7 @@ M._make_center_opts = function(
   buffer_previewer_opts = vim.deepcopy(buffer_previewer_opts)
 
   win_opts.relative = win_opts.relative or "editor"
+  assert(win_opts.relative == "editor" or win_opts.relative == "win")
 
   local layout = popup_helpers.make_center_layout(
     relative_winnr,
