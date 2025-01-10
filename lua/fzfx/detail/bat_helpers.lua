@@ -503,29 +503,48 @@ M._make_renderers = function()
     -- markup }
   }
 
+  local builtin_syntax_filenames = vim.fn.glob(vim.env.VIMRUNTIME .. "/syntax/*")
+  builtin_syntax_filenames =
+    str.split(builtin_syntax_filenames, "\n", { plain = true, trimempty = true })
+  for _, syntax_file in ipairs(builtin_syntax_filenames) do
+    local normalized = path.normalize(syntax_file, { double_backslash = true, expand = true })
+    local syntax = vim.fn.fnamemodify(normalized, ":t")
+    local lang = vim.fn.fnamemodify(syntax, ":r")
+    log.debug(string.format("syntax lang:%s", lang))
+    table.insert(
+      SCOPE_RENDERERS,
+      _BatThemeScopeRenderer:new({ lang .. "Structure" }, { "keyword.declaration.struct." .. lang })
+    )
+    table.insert(
+      SCOPE_RENDERERS,
+      _BatThemeScopeRenderer:new(
+        { lang .. "Keyword" },
+        { "storage.modifier." .. lang, "keyword.declaration." .. lang }
+      )
+    )
+    table.insert(
+      SCOPE_RENDERERS,
+      _BatThemeScopeRenderer:new({ lang .. "Identifier" }, { "entity.name.struct." .. lang })
+    )
+  end
+
   return {
     globals = GLOBAL_RENDERERS,
     scopes = SCOPE_RENDERERS,
   }
 end
 
--- TextMate Theme (the `tmTheme` file) renderer.
---
---- @class fzfx._BatThemeRenderer
---- @field template string
---- @field globals fzfx._BatThemeGlobalRenderer[]
---- @field scopes fzfx._BatThemeScopeRenderer[]
-local _BatThemeRenderer = {}
-
---- @return fzfx._BatThemeRenderer
-function _BatThemeRenderer:new()
+-- Render a TextMate theme file (.tmTheme) based on current vim's colorscheme highlighting groups.
+--- @param theme_name string
+--- @return {name:string,payload:string}
+local function _do_rendering(theme_name)
   -- There're 3 sections:
   --
   -- 1. {NAME}
   -- 2. {GLOBAL}
   -- 3. {SCOPE}
 
-  local template = [[
+  local payload = [[
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
@@ -560,28 +579,12 @@ function _BatThemeRenderer:new()
 </plist>
 ]]
 
-  local renderers = M._make_renderers()
-
-  local o = {
-    template = template,
-    globals = renderers.globals,
-    scopes = renderers.scopes,
-  }
-  setmetatable(o, self)
-  self.__index = self
-  return o
-end
-
--- Render a TextMate theme file (.tmTheme) based on current vim's colorscheme highlighting groups.
---- @param theme_name string
---- @return {name:string,payload:string}
-function _BatThemeRenderer:render(theme_name)
-  local payload = self.template
-
   payload = str.replace(payload, "{NAME}", theme_name)
 
+  local renderers = M._make_renderers()
+
   local globals = {}
-  for _, r in ipairs(self.globals) do
+  for _, r in ipairs(renderers.globals) do
     local result = r:render()
     if type(result) == "table" then
       for _, l in ipairs(result) do
@@ -590,7 +593,7 @@ function _BatThemeRenderer:render(theme_name)
     end
   end
   local scopes = {}
-  for _, r in ipairs(self.scopes) do
+  for _, r in ipairs(renderers.scopes) do
     local result = r:render()
     if type(result) == "table" then
       for _, l in ipairs(result) do
@@ -607,10 +610,6 @@ function _BatThemeRenderer:render(theme_name)
     payload = payload,
   }
 end
-
-M._BatThemeRenderer = _BatThemeRenderer
-
-M._BatThemeRendererInstance = nil
 
 local building_bat_theme = false
 
@@ -636,8 +635,7 @@ M._build_theme = function(colorname)
       .. vim.inspect(colorname)
   )
 
-  M._BatThemeRendererInstance = _BatThemeRenderer:new()
-  local rendered_result = M._BatThemeRendererInstance:render(theme_name)
+  local rendered_result = _do_rendering(theme_name)
   log.ensure(
     tbl.tbl_not_empty(rendered_result),
     "|_build_theme| rendered result is empty, color name:"
