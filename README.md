@@ -132,10 +132,10 @@ Windows actually already provide some builtin commands (`find.exe`, `bash.exe`) 
 
 ```lua
 require("lazy").setup({
-  -- optional for icons
+  -- Optional for icons.
   { "nvim-tree/nvim-web-devicons" },
 
-  -- optional for the 'fzf' command
+  -- Optional for 'fzf' command.
   {
     "junegunn/fzf",
     build = function()
@@ -145,6 +145,8 @@ require("lazy").setup({
 
   {
     "linrongbin16/fzfx.nvim",
+    -- Optional to avoid break changes between major versions.
+    version = "v7.*",
     dependencies = { "nvim-tree/nvim-web-devicons", 'junegunn/fzf' },
     config = function()
       require("fzfx").setup()
@@ -160,10 +162,10 @@ require("lazy").setup({
 
 ```lua
 return require("packer").startup(function(use)
-  -- optional for icons
+  -- Optional for icons.
   use({ "nvim-tree/nvim-web-devicons" })
 
-  -- optional for the 'fzf' command
+  -- Optional for 'fzf' command.
   use({
     "junegunn/fzf",
     run = function()
@@ -173,6 +175,8 @@ return require("packer").startup(function(use)
 
   use({
     "linrongbin16/fzfx.nvim",
+    -- Optional to avoid break changes between major versions.
+    tag = "v7.1.2",
     config = function()
       require("fzfx").setup()
     end,
@@ -188,14 +192,14 @@ end)
 ```vim
 call plug#begin()
 
-" optional for icons
+" Optional for icons.
 Plug 'nvim-tree/nvim-web-devicons'
 
-" optional for the 'fzf' command
+" Optional for 'fzf' command.
 Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 
-" specify version to avoid break changes
-Plug 'linrongbin16/fzfx.nvim'
+" Optional to avoid break changes between major versions.
+Plug 'linrongbin16/fzfx.nvim', { 'tag': 'v7.1.2' }
 
 call plug#end()
 
