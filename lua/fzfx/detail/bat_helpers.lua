@@ -316,10 +316,7 @@ M._make_renderers = function()
     ),
     _BatThemeScopeRenderer:new({ "htmlArg" }, "entity.other.attribute-name.html"),
     _BatThemeScopeRenderer:new({ "markdownLink" }, "markup.underline.link"),
-    _BatThemeScopeRenderer:new(
-      { "markdownLinkText" },
-      "meta.link.inline.link.description.markdown"
-    ),
+    _BatThemeScopeRenderer:new({ "markdownLinkText" }, "meta.link.inline.description.markdown"),
     _BatThemeScopeRenderer:new(
       { "markdownLinkTextDelimiter" },
       { "puncuation.definition.link.begin.markdown", "puncuation.definition.link.end.markdown" }
@@ -330,8 +327,6 @@ M._make_renderers = function()
     ),
     _BatThemeScopeRenderer:new({ "markdownBold" }, "markup.bold"),
     _BatThemeScopeRenderer:new({ "markdownItalic" }, "markup.italic"),
-    _BatThemeScopeRenderer:new({ "@markup.list" }, "markup.list"),
-    _BatThemeScopeRenderer:new({ "@markup.underline" }, "markup.underline"),
     _BatThemeScopeRenderer:new({ "markdownHeadingDelimiter" }, {
       "puncuation.definition.heading.begin.markdown",
       "puncuation.definition.heading.end.markdown",
