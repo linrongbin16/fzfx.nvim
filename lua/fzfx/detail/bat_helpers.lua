@@ -280,9 +280,9 @@ M._make_renderers = function()
     -- constant }
 
     -- entity {
-    _BatThemeScopeRenderer:new({ "@constant" }, "entity.name.constant"),
+    _BatThemeScopeRenderer:new({ "@constant", "Constant" }, "entity.name.constant"),
     _BatThemeScopeRenderer:new({ "@function.call", "Function" }, { "variable.function" }),
-    _BatThemeScopeRenderer:new({ "@function.macro", "PreProc" }, { "support.macro" }),
+    _BatThemeScopeRenderer:new({ "@function.macro" }, { "support.macro" }),
     _BatThemeScopeRenderer:new({ "@type", "Type" }, { "storage.type", "support.type" }),
     _BatThemeScopeRenderer:new({ "Identifier" }, { "entity.name.module" }),
     -- _BatThemeScopeRenderer:new({ "@label", "Label" }, "entity.name.label"),
