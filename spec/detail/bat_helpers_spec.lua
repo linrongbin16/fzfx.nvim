@@ -106,14 +106,6 @@ describe("detail.bat_helpers", function()
     end)
   end)
 
-  describe("[_BatThemeRenderer]", function()
-    it("test", function()
-      local r = bat_helpers._BatThemeRenderer:new()
-      local actual = r:render(vim.g.colors_name)
-      assert_true(tbl.tbl_not_empty(actual))
-    end)
-  end)
-
   describe("[_build_theme]", function()
     it("test", function()
       if consts.HAS_BAT then

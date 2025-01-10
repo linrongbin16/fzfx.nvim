@@ -400,7 +400,8 @@ M._make_renderers = function()
     -- keyword }
 
     -- meta {
-    _BatThemeScopeRenderer:new({ "@lsp.type.namespace", "@module" }, "meta.path"),
+    -- _BatThemeScopeRenderer:new({ "@lsp.type.namespace", "@module" }, "meta.path"),
+    _BatThemeScopeRenderer:new({ "@module" }, { "meta.path", "meta.module" }),
     -- meta }
 
     -- markup {
