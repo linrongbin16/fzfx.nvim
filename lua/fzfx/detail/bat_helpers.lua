@@ -319,7 +319,10 @@ M._make_renderers = function()
       { "entity.name.tag.block.any.html", "entity.name.tag.inline.any.html" }
     ),
     _BatThemeScopeRenderer:new({ "htmlArg" }, "entity.other.attribute-name.html"),
-    _BatThemeScopeRenderer:new({ "markdownLink" }, "markup.underline.link"),
+    _BatThemeScopeRenderer:new(
+      { "@markup.link.markdown_inline", "markdownLink" },
+      "markup.underline.link.markdown"
+    ),
     _BatThemeScopeRenderer:new(
       { "@markup.link.label.markdown_inline", "markdownLinkText" },
       "meta.link.inline.description.markdown"
