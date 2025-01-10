@@ -141,9 +141,9 @@ end
 --- @return boolean
 local function _is_treesitter_hl(hl)
   local result = str.not_empty(hl) and str.startswith(hl, "@") and not str.startswith(hl, "@lsp")
-  log.debug(
-    string.format("is_treesitter_hl - hl:%s,result:%s", vim.inspect(hl), vim.inspect(result))
-  )
+  -- log.debug(
+  --   string.format("is_treesitter_hl - hl:%s,result:%s", vim.inspect(hl), vim.inspect(result))
+  -- )
   return result
 end
 
@@ -161,38 +161,38 @@ function _BatThemeScopeRenderer:new(hls, scope)
       table.insert(new_hls, hl)
     end
   end
-  log.debug(
-    string.format(
-      "BatThemeScopeRenderer:new-0 - ts_exist:%s,(old)hls:%s,new_hls:%s",
-      vim.inspect(M._nvim_treesitter_exists),
-      vim.inspect(hls),
-      vim.inspect(new_hls)
-    )
-  )
+  -- log.debug(
+  --   string.format(
+  --     "BatThemeScopeRenderer:new-0 - ts_exist:%s,(old)hls:%s,new_hls:%s",
+  --     vim.inspect(M._nvim_treesitter_exists),
+  --     vim.inspect(hls),
+  --     vim.inspect(new_hls)
+  --   )
+  -- )
   hls = new_hls
 
   local value
   for _, hl in ipairs(hls) do
     local ok, hl_codes = pcall(color_hl.get_hl, hl)
-    log.debug(
-      string.format(
-        "BatThemeScopeRenderer:new-1 - hl:%s,hl_codes:%s",
-        vim.inspect(hl),
-        vim.inspect(hl_codes)
-      )
-    )
+    -- log.debug(
+    --   string.format(
+    --     "BatThemeScopeRenderer:new-1 - hl:%s,hl_codes:%s",
+    --     vim.inspect(hl),
+    --     vim.inspect(hl_codes)
+    --   )
+    -- )
     if ok and tbl.tbl_not_empty(hl_codes) then
       local scope_value = M._make_scope_value(hl, scope, hl_codes)
       if scope_value then
         value = scope_value
-        log.debug(
-          string.format(
-            "BatThemeScopeRenderer:new-2 - hl:%s,hl_codes:%s,value:%s",
-            vim.inspect(hl),
-            vim.inspect(hl_codes),
-            vim.inspect(value)
-          )
-        )
+        -- log.debug(
+        --   string.format(
+        --     "BatThemeScopeRenderer:new-2 - hl:%s,hl_codes:%s,value:%s",
+        --     vim.inspect(hl),
+        --     vim.inspect(hl_codes),
+        --     vim.inspect(value)
+        --   )
+        -- )
         break
       end
     end
@@ -202,9 +202,9 @@ function _BatThemeScopeRenderer:new(hls, scope)
     scope = scope,
     value = value,
   }
-  log.debug(
-    string.format("BatThemeScopeRenderer:new-3 - hls:%s,o:%s", vim.inspect(hls), vim.inspect(o))
-  )
+  -- log.debug(
+  --   string.format("BatThemeScopeRenderer:new-3 - hls:%s,o:%s", vim.inspect(hls), vim.inspect(o))
+  -- )
 
   setmetatable(o, self)
   self.__index = self
@@ -287,6 +287,8 @@ M._make_renderers = function()
     _BatThemeGlobalRenderer:new("Normal", "background", "bg"),
     _BatThemeGlobalRenderer:new("Normal", "foreground", "fg"),
     _BatThemeGlobalRenderer:new("NonText", "invisibles", "fg"),
+    -- _BatThemeGlobalRenderer:new("LineNr", "gutter", "fg"),
+    -- _BatThemeGlobalRenderer:new("CursorLineNr", "gutterForeground", "fg"),
     _BatThemeGlobalRenderer:new({ "Visual" }, "lineHighlight", "bg"),
     _BatThemeGlobalRenderer:new({
       "GitSignsAdd",
@@ -316,14 +318,14 @@ M._make_renderers = function()
   -- Scope theme
   local SCOPE_RENDERERS = {
     -- comment {
-    _BatThemeScopeRenderer:new({ "@comment", "Comment" }, "comment"),
+    _BatThemeScopeRenderer:new({ "@lsp.type.comment", "@comment", "Comment" }, "comment"),
     -- comment }
 
     -- constant {
     _BatThemeScopeRenderer:new({ "@constant", "Constant" }, "constant"),
     _BatThemeScopeRenderer:new({ "@number", "Number" }, "constant.numeric"),
     _BatThemeScopeRenderer:new({ "@number.float", "Float" }, "constant.numeric.float"),
-    _BatThemeScopeRenderer:new({ "@boolean", "Boolean" }, "constant.language"),
+    _BatThemeScopeRenderer:new({ "@constant.builtin", "Boolean" }, "constant.language"),
     _BatThemeScopeRenderer:new(
       { "@character", "Character" },
       { "constant.character", "character" }
@@ -337,19 +339,48 @@ M._make_renderers = function()
     -- constant }
 
     -- entity {
-    _BatThemeScopeRenderer:new({ "@constant", "Constant" }, "entity.name.constant"),
-    _BatThemeScopeRenderer:new({ "@function.call", "Function" }, { "variable.function" }),
-    _BatThemeScopeRenderer:new({ "@function.macro" }, { "support.macro" }),
-    _BatThemeScopeRenderer:new({ "@type", "Type" }, { "storage.type", "support.type" }),
-    -- _BatThemeScopeRenderer:new({ "Identifier" }, { "entity.name.module" }),
-    -- _BatThemeScopeRenderer:new({ "@label", "Label" }, "entity.name.label"),
+    _BatThemeScopeRenderer:new(
+      { "@lsp.typemod.static.declaration", "@constant", "Constant" },
+      "entity.name.constant"
+    ),
+    _BatThemeScopeRenderer:new(
+      { "@lsp.type.method", "@lsp.type.function", "@function.call", "Function" },
+      { "variable.function" }
+    ),
+    _BatThemeScopeRenderer:new({ "@lsp.type.method" }, { "entity.name.function" }),
+    _BatThemeScopeRenderer:new({ "@lsp.type.macro", "@function.macro" }, { "support.macro" }),
+    _BatThemeScopeRenderer:new(
+      { "@lsp.typemod.function.defaultLibrary", "@function.builtin" },
+      { "support.function.builtin" }
+    ),
+    _BatThemeScopeRenderer:new(
+      { "@lsp.type.struct", "@type", "Type" },
+      { "storage.type", "support.type" }
+    ),
+    _BatThemeScopeRenderer:new(
+      { "@lsp.typemod.keyword.documentation" },
+      { "entity.name.tag.documentation" }
+    ),
+    _BatThemeScopeRenderer:new({ "@lsp.type.property" }, { "meta.property" }),
     -- entity }
 
     -- variable {
     _BatThemeScopeRenderer:new({ "@variable" }, "variable.other"),
-    _BatThemeScopeRenderer:new({ "@variable.member" }, { "variable.other.member" }),
-    _BatThemeScopeRenderer:new({ "@variable.parameter" }, { "variable.parameter" }),
-    -- _BatThemeScopeRenderer:new({ "@variable.builtin" }, { "variable.language" }),
+    _BatThemeScopeRenderer:new(
+      { "@lsp.type.property", "@variable.member" },
+      { "variable.other.member" }
+    ),
+    _BatThemeScopeRenderer:new(
+      { "@lsp.type.parameter", "@variable.parameter" },
+      { "variable.parameter" }
+    ),
+    _BatThemeScopeRenderer:new({ "@variable.builtin" }, { "variable.language" }),
+    _BatThemeScopeRenderer:new(
+      { "@lsp.typemod.variable.defaultLibrary", "@module.builtin" },
+      { "support.constant.builtin" }
+    ),
+    _BatThemeScopeRenderer:new({ "@lsp.type.property", "@property" }, { "string.unquoted.key" }),
+    _BatThemeScopeRenderer:new({ "@lsp.type.decorator" }, { "variable.annotation" }),
     -- variable }
 
     -- Puncuation {
@@ -358,9 +389,8 @@ M._make_renderers = function()
     -- Puncuation }
 
     -- keyword {
-    _BatThemeScopeRenderer:new({ "@keyword", "Keyword" }, "keyword"),
-    _BatThemeScopeRenderer:new({ "@keyword", "StorageClass" }, "keyword.declaration.variable"),
-    _BatThemeScopeRenderer:new({ "@keyword.modifier", "StorageClass" }, "storage.modifier"),
+    _BatThemeScopeRenderer:new({ "@lsp.type.keyword", "@keyword", "Keyword" }, "keyword"),
+    _BatThemeScopeRenderer:new({ "@keyword.modifier" }, "storage.modifier"),
     _BatThemeScopeRenderer:new({ "@keyword.import" }, "keyword.declaration.import"),
     _BatThemeScopeRenderer:new(
       { "@operator", "Operator" },
@@ -370,7 +400,8 @@ M._make_renderers = function()
     -- keyword }
 
     -- meta {
-    _BatThemeScopeRenderer:new({ "@module" }, "meta.path"),
+    -- _BatThemeScopeRenderer:new({ "@lsp.type.namespace", "@module" }, "meta.path"),
+    _BatThemeScopeRenderer:new({ "@module" }, { "meta.path", "meta.module" }),
     -- meta }
 
     -- markup {
@@ -393,10 +424,15 @@ M._make_renderers = function()
       { "@markup.link.label", "markdownLinkText" },
       "meta.link.inline.description.markdown"
     ),
+    -- _BatThemeScopeRenderer:new({ "markdownLinkText" }, "meta.link.inline.description.markdown"),
     _BatThemeScopeRenderer:new(
       { "@markup.link", "markdownLinkTextDelimiter" },
       { "puncuation.definition.link.begin.markdown", "puncuation.definition.link.end.markdown" }
     ),
+    -- _BatThemeScopeRenderer:new(
+    --   { "markdownLinkTextDelimiter" },
+    --   { "puncuation.definition.link.begin.markdown", "puncuation.definition.link.end.markdown" }
+    -- ),
     _BatThemeScopeRenderer:new(
       { "markdownBlockquote" },
       { "puncuation.definition.blockquote.markdown" }
@@ -467,29 +503,45 @@ M._make_renderers = function()
     -- markup }
   }
 
+  -- local builtin_syntax_filenames = vim.fn.glob(vim.env.VIMRUNTIME .. "/syntax/*")
+  -- builtin_syntax_filenames =
+  --   str.split(builtin_syntax_filenames, "\n", { plain = true, trimempty = true })
+  -- for _, syntax_file in ipairs(builtin_syntax_filenames) do
+  --   local normalized = path.normalize(syntax_file, { double_backslash = true, expand = true })
+  --   local syntax = vim.fn.fnamemodify(normalized, ":t")
+  --   local lang = vim.fn.fnamemodify(syntax, ":r")
+  --   log.debug(string.format("syntax lang:%s", lang))
+  --   table.insert(
+  --     SCOPE_RENDERERS,
+  --     _BatThemeScopeRenderer:new({ lang .. "Structure" }, { "keyword.declaration.struct." .. lang })
+  --   )
+  --   table.insert(
+  --     SCOPE_RENDERERS,
+  --     _BatThemeScopeRenderer:new({ lang .. "Keyword" }, { "keyword.declaration.module." .. lang })
+  --   )
+  --   table.insert(
+  --     SCOPE_RENDERERS,
+  --     _BatThemeScopeRenderer:new({ lang .. "Identifier" }, { "entity.name.struct." .. lang })
+  --   )
+  -- end
+
   return {
     globals = GLOBAL_RENDERERS,
     scopes = SCOPE_RENDERERS,
   }
 end
 
--- TextMate Theme (the `tmTheme` file) renderer.
---
---- @class fzfx._BatThemeRenderer
---- @field template string
---- @field globals fzfx._BatThemeGlobalRenderer[]
---- @field scopes fzfx._BatThemeScopeRenderer[]
-local _BatThemeRenderer = {}
-
---- @return fzfx._BatThemeRenderer
-function _BatThemeRenderer:new()
+-- Render a TextMate theme file (.tmTheme) based on current vim's colorscheme highlighting groups.
+--- @param theme_name string
+--- @return {name:string,payload:string}
+local function _do_rendering(theme_name)
   -- There're 3 sections:
   --
   -- 1. {NAME}
   -- 2. {GLOBAL}
   -- 3. {SCOPE}
 
-  local template = [[
+  local payload = [[
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
@@ -524,28 +576,12 @@ function _BatThemeRenderer:new()
 </plist>
 ]]
 
-  local renderers = M._make_renderers()
-
-  local o = {
-    template = template,
-    globals = renderers.globals,
-    scopes = renderers.scopes,
-  }
-  setmetatable(o, self)
-  self.__index = self
-  return o
-end
-
--- Render a TextMate theme file (.tmTheme) based on current vim's colorscheme highlighting groups.
---- @param theme_name string
---- @return {name:string,payload:string}
-function _BatThemeRenderer:render(theme_name)
-  local payload = self.template
-
   payload = str.replace(payload, "{NAME}", theme_name)
 
+  local renderers = M._make_renderers()
+
   local globals = {}
-  for _, r in ipairs(self.globals) do
+  for _, r in ipairs(renderers.globals) do
     local result = r:render()
     if type(result) == "table" then
       for _, l in ipairs(result) do
@@ -554,7 +590,7 @@ function _BatThemeRenderer:render(theme_name)
     end
   end
   local scopes = {}
-  for _, r in ipairs(self.scopes) do
+  for _, r in ipairs(renderers.scopes) do
     local result = r:render()
     if type(result) == "table" then
       for _, l in ipairs(result) do
@@ -571,10 +607,6 @@ function _BatThemeRenderer:render(theme_name)
     payload = payload,
   }
 end
-
-M._BatThemeRenderer = _BatThemeRenderer
-
-M._BatThemeRendererInstance = nil
 
 local building_bat_theme = false
 
@@ -600,8 +632,7 @@ M._build_theme = function(colorname)
       .. vim.inspect(colorname)
   )
 
-  M._BatThemeRendererInstance = _BatThemeRenderer:new()
-  local rendered_result = M._BatThemeRendererInstance:render(theme_name)
+  local rendered_result = _do_rendering(theme_name)
   log.ensure(
     tbl.tbl_not_empty(rendered_result),
     "|_build_theme| rendered result is empty, color name:"
@@ -670,6 +701,17 @@ M.setup = function()
           M._build_theme(colorname)
         end
       end)
+    end,
+  })
+
+  vim.api.nvim_create_autocmd({ "LspTokenUpdate" }, {
+    callback = function(event)
+      vim.defer_fn(function()
+        local colorname = bat_themes_helper.get_color_name()
+        if str.not_empty(colorname) then
+          M._build_theme(colorname)
+        end
+      end, 200)
     end,
   })
 end
