@@ -236,12 +236,14 @@ M._make_renderers = function()
       "GitGutterAdd",
       "DiffAdd",
       "DiffAdded",
+      "@diff.plus",
       "Added",
     }, "lineDiffAdded", "fg"),
     _BatThemeGlobalRenderer:new({
       "GitSignsChange",
       "GitGutterChange",
       "DiffChange",
+      "@diff.delta",
       "Changed",
     }, "lineDiffModified", "fg"),
     _BatThemeGlobalRenderer:new({
@@ -249,6 +251,7 @@ M._make_renderers = function()
       "GitGutterDelete",
       "DiffDelete",
       "DiffRemoved",
+      "@diff.minus",
       "Removed",
     }, "lineDiffDeleted", "fg"),
   }
@@ -256,7 +259,7 @@ M._make_renderers = function()
   -- Scope theme
   local SCOPE_RENDERERS = {
     -- comment {
-    _BatThemeScopeRenderer:new({ "Comment" }, "comment"),
+    _BatThemeScopeRenderer:new({ "@comment", "Comment" }, "comment"),
     -- comment }
 
     -- constant {
@@ -351,21 +354,24 @@ M._make_renderers = function()
       "GitGutterAdd",
       "DiffAdd",
       "DiffAdded",
+      "@diff.plus",
       "Added",
     }, { "markup.inserted" }),
+    _BatThemeScopeRenderer:new({
+      "GitSignsChange",
+      "GitGutterChange",
+      "DiffChange",
+      "@diff.delta",
+      "Changed",
+    }, { "markup.changed" }),
     _BatThemeScopeRenderer:new({
       "GitSignsDelete",
       "GitGutterDelete",
       "DiffDelete",
       "DiffRemoved",
+      "@diff.minus",
       "Removed",
     }, { "markup.deleted" }),
-    _BatThemeScopeRenderer:new({
-      "GitGutterChange",
-      "GitSignsChange",
-      "DiffChange",
-      "Changed",
-    }, { "markup.changed" }),
     -- markup }
   }
 
