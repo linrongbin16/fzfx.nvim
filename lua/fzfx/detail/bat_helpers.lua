@@ -389,7 +389,7 @@ M._make_renderers = function()
     -- Puncuation }
 
     -- keyword {
-    _BatThemeScopeRenderer:new({ "@keyword", "Keyword" }, "keyword"),
+    _BatThemeScopeRenderer:new({ "@lsp.type.keyword", "@keyword", "Keyword" }, "keyword"),
     _BatThemeScopeRenderer:new({ "@keyword.modifier" }, "storage.modifier"),
     _BatThemeScopeRenderer:new({ "@keyword.import" }, "keyword.declaration.import"),
     _BatThemeScopeRenderer:new(
