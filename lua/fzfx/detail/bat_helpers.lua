@@ -351,7 +351,10 @@ M._make_renderers = function()
       { "@lsp.typemod.function.defaultLibrary", "@function.builtin" },
       { "support.function.builtin" }
     ),
-    _BatThemeScopeRenderer:new({ "@type", "Type" }, { "storage.type", "support.type" }),
+    _BatThemeScopeRenderer:new(
+      { "@lsp.type.struct", "@type", "Type" },
+      { "storage.type", "support.type" }
+    ),
     _BatThemeScopeRenderer:new(
       { "@lsp.typemod.keyword.documentation" },
       { "entity.name.tag.documentation" }
