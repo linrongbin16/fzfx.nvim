@@ -316,7 +316,7 @@ M._make_renderers = function()
   -- Scope theme
   local SCOPE_RENDERERS = {
     -- comment {
-    _BatThemeScopeRenderer:new({ "@comment", "Comment" }, "comment"),
+    _BatThemeScopeRenderer:new({ "@lsp.type.comment", "@comment", "Comment" }, "comment"),
     -- comment }
 
     -- constant {
@@ -337,9 +337,16 @@ M._make_renderers = function()
     -- constant }
 
     -- entity {
-    _BatThemeScopeRenderer:new({ "@constant", "Constant" }, "entity.name.constant"),
-    _BatThemeScopeRenderer:new({ "@function.call", "Function" }, { "variable.function" }),
-    _BatThemeScopeRenderer:new({ "@function.macro" }, { "support.macro" }),
+    _BatThemeScopeRenderer:new(
+      { "@lsp.typemod.static.declaration", "@constant", "Constant" },
+      "entity.name.constant"
+    ),
+    _BatThemeScopeRenderer:new(
+      { "@lsp.type.method", "@lsp.type.function", "@function.call", "Function" },
+      { "variable.function" }
+    ),
+    _BatThemeScopeRenderer:new({ "@lsp.type.method" }, { "entity.name.function" }),
+    _BatThemeScopeRenderer:new({ "@lsp.type.macro", "@function.macro" }, { "support.macro" }),
     _BatThemeScopeRenderer:new(
       { "@lsp.typemod.function.defaultLibrary", "@function.builtin" },
       { "support.function.builtin" }
@@ -355,8 +362,15 @@ M._make_renderers = function()
     -- variable {
     _BatThemeScopeRenderer:new({ "@variable" }, "variable.other"),
     _BatThemeScopeRenderer:new({ "@variable.member" }, { "variable.other.member" }),
-    _BatThemeScopeRenderer:new({ "@variable.parameter" }, { "variable.parameter" }),
-    -- _BatThemeScopeRenderer:new({ "@variable.builtin" }, { "variable.language" }),
+    _BatThemeScopeRenderer:new(
+      { "@lsp.type.parameter", "@variable.parameter" },
+      { "variable.parameter" }
+    ),
+    _BatThemeScopeRenderer:new({ "@variable.builtin" }, { "variable.language" }),
+    _BatThemeScopeRenderer:new(
+      { "@lsp.typemod.variable.defaultLibrary", "@module.builtin" },
+      { "support.constant.builtin" }
+    ),
     -- variable }
 
     -- Puncuation {
@@ -377,7 +391,7 @@ M._make_renderers = function()
     -- keyword }
 
     -- meta {
-    _BatThemeScopeRenderer:new({ "@module" }, "meta.path"),
+    _BatThemeScopeRenderer:new({ "@lsp.type.namespace", "@module" }, "meta.path"),
     -- meta }
 
     -- markup {
