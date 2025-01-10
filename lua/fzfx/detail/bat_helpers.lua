@@ -141,9 +141,9 @@ end
 --- @return boolean
 local function _is_treesitter_hl(hl)
   local result = str.not_empty(hl) and str.startswith(hl, "@") and not str.startswith(hl, "@lsp")
-  log.debug(
-    string.format("is_treesitter_hl - hl:%s,result:%s", vim.inspect(hl), vim.inspect(result))
-  )
+  -- log.debug(
+  --   string.format("is_treesitter_hl - hl:%s,result:%s", vim.inspect(hl), vim.inspect(result))
+  -- )
   return result
 end
 
@@ -161,38 +161,38 @@ function _BatThemeScopeRenderer:new(hls, scope)
       table.insert(new_hls, hl)
     end
   end
-  log.debug(
-    string.format(
-      "BatThemeScopeRenderer:new-0 - ts_exist:%s,(old)hls:%s,new_hls:%s",
-      vim.inspect(M._nvim_treesitter_exists),
-      vim.inspect(hls),
-      vim.inspect(new_hls)
-    )
-  )
+  -- log.debug(
+  --   string.format(
+  --     "BatThemeScopeRenderer:new-0 - ts_exist:%s,(old)hls:%s,new_hls:%s",
+  --     vim.inspect(M._nvim_treesitter_exists),
+  --     vim.inspect(hls),
+  --     vim.inspect(new_hls)
+  --   )
+  -- )
   hls = new_hls
 
   local value
   for _, hl in ipairs(hls) do
     local ok, hl_codes = pcall(color_hl.get_hl, hl)
-    log.debug(
-      string.format(
-        "BatThemeScopeRenderer:new-1 - hl:%s,hl_codes:%s",
-        vim.inspect(hl),
-        vim.inspect(hl_codes)
-      )
-    )
+    -- log.debug(
+    --   string.format(
+    --     "BatThemeScopeRenderer:new-1 - hl:%s,hl_codes:%s",
+    --     vim.inspect(hl),
+    --     vim.inspect(hl_codes)
+    --   )
+    -- )
     if ok and tbl.tbl_not_empty(hl_codes) then
       local scope_value = M._make_scope_value(hl, scope, hl_codes)
       if scope_value then
         value = scope_value
-        log.debug(
-          string.format(
-            "BatThemeScopeRenderer:new-2 - hl:%s,hl_codes:%s,value:%s",
-            vim.inspect(hl),
-            vim.inspect(hl_codes),
-            vim.inspect(value)
-          )
-        )
+        -- log.debug(
+        --   string.format(
+        --     "BatThemeScopeRenderer:new-2 - hl:%s,hl_codes:%s,value:%s",
+        --     vim.inspect(hl),
+        --     vim.inspect(hl_codes),
+        --     vim.inspect(value)
+        --   )
+        -- )
         break
       end
     end
@@ -202,9 +202,9 @@ function _BatThemeScopeRenderer:new(hls, scope)
     scope = scope,
     value = value,
   }
-  log.debug(
-    string.format("BatThemeScopeRenderer:new-3 - hls:%s,o:%s", vim.inspect(hls), vim.inspect(o))
-  )
+  -- log.debug(
+  --   string.format("BatThemeScopeRenderer:new-3 - hls:%s,o:%s", vim.inspect(hls), vim.inspect(o))
+  -- )
 
   setmetatable(o, self)
   self.__index = self
