@@ -495,105 +495,20 @@ function BufferPopupWindow:preview_file(job_id, previewer_result, previewer_labe
     return
   end
 
-  -- log.debug(
-  --   string.format(
-  --     "|BufferPopupWindow:preview_file| previewer_result:%s, previewer_label_result:%s",
-  --     vim.inspect(previewer_result),
-  --     vim.inspect(previewer_label_result)
-  --   )
-  -- )
-  table.insert(self.preview_files_queue, {
-    job_id = job_id,
-    previewer_result = previewer_result,
-    previewer_label_result = previewer_label_result,
-  })
-
-  vim.defer_fn(function()
-    if #self.preview_files_queue == 0 then
-      -- log.debug(
-      --   "|BufferPopupWindow:preview_file| empty preview files queue:%s",
-      --   vim.inspect(self.preview_files_queue)
-      -- )
-      return
-    end
-
-    local last_job = self.preview_files_queue[#self.preview_files_queue]
-    self.preview_files_queue = {}
-
-    -- check if the last job
-    if not self:is_last_previewing_file_job_id(last_job.job_id) then
-      return
-    end
-
-    local function async_read_file_handler(contents)
-      if not self:is_last_previewing_file_job_id(last_job.job_id) then
-        return
+  vim.api.nvim_buf_call(self.previewer_bufnr, function()
+    vim.cmd.view(previewer_result.filename)
+  end)
+  if type(previewer_result.lineno) == 'number' and previewer_result.lineno > 0 then
+    vim.api.nvim_win_call(self.previewer_winnr, function()
+      if type(previewer_result.lineno) == 'number' and previewer_result.lineno > 0 then
+        local height = vim.api.nvim_win_get_height(self.previewer_winnr)
+        local topline = math.max(1, previewer_result.lineno - math.floor(height / 2))
+        vim.api.nvim_command(string.format([[call winrestview({'topline':%d})]], topline))
+        -- vim.api.nvim_win_set_cursor(self.previewer_winnr, { previewer_result.lineno, 0 })
+        -- vim.cmd.execute("normal! zz")
       end
-
-      -- log.debug(
-      --   string.format(
-      --     "|BufferPopupWindow:preview_file - asyncreadfile| contents:%s",
-      --     vim.inspect(contents)
-      --   )
-      -- )
-      -- log.debug(
-      --   string.format(
-      --     "|BufferPopupWindow:preview_file - asyncreadfile| contents length:%s",
-      --     vim.inspect(string.len(contents))
-      --   )
-      -- )
-      local lines = {}
-      if str.not_empty(contents) then
-        contents = contents:gsub("\r\n", "\n")
-        lines = str.split(contents, "\n")
-        if str.endswith(contents, "\n") and #lines > 0 and lines[#lines] == "" then
-          table.remove(lines, #lines)
-        end
-      end
-      -- log.debug(
-      --   string.format(
-      --     "|BufferPopupWindow:preview_file - asyncreadfile| lines:%s",
-      --     vim.inspect(lines)
-      --   )
-      -- )
-      -- log.debug(
-      --   string.format(
-      --     "|BufferPopupWindow:preview_file - asyncreadfile| lines count:%s",
-      --     vim.inspect(#lines)
-      --   )
-      -- )
-      table.insert(self.preview_file_contents_queue, {
-        contents = lines,
-        job_id = last_job.job_id,
-        previewer_result = last_job.previewer_result,
-        previewer_label_result = last_job.previewer_label_result,
-      })
-
-      -- show file contents by lines
-      vim.defer_fn(function()
-        local last_content = self.preview_file_contents_queue[#self.preview_file_contents_queue]
-        self.preview_file_contents_queue = {}
-        self._saved_previewing_file_content_job = last_content
-
-        if not self:is_last_previewing_file_job_id(last_content.job_id) then
-          return
-        end
-        if not self:previewer_is_valid() then
-          return
-        end
-        local view = self:_make_view(last_content)
-        self:preview_file_contents(last_content, view)
-      end, 10)
-    end
-
-    -- read file content
-    fileio.asyncreadfile(last_job.previewer_result.filename, async_read_file_handler, {
-      on_error = function()
-        -- When failed to open/read the file, simply treats it as an empty file with empty text contents.
-        async_read_file_handler("")
-      end,
-    })
-  end, 20)
+    end)
+  end
 end
 
 --- @alias fzfx.BufferPopupWindowPreviewFileContentJob {contents:string[],job_id:integer,previewer_result:fzfx.BufferPreviewerResult ,previewer_label_result:string?}
