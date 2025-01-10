@@ -35,7 +35,7 @@ local bat_themes_helper = require("fzfx.helper.bat_themes")
 local M = {}
 
 --- @type boolean?
-M._nvim_treesitter_exists = nil
+-- M._nvim_treesitter_exists = nil
 
 --- @param ind integer
 --- @param fmt string
@@ -153,23 +153,23 @@ end
 function _BatThemeScopeRenderer:new(hls, scope)
   assert(type(hls) == "table")
 
-  local new_hls = {}
-  for _, hl in ipairs(hls) do
-    -- If "nvim-treesitter" doesn't exist, and `hl` is a treesitter hl, skip it.
-    -- Otherwise, add it to `new_hls` list.
-    if not (not M._nvim_treesitter_exists and _is_treesitter_hl(hl)) then
-      table.insert(new_hls, hl)
-    end
-  end
-  -- log.debug(
-  --   string.format(
-  --     "BatThemeScopeRenderer:new-0 - ts_exist:%s,(old)hls:%s,new_hls:%s",
-  --     vim.inspect(M._nvim_treesitter_exists),
-  --     vim.inspect(hls),
-  --     vim.inspect(new_hls)
-  --   )
-  -- )
-  hls = new_hls
+  -- local new_hls = {}
+  -- for _, hl in ipairs(hls) do
+  --   -- If "nvim-treesitter" doesn't exist, and `hl` is a treesitter hl, skip it.
+  --   -- Otherwise, add it to `new_hls` list.
+  --   if not (not M._nvim_treesitter_exists and _is_treesitter_hl(hl)) then
+  --     table.insert(new_hls, hl)
+  --   end
+  -- end
+  -- -- log.debug(
+  -- --   string.format(
+  -- --     "BatThemeScopeRenderer:new-0 - ts_exist:%s,(old)hls:%s,new_hls:%s",
+  -- --     vim.inspect(M._nvim_treesitter_exists),
+  -- --     vim.inspect(hls),
+  -- --     vim.inspect(new_hls)
+  -- --   )
+  -- -- )
+  -- hls = new_hls
 
   local value
   for _, hl in ipairs(hls) do
@@ -275,18 +275,20 @@ M._BatThemeScopeRenderer = _BatThemeScopeRenderer
 --- @return {globals:fzfx._BatThemeGlobalRenderer[],scopes:fzfx._BatThemeScopeRenderer[]}
 M._make_renderers = function()
   -- Detect if "nvim-treesitter" is installed
-  local ok, nvim_ts = pcall(require, "nvim-treesitter")
-  if ok and nvim_ts then
-    M._nvim_treesitter_exists = true
-  else
-    M._nvim_treesitter_exists = false
-  end
+  -- local ok, nvim_ts = pcall(require, "nvim-treesitter")
+  -- if ok and nvim_ts then
+  --   M._nvim_treesitter_exists = true
+  -- else
+  --   M._nvim_treesitter_exists = false
+  -- end
 
   -- Global theme
   local GLOBAL_RENDERERS = {
     _BatThemeGlobalRenderer:new("Normal", "background", "bg"),
     _BatThemeGlobalRenderer:new("Normal", "foreground", "fg"),
     _BatThemeGlobalRenderer:new("NonText", "invisibles", "fg"),
+    -- _BatThemeGlobalRenderer:new("LineNr", "gutter", "fg"),
+    -- _BatThemeGlobalRenderer:new("CursorLineNr", "gutterForeground", "fg"),
     _BatThemeGlobalRenderer:new({ "Visual" }, "lineHighlight", "bg"),
     _BatThemeGlobalRenderer:new({
       "GitSignsAdd",
@@ -364,7 +366,10 @@ M._make_renderers = function()
 
     -- variable {
     _BatThemeScopeRenderer:new({ "@variable" }, "variable.other"),
-    _BatThemeScopeRenderer:new({ "@variable.member" }, { "variable.other.member" }),
+    _BatThemeScopeRenderer:new(
+      { "@lsp.type.property", "@variable.member" },
+      { "variable.other.member" }
+    ),
     _BatThemeScopeRenderer:new(
       { "@lsp.type.parameter", "@variable.parameter" },
       { "variable.parameter" }
@@ -374,6 +379,8 @@ M._make_renderers = function()
       { "@lsp.typemod.variable.defaultLibrary", "@module.builtin" },
       { "support.constant.builtin" }
     ),
+    _BatThemeScopeRenderer:new({ "@lsp.type.property", "@property" }, { "string.unquoted.key" }),
+    _BatThemeScopeRenderer:new({ "@lsp.type.decorator" }, { "variable.annotation" }),
     -- variable }
 
     -- Puncuation {
@@ -408,17 +415,22 @@ M._make_renderers = function()
       { "entity.name.tag.block.any.html", "entity.name.tag.inline.any.html" }
     ),
     _BatThemeScopeRenderer:new({ "htmlArg" }, "entity.other.attribute-name.html"),
+    -- _BatThemeScopeRenderer:new(
+    --   { "@markup.link", "markdownUrl", "markdownLink" },
+    --   "markup.underline.link.markdown"
+    -- ),
+    _BatThemeScopeRenderer:new({ "markdownUrl", "markdownLink" }, "markup.underline.link.markdown"),
+    -- _BatThemeScopeRenderer:new(
+    --   { "@markup.link.label", "markdownLinkText" },
+    --   "meta.link.inline.description.markdown"
+    -- ),
+    _BatThemeScopeRenderer:new({ "markdownLinkText" }, "meta.link.inline.description.markdown"),
+    -- _BatThemeScopeRenderer:new(
+    --   { "@markup.link", "markdownLinkTextDelimiter" },
+    --   { "puncuation.definition.link.begin.markdown", "puncuation.definition.link.end.markdown" }
+    -- ),
     _BatThemeScopeRenderer:new(
-      { "@markup.link", "markdownUrl", "markdownLink" },
-      "markup.underline.link.markdown"
-    ),
-    -- _BatThemeScopeRenderer:new({ "markdownUrl", "markdownLink" }, "markup.underline.link.markdown"),
-    _BatThemeScopeRenderer:new(
-      { "@markup.link.label", "markdownLinkText" },
-      "meta.link.inline.description.markdown"
-    ),
-    _BatThemeScopeRenderer:new(
-      { "@markup.link", "markdownLinkTextDelimiter" },
+      { "markdownLinkTextDelimiter" },
       { "puncuation.definition.link.begin.markdown", "puncuation.definition.link.end.markdown" }
     ),
     _BatThemeScopeRenderer:new(
@@ -699,12 +711,12 @@ M.setup = function()
 
   vim.api.nvim_create_autocmd({ "LspTokenUpdate" }, {
     callback = function(event)
-      vim.schedule(function()
+      vim.defer_fn(function()
         local colorname = bat_themes_helper.get_color_name()
         if str.not_empty(colorname) then
           M._build_theme(colorname)
         end
-      end)
+      end, 200)
     end,
   })
 end
