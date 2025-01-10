@@ -503,30 +503,30 @@ M._make_renderers = function()
     -- markup }
   }
 
-  local builtin_syntax_filenames = vim.fn.glob(vim.env.VIMRUNTIME .. "/syntax/*")
-  builtin_syntax_filenames =
-    str.split(builtin_syntax_filenames, "\n", { plain = true, trimempty = true })
-  for _, syntax_file in ipairs(builtin_syntax_filenames) do
-    local normalized = path.normalize(syntax_file, { double_backslash = true, expand = true })
-    local syntax = vim.fn.fnamemodify(normalized, ":t")
-    local lang = vim.fn.fnamemodify(syntax, ":r")
-    log.debug(string.format("syntax lang:%s", lang))
-    table.insert(
-      SCOPE_RENDERERS,
-      _BatThemeScopeRenderer:new({ lang .. "Structure" }, { "keyword.declaration.struct." .. lang })
-    )
-    table.insert(
-      SCOPE_RENDERERS,
-      _BatThemeScopeRenderer:new(
-        { lang .. "Keyword" },
-        { "storage.modifier." .. lang, "keyword.declaration." .. lang }
-      )
-    )
-    table.insert(
-      SCOPE_RENDERERS,
-      _BatThemeScopeRenderer:new({ lang .. "Identifier" }, { "entity.name.struct." .. lang })
-    )
-  end
+  -- local builtin_syntax_filenames = vim.fn.glob(vim.env.VIMRUNTIME .. "/syntax/*")
+  -- builtin_syntax_filenames =
+  --   str.split(builtin_syntax_filenames, "\n", { plain = true, trimempty = true })
+  -- for _, syntax_file in ipairs(builtin_syntax_filenames) do
+  --   local normalized = path.normalize(syntax_file, { double_backslash = true, expand = true })
+  --   local syntax = vim.fn.fnamemodify(normalized, ":t")
+  --   local lang = vim.fn.fnamemodify(syntax, ":r")
+  --   log.debug(string.format("syntax lang:%s", lang))
+  --   table.insert(
+  --     SCOPE_RENDERERS,
+  --     _BatThemeScopeRenderer:new({ lang .. "Structure" }, { "keyword.declaration.struct." .. lang })
+  --   )
+  --   table.insert(
+  --     SCOPE_RENDERERS,
+  --     _BatThemeScopeRenderer:new(
+  --       { lang .. "Keyword" },
+  --       { "storage.modifier." .. lang, "keyword.declaration." .. lang }
+  --     )
+  --   )
+  --   table.insert(
+  --     SCOPE_RENDERERS,
+  --     _BatThemeScopeRenderer:new({ lang .. "Identifier" }, { "entity.name.struct." .. lang })
+  --   )
+  -- end
 
   return {
     globals = GLOBAL_RENDERERS,
