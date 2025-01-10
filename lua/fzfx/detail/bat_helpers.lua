@@ -263,7 +263,7 @@ M._make_renderers = function()
     -- comment }
 
     -- constant {
-    _BatThemeScopeRenderer:new({ "Constant" }, "constant"),
+    _BatThemeScopeRenderer:new({ "@constant", "Constant" }, "constant"),
     _BatThemeScopeRenderer:new({ "@number", "Number" }, "constant.numeric"),
     _BatThemeScopeRenderer:new({ "@number.float", "Float" }, "constant.numeric.float"),
     _BatThemeScopeRenderer:new({ "@boolean", "Boolean" }, "constant.language"),
@@ -271,7 +271,7 @@ M._make_renderers = function()
       { "@character", "Character" },
       { "constant.character", "character" }
     ),
-    _BatThemeScopeRenderer:new({ "String" }, { "string", "string.quoted" }),
+    _BatThemeScopeRenderer:new({ "@string", "String" }, { "string", "string.quoted" }),
     _BatThemeScopeRenderer:new({ "@string.regexp" }, { "string.regexp" }),
     _BatThemeScopeRenderer:new(
       { "Special" },
@@ -280,10 +280,10 @@ M._make_renderers = function()
     -- constant }
 
     -- entity {
-    _BatThemeScopeRenderer:new({ "Constant" }, "entity.name.constant"),
-    _BatThemeScopeRenderer:new({ "Function" }, { "variable.function" }),
-    _BatThemeScopeRenderer:new({ "PreProc" }, { "support.macro" }),
-    _BatThemeScopeRenderer:new({ "Type" }, { "storage.type", "support.type" }),
+    _BatThemeScopeRenderer:new({ "@constant" }, "entity.name.constant"),
+    _BatThemeScopeRenderer:new({ "@function.call", "Function" }, { "variable.function" }),
+    _BatThemeScopeRenderer:new({ "@function.macro", "PreProc" }, { "support.macro" }),
+    _BatThemeScopeRenderer:new({ "@type", "Type" }, { "storage.type", "support.type" }),
     _BatThemeScopeRenderer:new({ "Identifier" }, { "entity.name.module" }),
     -- _BatThemeScopeRenderer:new({ "@label", "Label" }, "entity.name.label"),
     -- entity }
@@ -302,9 +302,13 @@ M._make_renderers = function()
 
     -- keyword {
     _BatThemeScopeRenderer:new({ "Keyword" }, "keyword"),
-    _BatThemeScopeRenderer:new({ "StorageClass" }, "keyword.declaration.variable.static"),
+    _BatThemeScopeRenderer:new(
+      { "@keyword.modifier", "StorageClass" },
+      "keyword.declaration.variable.static"
+    ),
     _BatThemeScopeRenderer:new({ "StorageClass" }, "storage.modifier"),
-    _BatThemeScopeRenderer:new({ "Operator" }, "keyword.operator"),
+    _BatThemeScopeRenderer:new({ "@keyword.import" }, "keyword.declaration.import"),
+    _BatThemeScopeRenderer:new({ "@operator", "Operator" }, "keyword.operator"),
     _BatThemeScopeRenderer:new({ "Conditional" }, "keyword.control"),
     -- keyword }
 
