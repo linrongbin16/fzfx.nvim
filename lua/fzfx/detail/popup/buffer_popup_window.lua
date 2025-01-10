@@ -229,7 +229,6 @@ local function _set_provider_buf_opts(bufnr)
   vim.api.nvim_set_option_value("filetype", "fzf", { buf = bufnr })
 end
 
-
 --- @param winnr integer
 --- @param current_winnr integer
 local function _set_provider_win_opts(winnr, current_winnr)
