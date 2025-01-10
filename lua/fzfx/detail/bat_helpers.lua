@@ -323,7 +323,7 @@ M._make_renderers = function()
     _BatThemeScopeRenderer:new({ "@constant", "Constant" }, "constant"),
     _BatThemeScopeRenderer:new({ "@number", "Number" }, "constant.numeric"),
     _BatThemeScopeRenderer:new({ "@number.float", "Float" }, "constant.numeric.float"),
-    _BatThemeScopeRenderer:new({ "@boolean", "Boolean" }, "constant.language"),
+    _BatThemeScopeRenderer:new({ "@constant.builtin", "Boolean" }, "constant.language"),
     _BatThemeScopeRenderer:new(
       { "@character", "Character" },
       { "constant.character", "character" }
@@ -340,9 +340,16 @@ M._make_renderers = function()
     _BatThemeScopeRenderer:new({ "@constant", "Constant" }, "entity.name.constant"),
     _BatThemeScopeRenderer:new({ "@function.call", "Function" }, { "variable.function" }),
     _BatThemeScopeRenderer:new({ "@function.macro" }, { "support.macro" }),
+    _BatThemeScopeRenderer:new(
+      { "@lsp.typemod.function.defaultLibrary", "@function.builtin" },
+      { "support.function.builtin" }
+    ),
     _BatThemeScopeRenderer:new({ "@type", "Type" }, { "storage.type", "support.type" }),
-    -- _BatThemeScopeRenderer:new({ "Identifier" }, { "entity.name.module" }),
-    -- _BatThemeScopeRenderer:new({ "@label", "Label" }, "entity.name.label"),
+    _BatThemeScopeRenderer:new(
+      { "@lsp.typemod.keyword.documentation" },
+      { "entity.name.tag.documentation" }
+    ),
+    _BatThemeScopeRenderer:new({ "@lsp.type.property" }, { "meta.property" }),
     -- entity }
 
     -- variable {
