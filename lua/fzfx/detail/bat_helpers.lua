@@ -696,6 +696,17 @@ M.setup = function()
       end)
     end,
   })
+
+  vim.api.nvim_create_autocmd({ "LspTokenUpdate" }, {
+    callback = function(event)
+      vim.schedule(function()
+        local colorname = bat_themes_helper.get_color_name()
+        if str.not_empty(colorname) then
+          M._build_theme(colorname)
+        end
+      end)
+    end,
+  })
 end
 
 return M
