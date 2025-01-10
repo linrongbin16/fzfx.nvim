@@ -336,6 +336,7 @@ function BufferPopupWindow:close()
   --   )
   -- )
 
+  -- Clean up windows.
   if type(self.provider_winnr) == "number" and vim.api.nvim_win_is_valid(self.provider_winnr) then
     vim.api.nvim_win_close(self.provider_winnr, true)
     self.provider_winnr = nil
@@ -345,6 +346,7 @@ function BufferPopupWindow:close()
     self.previewer_winnr = nil
   end
 
+  -- Clean up buffers.
   if type(self.provider_bufnr) == 'number' and vim.api.nvim_buf_is_valid(self.provider_bufnr) then
     vim.api.nvim_buf_delete(self.provider_bufnr)
     self.provider_bufnr = nil
@@ -353,6 +355,8 @@ function BufferPopupWindow:close()
     vim.api.nvim_buf_delete(self.previewer_bufnr)
     self.previewer_bufnr = nil
   end
+
+  -- Restore window options.
   self.window_opts_context:restore()
 end
 
