@@ -390,7 +390,6 @@ M._make_renderers = function()
 
     -- keyword {
     _BatThemeScopeRenderer:new({ "@keyword", "Keyword" }, "keyword"),
-    _BatThemeScopeRenderer:new({ "@keyword", "StorageClass" }, "keyword.declaration.variable"),
     _BatThemeScopeRenderer:new({ "@keyword.modifier" }, "storage.modifier"),
     _BatThemeScopeRenderer:new({ "@keyword.import" }, "keyword.declaration.import"),
     _BatThemeScopeRenderer:new(
@@ -517,10 +516,7 @@ M._make_renderers = function()
   --   )
   --   table.insert(
   --     SCOPE_RENDERERS,
-  --     _BatThemeScopeRenderer:new(
-  --       { lang .. "Keyword" },
-  --       { "storage.modifier." .. lang, "keyword.declaration." .. lang }
-  --     )
+  --     _BatThemeScopeRenderer:new({ lang .. "Keyword" }, { "keyword.declaration.module." .. lang })
   --   )
   --   table.insert(
   --     SCOPE_RENDERERS,
