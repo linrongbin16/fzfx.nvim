@@ -1,5 +1,19 @@
 # Changelog
 
+## [7.2.0](https://github.com/linrongbin16/fzfx.nvim/compare/v7.1.2...v7.2.0) (2025-01-10)
+
+
+### Features
+
+* **bat:** more precisely bat theme generation with regex+treesitter ([#771](https://github.com/linrongbin16/fzfx.nvim/issues/771)) ([ea0d609](https://github.com/linrongbin16/fzfx.nvim/commit/ea0d6094b39c1670c0350dfe59f8668bb256df42))
+* **bat:** more precisely bat themes with LSP token ([#772](https://github.com/linrongbin16/fzfx.nvim/issues/772)) ([1ea2780](https://github.com/linrongbin16/fzfx.nvim/commit/1ea27805303948b1b81e05fe6a4b44c2a599ad9a))
+
+
+### Bug Fixes
+
+* **popup:** fix cursor-relative popup window layout ([#768](https://github.com/linrongbin16/fzfx.nvim/issues/768)) ([7122198](https://github.com/linrongbin16/fzfx.nvim/commit/712219837c7fff2e1a10fc7f4ee24a0918d9a334))
+* **tempfile:** clean up temp files inside the engine ([#765](https://github.com/linrongbin16/fzfx.nvim/issues/765)) ([506b49f](https://github.com/linrongbin16/fzfx.nvim/commit/506b49f83fec8d3ccc7c205c418e9332e4c9bb27))
+
 ## [7.1.2](https://github.com/linrongbin16/fzfx.nvim/compare/v7.1.1...v7.1.2) (2025-01-06)
 
 
