@@ -156,9 +156,8 @@ function _BatThemeScopeRenderer:new(hls, scope)
   local new_hls = {}
   for _, hl in ipairs(hls) do
     -- If "nvim-treesitter" doesn't exist, and `hl` is a treesitter hl, skip it.
-    if not M._nvim_treesitter_exists and _is_treesitter_hl(hl) then
-      -- Skip
-    else
+    -- Otherwise, add it to `new_hls` list.
+    if not (not M._nvim_treesitter_exists and _is_treesitter_hl(hl)) then
       table.insert(new_hls, hl)
     end
   end
