@@ -349,7 +349,7 @@ M._make_renderers = function()
     _BatThemeScopeRenderer:new({ "@variable" }, "variable.other"),
     _BatThemeScopeRenderer:new({ "@variable.member" }, { "variable.other.member" }),
     _BatThemeScopeRenderer:new({ "@variable.parameter" }, { "variable.parameter" }),
-    _BatThemeScopeRenderer:new({ "@variable.builtin" }, { "variable.language" }),
+    -- _BatThemeScopeRenderer:new({ "@variable.builtin" }, { "variable.language" }),
     -- variable }
 
     -- Puncuation {
@@ -362,7 +362,10 @@ M._make_renderers = function()
     _BatThemeScopeRenderer:new({ "@keyword", "StorageClass" }, "keyword.declaration.variable"),
     _BatThemeScopeRenderer:new({ "@keyword.modifier", "StorageClass" }, "storage.modifier"),
     _BatThemeScopeRenderer:new({ "@keyword.import" }, "keyword.declaration.import"),
-    _BatThemeScopeRenderer:new({ "@operator", "Operator" }, "keyword.operator"),
+    _BatThemeScopeRenderer:new(
+      { "@operator", "Operator" },
+      { "keyword.operator.assignment", "keyword.operator" }
+    ),
     _BatThemeScopeRenderer:new({ "@keyword.conditional", "Conditional" }, "keyword.control"),
     -- keyword }
 
