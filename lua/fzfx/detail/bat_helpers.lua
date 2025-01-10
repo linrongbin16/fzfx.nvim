@@ -143,10 +143,25 @@ function _BatThemeScopeRenderer:new(hls, scope)
   local value
   for _, hl in ipairs(hls) do
     local ok, hl_codes = pcall(color_hl.get_hl, hl)
+    -- log.debug(
+    --   string.format(
+    --     "BatThemeScopeRenderer:new-1 - hl:%s,hl_codes:%s",
+    --     vim.inspect(hl),
+    --     vim.inspect(hl_codes)
+    --   )
+    -- )
     if ok and tbl.tbl_not_empty(hl_codes) then
       local scope_value = M._make_scope_value(hl, scope, hl_codes)
       if scope_value then
         value = scope_value
+        -- log.debug(
+        --   string.format(
+        --     "BatThemeScopeRenderer:new-2 - hl:%s,hl_codes:%s,value:%s",
+        --     vim.inspect(hl),
+        --     vim.inspect(hl_codes),
+        --     vim.inspect(value)
+        --   )
+        -- )
         break
       end
     end
@@ -156,6 +171,9 @@ function _BatThemeScopeRenderer:new(hls, scope)
     scope = scope,
     value = value,
   }
+  -- log.debug(
+  --   string.format("BatThemeScopeRenderer:new-3 - hls:%s,o:%s", vim.inspect(hls), vim.inspect(o))
+  -- )
 
   setmetatable(o, self)
   self.__index = self
@@ -318,21 +336,23 @@ M._make_renderers = function()
       { "htmlTag" },
       { "puncuation.definition.tag.begin.html", "puncuation.definition.tag.end.html" }
     ),
+    _BatThemeScopeRenderer:new({ "htmlString" }, { "string.quoted.double.html" }),
     _BatThemeScopeRenderer:new(
       { "htmlTagName" },
       { "entity.name.tag.block.any.html", "entity.name.tag.inline.any.html" }
     ),
     _BatThemeScopeRenderer:new({ "htmlArg" }, "entity.other.attribute-name.html"),
     _BatThemeScopeRenderer:new(
-      { "@markup.link.markdown_inline", "markdownLink" },
+      { "@markup.link", "markdownUrl", "markdownLink" },
       "markup.underline.link.markdown"
     ),
+    -- _BatThemeScopeRenderer:new({ "markdownUrl", "markdownLink" }, "markup.underline.link.markdown"),
     _BatThemeScopeRenderer:new(
-      { "@markup.link.label.markdown_inline", "markdownLinkText" },
+      { "@markup.link.label", "markdownLinkText" },
       "meta.link.inline.description.markdown"
     ),
     _BatThemeScopeRenderer:new(
-      { "@markup.link.markdown_inline", "markdownLinkTextDelimiter" },
+      { "@markup.link", "markdownLinkTextDelimiter" },
       { "puncuation.definition.link.begin.markdown", "puncuation.definition.link.end.markdown" }
     ),
     _BatThemeScopeRenderer:new(
@@ -369,14 +389,12 @@ M._make_renderers = function()
       { "@markup.heading.6.markdown", "markdownH6" },
       { "markup.heading.6.markdown" }
     ),
-    _BatThemeScopeRenderer:new(
-      { "@markup.list.markdown", "markdownListMarker" },
-      { "puncuation.definition.list_item.markdown", "markup.list.unnumbered" }
-    ),
-    _BatThemeScopeRenderer:new(
-      { "@markup.list.markdown", "markdownOrderedListMarker" },
-      { "markup.list.numbered" }
-    ),
+    -- _BatThemeScopeRenderer:new(
+    --   { "@markup.list.markdown", "markdownListMarker" },
+    --   { "puncuation.definition.list_item.markdown" }
+    -- ),
+    -- _BatThemeScopeRenderer:new({ "@markup.list.markdown" }, { "markup.list.unnumbered" }),
+    -- _BatThemeScopeRenderer:new({ "@markup.list.markdown" }, { "markup.list.numbered" }),
     _BatThemeScopeRenderer:new({ "@markup.raw.block.markdown", "markdownCodeDelimiter" }, {
       "puncuation.definition.raw.code-fence.begin.markdown",
       "puncuation.definition.raw.code-fence.end.markdown",
