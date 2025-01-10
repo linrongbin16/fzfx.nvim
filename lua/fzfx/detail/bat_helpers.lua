@@ -236,14 +236,12 @@ M._make_renderers = function()
       "GitGutterAdd",
       "DiffAdd",
       "DiffAdded",
-      "@diff.plus",
       "Added",
     }, "lineDiffAdded", "fg"),
     _BatThemeGlobalRenderer:new({
       "GitSignsChange",
       "GitGutterChange",
       "DiffChange",
-      "@diff.delta",
       "Changed",
     }, "lineDiffModified", "fg"),
     _BatThemeGlobalRenderer:new({
@@ -251,7 +249,6 @@ M._make_renderers = function()
       "GitGutterDelete",
       "DiffDelete",
       "DiffRemoved",
-      "@diff.minus",
       "Removed",
     }, "lineDiffDeleted", "fg"),
   }
@@ -259,11 +256,11 @@ M._make_renderers = function()
   -- Scope theme
   local SCOPE_RENDERERS = {
     -- comment {
-    _BatThemeScopeRenderer:new({ "@comment", "Comment" }, "comment"),
+    _BatThemeScopeRenderer:new({ "Comment" }, "comment"),
     -- comment }
 
     -- constant {
-    _BatThemeScopeRenderer:new({ "@constant", "Constant" }, "constant"),
+    _BatThemeScopeRenderer:new({ "Constant" }, "constant"),
     _BatThemeScopeRenderer:new({ "@number", "Number" }, "constant.numeric"),
     _BatThemeScopeRenderer:new({ "@number.float", "Float" }, "constant.numeric.float"),
     _BatThemeScopeRenderer:new({ "@boolean", "Boolean" }, "constant.language"),
@@ -271,62 +268,94 @@ M._make_renderers = function()
       { "@character", "Character" },
       { "constant.character", "character" }
     ),
-    _BatThemeScopeRenderer:new({ "@string", "String" }, { "string", "string.quoted" }),
+    _BatThemeScopeRenderer:new({ "String" }, { "string", "string.quoted" }),
     _BatThemeScopeRenderer:new({ "@string.regexp" }, { "string.regexp" }),
     _BatThemeScopeRenderer:new(
-      { "@string.escape", "SpecialChar" },
+      { "Special" },
       { "constant.character.escaped", "constant.character.escape" }
     ),
     -- constant }
 
     -- entity {
-    _BatThemeScopeRenderer:new({ "@constant", "Constant" }, "entity.name.constant"),
-    _BatThemeScopeRenderer:new({ "@function.call", "Function" }, "variable.function"),
-    _BatThemeScopeRenderer:new({ "@function.macro", "Function" }, { "support.macro" }),
-    _BatThemeScopeRenderer:new({ "@function.builtin" }, { "support.function" }),
-    _BatThemeScopeRenderer:new({ "@type", "Type" }, { "storage.type", "support.type" }),
-    _BatThemeScopeRenderer:new({ "@module" }, { "meta.path" }),
-    _BatThemeScopeRenderer:new({ "@tag" }, "entity.name.tag"),
-    _BatThemeScopeRenderer:new({ "@label", "Label" }, "entity.name.label"),
+    _BatThemeScopeRenderer:new({ "Constant" }, "entity.name.constant"),
+    _BatThemeScopeRenderer:new({ "Function" }, { "variable.function" }),
+    _BatThemeScopeRenderer:new({ "PreProc" }, { "support.macro" }),
+    _BatThemeScopeRenderer:new({ "Type" }, { "storage.type", "support.type" }),
+    _BatThemeScopeRenderer:new({ "Identifier" }, { "entity.name.module" }),
+    -- _BatThemeScopeRenderer:new({ "@label", "Label" }, "entity.name.label"),
     -- entity }
 
     -- variable {
-    _BatThemeScopeRenderer:new({ "@variable" }, "variable"),
-    _BatThemeScopeRenderer:new({ "@variable.parameter" }, { "variable.parameter" }),
-    _BatThemeScopeRenderer:new({ "@variable.builtin" }, { "variable.language" }),
-    _BatThemeScopeRenderer:new({ "@variable.member" }, { "variable.other.member" }),
+    -- _BatThemeScopeRenderer:new({ "@variable" }, "variable"),
+    -- _BatThemeScopeRenderer:new({ "@variable.parameter" }, { "variable.parameter" }),
+    -- _BatThemeScopeRenderer:new({ "@variable.builtin" }, { "variable.language" }),
+    -- _BatThemeScopeRenderer:new({ "@variable.member" }, { "variable.other.member" }),
     -- variable }
 
     -- Puncuation {
-    _BatThemeScopeRenderer:new({ "@puncuation.bracket", "Delimiter" }, "puncuation.brackets"),
-    _BatThemeScopeRenderer:new({ "@puncuation.delimiter", "Delimiter" }, "puncuation.semi"),
+    _BatThemeScopeRenderer:new({ "Delimiter" }, "puncuation.brackets"),
+    _BatThemeScopeRenderer:new({ "Delimiter" }, "puncuation.semi"),
     -- Puncuation }
 
     -- keyword {
-    _BatThemeScopeRenderer:new({ "@keyword", "Keyword" }, "keyword"),
-    _BatThemeScopeRenderer:new({ "@keyword.modifier" }, "keyword.declaration"),
-    _BatThemeScopeRenderer:new({ "@keyword.function" }, "storage.modifier"),
-    _BatThemeScopeRenderer:new({ "@operator", "Operator" }, "keyword.operator"),
-    _BatThemeScopeRenderer:new({ "@keyword.conditional", "Conditional" }, "keyword.control"),
-    _BatThemeScopeRenderer:new({ "@keyword.import" }, "keyword.declaration.import"),
+    _BatThemeScopeRenderer:new({ "Keyword" }, "keyword"),
+    _BatThemeScopeRenderer:new({ "StorageClass" }, "keyword.declaration.variable.static"),
+    _BatThemeScopeRenderer:new({ "StorageClass" }, "storage.modifier"),
+    _BatThemeScopeRenderer:new({ "Operator" }, "keyword.operator"),
+    _BatThemeScopeRenderer:new({ "Conditional" }, "keyword.control"),
     -- keyword }
 
     -- markup {
-    _BatThemeScopeRenderer:new({ "@markup.link" }, "markup.underline.link"),
-    _BatThemeScopeRenderer:new({ "@markup.link.label" }, { "meta.link.inline" }),
-    _BatThemeScopeRenderer:new({ "@markup.strong" }, "markup.bold"),
-    _BatThemeScopeRenderer:new({ "@markup.italic" }, "markup.italic"),
+    _BatThemeScopeRenderer:new(
+      { "htmlTag" },
+      { "puncuation.definition.tag.begin.html", "puncuation.definition.tag.end.html" }
+    ),
+    _BatThemeScopeRenderer:new(
+      { "htmlTagName" },
+      { "entity.name.tag.block.any.html", "entity.name.tag.inline.any.html" }
+    ),
+    _BatThemeScopeRenderer:new({ "htmlArg" }, "entity.other.attribute-name.html"),
+    _BatThemeScopeRenderer:new({ "markdownLink" }, "markup.underline.link"),
+    _BatThemeScopeRenderer:new(
+      { "markdownLinkText" },
+      "meta.link.inline.link.description.markdown"
+    ),
+    _BatThemeScopeRenderer:new(
+      { "markdownLinkTextDelimiter" },
+      { "puncuation.definition.link.begin.markdown", "puncuation.definition.link.end.markdown" }
+    ),
+    _BatThemeScopeRenderer:new(
+      { "markdownBlockquote" },
+      { "puncuation.definition.blockquote.markdown" }
+    ),
+    _BatThemeScopeRenderer:new({ "markdownBold" }, "markup.bold"),
+    _BatThemeScopeRenderer:new({ "markdownItalic" }, "markup.italic"),
     _BatThemeScopeRenderer:new({ "@markup.list" }, "markup.list"),
     _BatThemeScopeRenderer:new({ "@markup.underline" }, "markup.underline"),
-    _BatThemeScopeRenderer:new({ "@markup.heading" }, { "markup.heading" }),
-    -- _BatThemeScopeRenderer:new({ "@markup.raw" }, "meta.code-fence"),
-    _BatThemeScopeRenderer:new({ "@markup.quote" }, "markup.quote"),
+    _BatThemeScopeRenderer:new({ "markdownHeadingDelimiter" }, {
+      "puncuation.definition.heading.begin.markdown",
+      "puncuation.definition.heading.end.markdown",
+    }),
+    _BatThemeScopeRenderer:new({ "markdownH1" }, { "markup.heading.1.markdown" }),
+    _BatThemeScopeRenderer:new({ "markdownH2" }, { "markup.heading.2.markdown" }),
+    _BatThemeScopeRenderer:new({ "markdownH3" }, { "markup.heading.3.markdown" }),
+    _BatThemeScopeRenderer:new({ "markdownH4" }, { "markup.heading.4.markdown" }),
+    _BatThemeScopeRenderer:new({ "markdownH5" }, { "markup.heading.5.markdown" }),
+    _BatThemeScopeRenderer:new({ "markdownH6" }, { "markup.heading.6.markdown" }),
+    _BatThemeScopeRenderer:new(
+      { "markdownListMarker" },
+      { "puncuation.definition.list_item.markdown", "markup.list.unnumbered" }
+    ),
+    _BatThemeScopeRenderer:new({ "markdownOrderedListMarker" }, { "markup.list.numbered" }),
+    _BatThemeScopeRenderer:new({ "markdownCodeDelimiter" }, {
+      "puncuation.definition.raw.code-fence.begin.markdown",
+      "puncuation.definition.raw.code-fence.end.markdown",
+    }),
     _BatThemeScopeRenderer:new({
       "GitSignsAdd",
       "GitGutterAdd",
       "DiffAdd",
       "DiffAdded",
-      "@diff.plus",
       "Added",
     }, { "markup.inserted" }),
     _BatThemeScopeRenderer:new({
@@ -334,14 +363,12 @@ M._make_renderers = function()
       "GitGutterDelete",
       "DiffDelete",
       "DiffRemoved",
-      "@diff.minus",
       "Removed",
     }, { "markup.deleted" }),
     _BatThemeScopeRenderer:new({
       "GitGutterChange",
       "GitSignsChange",
       "DiffChange",
-      "@diff.delta",
       "Changed",
     }, { "markup.changed" }),
     -- markup }
