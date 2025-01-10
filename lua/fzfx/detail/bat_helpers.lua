@@ -274,7 +274,7 @@ M._make_renderers = function()
     _BatThemeScopeRenderer:new({ "@string", "String" }, { "string", "string.quoted" }),
     _BatThemeScopeRenderer:new({ "@string.regexp" }, { "string.regexp" }),
     _BatThemeScopeRenderer:new(
-      { "Special" },
+      { "@string.escape", "Special" },
       { "constant.character.escaped", "constant.character.escape" }
     ),
     -- constant }
@@ -289,27 +289,24 @@ M._make_renderers = function()
     -- entity }
 
     -- variable {
-    -- _BatThemeScopeRenderer:new({ "@variable" }, "variable"),
-    -- _BatThemeScopeRenderer:new({ "@variable.parameter" }, { "variable.parameter" }),
+    _BatThemeScopeRenderer:new({ "@variable" }, "variable.other"),
+    _BatThemeScopeRenderer:new({ "@variable.member" }, { "variable.other.member" }),
+    _BatThemeScopeRenderer:new({ "@variable.parameter" }, { "variable.parameter" }),
     -- _BatThemeScopeRenderer:new({ "@variable.builtin" }, { "variable.language" }),
-    -- _BatThemeScopeRenderer:new({ "@variable.member" }, { "variable.other.member" }),
     -- variable }
 
     -- Puncuation {
-    _BatThemeScopeRenderer:new({ "Delimiter" }, "puncuation.brackets"),
-    _BatThemeScopeRenderer:new({ "Delimiter" }, "puncuation.semi"),
+    _BatThemeScopeRenderer:new({ "@puncuation.bracket", "Delimiter" }, "puncuation.brackets"),
+    _BatThemeScopeRenderer:new({ "@puncuation.delimiter", "Delimiter" }, "puncuation.terminator"),
     -- Puncuation }
 
     -- keyword {
-    _BatThemeScopeRenderer:new({ "Keyword" }, "keyword"),
-    _BatThemeScopeRenderer:new(
-      { "@keyword.modifier", "StorageClass" },
-      "keyword.declaration.variable.static"
-    ),
-    _BatThemeScopeRenderer:new({ "StorageClass" }, "storage.modifier"),
+    _BatThemeScopeRenderer:new({ "@keyword", "Keyword" }, "keyword"),
+    _BatThemeScopeRenderer:new({ "@keyword", "StorageClass" }, "keyword.declaration.variable"),
+    _BatThemeScopeRenderer:new({ "@keyword.modifier", "StorageClass" }, "storage.modifier"),
     _BatThemeScopeRenderer:new({ "@keyword.import" }, "keyword.declaration.import"),
     _BatThemeScopeRenderer:new({ "@operator", "Operator" }, "keyword.operator"),
-    _BatThemeScopeRenderer:new({ "Conditional" }, "keyword.control"),
+    _BatThemeScopeRenderer:new({ "@keyword.conditional", "Conditional" }, "keyword.control"),
     -- keyword }
 
     -- markup {
@@ -323,33 +320,57 @@ M._make_renderers = function()
     ),
     _BatThemeScopeRenderer:new({ "htmlArg" }, "entity.other.attribute-name.html"),
     _BatThemeScopeRenderer:new({ "markdownLink" }, "markup.underline.link"),
-    _BatThemeScopeRenderer:new({ "markdownLinkText" }, "meta.link.inline.description.markdown"),
     _BatThemeScopeRenderer:new(
-      { "markdownLinkTextDelimiter" },
+      { "@markup.link.label.markdown_inline", "markdownLinkText" },
+      "meta.link.inline.description.markdown"
+    ),
+    _BatThemeScopeRenderer:new(
+      { "@markup.link.markdown_inline", "markdownLinkTextDelimiter" },
       { "puncuation.definition.link.begin.markdown", "puncuation.definition.link.end.markdown" }
     ),
     _BatThemeScopeRenderer:new(
       { "markdownBlockquote" },
       { "puncuation.definition.blockquote.markdown" }
     ),
-    _BatThemeScopeRenderer:new({ "markdownBold" }, "markup.bold"),
-    _BatThemeScopeRenderer:new({ "markdownItalic" }, "markup.italic"),
+    _BatThemeScopeRenderer:new({ "@markup.strong", "markdownBold" }, "markup.bold"),
+    _BatThemeScopeRenderer:new({ "@markup.italic", "markdownItalic" }, "markup.italic"),
     _BatThemeScopeRenderer:new({ "markdownHeadingDelimiter" }, {
       "puncuation.definition.heading.begin.markdown",
       "puncuation.definition.heading.end.markdown",
     }),
-    _BatThemeScopeRenderer:new({ "markdownH1" }, { "markup.heading.1.markdown" }),
-    _BatThemeScopeRenderer:new({ "markdownH2" }, { "markup.heading.2.markdown" }),
-    _BatThemeScopeRenderer:new({ "markdownH3" }, { "markup.heading.3.markdown" }),
-    _BatThemeScopeRenderer:new({ "markdownH4" }, { "markup.heading.4.markdown" }),
-    _BatThemeScopeRenderer:new({ "markdownH5" }, { "markup.heading.5.markdown" }),
-    _BatThemeScopeRenderer:new({ "markdownH6" }, { "markup.heading.6.markdown" }),
     _BatThemeScopeRenderer:new(
-      { "markdownListMarker" },
+      { "@markup.heading.1.markdown", "markdownH1" },
+      { "markup.heading.1.markdown" }
+    ),
+    _BatThemeScopeRenderer:new(
+      { "@markup.heading.2.markdown", "markdownH2" },
+      { "markup.heading.2.markdown" }
+    ),
+    _BatThemeScopeRenderer:new(
+      { "@markup.heading.3.markdown", "markdownH3" },
+      { "markup.heading.3.markdown" }
+    ),
+    _BatThemeScopeRenderer:new(
+      { "@markup.heading.4.markdown", "markdownH4" },
+      { "markup.heading.4.markdown" }
+    ),
+    _BatThemeScopeRenderer:new(
+      { "@markup.heading.5.markdown", "markdownH5" },
+      { "markup.heading.5.markdown" }
+    ),
+    _BatThemeScopeRenderer:new(
+      { "@markup.heading.6.markdown", "markdownH6" },
+      { "markup.heading.6.markdown" }
+    ),
+    _BatThemeScopeRenderer:new(
+      { "@markup.list.markdown", "markdownListMarker" },
       { "puncuation.definition.list_item.markdown", "markup.list.unnumbered" }
     ),
-    _BatThemeScopeRenderer:new({ "markdownOrderedListMarker" }, { "markup.list.numbered" }),
-    _BatThemeScopeRenderer:new({ "markdownCodeDelimiter" }, {
+    _BatThemeScopeRenderer:new(
+      { "@markup.list.markdown", "markdownOrderedListMarker" },
+      { "markup.list.numbered" }
+    ),
+    _BatThemeScopeRenderer:new({ "@markup.raw.block.markdown", "markdownCodeDelimiter" }, {
       "puncuation.definition.raw.code-fence.begin.markdown",
       "puncuation.definition.raw.code-fence.end.markdown",
     }),
