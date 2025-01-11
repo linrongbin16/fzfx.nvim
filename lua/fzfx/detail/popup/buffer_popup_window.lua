@@ -342,22 +342,22 @@ function BufferPopupWindow:close()
   -- Clean up windows.
   if type(self.provider_winnr) == "number" and vim.api.nvim_win_is_valid(self.provider_winnr) then
     vim.api.nvim_win_close(self.provider_winnr, true)
-    self.provider_winnr = nil
   end
   if type(self.previewer_winnr) == "number" and vim.api.nvim_win_is_valid(self.previewer_winnr) then
     vim.api.nvim_win_close(self.previewer_winnr, true)
-    self.previewer_winnr = nil
   end
+  self.provider_winnr = nil
+  self.previewer_winnr = nil
 
-  -- Clean up windows.
+  -- Clean up buffers.
   if type(self.provider_bufnr) == "number" and vim.api.nvim_buf_is_valid(self.provider_bufnr) then
     vim.api.nvim_buf_delete(self.provider_bufnr, { force = true })
-    self.provider_bufnr = nil
   end
   if type(self.previewer_bufnr) == "number" and vim.api.nvim_buf_is_valid(self.previewer_bufnr) then
     vim.api.nvim_buf_delete(self.previewer_bufnr, { force = true })
-    self.previewer_bufnr = nil
   end
+  self.provider_bufnr = nil
+  self.previewer_bufnr = nil
 
   -- Restore window context.
   self.saved_win_ctx:restore()
