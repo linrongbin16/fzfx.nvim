@@ -351,11 +351,11 @@ function BufferPopupWindow:close()
 
   -- Clean up windows.
   if type(self.provider_bufnr) == "number" and vim.api.nvim_buf_is_valid(self.provider_bufnr) then
-    vim.api.nvim_buf_delete(self.provider_bufnr)
+    vim.api.nvim_buf_delete(self.provider_bufnr, { force = true })
     self.provider_bufnr = nil
   end
   if type(self.previewer_bufnr) == "number" and vim.api.nvim_buf_is_valid(self.previewer_bufnr) then
-    vim.api.nvim_buf_delete(self.previewer_bufnr)
+    vim.api.nvim_buf_delete(self.previewer_bufnr, { force = true })
     self.previewer_bufnr = nil
   end
 
