@@ -1,5 +1,5 @@
 [selene]
-base = "luajit"
+base = "lua51"
 
 [vim]
 any = true
