@@ -115,7 +115,7 @@ end
 -- FzfPopupWindow {
 
 --- @class fzfx.FzfPopupWindow
---- @field window_opts_context fzfx.WindowOptsContext?
+--- @field saved_win_ctx fzfx.WindowContext?
 --- @field bufnr integer?
 --- @field winnr integer?
 --- @field _saved_current_winnr integer
@@ -134,7 +134,7 @@ function FzfPopupWindow:new(win_opts, buffer_previewer_opts)
   local current_win_first_line = vim.fn.line("w0")
 
   -- save current window context
-  local window_opts_context = popup_helpers.WindowOptsContext:save()
+  local saved_win_ctx = popup_helpers.WindowContext:save()
 
   --- @type integer
   local bufnr = vim.api.nvim_create_buf(false, true)
@@ -158,7 +158,7 @@ function FzfPopupWindow:new(win_opts, buffer_previewer_opts)
   vim.api.nvim_set_option_value("wrap", false, { win = winnr })
 
   local o = {
-    window_opts_context = window_opts_context,
+    saved_win_ctx = saved_win_ctx,
     bufnr = bufnr,
     winnr = winnr,
     _saved_current_winnr = current_winnr,
@@ -181,7 +181,7 @@ function FzfPopupWindow:close()
   end
 
   self.bufnr = nil
-  self.window_opts_context:restore()
+  self.saved_win_ctx:restore()
 end
 
 function FzfPopupWindow:is_valid()

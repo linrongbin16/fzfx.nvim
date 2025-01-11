@@ -6,17 +6,22 @@ local log = require("fzfx.lib.log")
 
 local M = {}
 
--- WindowOptsContext {
+-- WindowContext {
 
---- @class fzfx.WindowOptsContext
+--- @class fzfx.WindowContext
 --- @field tabnr integer
 --- @field winnr integer
-local WindowOptsContext = {}
+--- @field win_first_line integer
+--- @field win_last_line integer
+local WindowContext = {}
 
---- @return fzfx.WindowOptsContext
-function WindowOptsContext:save()
+--- @return fzfx.WindowContext
+function WindowContext:save()
+  local winnr = vim.api.nvim_get_current_win()
   local o = {
-    winnr = vim.api.nvim_get_current_win(),
+    winnr = winnr,
+    win_first_line = vim.fn.line("w0", winnr),
+    win_last_line = vim.fn.line("w$", winnr),
     tabnr = vim.api.nvim_get_current_tabpage(),
   }
   setmetatable(o, self)
@@ -24,7 +29,7 @@ function WindowOptsContext:save()
   return o
 end
 
-function WindowOptsContext:restore()
+function WindowContext:restore()
   if vim.api.nvim_tabpage_is_valid(self.tabnr) then
     vim.api.nvim_set_current_tabpage(self.tabnr)
   end
@@ -33,13 +38,33 @@ function WindowOptsContext:restore()
   end
 end
 
-M.WindowOptsContext = WindowOptsContext
+--- @return integer
+function WindowContext:get_winnr()
+  return self.winnr
+end
 
--- WindowOptsContext }
+--- @return integer
+function WindowContext:get_win_first_line()
+  return self.win_first_line
+end
 
--- ShellOptsContext {
+--- @return integer
+function WindowContext:get_win_last_line()
+  return self.win_last_line
+end
 
---- @class fzfx.ShellOptsContext
+--- @return integer
+function WindowContext:get_tabnr()
+  return self.tabnr
+end
+
+M.WindowContext = WindowContext
+
+-- WindowContext }
+
+-- ShellContext {
+
+--- @class fzfx.ShellContext
 --- @field shell string?
 --- @field shellslash string?
 --- @field shellcmdflag string?
@@ -48,10 +73,10 @@ M.WindowOptsContext = WindowOptsContext
 --- @field shellredir string?
 --- @field shellpipe string?
 --- @field shellxescape string?
-local ShellOptsContext = {}
+local ShellContext = {}
 
---- @return fzfx.ShellOptsContext
-function ShellOptsContext:save()
+--- @return fzfx.ShellContext
+function ShellContext:save()
   local o = constants.IS_WINDOWS
       and {
         shell = vim.o.shell,
@@ -85,7 +110,7 @@ function ShellOptsContext:save()
   return o
 end
 
-function ShellOptsContext:restore()
+function ShellContext:restore()
   if constants.IS_WINDOWS then
     vim.o.shell = self.shell
     vim.o.shellslash = self.shellslash
@@ -100,9 +125,9 @@ function ShellOptsContext:restore()
   end
 end
 
-M.ShellOptsContext = ShellOptsContext
+M.ShellContext = ShellContext
 
--- ShellOptsContext }
+-- ShellContext }
 
 -- layout {
 

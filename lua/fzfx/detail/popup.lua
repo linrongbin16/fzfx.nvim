@@ -273,7 +273,7 @@ function Popup:new(
   end -- on_fzf_exit
 
   -- save fzf/shell context
-  local saved_shell_opts_context = popup_helpers.ShellOptsContext:save()
+  local saved_shell_ctx = popup_helpers.ShellContext:save()
   local saved_fzf_default_command = vim.env.FZF_DEFAULT_COMMAND
   local saved_fzf_default_opts = vim.env.FZF_DEFAULT_OPTS
   vim.env.FZF_DEFAULT_OPTS = fzf_helpers.make_fzf_default_opts()
@@ -287,7 +287,7 @@ function Popup:new(
   local jobid = vim.fn.termopen(fzf_command, { on_exit = on_fzf_exit }) --[[@as integer ]]
 
   -- restore fzf/shell context
-  saved_shell_opts_context:restore()
+  saved_shell_ctx:restore()
   vim.env.FZF_DEFAULT_COMMAND = saved_fzf_default_command
   vim.env.FZF_DEFAULT_OPTS = saved_fzf_default_opts
 

@@ -184,7 +184,7 @@ end
 -- BufferPopupWindow {
 
 --- @class fzfx.BufferPopupWindow
---- @field window_opts_context fzfx.WindowOptsContext?
+--- @field saved_win_ctx fzfx.WindowContext?
 --- @field provider_bufnr integer?
 --- @field provider_winnr integer?
 --- @field previewer_bufnr integer?
@@ -253,15 +253,13 @@ function BufferPopupWindow:new(win_opts, buffer_previewer_opts)
   local current_win_first_line = vim.fn.line("w0")
 
   -- save current window context
-  local window_opts_context = popup_helpers.WindowOptsContext:save()
+  local saved_win_ctx = popup_helpers.WindowContext:save()
 
-  --- @type integer
-  local provider_bufnr = vim.api.nvim_create_buf(false, true)
+  local provider_bufnr = vim.api.nvim_create_buf(false, true) --[[@as integer]]
   log.ensure(provider_bufnr > 0, "failed to create provider buf")
   _set_provider_buf_opts(provider_bufnr)
 
-  --- @type integer
-  local previewer_bufnr
+  local previewer_bufnr --[[@as integer]]
   if not buffer_previewer_opts.fzf_preview_window_opts.hidden then
     previewer_bufnr = vim.api.nvim_create_buf(false, true)
     log.ensure(previewer_bufnr > 0, "failed to create previewer buf")
@@ -282,15 +280,15 @@ function BufferPopupWindow:new(win_opts, buffer_previewer_opts)
     provider_win_confs.previewer = nil
   end
 
-  local previewer_winnr
+  local previewer_winnr --[[@as integer]]
   if previewer_bufnr then
-    previewer_winnr = vim.api.nvim_open_win(previewer_bufnr, true, previewer_win_confs)
+    previewer_winnr = vim.api.nvim_open_win(previewer_bufnr, true, previewer_win_confs) --[[@as integer]]
     log.ensure(previewer_winnr > 0, "failed to create previewer win")
     local wrap = buffer_previewer_opts.fzf_preview_window_opts.wrap
     _set_previewer_win_opts(previewer_winnr, wrap, current_winnr)
   end
 
-  local provider_winnr = vim.api.nvim_open_win(provider_bufnr, true, provider_win_confs)
+  local provider_winnr = vim.api.nvim_open_win(provider_bufnr, true, provider_win_confs) --[[@as integer]]
   log.ensure(provider_winnr > 0, "failed to create provider win")
   _set_provider_win_opts(provider_winnr, current_winnr)
 
@@ -307,7 +305,7 @@ function BufferPopupWindow:new(win_opts, buffer_previewer_opts)
   })
 
   local o = {
-    window_opts_context = window_opts_context,
+    saved_win_ctx = saved_win_ctx,
     provider_bufnr = provider_bufnr,
     provider_winnr = provider_winnr,
     previewer_bufnr = previewer_bufnr,
@@ -341,6 +339,7 @@ function BufferPopupWindow:close()
   --   )
   -- )
 
+  -- Clean up windows.
   if type(self.provider_winnr) == "number" and vim.api.nvim_win_is_valid(self.provider_winnr) then
     vim.api.nvim_win_close(self.provider_winnr, true)
     self.provider_winnr = nil
@@ -350,9 +349,18 @@ function BufferPopupWindow:close()
     self.previewer_winnr = nil
   end
 
-  self.provider_bufnr = nil
-  self.previewer_bufnr = nil
-  self.window_opts_context:restore()
+  -- Clean up windows.
+  if type(self.provider_bufnr) == "number" and vim.api.nvim_buf_is_valid(self.provider_bufnr) then
+    vim.api.nvim_buf_delete(self.provider_bufnr)
+    self.provider_bufnr = nil
+  end
+  if type(self.previewer_bufnr) == "number" and vim.api.nvim_buf_is_valid(self.previewer_bufnr) then
+    vim.api.nvim_buf_delete(self.previewer_bufnr)
+    self.previewer_bufnr = nil
+  end
+
+  -- Restore window context.
+  self.saved_win_ctx:restore()
 end
 
 function BufferPopupWindow:is_resizing()
