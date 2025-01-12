@@ -5,7 +5,7 @@
 local tbl = require("fzfx.commons.tbl")
 local str = require("fzfx.commons.str")
 local path = require("fzfx.commons.path")
-local fileio = require("fzfx.commons.fio")
+local fio = require("fzfx.commons.fio")
 local color_term = require("fzfx.commons.color.term")
 
 local switches = require("fzfx.lib.switches")
@@ -149,7 +149,7 @@ M._render_lsp_location_to_line = function(loc)
   if type(filename) ~= "string" or vim.fn.filereadable(filename) <= 0 then
     return nil
   end
-  local filelines = fileio.readlines(filename)
+  local filelines = fio.readlines(filename)
   if type(filelines) ~= "table" or #filelines < range.start.line + 1 then
     return nil
   end
@@ -340,7 +340,7 @@ M._render_lsp_call_hierarchy_to_lines = function(item, ranges)
   if type(filename) ~= "string" or vim.fn.filereadable(filename) <= 0 then
     return nil
   end
-  local filelines = fileio.readlines(filename)
+  local filelines = fio.readlines(filename)
   if type(filelines) ~= "table" then
     return nil
   end

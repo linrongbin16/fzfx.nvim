@@ -6,7 +6,7 @@ vim.opt.runtimepath:append(SELF_PATH)
 
 local str = require("fzfx.commons.str")
 local tbl = require("fzfx.commons.tbl")
-local fileio = require("fzfx.commons.fio")
+local fio = require("fzfx.commons.fio")
 local spawn = require("fzfx.commons.spawn")
 local schema = require("fzfx.schema")
 local shell_helpers = require("fzfx.detail.shell_helpers")
@@ -48,7 +48,7 @@ vim.rpcrequest(
 )
 vim.fn.chanclose(channel_id)
 
-local metajsonstring = fileio.readfile(metafile, { trim = true }) --[[@as string]]
+local metajsonstring = fio.readfile(metafile, { trim = true }) --[[@as string]]
 shell_helpers.log_ensure(
   str.not_empty(metajsonstring),
   "metajsonstring is not string:" .. vim.inspect(metajsonstring)
@@ -117,7 +117,7 @@ if
   or metaopts.provider_type == ProviderTypeEnum.FUNCTIONAL_COMMAND_STRING
 then
   --- @type string
-  local cmd = fileio.readfile(resultfile, { trim = true }) --[[@as string]]
+  local cmd = fio.readfile(resultfile, { trim = true }) --[[@as string]]
   -- shell_helpers.log_debug("plain/command cmd:%s", vim.inspect(cmd))
   if str.empty(cmd) then
     os.exit(0)
@@ -136,7 +136,7 @@ elseif
   metaopts.provider_type == ProviderTypeEnum.PLAIN_COMMAND_ARRAY
   or metaopts.provider_type == ProviderTypeEnum.FUNCTIONAL_COMMAND_ARRAY
 then
-  local cmd = fileio.readfile(resultfile, { trim = true }) --[[@as string]]
+  local cmd = fio.readfile(resultfile, { trim = true }) --[[@as string]]
   -- shell_helpers.log_debug("plain_list/command_list cmd:%s", vim.inspect(cmd))
   if str.empty(cmd) then
     os.exit(0)
@@ -153,7 +153,7 @@ then
   shell_helpers.log_ensure(sp ~= nil, "failed to run command:" .. vim.inspect(cmd_splits))
   sp:wait()
 elseif metaopts.provider_type == ProviderTypeEnum.DIRECT then
-  local reader = fileio.FileLineReader:open(resultfile) --[[@as commons.FileLineReader ]]
+  local reader = fio.FileLineReader:open(resultfile) --[[@as commons.FileLineReader ]]
   shell_helpers.log_ensure(reader ~= nil, "failed to open resultfile:" .. vim.inspect(resultfile))
 
   while reader:has_next() do

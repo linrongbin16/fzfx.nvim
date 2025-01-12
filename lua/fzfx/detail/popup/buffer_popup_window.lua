@@ -1,7 +1,7 @@
 local tbl = require("fzfx.commons.tbl")
 local str = require("fzfx.commons.str")
 local num = require("fzfx.commons.num")
-local fileio = require("fzfx.commons.fio")
+local fio = require("fzfx.commons.fio")
 
 local log = require("fzfx.lib.log")
 local fzf_helpers = require("fzfx.detail.fzf_helpers")
@@ -590,7 +590,7 @@ function BufferPopupWindow:preview_file(job_id, previewer_result, previewer_labe
     end
 
     -- read file content
-    fileio.asyncreadfile(last_job.previewer_result.filename, {
+    fio.asyncreadfile(last_job.previewer_result.filename, {
       on_complete = async_read_file_handler,
       on_error = function()
         -- When failed to open/read the file, simply treats it as an empty file with empty text contents.

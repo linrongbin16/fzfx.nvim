@@ -1,7 +1,7 @@
 local tbl = require("fzfx.commons.tbl")
 local str = require("fzfx.commons.str")
 local path = require("fzfx.commons.path")
-local fileio = require("fzfx.commons.fio")
+local fio = require("fzfx.commons.fio")
 
 local consts = require("fzfx.lib.constants")
 local log = require("fzfx.lib.log")
@@ -127,7 +127,7 @@ M._get_ex_commands = function()
 
   local results = {}
   for _, help_doc in ipairs(help_docs) do
-    local lines = fileio.readlines(help_doc) --[[@as string[] ]]
+    local lines = fio.readlines(help_doc) --[[@as string[] ]]
     for i = 1, #lines do
       local line = lines[i]
       if str.startswith(line, "|:") then
@@ -284,7 +284,7 @@ M._get_commands_output_in_lines = function()
     ]],
     tmpfile
   ))
-  local lines = fileio.readlines(tmpfile) --[[@as string[] ]]
+  local lines = fio.readlines(tmpfile) --[[@as string[] ]]
   return lines
 end
 

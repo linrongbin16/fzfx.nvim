@@ -1,6 +1,6 @@
 local str = require("fzfx.commons.str")
 local path = require("fzfx.commons.path")
-local fileio = require("fzfx.commons.fio")
+local fio = require("fzfx.commons.fio")
 
 local consts = require("fzfx.lib.constants")
 local shells = require("fzfx.lib.shells")
@@ -98,7 +98,7 @@ M._make_provider_lsd = function(opts)
   --- @param context fzfx.FileExplorerPipelineContext
   --- @return string?
   local function impl(query, context)
-    local cwd = fileio.readfile(context.cwd) --[[@as string]]
+    local cwd = fio.readfile(context.cwd) --[[@as string]]
     return consts.HAS_ECHO
         and string.format(
           "echo %s && %s %s --color=always --header -- %s",
@@ -127,7 +127,7 @@ M._make_provider_eza = function(opts)
   --- @param context fzfx.FileExplorerPipelineContext
   --- @return string?
   local function impl(query, context)
-    local cwd = fileio.readfile(context.cwd) --[[@as string]]
+    local cwd = fio.readfile(context.cwd) --[[@as string]]
     if str.endswith(args, "a") then
       -- eza need double 'a' to show '.' and '..' directories
       args = args .. "a"
@@ -155,7 +155,7 @@ M._make_provider_ls = function(opts)
   --- @param context fzfx.FileExplorerPipelineContext
   --- @return string?
   local function impl(query, context)
-    local cwd = fileio.readfile(context.cwd) --[[@as string]]
+    local cwd = fio.readfile(context.cwd) --[[@as string]]
     return consts.HAS_ECHO
         and string.format(
           "echo %s && %s --color=always %s %s",
@@ -327,7 +327,7 @@ M._cd = function(line, context)
   local parsed = parser(line, context)
 
   if path.isdir(parsed.filename) then
-    fileio.writefile(context.cwd, parsed.filename)
+    fio.writefile(context.cwd, parsed.filename)
   end
 end
 
@@ -341,7 +341,7 @@ M._upper = function(line, context)
   --     vim.inspect(context)
   --   )
   -- )
-  local cwd = fileio.readfile(context.cwd) --[[@as string]]
+  local cwd = fio.readfile(context.cwd) --[[@as string]]
   -- log.debug("|_upper_file_explorer| cwd:" .. vim.inspect(cwd))
   local target = vim.fn.fnamemodify(cwd, ":h") --[[@as string]]
   -- log.debug("|_upper_file_explorer| target:" .. vim.inspect(target))
@@ -349,7 +349,7 @@ M._upper = function(line, context)
   -- Unix/linux root folder: `/`
   local root_dir_len = consts.IS_WINDOWS and 3 or 1
   if path.isdir(target) and string.len(target) > root_dir_len then
-    fileio.writefile(context.cwd, target)
+    fio.writefile(context.cwd, target)
   end
 end
 
@@ -391,7 +391,7 @@ M.fzf_opts = {
 --- @return fzfx.FileExplorerPipelineContext
 M._context_maker = function()
   local temp = vim.fn.tempname()
-  fileio.writefile(temp --[[@as string]], vim.fn.getcwd() --[[@as string]])
+  fio.writefile(temp --[[@as string]], vim.fn.getcwd() --[[@as string]])
   local context = {
     bufnr = vim.api.nvim_get_current_buf(),
     winnr = vim.api.nvim_get_current_win(),

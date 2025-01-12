@@ -3,7 +3,7 @@ local path = require("fzfx.commons.path")
 local str = require("fzfx.commons.str")
 local num = require("fzfx.commons.num")
 local color_term = require("fzfx.commons.color.term")
-local fileio = require("fzfx.commons.fio")
+local fio = require("fzfx.commons.fio")
 local uv = require("fzfx.commons.uv")
 
 local constants = require("fzfx.lib.constants")
@@ -213,9 +213,9 @@ function ProviderSwitch:_handle_plain_command_string(provider_config)
     )
   )
   if provider_config.provider == nil then
-    fileio.writefile(self.resultfile, "")
+    fio.writefile(self.resultfile, "")
   else
-    fileio.writefile(self.resultfile, provider_config.provider --[[@as string]])
+    fio.writefile(self.resultfile, provider_config.provider --[[@as string]])
   end
 end
 
@@ -236,9 +236,9 @@ function ProviderSwitch:_handle_plain_command_array(provider_config)
     )
   )
   if tbl.tbl_empty(provider_config.provider) then
-    fileio.writefile(self.resultfile, "")
+    fio.writefile(self.resultfile, "")
   else
-    fileio.writefile(
+    fio.writefile(
       self.resultfile,
       vim.json.encode(provider_config.provider --[[@as table]]) --[[@as string]]
     )
@@ -265,7 +265,7 @@ function ProviderSwitch:_handle_functional_command_string(provider_config, query
     )
   )
   if not ok then
-    fileio.writefile(self.resultfile, "")
+    fio.writefile(self.resultfile, "")
     log.err(
       string.format(
         "failed to call pipeline %s (FUNCTIONAL_COMMAND_STRING provider %s)! query:%s, context:%s, error:%s",
@@ -278,9 +278,9 @@ function ProviderSwitch:_handle_functional_command_string(provider_config, query
     )
   else
     if result == nil then
-      fileio.writefile(self.resultfile, "")
+      fio.writefile(self.resultfile, "")
     else
-      fileio.writefile(self.resultfile, result)
+      fio.writefile(self.resultfile, result)
     end
   end
 end
@@ -305,7 +305,7 @@ function ProviderSwitch:_handle_functional_command_array(provider_config, query,
     )
   )
   if not ok then
-    fileio.writefile(self.resultfile, "")
+    fio.writefile(self.resultfile, "")
     log.err(
       string.format(
         "failed to call pipeline %s (FUNCTIONAL_COMMAND_ARRAY provider %s)! query:%s, context:%s, error:%s",
@@ -318,9 +318,9 @@ function ProviderSwitch:_handle_functional_command_array(provider_config, query,
     )
   else
     if tbl.tbl_empty(result) then
-      fileio.writefile(self.resultfile, "")
+      fio.writefile(self.resultfile, "")
     else
-      fileio.writefile(self.resultfile, vim.json.encode(result) --[[@as string]])
+      fio.writefile(self.resultfile, vim.json.encode(result) --[[@as string]])
     end
   end
 end
@@ -345,7 +345,7 @@ function ProviderSwitch:_handle_direct(provider_config, query, context)
     )
   )
   if not ok then
-    fileio.writefile(self.resultfile, "")
+    fio.writefile(self.resultfile, "")
     log.err(
       string.format(
         "failed to call pipeline %s (DIRECT provider %s)! query:%s, context:%s, error:%s",
@@ -358,9 +358,9 @@ function ProviderSwitch:_handle_direct(provider_config, query, context)
     )
   else
     if tbl.tbl_empty(result) then
-      fileio.writefile(self.resultfile, "")
+      fio.writefile(self.resultfile, "")
     else
-      fileio.writelines(self.resultfile, result)
+      fio.writelines(self.resultfile, result)
     end
   end
 end
@@ -408,7 +408,7 @@ function ProviderSwitch:provide(query, context)
 
   local metaopts = make_provider_meta_opts(self.pipeline, provider_config)
   local metajson = vim.json.encode(metaopts) --[[@as string]]
-  fileio.writefile(self.metafile, metajson)
+  fio.writefile(self.metafile, metajson)
 
   if self:_is_plain_command_string(provider_config) then
     self:_handle_plain_command_string(provider_config)
@@ -478,7 +478,7 @@ function PreviewerSwitch:new(name, pipeline, previewer_configs, fzf_port_file)
     previewer_labels_queue = {},
     metafile = _previewer_metafile(),
     resultfile = _previewer_resultfile(),
-    fzf_port_reader = fileio.CachedFileReader:open(fzf_port_file),
+    fzf_port_reader = fio.CachedFileReader:open(fzf_port_file),
   }
   setmetatable(o, self)
   self.__index = self
@@ -567,12 +567,12 @@ function PreviewerSwitch:preview(line, context)
 
   local metaopts = make_previewer_meta_opts(self.pipeline, previewer_config)
   local metajson = vim.json.encode(metaopts) --[[@as string]]
-  fileio.writefile(self.metafile, metajson)
+  fio.writefile(self.metafile, metajson)
 
   if previewer_config.previewer_type == PreviewerTypeEnum.FUNCTIONAL_COMMAND_STRING then
     local ok, result = pcall(previewer_config.previewer, line, context)
     if not ok then
-      fileio.writefile(self.resultfile, "")
+      fio.writefile(self.resultfile, "")
       log.err(
         string.format(
           "failed to call pipeline %s command previewer %s! line:%s, context:%s, error:%s",
@@ -593,15 +593,15 @@ function PreviewerSwitch:preview(line, context)
         )
       )
       if result == nil then
-        fileio.writefile(self.resultfile, "")
+        fio.writefile(self.resultfile, "")
       else
-        fileio.writefile(self.resultfile, result --[[@as string]])
+        fio.writefile(self.resultfile, result --[[@as string]])
       end
     end
   elseif previewer_config.previewer_type == PreviewerTypeEnum.FUNCTIONAL_COMMAND_ARRAY then
     local ok, result = pcall(previewer_config.previewer, line, context)
     if not ok then
-      fileio.writefile(self.resultfile, "")
+      fio.writefile(self.resultfile, "")
       log.err(
         string.format(
           "failed to call pipeline %s command_list previewer %s! line:%s, context:%s, error:%s",
@@ -622,9 +622,9 @@ function PreviewerSwitch:preview(line, context)
         )
       )
       if tbl.tbl_empty(result) then
-        fileio.writefile(self.resultfile, "")
+        fio.writefile(self.resultfile, "")
       else
-        fileio.writefile(self.resultfile, vim.json.encode(result --[[@as table]]) --[[@as string]])
+        fio.writefile(self.resultfile, vim.json.encode(result --[[@as table]]) --[[@as string]])
       end
     end
   else
@@ -1110,7 +1110,7 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
 
   if use_buffer_previewer then
     -- listen fzf actions {
-    fileio.writefile(buffer_previewer_actions_file, "")
+    fio.writefile(buffer_previewer_actions_file, "")
     buffer_previewer_actions_fsevent, buffer_previewer_actions_fsevent_err = uv.new_fs_event()
     log.ensure(
       buffer_previewer_actions_fsevent ~= nil,
@@ -1152,7 +1152,7 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
           return
         end
 
-        fileio.asyncreadfile(buffer_previewer_actions_file, {
+        fio.asyncreadfile(buffer_previewer_actions_file, {
           on_complete = function(actions_data)
             -- log.debug(
             --   string.format(
@@ -1195,7 +1195,7 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
     -- listen fzf actions }
 
     -- query fzf status {
-    local fzf_port_reader = fileio.CachedFileReader:open(fzf_port_file)
+    local fzf_port_reader = fio.CachedFileReader:open(fzf_port_file)
     local QUERY_FZF_CURRENT_STATUS_INTERVAL = 150
     buffer_previewer_query_fzf_status_start = true
 
@@ -1479,7 +1479,7 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
       default_provider = provider_switch.pipeline,
       query = last_query,
     }) --[[@as string]]
-    fileio.asyncwritefile(last_query_cache, content, function(bytes)
+    fio.asyncwritefile(last_query_cache, content, function(bytes)
       -- log.debug("|general| dump last query:%s", vim.inspect(bytes))
     end)
 
