@@ -1,5 +1,12 @@
 # Changelog
 
+## [7.2.1](https://github.com/linrongbin16/fzfx.nvim/compare/v7.2.0...v7.2.1) (2025-01-12)
+
+
+### Bug Fixes
+
+* **git:** disable git-delta on windows platform ([#776](https://github.com/linrongbin16/fzfx.nvim/issues/776)) ([edff97a](https://github.com/linrongbin16/fzfx.nvim/commit/edff97a14dba2da477007667bb8a86d6199b269e))
+
 ## [7.2.0](https://github.com/linrongbin16/fzfx.nvim/compare/v7.1.2...v7.2.0) (2025-01-10)
 
 
