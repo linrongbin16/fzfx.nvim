@@ -1,7 +1,7 @@
 local str = require("fzfx.commons.str")
 local tbl = require("fzfx.commons.tbl")
 local path = require("fzfx.commons.path")
-local fileio = require("fzfx.commons.fileio")
+local fio = require("fzfx.commons.fio")
 local color_hl = require("fzfx.commons.color.hl")
 
 local constants = require("fzfx.lib.constants")
@@ -104,7 +104,7 @@ end
 local function get_last_query_cache(name)
   if LAST_QUERY_CACHES[name] == nil then
     local cache_filename = last_query_cache_name(name)
-    local data = fileio.readfile(cache_filename, { trim = true }) --[[@as string]]
+    local data = fio.readfile(cache_filename, { trim = true }) --[[@as string]]
     if str.not_empty(data) then
       --- @type boolean, fzfx.LastQueryCacheObj?
       local ok, data_obj = pcall(vim.json.decode, data)

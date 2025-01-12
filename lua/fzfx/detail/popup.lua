@@ -1,6 +1,6 @@
 ---@diagnostic disable: invisible
 
-local fileio = require("fzfx.commons.fileio")
+local fio = require("fzfx.commons.fio")
 local path = require("fzfx.commons.path")
 local version = require("fzfx.commons.version")
 local uv = require("fzfx.commons.uv")
@@ -208,7 +208,7 @@ function Popup:new(
       path.isfile(result),
       string.format("|Popup:new.on_fzf_exit| result %s must be readable", vim.inspect(result))
     )
-    local lines = fileio.readlines(result --[[@as string]]) --[[@as table]]
+    local lines = fio.readlines(result --[[@as string]]) --[[@as table]]
     -- log.debug(
     --   string.format(
     --     "|Popup:new - on_fzf_exit| result:%s, lines:%s",

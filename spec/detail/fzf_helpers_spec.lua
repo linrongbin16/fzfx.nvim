@@ -15,7 +15,7 @@ describe("detail.fzf_helpers", function()
 
   local tbl = require("fzfx.commons.tbl")
   local str = require("fzfx.commons.str")
-  local fileio = require("fzfx.commons.fileio")
+  local fio = require("fzfx.commons.fio")
   local fzf_helpers = require("fzfx.detail.fzf_helpers")
   local CommandFeedEnum = require("fzfx.schema").CommandFeedEnum
   require("fzfx").setup({
@@ -50,7 +50,7 @@ describe("detail.fzf_helpers", function()
     it("has value if exists cache file", function()
       local cache_file = fzf_helpers.last_query_cache_name("test2")
       local input = vim.json.encode({ query = "query2", default_provider = "provider3" })
-      fileio.writefile(cache_file, input)
+      fio.writefile(cache_file, input)
       local actual = fzf_helpers.get_last_query_cache("test2")
       assert_eq(type(actual), "table")
       assert_eq(actual.query, "query2")

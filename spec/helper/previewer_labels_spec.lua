@@ -19,7 +19,7 @@ describe("helper.previewer_labels", function()
   end
 
   local str = require("fzfx.commons.str")
-  local fileio = require("fzfx.commons.fileio")
+  local fio = require("fzfx.commons.fio")
   local parsers_helper = require("fzfx.helper.parsers")
   local previewer_labels_helper = require("fzfx.helper.previewer_labels")
   require("fzfx").setup()
@@ -194,7 +194,7 @@ describe("helper.previewer_labels", function()
 
   describe("[label_ls/lsd/eza]", function()
     local TEMP = vim.fn.tempname()
-    fileio.writefile(TEMP --[[@as string]], vim.fn.getcwd() --[[@as string]])
+    fio.writefile(TEMP --[[@as string]], vim.fn.getcwd() --[[@as string]])
     local CONTEXT = {
       bufnr = vim.api.nvim_get_current_buf(),
       winnr = vim.api.nvim_get_current_win(),

@@ -17,7 +17,7 @@ describe("helper.parsers", function()
   local num = require("fzfx.commons.num")
   local tbl = require("fzfx.commons.tbl")
   local path = require("fzfx.commons.path")
-  local fileio = require("fzfx.commons.fileio")
+  local fio = require("fzfx.commons.fio")
   local consts = require("fzfx.lib.constants")
   local parsers_helper = require("fzfx.helper.parsers")
   require("fzfx").setup()
@@ -375,7 +375,7 @@ describe("helper.parsers", function()
 
   describe("[parse_ls/parse_lsd/parse_eza]", function()
     local tmp = vim.fn.tempname()
-    fileio.writefile(tmp, cwd)
+    fio.writefile(tmp, cwd)
     local CONTEXT = { cwd = tmp }
     it("ls", function()
       local lines = {

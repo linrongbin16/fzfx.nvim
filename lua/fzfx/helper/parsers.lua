@@ -1,7 +1,7 @@
 local tbl = require("fzfx.commons.tbl")
 local str = require("fzfx.commons.str")
 local num = require("fzfx.commons.num")
-local fileio = require("fzfx.commons.fileio")
+local fio = require("fzfx.commons.fio")
 local path = require("fzfx.commons.path")
 
 local consts = require("fzfx.lib.constants")
@@ -500,7 +500,7 @@ M._make_parse_ls = function(start_pos, name)
   --- @param context fzfx.FileExplorerPipelineContext
   --- @return {filename:string}
   local function impl(line, context)
-    local cwd = fileio.readfile(context.cwd, { trim = true })
+    local cwd = fio.readfile(context.cwd, { trim = true })
     assert(
       str.not_empty(cwd),
       string.format("failed to parse file explorer context, cwd:%s", vim.inspect(cwd))

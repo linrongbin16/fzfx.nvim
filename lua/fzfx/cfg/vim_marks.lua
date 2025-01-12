@@ -1,7 +1,7 @@
 local tbl = require("fzfx.commons.tbl")
 local num = require("fzfx.commons.num")
 local str = require("fzfx.commons.str")
-local fileio = require("fzfx.commons.fileio")
+local fio = require("fzfx.commons.fio")
 local path = require("fzfx.commons.path")
 
 local constants = require("fzfx.lib.constants")
@@ -166,7 +166,7 @@ M._get_marks_output_in_lines = function()
     ]],
     tmpfile
   ))
-  local lines = fileio.readlines(tmpfile) --[[@as string[] ]]
+  local lines = fio.readlines(tmpfile) --[[@as string[] ]]
   return lines
 end
 

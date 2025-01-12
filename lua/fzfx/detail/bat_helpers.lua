@@ -23,7 +23,7 @@ local str = require("fzfx.commons.str")
 local tbl = require("fzfx.commons.tbl")
 local color_hl = require("fzfx.commons.color.hl")
 local path = require("fzfx.commons.path")
-local fileio = require("fzfx.commons.fileio")
+local fio = require("fzfx.commons.fio")
 local spawn = require("fzfx.commons.spawn")
 
 local consts = require("fzfx.lib.constants")
@@ -653,7 +653,7 @@ M._build_theme = function(colorname)
   end
   building_bat_theme = true
 
-  fileio.asyncwritefile(theme_config_file, rendered_result.payload, function()
+  fio.asyncwritefile(theme_config_file, rendered_result.payload, function()
     vim.defer_fn(function()
       -- log.debug(
       --   "|_build_theme| dump theme payload, theme_template:%s",

@@ -16,7 +16,7 @@ describe("detail.general", function()
 
   local tbl = require("fzfx.commons.tbl")
   local str = require("fzfx.commons.str")
-  local fileio = require("fzfx.commons.fileio")
+  local fio = require("fzfx.commons.fio")
   local path = require("fzfx.commons.path")
 
   local schema = require("fzfx.schema")
@@ -49,8 +49,8 @@ describe("detail.general", function()
       assert_eq(ps:switch("default"), nil)
       assert_eq(ps:provide("hello", {}), ProviderTypeEnum.PLAIN_COMMAND_STRING)
       if not github_actions then
-        local meta1 = fileio.readfile(general._provider_metafile(), { trim = true })
-        local result1 = fileio.readfile(general._provider_resultfile(), { trim = true })
+        local meta1 = fio.readfile(general._provider_metafile(), { trim = true })
+        local result1 = fio.readfile(general._provider_resultfile(), { trim = true })
         print(string.format("metafile1:%s\n", meta1))
         local metajson1 = vim.json.decode(meta1) --[[@as table]]
         assert_eq(type(metajson1), "table")
@@ -79,8 +79,8 @@ describe("detail.general", function()
       assert_eq(ps:switch("default"), nil)
       assert_eq(ps:provide("hello", {}), ProviderTypeEnum.PLAIN_COMMAND_ARRAY)
       if not github_actions then
-        local meta2 = fileio.readfile(general._provider_metafile(), { trim = true })
-        local result2 = fileio.readfile(general._provider_resultfile(), { trim = true })
+        local meta2 = fio.readfile(general._provider_metafile(), { trim = true })
+        local result2 = fio.readfile(general._provider_resultfile(), { trim = true })
         print(string.format("metafile2:%s\n", meta2))
         local metajson1 = vim.json.decode(meta2) --[[@as table]]
         assert_eq(type(metajson1), "table")
@@ -118,8 +118,8 @@ describe("detail.general", function()
       assert_eq(ps:switch("p1"), nil)
       assert_eq(ps:provide("hello", {}), ProviderTypeEnum.PLAIN_COMMAND_STRING)
       if not github_actions then
-        local meta3 = fileio.readfile(general._provider_metafile(), { trim = true })
-        local result3 = fileio.readfile(general._provider_resultfile(), { trim = true })
+        local meta3 = fio.readfile(general._provider_metafile(), { trim = true })
+        local result3 = fio.readfile(general._provider_resultfile(), { trim = true })
         print(string.format("metafile3:%s\n", meta3))
         local metajson1 = vim.json.decode(meta3) --[[@as table]]
         assert_eq(type(metajson1), "table")
@@ -142,8 +142,8 @@ describe("detail.general", function()
       assert_eq(ps:switch("p2"), nil)
       assert_eq(ps:provide("hello", {}), ProviderTypeEnum.PLAIN_COMMAND_ARRAY)
       if not github_actions then
-        local meta4 = fileio.readfile(general._provider_metafile(), { trim = true })
-        local result4 = fileio.readfile(general._provider_resultfile(), { trim = true })
+        local meta4 = fio.readfile(general._provider_metafile(), { trim = true })
+        local result4 = fio.readfile(general._provider_resultfile(), { trim = true })
         print(string.format("metafile4:%s\n", meta4))
         local metajson1 = vim.json.decode(meta4) --[[@as table]]
         assert_eq(type(metajson1), "table")
@@ -179,8 +179,8 @@ describe("detail.general", function()
       assert_eq(ps:switch("default"), nil)
       assert_eq(ps:provide("hello", {}), ProviderTypeEnum.FUNCTIONAL_COMMAND_STRING)
       if not github_actions then
-        local meta1 = fileio.readfile(general._provider_metafile(), { trim = true })
-        local result1 = fileio.readfile(general._provider_resultfile(), { trim = true })
+        local meta1 = fio.readfile(general._provider_metafile(), { trim = true })
+        local result1 = fio.readfile(general._provider_resultfile(), { trim = true })
         print(string.format("metafile1:%s\n", meta1))
         local metajson1 = vim.json.decode(meta1) --[[@as table]]
         assert_eq(type(metajson1), "table")
@@ -211,8 +211,8 @@ describe("detail.general", function()
       assert_eq(ps:switch("default"), nil)
       assert_eq(ps:provide("hello", {}), ProviderTypeEnum.FUNCTIONAL_COMMAND_ARRAY)
       if not github_actions then
-        local meta1 = fileio.readfile(general._provider_metafile(), { trim = true })
-        local result1 = fileio.readfile(general._provider_resultfile(), { trim = true })
+        local meta1 = fio.readfile(general._provider_metafile(), { trim = true })
+        local result1 = fio.readfile(general._provider_resultfile(), { trim = true })
         print(string.format("metafile1:%s\n", meta1))
         local metajson1 = vim.json.decode(meta1) --[[@as table]]
         assert_eq(type(metajson1), "table")
@@ -240,8 +240,8 @@ describe("detail.general", function()
       assert_eq(ps:switch("default"), nil)
       assert_eq(ps:provide("hello", {}), ProviderTypeEnum.DIRECT)
       if not github_actions then
-        local meta1 = fileio.readfile(general._provider_metafile(), { trim = true })
-        local result1 = fileio.readfile(general._provider_resultfile(), { trim = true })
+        local meta1 = fio.readfile(general._provider_metafile(), { trim = true })
+        local result1 = fio.readfile(general._provider_resultfile(), { trim = true })
         print(string.format("metafile1:%s\n", meta1))
         local metajson1 = vim.json.decode(meta1) --[[@as table]]
         assert_eq(type(metajson1), "table")
@@ -271,8 +271,8 @@ describe("detail.general", function()
       print(string.format("GITHUB_ACTIONS:%s\n", os.getenv("GITHUB_ACTIONS")))
       assert_eq(ps:preview("hello", {}), PreviewerTypeEnum.FUNCTIONAL_COMMAND_STRING)
       if not github_actions then
-        local meta1 = fileio.readfile(general._previewer_metafile(), { trim = true })
-        local result1 = fileio.readfile(general._previewer_resultfile(), { trim = true })
+        local meta1 = fio.readfile(general._previewer_metafile(), { trim = true })
+        local result1 = fio.readfile(general._previewer_resultfile(), { trim = true })
         print(string.format("metafile1:%s\n", meta1))
         local metajson1 = vim.json.decode(meta1) --[[@as table]]
         assert_eq(type(metajson1), "table")
@@ -284,8 +284,8 @@ describe("detail.general", function()
       ps:switch("p2")
       assert_eq(ps:preview("world", {}), PreviewerTypeEnum.FUNCTIONAL_COMMAND_ARRAY)
       if not github_actions then
-        local meta2 = fileio.readfile(general._previewer_metafile(), { trim = true })
-        local result2 = fileio.readfile(general._previewer_resultfile(), { trim = true })
+        local meta2 = fio.readfile(general._previewer_metafile(), { trim = true })
+        local result2 = fio.readfile(general._previewer_resultfile(), { trim = true })
         print(string.format("metafile2:%s\n", meta2))
         local metajson2 = vim.json.decode(meta2) --[[@as table]]
         assert_eq(type(metajson2), "table")
@@ -317,8 +317,8 @@ describe("detail.general", function()
       }, FZFPORTFILE)
       assert_eq(ps:preview("hello", {}), PreviewerTypeEnum.FUNCTIONAL_COMMAND_STRING)
       if not github_actions then
-        local meta1 = fileio.readfile(general._previewer_metafile(), { trim = true })
-        local result1 = fileio.readfile(general._previewer_resultfile(), { trim = true })
+        local meta1 = fio.readfile(general._previewer_metafile(), { trim = true })
+        local result1 = fio.readfile(general._previewer_resultfile(), { trim = true })
         print(string.format("metafile:%s\n", meta1))
         local metajson1 = vim.json.decode(meta1) --[[@as table]]
         assert_eq(type(metajson1), "table")
@@ -330,8 +330,8 @@ describe("detail.general", function()
       ps:switch("p2")
       assert_eq(ps:preview("world", {}), PreviewerTypeEnum.FUNCTIONAL_COMMAND_ARRAY)
       if not github_actions then
-        local meta2 = fileio.readfile(general._previewer_metafile(), { trim = true })
-        local result2 = fileio.readfile(general._previewer_resultfile(), { trim = true })
+        local meta2 = fio.readfile(general._previewer_metafile(), { trim = true })
+        local result2 = fio.readfile(general._previewer_resultfile(), { trim = true })
         print(string.format("metafile:%s\n", meta2))
         local metajson2 = vim.json.decode(meta2) --[[@as table]]
         assert_eq(type(metajson2), "table")
@@ -402,7 +402,7 @@ describe("detail.general", function()
     local FZFPORTFILE = general._make_cache_filename("fzf_port_file")
     it("not previews label", function()
       local name = "label_test1"
-      fileio.writefile(FZFPORTFILE, "12345")
+      fio.writefile(FZFPORTFILE, "12345")
       local ps = general.PreviewerSwitch:new(name, "p1", {
         p1 = {
           previewer = function()
@@ -423,7 +423,7 @@ describe("detail.general", function()
     end)
     it("previews label", function()
       local name = "label_test2"
-      fileio.writefile(FZFPORTFILE, "54321")
+      fio.writefile(FZFPORTFILE, "54321")
       local ps = general.PreviewerSwitch:new(name, "p1", {
         p1 = {
           previewer = function()
@@ -453,7 +453,7 @@ describe("detail.general", function()
     local FZFPORTFILE = general._make_cache_filename("fzf_port_file")
     it("test", function()
       local name = "current1"
-      fileio.writefile(FZFPORTFILE, "12345")
+      fio.writefile(FZFPORTFILE, "12345")
       local ps = general.PreviewerSwitch:new(name, "p1", {
         p1 = {
           previewer = function()

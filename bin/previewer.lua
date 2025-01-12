@@ -6,7 +6,7 @@ vim.opt.runtimepath:append(SELF_PATH)
 
 local str = require("fzfx.commons.str")
 local tbl = require("fzfx.commons.tbl")
-local fileio = require("fzfx.commons.fileio")
+local fio = require("fzfx.commons.fio")
 local spawn = require("fzfx.commons.spawn")
 local schema = require("fzfx.schema")
 local shell_helpers = require("fzfx.detail.shell_helpers")
@@ -51,7 +51,7 @@ vim.rpcrequest(
 )
 vim.fn.chanclose(channel_id)
 
-local metajsonstring = fileio.readfile(metafile, { trim = true }) --[[@as string]]
+local metajsonstring = fio.readfile(metafile, { trim = true }) --[[@as string]]
 shell_helpers.log_ensure(
   str.not_empty(metajsonstring),
   "metajsonstring is not string! " .. vim.inspect(metajsonstring)
@@ -69,7 +69,7 @@ end
 
 local PreviewerTypeEnum = schema.PreviewerTypeEnum
 if metaopts.previewer_type == PreviewerTypeEnum.FUNCTIONAL_COMMAND_STRING then
-  local cmd = fileio.readfile(resultfile, { trim = true })
+  local cmd = fio.readfile(resultfile, { trim = true })
   shell_helpers.log_debug("cmd:" .. vim.inspect(cmd))
   if str.empty(cmd) then
     os.exit(0)
@@ -77,7 +77,7 @@ if metaopts.previewer_type == PreviewerTypeEnum.FUNCTIONAL_COMMAND_STRING then
     os.execute(cmd)
   end
 elseif metaopts.previewer_type == PreviewerTypeEnum.FUNCTIONAL_COMMAND_ARRAY then
-  local cmd = fileio.readfile(resultfile, { trim = true })
+  local cmd = fio.readfile(resultfile, { trim = true })
   shell_helpers.log_debug("cmd:" .. vim.inspect(cmd))
   if str.empty(cmd) then
     os.exit(0)
