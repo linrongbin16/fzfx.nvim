@@ -241,7 +241,7 @@ M.fzf_preview_git_commit = function(line)
 
   local first_space_pos = str.find(line, " ")
   local commit_id = line:sub(1, first_space_pos - 1) --[[@as string]]
-  if consts.HAS_DELTA then
+  if consts.HAS_DELTA and not consts.IS_WINDOWS then
     return string.format("git show %s | delta -n --tabs 4 --width $FZF_PREVIEW_COLUMNS", commit_id)
   else
     return string.format("git show --color=always %s", commit_id)
@@ -257,7 +257,7 @@ end
 --- @return string
 M.fzf_preview_git_status = function(line)
   local parsed = parsers_helper.parse_git_status(line)
-  if consts.HAS_DELTA then
+  if consts.HAS_DELTA and not consts.IS_WINDOWS then
     return string.format(
       "git diff %s | delta -n --tabs 4 --width $FZF_PREVIEW_COLUMNS",
       shells.shellescape(parsed.filename)
