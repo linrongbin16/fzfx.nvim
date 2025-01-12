@@ -1152,33 +1152,36 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
           return
         end
 
-        fileio.asyncreadfile(buffer_previewer_actions_file, function(actions_data)
-          -- log.debug(
-          --   string.format(
-          --     "|general - buffer_previewer_actions_fsevent:start| complete read actions_file:%s, actions_data:%s",
-          --     vim.inspect(actions_file),
-          --     vim.inspect(actions_data)
-          --   )
-          -- )
-          if not popup or not popup:provider_is_valid() then
-            return
-          end
-          if constants.IS_WINDOWS then
-            if str.startswith(actions_data, '"') then
-              actions_data = string.sub(actions_data, 2)
-            end
-            if str.endswith(actions_data, '"') then
-              actions_data = string.sub(actions_data, 1, #actions_data - 1)
-            end
-          end
-
-          vim.schedule(function()
+        fileio.asyncreadfile(buffer_previewer_actions_file, {
+          on_complete = function(actions_data)
+            -- log.debug(
+            --   string.format(
+            --     "|general - buffer_previewer_actions_fsevent:start| complete read actions_file:%s, actions_data:%s",
+            --     vim.inspect(actions_file),
+            --     vim.inspect(actions_data)
+            --   )
+            -- )
             if not popup or not popup:provider_is_valid() then
               return
             end
-            popup.popup_window:preview_action(actions_data)
-          end)
-        end, { trim = true })
+            if constants.IS_WINDOWS then
+              if str.startswith(actions_data, '"') then
+                actions_data = string.sub(actions_data, 2)
+              end
+              if str.endswith(actions_data, '"') then
+                actions_data = string.sub(actions_data, 1, #actions_data - 1)
+              end
+            end
+
+            vim.schedule(function()
+              if not popup or not popup:provider_is_valid() then
+                return
+              end
+              popup.popup_window:preview_action(actions_data)
+            end)
+          end,
+          trim = true,
+        })
       end
     )
     log.ensure(
