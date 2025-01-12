@@ -1,7 +1,7 @@
 local tbl = require("fzfx.commons.tbl")
 local str = require("fzfx.commons.str")
 local path = require("fzfx.commons.path")
-local fileio = require("fzfx.commons.fileio")
+local fileio = require("fzfx.commons.fio")
 
 local consts = require("fzfx.lib.constants")
 local log = require("fzfx.lib.log")

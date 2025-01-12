@@ -1,6 +1,6 @@
 ---@diagnostic disable: invisible
 
-local fileio = require("fzfx.commons.fileio")
+local fileio = require("fzfx.commons.fio")
 local path = require("fzfx.commons.path")
 local version = require("fzfx.commons.version")
 local uv = require("fzfx.commons.uv")

@@ -3,7 +3,7 @@ local path = require("fzfx.commons.path")
 local str = require("fzfx.commons.str")
 local num = require("fzfx.commons.num")
 local color_term = require("fzfx.commons.color.term")
-local fileio = require("fzfx.commons.fileio")
+local fileio = require("fzfx.commons.fio")
 local uv = require("fzfx.commons.uv")
 
 local constants = require("fzfx.lib.constants")

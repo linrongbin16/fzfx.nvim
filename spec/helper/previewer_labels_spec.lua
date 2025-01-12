@@ -19,7 +19,7 @@ describe("helper.previewer_labels", function()
   end
 
   local str = require("fzfx.commons.str")
-  local fileio = require("fzfx.commons.fileio")
+  local fileio = require("fzfx.commons.fio")
   local parsers_helper = require("fzfx.helper.parsers")
   local previewer_labels_helper = require("fzfx.helper.previewer_labels")
   require("fzfx").setup()

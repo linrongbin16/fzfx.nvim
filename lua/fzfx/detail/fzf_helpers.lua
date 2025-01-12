@@ -1,7 +1,7 @@
 local str = require("fzfx.commons.str")
 local tbl = require("fzfx.commons.tbl")
 local path = require("fzfx.commons.path")
-local fileio = require("fzfx.commons.fileio")
+local fileio = require("fzfx.commons.fio")
 local color_hl = require("fzfx.commons.color.hl")
 
 local constants = require("fzfx.lib.constants")

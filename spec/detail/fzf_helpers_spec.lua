@@ -15,7 +15,7 @@ describe("detail.fzf_helpers", function()
 
   local tbl = require("fzfx.commons.tbl")
   local str = require("fzfx.commons.str")
-  local fileio = require("fzfx.commons.fileio")
+  local fileio = require("fzfx.commons.fio")
   local fzf_helpers = require("fzfx.detail.fzf_helpers")
   local CommandFeedEnum = require("fzfx.schema").CommandFeedEnum
   require("fzfx").setup({

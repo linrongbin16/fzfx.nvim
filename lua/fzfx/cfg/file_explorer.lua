@@ -1,6 +1,6 @@
 local str = require("fzfx.commons.str")
 local path = require("fzfx.commons.path")
-local fileio = require("fzfx.commons.fileio")
+local fileio = require("fzfx.commons.fio")
 
 local consts = require("fzfx.lib.constants")
 local shells = require("fzfx.lib.shells")

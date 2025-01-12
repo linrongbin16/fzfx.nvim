@@ -6,7 +6,7 @@ vim.opt.runtimepath:append(SELF_PATH)
 
 local str = require("fzfx.commons.str")
 local tbl = require("fzfx.commons.tbl")
-local fileio = require("fzfx.commons.fileio")
+local fileio = require("fzfx.commons.fio")
 local spawn = require("fzfx.commons.spawn")
 local schema = require("fzfx.schema")
 local shell_helpers = require("fzfx.detail.shell_helpers")

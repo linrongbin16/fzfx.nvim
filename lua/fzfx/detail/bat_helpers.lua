@@ -23,7 +23,7 @@ local str = require("fzfx.commons.str")
 local tbl = require("fzfx.commons.tbl")
 local color_hl = require("fzfx.commons.color.hl")
 local path = require("fzfx.commons.path")
-local fileio = require("fzfx.commons.fileio")
+local fileio = require("fzfx.commons.fio")
 local spawn = require("fzfx.commons.spawn")
 
 local consts = require("fzfx.lib.constants")
