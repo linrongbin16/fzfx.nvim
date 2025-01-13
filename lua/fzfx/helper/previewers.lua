@@ -30,30 +30,6 @@ M._bat_style = function()
   return "--style=" .. style
 end
 
---- @return string?
-M._bat_theme = function()
-  local theme = "base16"
-  if str.not_empty(vim.env["BAT_THEME"]) then
-    theme = vim.env["BAT_THEME"]
-    return "--theme=" .. theme
-  end
-
-  if switches.bat_theme_autogen_enabled() and consts.HAS_BAT and vim.opt.termguicolors then
-    local colorname = bat_themes_helper.get_color_name()
-    if str.not_empty(colorname) then
-      local theme_config_file = bat_themes_helper.get_theme_config_filename(colorname) --[[@as string]]
-      if str.not_empty(theme_config_file) and path.isfile(theme_config_file) then
-        local theme_name = bat_themes_helper.get_theme_name(colorname) --[[@as string]]
-        if str.not_empty(theme_name) then
-          return "--theme=" .. theme_name
-        end
-      end
-    end
-  end
-
-  return nil
-end
-
 -- The margin of fzf preview window
 local FZF_PREVIEW_WINDOW_MARGIN = 6
 
@@ -94,11 +70,7 @@ M._fzf_preview_find = function(filename)
     local results = vim.deepcopy(M._FZF_PREVIEW_BAT)
 
     local style = M._bat_style()
-    local theme = M._bat_theme()
     table.insert(results, style)
-    if str.not_empty(theme) then
-      table.insert(results, theme)
-    end
     table.insert(results, "--")
     table.insert(results, filename)
     return results
@@ -155,14 +127,10 @@ M._fzf_preview_grep = function(filename, lineno)
     local results = vim.deepcopy(M._FZF_PREVIEW_BAT)
 
     local style = M._bat_style()
-    local theme = M._bat_theme()
     if type(lineno) == "number" then
       table.insert(results, "--highlight-line=" .. lineno)
     end
     table.insert(results, style)
-    if str.not_empty(theme) then
-      table.insert(results, theme)
-    end
     table.insert(results, "--")
     table.insert(results, filename)
     return results
@@ -295,11 +263,7 @@ M._fzf_preview_grep_with_line_range = function(filename, lineno)
     local results = vim.deepcopy(M._FZF_PREVIEW_BAT)
 
     local style = M._bat_style()
-    local theme = M._bat_theme()
     table.insert(results, style)
-    if str.not_empty(theme) then
-      table.insert(results, theme)
-    end
     table.insert(results, "--highlight-line=" .. lineno)
 
     local win_height = vim.api.nvim_win_get_height(0)
