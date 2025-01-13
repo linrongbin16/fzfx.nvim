@@ -579,11 +579,13 @@ function BufferPopupWindow:preview_file(job_id, previewer_result, previewer_labe
             end
 
             -- Update file contents by lines.
+            local WIN_HEIGHT = vim.api.nvim_win_get_height(self.previewer_winnr)
             local LINES_COUNT = #LINES
             local FIRST_LINE = 1
             local LAST_LINE = LINES_COUNT
-            local LINES_STEP =
-              math.max(math.ceil(math.sqrt(LINES_COUNT)), math.max(30, vim.o.lines))
+            -- local LINES_STEP =
+            --   math.max(math.ceil(math.sqrt(LINES_COUNT)), math.max(30, vim.o.lines))
+            local LINES_STEP = math.max(30, vim.o.lines)
             local SCHEDULE_TIME = LINES_COUNT >= 500
                 and math.max(10 - string.len(tostring(LINES_COUNT)) * 2, 3)
               or 10
@@ -671,10 +673,9 @@ function BufferPopupWindow:preview_file(job_id, previewer_result, previewer_labe
                   and previewer_result.lineno > 0
                   and previewer_result.lineno > end_line
                 then
-                  local win_height = vim.api.nvim_win_get_height(self.previewer_winnr)
                   local view = buffer_popup_window_helpers.make_center_view(
                     LINES_COUNT,
-                    win_height,
+                    WIN_HEIGHT,
                     previewer_result.lineno
                   )
                   vim.api.nvim_win_call(self.previewer_winnr, function()
