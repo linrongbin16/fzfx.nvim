@@ -597,7 +597,7 @@ function BufferPopupWindow:preview_file(job_id, previewer_result, previewer_labe
             local LINES_STEP =
               math.max(math.ceil(math.sqrt(LINES_COUNT)), math.max(30, vim.o.lines))
             local SCHEDULE_TIMEOUT = LINES_COUNT >= 500
-                and math.max(10 - string.len(tostring(LINES_COUNT)) * 2, 1)
+                and math.max(10 - string.len(tostring(LINES_COUNT)) * 2, 2)
               or 10
             local line_idx = FIRST_LINE
 
