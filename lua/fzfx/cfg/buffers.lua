@@ -2,17 +2,13 @@ local str = require("fzfx.commons.str")
 local path = require("fzfx.commons.path")
 
 local bufs = require("fzfx.lib.bufs")
-local switches = require("fzfx.lib.switches")
-
 local parsers_helper = require("fzfx.helper.parsers")
 local actions_helper = require("fzfx.helper.actions")
 local labels_helper = require("fzfx.helper.previewer_labels")
 local previewers_helper = require("fzfx.helper.previewers")
-
 local ProviderTypeEnum = require("fzfx.schema").ProviderTypeEnum
 local PreviewerTypeEnum = require("fzfx.schema").PreviewerTypeEnum
 local CommandFeedEnum = require("fzfx.schema").CommandFeedEnum
-
 local _decorator = require("fzfx.cfg._decorator")
 
 local M = {}
@@ -80,19 +76,9 @@ M.providers = {
   provider_decorator = { module = _decorator.PREPEND_ICON_FIND },
 }
 
-local previewer
-local previewer_type
-if switches.buffer_previewer_disabled() then
-  previewer = previewers_helper.fzf_preview_find
-  previewer_type = PreviewerTypeEnum.FUNCTIONAL_COMMAND_ARRAY
-else
-  previewer = previewers_helper.buffer_preview_find
-  previewer_type = PreviewerTypeEnum.BUFFER
-end
-
 M.previewers = {
-  previewer = previewer,
-  previewer_type = previewer_type,
+  previewer = previewers_helper.fzf_preview_find,
+  previewer_type = PreviewerTypeEnum.FUNCTIONAL_COMMAND_ARRAY,
   previewer_label = labels_helper.label_find,
 }
 

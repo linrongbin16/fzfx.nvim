@@ -8,17 +8,13 @@ local path = require("fzfx.commons.path")
 local fio = require("fzfx.commons.fio")
 local color_term = require("fzfx.commons.color.term")
 
-local switches = require("fzfx.lib.switches")
 local log = require("fzfx.lib.log")
 local LogLevels = require("fzfx.lib.log").LogLevels
 local lsp = require("fzfx.lib.lsp")
-
 local actions_helper = require("fzfx.helper.actions")
 local labels_helper = require("fzfx.helper.previewer_labels")
 local previewers_helper = require("fzfx.helper.previewers")
-
 local PreviewerTypeEnum = require("fzfx.schema").PreviewerTypeEnum
-
 local _lsp = require("fzfx.cfg._lsp")
 
 local M = {}
@@ -551,19 +547,9 @@ M._lsp_position_context_maker = function()
   return context
 end
 
-local previewer
-local previewer_type
-if switches.buffer_previewer_disabled() then
-  previewer = previewers_helper.fzf_preview_grep
-  previewer_type = PreviewerTypeEnum.FUNCTIONAL_COMMAND_ARRAY
-else
-  previewer = previewers_helper.buffer_preview_grep
-  previewer_type = PreviewerTypeEnum.BUFFER
-end
-
 M.previewers = {
-  previewer = previewer,
-  previewer_type = previewer_type,
+  previewer = previewers_helper.fzf_preview_grep,
+  previewer_type = PreviewerTypeEnum.FUNCTIONAL_COMMAND_ARRAY,
   previewer_label = labels_helper.label_rg,
 }
 
