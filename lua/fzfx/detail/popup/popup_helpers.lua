@@ -574,6 +574,7 @@ end
 
 M.FLOAT_WIN_STYLE = "minimal"
 M.FLOAT_WIN_ZINDEX = 60
+M.FLOAT_WIN_BORDER = "none"
 
 -- constants }
 

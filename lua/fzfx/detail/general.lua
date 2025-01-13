@@ -1094,11 +1094,6 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
     )
   end
 
-  local previewer_opts = {}
-  local non_buffer_previewer_border_opts = nil
-  fzf_opts, non_buffer_previewer_border_opts = mock_non_buffer_previewer_fzf_border_opts(fzf_opts)
-  previewer_opts.fzf_border_opts = non_buffer_previewer_border_opts
-
   popup = Popup:new(win_opts or {}, query_command, fzf_opts, actions, context, function(last_query)
     -- On popup exit
 
@@ -1148,7 +1143,7 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
       --   )
       -- )
     end)
-  end, previewer_opts)
+  end)
 end
 
 --- @param name string
