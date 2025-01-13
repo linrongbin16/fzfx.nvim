@@ -336,24 +336,28 @@ function BufferPopupWindow:close()
   -- )
 
   -- Clean up windows.
-  if type(self.provider_winnr) == "number" and vim.api.nvim_win_is_valid(self.provider_winnr) then
-    vim.api.nvim_win_close(self.provider_winnr, true)
-  end
-  if type(self.previewer_winnr) == "number" and vim.api.nvim_win_is_valid(self.previewer_winnr) then
-    vim.api.nvim_win_close(self.previewer_winnr, true)
-  end
+  local provider_win = self.provider_winnr
+  local previewer_win = self.previewer_winnr
   self.provider_winnr = nil
   self.previewer_winnr = nil
+  if type(provider_win) == "number" and vim.api.nvim_win_is_valid(provider_win) then
+    vim.api.nvim_win_close(provider_win, true)
+  end
+  if type(previewer_win) == "number" and vim.api.nvim_win_is_valid(previewer_win) then
+    vim.api.nvim_win_close(previewer_win, true)
+  end
 
   -- Clean up buffers.
-  if type(self.provider_bufnr) == "number" and vim.api.nvim_buf_is_valid(self.provider_bufnr) then
-    vim.api.nvim_buf_delete(self.provider_bufnr, { force = true })
-  end
-  if type(self.previewer_bufnr) == "number" and vim.api.nvim_buf_is_valid(self.previewer_bufnr) then
-    vim.api.nvim_buf_delete(self.previewer_bufnr, { force = true })
-  end
+  local provider_buf = self.provider_bufnr
+  local previewer_buf = self.previewer_bufnr
   self.provider_bufnr = nil
   self.previewer_bufnr = nil
+  if type(provider_buf) == "number" and vim.api.nvim_buf_is_valid(provider_buf) then
+    vim.api.nvim_buf_delete(provider_buf, { force = true })
+  end
+  if type(previewer_buf) == "number" and vim.api.nvim_buf_is_valid(previewer_buf) then
+    vim.api.nvim_buf_delete(previewer_buf, { force = true })
+  end
 
   -- Restore window context.
   self.saved_win_ctx:restore()
