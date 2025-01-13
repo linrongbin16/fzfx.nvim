@@ -11,8 +11,10 @@ local fzf_helpers = require("fzfx.detail.fzf_helpers")
 local popup_helpers = require("fzfx.detail.popup.popup_helpers")
 local fzf_popup_window = require("fzfx.detail.popup.fzf_popup_window")
 
+local M = {}
+
 --- @type table<integer, fzfx.PopupWindow>
-local PopupWindowInstances = {}
+M._PopupWindowInstances = {}
 
 --- @class fzfx.PopupWindow
 --- @field instance fzfx.FzfPopupWindow
@@ -35,7 +37,7 @@ function PopupWindow:new(win_opts)
   setmetatable(o, self)
   self.__index = self
 
-  PopupWindowInstances[instance:handle()] = o
+  M._PopupWindowInstances[instance:handle()] = o
 
   return o
 end
@@ -44,7 +46,7 @@ function PopupWindow:close()
   -- log.debug("|fzfx.popup - Popup:close| self:%s", vim.inspect(self))
 
   if self.instance then
-    PopupWindowInstances[self.instance:handle()] = nil
+    M._PopupWindowInstances[self.instance:handle()] = nil
     self.instance:close()
     self.instance = nil
   end
@@ -267,17 +269,17 @@ end
 
 --- @return table<integer, fzfx.PopupWindow>
 local function _get_instances()
-  return PopupWindowInstances
+  return M._PopupWindowInstances
 end
 
 local function _clear_instances()
-  PopupWindowInstances = {}
+  M._PopupWindowInstances = {}
 end
 
 --- @return integer
 local function _count_instances()
   local n = 0
-  for _, popup_win in pairs(PopupWindowInstances) do
+  for _, popup_win in pairs(M._PopupWindowInstances) do
     if popup_win then
       n = n + 1
     end
@@ -286,7 +288,7 @@ local function _count_instances()
 end
 
 local function _resize_instances()
-  for _, popup_win in pairs(PopupWindowInstances) do
+  for _, popup_win in pairs(M._PopupWindowInstances) do
     if popup_win then
       popup_win:resize()
     end
@@ -306,19 +308,17 @@ local function setup()
   end
 end
 
-local M = {
-  _get_instances = _get_instances,
-  _clear_instances = _clear_instances,
-  _count_instances = _count_instances,
-  _resize_instances = _resize_instances,
+M._get_instances = _get_instances
+M._clear_instances = _clear_instances
+M._count_instances = _count_instances
+M._resize_instances = _resize_instances
 
-  _make_expect_keys = _make_expect_keys,
-  _merge_fzf_actions = _merge_fzf_actions,
-  _make_fzf_command = _make_fzf_command,
+M._make_expect_keys = _make_expect_keys
+M._merge_fzf_actions = _merge_fzf_actions
+M._make_fzf_command = _make_fzf_command
 
-  PopupWindow = PopupWindow,
-  Popup = Popup,
-  setup = setup,
-}
+M.PopupWindow = PopupWindow
+M.Popup = Popup
+M.setup = setup
 
 return M
