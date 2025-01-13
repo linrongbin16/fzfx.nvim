@@ -369,12 +369,6 @@ end
 --- @param context fzfx.PipelineContext?
 function ProviderSwitch:provide(query, context)
   local provider_config = self.provider_configs[self.pipeline] --[[@as fzfx.ProviderConfig]]
-  -- log.debug(
-  --     "|fzfx.general - ProviderSwitch:provide| pipeline:%s, provider_config:%s, context:%s",
-  --     vim.inspect(self.pipeline),
-  --     vim.inspect(provider_config),
-  --     vim.inspect(context)
-  -- )
   log.ensure(
     type(provider_config) == "table",
     string.format(
@@ -533,12 +527,6 @@ end
 --- @return fzfx.PreviewerType
 function PreviewerSwitch:preview(line, context)
   local previewer_config = self.previewer_configs[self.pipeline]
-  -- log.debug(
-  --     "|fzfx.general - PreviewerSwitch:preview| pipeline:%s, previewer_config:%s, context:%s",
-  --     vim.inspect(self.pipeline),
-  --     vim.inspect(previewer_config),
-  --     vim.inspect(context)
-  -- )
   log.ensure(
     type(previewer_config) == "table",
     string.format(
@@ -662,12 +650,6 @@ end
 --- @return string?
 function PreviewerSwitch:_preview_label(line, context)
   local previewer_config = self.previewer_configs[self.pipeline]
-  -- log.debug(
-  --     "|fzfx.general - PreviewerSwitch:preview_label| pipeline:%s, previewer_config:%s, context:%s",
-  --     vim.inspect(self.pipeline),
-  --     vim.inspect(previewer_config),
-  --     vim.inspect(context)
-  -- )
   log.ensure(
     type(previewer_config) == "table",
     string.format(
@@ -795,10 +777,6 @@ function HeaderSwitch:new(provider_configs, interaction_configs)
   if schema.is_provider_config(provider_configs) then
     headers_map[DEFAULT_PIPELINE] = _make_help_doc(interaction_configs, {})
   else
-    -- log.debug(
-    --     "|fzfx.general - HeaderSwitch:new| provider_configs:%s",
-    --     vim.inspect(provider_configs)
-    -- )
     for provider_name, provider_opts in pairs(provider_configs) do
       local help_builder = _make_help_doc(provider_configs, {}, { provider_name })
       headers_map[provider_name] = _make_help_doc(interaction_configs, help_builder)
@@ -842,116 +820,6 @@ local function get_pipeline_size(pipeline_configs)
     end
   end
   return n
-end
-
---- @param action_name string
---- @param action_file string
---- @return string
-local function dump_action_command(action_name, action_file)
-  if constants.IS_WINDOWS then
-    return string.format("execute-silent(cmd.exe /C echo %s>%s)", action_name, action_file)
-  else
-    return string.format("execute-silent(echo %s>%s)", action_name, action_file)
-  end
-end
-
---- @param fzf_opts fzfx.FzfOpt[]
---- @param fzf_action_file string
---- @return fzfx.FzfOpt[], fzfx.BufferPreviewerOpts
-local function mock_buffer_previewer_fzf_opts(fzf_opts, fzf_action_file)
-  local new_fzf_opts = {}
-  local border_opts = fzf_helpers.FZF_DEFAULT_BORDER_OPTS
-  local pw_opts = {}
-  for _, o in ipairs(fzf_opts) do
-    local mocked = false
-
-    if type(o) == "table" and str.not_empty(o[1]) and str.startswith(o[1], "--preview-window") then
-      table.insert(pw_opts, o)
-      mocked = true
-    elseif
-      str.not_empty(o) and str.startswith(o --[[@as string]], "--preview-window")
-    then
-      table.insert(pw_opts, o)
-      mocked = true
-    end
-
-    if type(o) == "table" and str.not_empty(o[1]) and str.startswith(o[1], "--border") then
-      border_opts = o[2]
-      mocked = true
-    elseif
-      str.not_empty(o) and str.startswith(o --[[@as string]], "--border")
-    then
-      border_opts = string.sub(o --[[@as string]], string.len("--border") + 2)
-      mocked = true
-    end
-
-    -- preview actions
-    local split_o = nil
-    for action_name, _ in pairs(fzf_helpers.FZF_PREVIEW_ACTIONS) do
-      if type(o) == "table" and str.not_empty(o[2]) then
-        if str.find(o[2], action_name) then
-          split_o = o
-        end
-      elseif str.not_empty(o) then
-        if
-          str.find(o --[[@as string]], action_name)
-        then
-          local split_pos = str.find(o --[[@as string]], "=")
-          if not split_pos then
-            split_pos = str.find(o --[[@as string]], " ")
-          end
-          if type(split_pos) == "number" and split_pos > 1 then
-            split_o = {}
-            local o1 = str.trim(string.sub(o --[[@as string]], 1, split_pos - 1))
-            -- log.debug(
-            --   "|general - use_buffer_previewer| o:%s, split_pos:%s, o1:%s",
-            --   vim.inspect(o),
-            --   vim.inspect(split_pos),
-            --   vim.inspect(o1)
-            -- )
-            local o2 = str.trim(string.sub(o --[[@as string]], split_pos + 1))
-            -- log.debug(
-            --   "|general - use_buffer_previewer| o:%s, split_pos:%s, o2:%s",
-            --   vim.inspect(o),
-            --   vim.inspect(split_pos),
-            --   vim.inspect(o2)
-            -- )
-            table.insert(split_o, o1)
-            table.insert(split_o, o2)
-          end
-        end
-      end
-
-      if type(split_o) == "table" and #split_o == 2 then
-        if str.find(split_o[2], action_name) then
-          local new_o2 =
-            str.replace(split_o[2], action_name, dump_action_command(action_name, fzf_action_file))
-          table.insert(new_fzf_opts, { split_o[1], new_o2 })
-          mocked = true
-        end
-      end
-
-      split_o = nil
-    end
-
-    if not mocked then
-      table.insert(new_fzf_opts, o)
-    end
-  end
-
-  local preview_window_opts =
-    fzf_helpers.parse_fzf_preview_window_opts(#pw_opts > 0 and pw_opts or {
-      {
-        "--preview-window",
-        "right,50%",
-      },
-    })
-
-  return new_fzf_opts,
-    {
-      fzf_border_opts = border_opts,
-      fzf_preview_window_opts = preview_window_opts,
-    }
 end
 
 --- @param fzf_opts fzfx.FzfOpt[]
@@ -1397,8 +1265,6 @@ local M = {
   _should_skip_help = _should_skip_help,
   _make_help_doc = _make_help_doc,
   HeaderSwitch = HeaderSwitch,
-  dump_action_command = dump_action_command,
-  mock_buffer_previewer_fzf_opts = mock_buffer_previewer_fzf_opts,
 }
 
 return M
