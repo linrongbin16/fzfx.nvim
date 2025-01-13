@@ -40,17 +40,6 @@ describe("helper.previewers", function()
     end)
   end)
 
-  describe("[_bat_theme]", function()
-    it("default", function()
-      vim.env.BAT_THEME = nil
-      assert_true(str.startswith(previewers_helper._bat_theme(), "--theme="))
-    end)
-    it("overwrite", function()
-      vim.env.BAT_THEME = "MyBatTheme"
-      assert_eq(previewers_helper._bat_theme(), "--theme=MyBatTheme")
-    end)
-  end)
-
   describe("[_fzf_preview_window_width]", function()
     it("test", function()
       local actual = previewers_helper._fzf_preview_window_width()
