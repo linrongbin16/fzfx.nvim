@@ -622,11 +622,15 @@ function BufferPopupWindow:preview_file(job_id, previewer_result, previewer_labe
     -- Read file content
     fio.asyncreadfile(previewer_result.filename, {
       on_complete = function(contents)
-        preview_file_impl(contents)
+        vim.schedule(function()
+          preview_file_impl(contents)
+        end)
       end,
       on_error = function()
         -- When failed to open/read file, simply treat as empty file.
-        preview_file_impl("")
+        vim.schedule(function()
+          preview_file_impl("")
+        end)
       end,
     })
   end, 100)
