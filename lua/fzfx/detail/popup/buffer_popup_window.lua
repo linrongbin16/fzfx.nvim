@@ -525,54 +525,7 @@ function BufferPopupWindow:preview_file(job_id, previewer_result, previewer_labe
       --   )
       -- )
 
-      -- Update file type for syntax highlighting.
-      do
-        local filetype = vim.filetype.match({ filename = previewer_result.filename }) or ""
-        vim.api.nvim_set_option_value("filetype", filetype, { buf = self.previewer_bufnr })
-      end
-
-      -- Update preview window label.
-      do
-        local label_opts = {
-          title = previewer_label_result,
-          title_pos = "center",
-        }
-        vim.api.nvim_win_set_config(self.previewer_winnr, label_opts)
-        local wrap = self._saved_buffer_previewer_opts.fzf_preview_window_opts.wrap
-        _set_previewer_win_opts(self.previewer_winnr, wrap, self._saved_current_winnr)
-      end
-
-      local EXTMARKS_NAMESPACE = "fzfx-file-buffer-previewer"
-
-      -- Clear old extmarks.
-      do
-        local extmark_ns = vim.api.nvim_create_namespace(EXTMARKS_NAMESPACE)
-        local old_extmarks = vim.api.nvim_buf_get_extmarks(
-          self.previewer_bufnr,
-          extmark_ns,
-          { 0, 0 },
-          { -1, -1 },
-          {}
-        )
-        if tbl.list_not_empty(old_extmarks) then
-          for i, m in ipairs(old_extmarks) do
-            pcall(vim.api.nvim_buf_del_extmark, self.previewer_bufnr, extmark_ns, m[1])
-          end
-        end
-      end
-
-      -- Update file contents by lines.
-      local LINES_COUNT = #LINES
-
-      local FIRST_LINE = 1
-      local LAST_LINE = LINES_COUNT
-      local LINES_STEP = math.max(math.ceil(math.sqrt(LINES_COUNT)), math.max(30, vim.o.lines))
-      local line_idx = FIRST_LINE
-
-      local updated_extmarks = false
-      local updated_win_view = false
-
-      local function set_lines_impl()
+      vim.defer_fn(function()
         if not self:is_last_previewing_file_job_id(job_id) then
           return
         end
@@ -580,90 +533,173 @@ function BufferPopupWindow:preview_file(job_id, previewer_result, previewer_labe
           return
         end
 
-        local start_line = line_idx
-        local end_line = math.max(start_line + LINES_STEP, LINES_COUNT)
-
-        -- Set lines.
+        -- Update file type for syntax highlighting.
         do
-          local tmplines = {}
-          for i = start_line, end_line do
-            table.insert(tmplines, LINES[i])
-          end
-          -- 0-index, exclusive.
-          vim.api.nvim_buf_set_lines(self.previewer_bufnr, start_line - 1, end_line, false, LINES)
+          local filetype = vim.filetype.match({ filename = previewer_result.filename }) or ""
+          vim.api.nvim_set_option_value("filetype", filetype, { buf = self.previewer_bufnr })
         end
 
-        -- Set lineno, i.e. the highlighted line.
-        if not updated_extmarks then
-          if
-            type(previewer_result.lineno) == "number"
-            and previewer_result.lineno > 0
-            and end_line > previewer_result.lineno
-          then
-            local highlighted_line = LINES[previewer_result.lineno]
-            local highlighted_line_len = str.not_empty(highlighted_line)
-                and string.len(highlighted_line)
-              or 0
-            local start_row = previewer_result.lineno - 1
-            local end_row = previewer_result.lineno - 1
-            local start_col = 0
-            local end_col = highlighted_line_len > 0 and highlighted_line_len or nil
-            local ext_opts = {
-              end_row = end_row,
-              end_col = end_col,
-              strict = false,
-              sign_hl_group = "CursorLineSign",
-              number_hl_group = "CursorLineNr",
-              line_hl_group = "Visual",
+        vim.defer_fn(function()
+          if not self:is_last_previewing_file_job_id(job_id) then
+            return
+          end
+          if not self:previewer_is_valid() then
+            return
+          end
+
+          -- Update preview window label.
+          do
+            local label_opts = {
+              title = previewer_label_result,
+              title_pos = "center",
             }
-            local extmark_ns = vim.api.nvim_create_namespace(EXTMARKS_NAMESPACE)
-            ---@diagnostic disable-next-line: unused-local
-            local extmark_ok, extmark_result = pcall(
-              vim.api.nvim_buf_set_extmark,
-              self.previewer_bufnr,
-              extmark_ns,
-              start_row,
-              start_col,
-              ext_opts
-            )
+            vim.api.nvim_win_set_config(self.previewer_winnr, label_opts)
+            local wrap = self._saved_buffer_previewer_opts.fzf_preview_window_opts.wrap
+            _set_previewer_win_opts(self.previewer_winnr, wrap, self._saved_current_winnr)
           end
-          updated_extmarks = true
-        end
 
-        -- Update window view.
-        if not updated_win_view then
-          if type(previewer_result.lineno) == "number" and previewer_result.lineno > 0 then
-            local win_height = vim.api.nvim_win_get_height(self.previewer_winnr)
-            local view = buffer_popup_window_helpers.make_center_view(
-              LINES_COUNT,
-              win_height,
-              previewer_result.lineno
-            )
-            vim.api.nvim_win_call(self.previewer_winnr, function()
-              vim.api.nvim_command(string.format([[call winrestview({'topline':%d})]], view.top))
-            end)
-          else
-            vim.api.nvim_win_call(self.previewer_winnr, function()
-              vim.api.nvim_command(string.format([[call winrestview({'topline':%d})]], 1))
-            end)
-          end
-          updated_win_view = true
-        end
+          local EXTMARKS_NAMESPACE = "fzfx-file-buffer-previewer"
 
-        line_idx = line_idx + LINES_STEP
-        if line_idx <= LAST_LINE then
-          -- More lines to render.
-          vim.defer_fn(
-            set_lines_impl,
-            LINES_COUNT >= 500 and math.max(10 - string.len(tostring(LINES_COUNT)) * 2, 1) or 10
-          )
-        else
-          -- Complete render.
-          vim.api.nvim_buf_set_lines(self.previewer_bufnr, LINES_COUNT, -1, false, {})
-        end
-      end
+          vim.defer_fn(function()
+            if not self:is_last_previewing_file_job_id(job_id) then
+              return
+            end
+            if not self:previewer_is_valid() then
+              return
+            end
 
-      set_lines_impl()
+            -- Clear old extmarks.
+            do
+              local extmark_ns = vim.api.nvim_create_namespace(EXTMARKS_NAMESPACE)
+              local old_extmarks = vim.api.nvim_buf_get_extmarks(
+                self.previewer_bufnr,
+                extmark_ns,
+                { 0, 0 },
+                { -1, -1 },
+                {}
+              )
+              if tbl.list_not_empty(old_extmarks) then
+                for i, m in ipairs(old_extmarks) do
+                  pcall(vim.api.nvim_buf_del_extmark, self.previewer_bufnr, extmark_ns, m[1])
+                end
+              end
+            end
+
+            -- Update file contents by lines.
+            local LINES_COUNT = #LINES
+
+            local FIRST_LINE = 1
+            local LAST_LINE = LINES_COUNT
+            local LINES_STEP =
+              math.max(math.ceil(math.sqrt(LINES_COUNT)), math.max(30, vim.o.lines))
+            local SCHEDULE_TIMEOUT = LINES_COUNT >= 500
+                and math.max(10 - string.len(tostring(LINES_COUNT)) * 2, 1)
+              or 10
+            local line_idx = FIRST_LINE
+
+            local updated_extmarks = false
+            local updated_win_view = false
+
+            local function set_lines_impl()
+              if not self:is_last_previewing_file_job_id(job_id) then
+                return
+              end
+              if not self:previewer_is_valid() then
+                return
+              end
+
+              local start_line = line_idx
+              local end_line = math.max(start_line + LINES_STEP, LINES_COUNT)
+
+              -- Set lines.
+              do
+                local tmplines = {}
+                for i = start_line, end_line do
+                  table.insert(tmplines, LINES[i])
+                end
+                -- 0-index, exclusive.
+                vim.api.nvim_buf_set_lines(
+                  self.previewer_bufnr,
+                  start_line - 1,
+                  end_line,
+                  false,
+                  LINES
+                )
+              end
+
+              -- Set lineno, i.e. the highlighted line.
+              if not updated_extmarks then
+                if
+                  type(previewer_result.lineno) == "number"
+                  and previewer_result.lineno > 0
+                  and end_line > previewer_result.lineno
+                then
+                  local highlighted_line = LINES[previewer_result.lineno]
+                  local highlighted_line_len = str.not_empty(highlighted_line)
+                      and string.len(highlighted_line)
+                    or 0
+                  local start_row = previewer_result.lineno - 1
+                  local end_row = previewer_result.lineno - 1
+                  local start_col = 0
+                  local end_col = highlighted_line_len > 0 and highlighted_line_len or nil
+                  local ext_opts = {
+                    end_row = end_row,
+                    end_col = end_col,
+                    strict = false,
+                    sign_hl_group = "CursorLineSign",
+                    number_hl_group = "CursorLineNr",
+                    line_hl_group = "Visual",
+                  }
+                  local extmark_ns = vim.api.nvim_create_namespace(EXTMARKS_NAMESPACE)
+                  ---@diagnostic disable-next-line: unused-local
+                  local extmark_ok, extmark_result = pcall(
+                    vim.api.nvim_buf_set_extmark,
+                    self.previewer_bufnr,
+                    extmark_ns,
+                    start_row,
+                    start_col,
+                    ext_opts
+                  )
+                end
+                updated_extmarks = true
+              end
+
+              -- Update window view.
+              if not updated_win_view then
+                if type(previewer_result.lineno) == "number" and previewer_result.lineno > 0 then
+                  local win_height = vim.api.nvim_win_get_height(self.previewer_winnr)
+                  local view = buffer_popup_window_helpers.make_center_view(
+                    LINES_COUNT,
+                    win_height,
+                    previewer_result.lineno
+                  )
+                  vim.api.nvim_win_call(self.previewer_winnr, function()
+                    vim.api.nvim_command(
+                      string.format([[call winrestview({'topline':%d})]], view.top)
+                    )
+                  end)
+                else
+                  vim.api.nvim_win_call(self.previewer_winnr, function()
+                    vim.api.nvim_command(string.format([[call winrestview({'topline':%d})]], 1))
+                  end)
+                end
+                updated_win_view = true
+              end
+
+              line_idx = line_idx + LINES_STEP
+              if line_idx <= LAST_LINE then
+                -- More lines to render.
+                vim.defer_fn(set_lines_impl, SCHEDULE_TIMEOUT)
+              else
+                -- Complete render.
+                vim.api.nvim_buf_set_lines(self.previewer_bufnr, LINES_COUNT, -1, false, {})
+              end
+            end
+
+            vim.defer_fn(set_lines_impl, SCHEDULE_TIMEOUT)
+          end, 10)
+        end, 10)
+      end, 10)
     end
 
     -- Read file content
@@ -680,7 +716,7 @@ function BufferPopupWindow:preview_file(job_id, previewer_result, previewer_labe
         end)
       end,
     })
-  end, 100)
+  end, 50)
 end
 
 --- @alias fzfx.BufferPopupWindowPreviewFileContentJob {contents:string[],job_id:integer,previewer_result:fzfx.BufferPreviewerResult ,previewer_label_result:string?}
