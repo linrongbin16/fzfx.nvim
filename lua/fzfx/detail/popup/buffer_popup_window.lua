@@ -627,7 +627,7 @@ function BufferPopupWindow:preview_file(job_id, previewer_result, previewer_labe
                   start_line - 1,
                   end_line,
                   false,
-                  LINES
+                  tmplines
                 )
               end
 
