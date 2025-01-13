@@ -263,14 +263,6 @@ end
 
 -- function Popup:close() end
 
-function Popup:previewer_is_valid()
-  return self.popup_window ~= nil and self.popup_window:previewer_is_valid()
-end
-
-function Popup:provider_is_valid()
-  return self.popup_window ~= nil and self.popup_window:provider_is_valid()
-end
-
 -- PopupWindowInstances {
 
 --- @return table<integer, fzfx.PopupWindow>
