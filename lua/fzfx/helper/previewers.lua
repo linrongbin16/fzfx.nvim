@@ -30,7 +30,7 @@ M._bat_style = function()
   return "--style=" .. style
 end
 
---- @return string
+--- @return string?
 M._bat_theme = function()
   local theme = "base16"
   if str.not_empty(vim.env["BAT_THEME"]) then
@@ -51,7 +51,7 @@ M._bat_theme = function()
     end
   end
 
-  return "--theme=" .. theme
+  return nil
 end
 
 -- The margin of fzf preview window
@@ -96,7 +96,9 @@ M._fzf_preview_find = function(filename)
     local style = M._bat_style()
     local theme = M._bat_theme()
     table.insert(results, style)
-    table.insert(results, theme)
+    if str.not_empty(theme) then
+      table.insert(results, theme)
+    end
     table.insert(results, "--")
     table.insert(results, filename)
     return results
@@ -158,7 +160,9 @@ M._fzf_preview_grep = function(filename, lineno)
       table.insert(results, "--highlight-line=" .. lineno)
     end
     table.insert(results, style)
-    table.insert(results, theme)
+    if str.not_empty(theme) then
+      table.insert(results, theme)
+    end
     table.insert(results, "--")
     table.insert(results, filename)
     return results
@@ -293,7 +297,9 @@ M._fzf_preview_grep_with_line_range = function(filename, lineno)
     local style = M._bat_style()
     local theme = M._bat_theme()
     table.insert(results, style)
-    table.insert(results, theme)
+    if str.not_empty(theme) then
+      table.insert(results, theme)
+    end
     table.insert(results, "--highlight-line=" .. lineno)
 
     local win_height = vim.api.nvim_win_get_height(0)
