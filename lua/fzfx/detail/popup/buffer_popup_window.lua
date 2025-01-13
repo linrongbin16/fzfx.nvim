@@ -614,7 +614,7 @@ function BufferPopupWindow:preview_file(job_id, previewer_result, previewer_labe
             previewer_result.lineno
           )
           vim.api.nvim_win_call(self.previewer_winnr, function()
-            vim.api.nvim_command(string.format([[call winrestview({'topline':%d})]], 1))
+            vim.api.nvim_command(string.format([[call winrestview({'topline':%d})]], view.top))
           end)
         else
           vim.api.nvim_win_call(self.previewer_winnr, function()
