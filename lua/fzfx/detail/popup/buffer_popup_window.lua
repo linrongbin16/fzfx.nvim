@@ -551,17 +551,6 @@ function BufferPopupWindow:preview_file(job_id, previewer_result, previewer_labe
             return
           end
 
-          -- Update preview window label.
-          do
-            local label_opts = {
-              title = previewer_label_result,
-              title_pos = "center",
-            }
-            vim.api.nvim_win_set_config(self.previewer_winnr, label_opts)
-            local wrap = self._saved_buffer_previewer_opts.fzf_preview_window_opts.wrap
-            _set_previewer_win_opts(self.previewer_winnr, wrap, self._saved_current_winnr)
-          end
-
           local EXTMARKS_NAMESPACE = "fzfx-file-buffer-previewer"
 
           vim.defer_fn(function()
@@ -592,19 +581,7 @@ function BufferPopupWindow:preview_file(job_id, previewer_result, previewer_labe
             -- Update file contents by lines.
             local LINES_COUNT = #LINES
 
-            local FIRST_LINE = 1
-            local LAST_LINE = LINES_COUNT
-            local LINES_STEP =
-              math.max(math.ceil(math.sqrt(LINES_COUNT)), math.max(30, vim.o.lines))
-            local SCHEDULE_TIMEOUT = LINES_COUNT >= 500
-                and math.max(10 - string.len(tostring(LINES_COUNT)) * 2, 2)
-              or 10
-            local line_idx = FIRST_LINE
-
-            local updated_extmarks = false
-            local updated_win_view = false
-
-            local function set_lines_impl()
+            vim.defer_fn(function()
               if not self:is_last_previewing_file_job_id(job_id) then
                 return
               end
@@ -612,32 +589,22 @@ function BufferPopupWindow:preview_file(job_id, previewer_result, previewer_labe
                 return
               end
 
-              local start_line = line_idx
-              local end_line = math.max(start_line + LINES_STEP, LINES_COUNT)
-
               -- Set lines.
               do
-                local tmplines = {}
-                for i = start_line, end_line do
-                  table.insert(tmplines, LINES[i])
-                end
-                -- 0-index, exclusive.
-                vim.api.nvim_buf_set_lines(
-                  self.previewer_bufnr,
-                  start_line - 1,
-                  end_line,
-                  false,
-                  tmplines
-                )
+                vim.api.nvim_buf_set_lines(self.previewer_bufnr, 0, LINES_COUNT, false, LINES)
+                vim.api.nvim_buf_set_lines(self.previewer_bufnr, LINES_COUNT, -1, false, {})
               end
 
               -- Set lineno, i.e. the highlighted line.
-              if not updated_extmarks then
-                if
-                  type(previewer_result.lineno) == "number"
-                  and previewer_result.lineno > 0
-                  and end_line > previewer_result.lineno
-                then
+              vim.defer_fn(function()
+                if not self:is_last_previewing_file_job_id(job_id) then
+                  return
+                end
+                if not self:previewer_is_valid() then
+                  return
+                end
+
+                if type(previewer_result.lineno) == "number" and previewer_result.lineno > 0 then
                   local highlighted_line = LINES[previewer_result.lineno]
                   local highlighted_line_len = str.not_empty(highlighted_line)
                       and string.len(highlighted_line)
@@ -665,11 +632,19 @@ function BufferPopupWindow:preview_file(job_id, previewer_result, previewer_labe
                     ext_opts
                   )
                 end
-                updated_extmarks = true
-              end
 
-              -- Update window view.
-              if not updated_win_view then
+                -- Update preview window label.
+                do
+                  local label_opts = {
+                    title = previewer_label_result,
+                    title_pos = "center",
+                  }
+                  vim.api.nvim_win_set_config(self.previewer_winnr, label_opts)
+                  local wrap = self._saved_buffer_previewer_opts.fzf_preview_window_opts.wrap
+                  _set_previewer_win_opts(self.previewer_winnr, wrap, self._saved_current_winnr)
+                end
+
+                -- Update window view.
                 if type(previewer_result.lineno) == "number" and previewer_result.lineno > 0 then
                   local win_height = vim.api.nvim_win_get_height(self.previewer_winnr)
                   local view = buffer_popup_window_helpers.make_center_view(
@@ -687,23 +662,11 @@ function BufferPopupWindow:preview_file(job_id, previewer_result, previewer_labe
                     vim.api.nvim_command(string.format([[call winrestview({'topline':%d})]], 1))
                   end)
                 end
-                updated_win_view = true
-              end
-
-              line_idx = line_idx + LINES_STEP
-              if line_idx <= LAST_LINE then
-                -- More lines to render.
-                vim.defer_fn(set_lines_impl, SCHEDULE_TIMEOUT)
-              else
-                -- Complete render.
-                vim.api.nvim_buf_set_lines(self.previewer_bufnr, LINES_COUNT, -1, false, {})
-              end
-            end
-
-            vim.defer_fn(set_lines_impl, SCHEDULE_TIMEOUT)
-          end, 10)
-        end, 10)
-      end, 10)
+              end, 30)
+            end, 30)
+          end, 30)
+        end, 30)
+      end, 30)
     end
 
     -- Read file content
