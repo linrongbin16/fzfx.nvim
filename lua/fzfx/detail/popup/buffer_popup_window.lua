@@ -511,6 +511,8 @@ function BufferPopupWindow:preview_file(job_id, previewer_result, previewer_labe
     previewer_label_result = previewer_label_result,
   })
 
+  local MIN_LINE_STEP = math.max(30, vim.o.lines)
+
   vim.defer_fn(function()
     if #self.preview_files_queue == 0 then
       -- log.debug(
@@ -528,31 +530,23 @@ function BufferPopupWindow:preview_file(job_id, previewer_result, previewer_labe
       return
     end
 
-    local function async_read_file_handler(contents)
+    local function preview_file_impl(contents)
       if not self:is_last_previewing_file_job_id(last_job.job_id) then
         return
       end
+      if not self:previewer_is_valid() then
+        return
+      end
 
-      -- log.debug(
-      --   string.format(
-      --     "|BufferPopupWindow:preview_file - asyncreadfile| contents:%s",
-      --     vim.inspect(contents)
-      --   )
-      -- )
-      -- log.debug(
-      --   string.format(
-      --     "|BufferPopupWindow:preview_file - asyncreadfile| contents length:%s",
-      --     vim.inspect(string.len(contents))
-      --   )
-      -- )
-      local lines = {}
+      local LINES = {}
       if str.not_empty(contents) then
         contents = contents:gsub("\r\n", "\n")
-        lines = str.split(contents, "\n")
-        if str.endswith(contents, "\n") and #lines > 0 and lines[#lines] == "" then
-          table.remove(lines, #lines)
+        LINES = str.split(contents, "\n")
+        if str.endswith(contents, "\n") and #LINES > 0 and LINES[#LINES] == "" then
+          table.remove(LINES, #LINES)
         end
       end
+
       -- log.debug(
       --   string.format(
       --     "|BufferPopupWindow:preview_file - asyncreadfile| lines:%s",
@@ -565,8 +559,108 @@ function BufferPopupWindow:preview_file(job_id, previewer_result, previewer_labe
       --     vim.inspect(#lines)
       --   )
       -- )
+
+      -- Update file type for syntax highlighting.
+      local filetype = vim.filetype.match({ filename = previewer_result.filename }) or ""
+      vim.api.nvim_set_option_value("filetype", filetype, { buf = self.previewer_bufnr })
+
+      -- Update preview window label.
+      local title_opts = {
+        title = previewer_label_result,
+        title_pos = "center",
+      }
+      vim.api.nvim_win_set_config(self.previewer_winnr, title_opts)
+      local wrap = self._saved_buffer_previewer_opts.fzf_preview_window_opts.wrap
+      _set_previewer_win_opts(self.previewer_winnr, wrap, self._saved_current_winnr)
+
+      -- Update file contents by lines.
+      local LINES_COUNT = #LINES
+      local FIRST_LINE = 1
+      local LAST_LINE = LINES_COUNT
+      local LINES_STEP = math.max(math.ceil(math.sqrt(LINES_COUNT)), MIN_LINE_STEP)
+
+      local line_idx = FIRST_LINE
+
+      local function set_lines_impl()
+        if not self:is_last_previewing_file_job_id(last_job.job_id) then
+          return
+        end
+        if not self:previewer_is_valid() then
+          return
+        end
+
+        -- Set lines.
+        local start_line = line_idx
+        local end_line = math.min(start_line + LINES_STEP, LAST_LINE)
+        local set_start_line = start_line - 1
+        local set_end_line = end_line - 1
+        local tmplines = {}
+        for i = start_line, end_line do
+          table.insert(tmplines, LINES[i])
+        end
+        vim.api.nvim_buf_set_lines(
+          self.previewer_bufnr,
+          set_start_line,
+          set_end_line,
+          false,
+          tmplines
+        )
+
+        -- Set lineno, i.e. the highlighted line.
+        local extmark_ns = vim.api.nvim_create_namespace("fzfx-buffer-previewer")
+        local old_extmarks = vim.api.nvim_buf_get_extmarks(
+          self.previewer_bufnr,
+          extmark_ns,
+          { 0, 0 },
+          { -1, -1 },
+          {}
+        )
+        if tbl.list_not_empty(old_extmarks) then
+          for i, m in ipairs(old_extmarks) do
+            pcall(vim.api.nvim_buf_del_extmark, self.previewer_bufnr, extmark_ns, m[1])
+          end
+        end
+        if type(previewer_result.lineno) == "number" and previewer_result.lineno > 0 then
+          local highlighted_line = LINES[previewer_result.lineno]
+          local highlighted_line_len = str.not_empty(highlighted_line)
+              and string.len(highlighted_line)
+            or 0
+          local start_row = previewer_result.lineno - 1
+          local end_row = previewer_result.lineno - 1
+          local start_col = 0
+          local end_col = highlighted_line_len > 0 and highlighted_line_len or nil
+          local ext_opts = {
+            end_row = end_row,
+            end_col = end_col,
+            strict = false,
+            sign_hl_group = "CursorLineSign",
+            number_hl_group = "CursorLineNr",
+            line_hl_group = "Visual",
+          }
+          ---@diagnostic disable-next-line: unused-local
+          local extmark_ok, extmark_result = pcall(
+            vim.api.nvim_buf_set_extmark,
+            self.previewer_bufnr,
+            extmark_ns,
+            start_row,
+            start_col,
+            ext_opts
+          )
+        end
+
+        line_idx = line_idx + LINES_STEP
+        if line_idx <= LINES_COUNT then
+          vim.defer_fn(
+            set_lines_impl,
+            LINES_COUNT >= 500 and math.max(10 - string.len(tostring(LINES_COUNT)) * 2, 1) or 10
+          )
+        else
+          vim.api.nvim_buf_set_lines(self.previewer_bufnr, set_end_line, -1, false, {})
+        end
+      end
+
       table.insert(self.preview_file_contents_queue, {
-        contents = lines,
+        contents = LINES,
         job_id = last_job.job_id,
         previewer_result = last_job.previewer_result,
         previewer_label_result = last_job.previewer_label_result,
@@ -591,10 +685,12 @@ function BufferPopupWindow:preview_file(job_id, previewer_result, previewer_labe
 
     -- read file content
     fio.asyncreadfile(last_job.previewer_result.filename, {
-      on_complete = async_read_file_handler,
+      on_complete = function(contents)
+        preview_file_impl(contents)
+      end,
       on_error = function()
-        -- When failed to open/read the file, simply treats it as an empty file with empty text contents.
-        async_read_file_handler("")
+        -- When failed to open/read file, simply treat as empty file.
+        preview_file_impl("")
       end,
     })
   end, 20)
@@ -627,27 +723,6 @@ function BufferPopupWindow:preview_file_contents(file_content, content_view, on_
     if not self:is_last_previewing_file_job_id(file_content.job_id) then
       do_complete(false)
       return
-    end
-
-    local function set_win_title()
-      if not self:previewer_is_valid() then
-        return
-      end
-      if not self:is_last_previewing_file_job_id(file_content.job_id) then
-        return
-      end
-
-      local title_opts = {
-        title = file_content.previewer_label_result,
-        title_pos = "center",
-      }
-      vim.api.nvim_win_set_config(self.previewer_winnr, title_opts)
-      local wrap = self._saved_buffer_previewer_opts.fzf_preview_window_opts.wrap
-      _set_previewer_win_opts(self.previewer_winnr, wrap, self._saved_current_winnr)
-    end
-
-    if str.not_empty(file_content.previewer_label_result) then
-      vim.defer_fn(set_win_title, 100)
     end
 
     self:render_file_contents(file_content, content_view, on_complete)
