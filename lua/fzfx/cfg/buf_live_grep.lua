@@ -2,7 +2,6 @@ local str = require("fzfx.commons.str")
 local path = require("fzfx.commons.path")
 
 local constants = require("fzfx.lib.constants")
-local switches = require("fzfx.lib.switches")
 local bufs = require("fzfx.lib.bufs")
 local log = require("fzfx.lib.log")
 local LogLevels = require("fzfx.lib.log").LogLevels
@@ -117,19 +116,9 @@ M.providers = {
   provider_type = ProviderTypeEnum.FUNCTIONAL_COMMAND_ARRAY,
 }
 
-local previewer
-local previewer_type
-if switches.buffer_previewer_disabled() then
-  previewer = previewers_helper.fzf_preview_grep_no_filename
-  previewer_type = PreviewerTypeEnum.FUNCTIONAL_COMMAND_ARRAY
-else
-  previewer = previewers_helper.buffer_preview_grep_no_filename
-  previewer_type = PreviewerTypeEnum.BUFFER
-end
-
 M.previewers = {
-  previewer = previewer,
-  previewer_type = previewer_type,
+  previewer = previewers_helper.fzf_preview_grep_no_filename,
+  previewer_type = PreviewerTypeEnum.FUNCTIONAL_COMMAND_ARRAY,
   previewer_label = constants.HAS_RG and labels_helper.label_rg_no_filename
     or labels_helper.label_grep_no_filename,
 }

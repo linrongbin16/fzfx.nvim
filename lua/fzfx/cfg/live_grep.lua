@@ -3,18 +3,14 @@ local str = require("fzfx.commons.str")
 local path = require("fzfx.commons.path")
 
 local constants = require("fzfx.lib.constants")
-local switches = require("fzfx.lib.switches")
 local log = require("fzfx.lib.log")
 local LogLevels = require("fzfx.lib.log").LogLevels
-
 local actions_helper = require("fzfx.helper.actions")
 local labels_helper = require("fzfx.helper.previewer_labels")
 local previewers_helper = require("fzfx.helper.previewers")
-
 local ProviderTypeEnum = require("fzfx.schema").ProviderTypeEnum
 local PreviewerTypeEnum = require("fzfx.schema").PreviewerTypeEnum
 local CommandFeedEnum = require("fzfx.schema").CommandFeedEnum
-
 local _grep = require("fzfx.cfg._grep")
 local _decorator = require("fzfx.cfg._decorator")
 
@@ -218,30 +214,20 @@ M.providers = {
   },
 }
 
-local previewer
-local previewer_type
-if switches.buffer_previewer_disabled() then
-  previewer = previewers_helper.fzf_preview_grep
-  previewer_type = PreviewerTypeEnum.FUNCTIONAL_COMMAND_ARRAY
-else
-  previewer = previewers_helper.buffer_preview_grep
-  previewer_type = PreviewerTypeEnum.BUFFER
-end
-
 M.previewers = {
   restricted_mode = {
-    previewer = previewer,
-    previewer_type = previewer_type,
+    previewer = previewers_helper.fzf_preview_grep,
+    previewer_type = PreviewerTypeEnum.FUNCTIONAL_COMMAND_ARRAY,
     previewer_label = constants.HAS_RG and labels_helper.label_rg or labels_helper.label_grep,
   },
   unrestricted_mode = {
-    previewer = previewer,
-    previewer_type = previewer_type,
+    previewer = previewers_helper.fzf_preview_grep,
+    previewer_type = PreviewerTypeEnum.FUNCTIONAL_COMMAND_ARRAY,
     previewer_label = constants.HAS_RG and labels_helper.label_rg or labels_helper.label_grep,
   },
   buffer_mode = {
-    previewer = previewer,
-    previewer_type = previewer_type,
+    previewer = previewers_helper.fzf_preview_grep,
+    previewer_type = PreviewerTypeEnum.FUNCTIONAL_COMMAND_ARRAY,
     previewer_label = constants.HAS_RG and labels_helper.label_rg or labels_helper.label_grep,
   },
 }
