@@ -491,47 +491,17 @@ end
 --- @param previewer_label_result string?
 function BufferPopupWindow:preview_file(job_id, previewer_result, previewer_label_result)
   if str.empty(tbl.tbl_get(previewer_result, "filename")) then
-    -- log.debug(
-    --   "|BufferPopupWindow:preview_file| empty previewer_result:%s",
-    --   vim.inspect(previewer_result)
-    -- )
     return
   end
 
-  -- log.debug(
-  --   string.format(
-  --     "|BufferPopupWindow:preview_file| previewer_result:%s, previewer_label_result:%s",
-  --     vim.inspect(previewer_result),
-  --     vim.inspect(previewer_label_result)
-  --   )
-  -- )
-  table.insert(self.preview_files_queue, {
-    job_id = job_id,
-    previewer_result = previewer_result,
-    previewer_label_result = previewer_label_result,
-  })
-
-  local MIN_LINE_STEP = math.max(30, vim.o.lines)
-
   vim.defer_fn(function()
-    if #self.preview_files_queue == 0 then
-      -- log.debug(
-      --   "|BufferPopupWindow:preview_file| empty preview files queue:%s",
-      --   vim.inspect(self.preview_files_queue)
-      -- )
-      return
-    end
-
-    local last_job = self.preview_files_queue[#self.preview_files_queue]
-    self.preview_files_queue = {}
-
     -- check if the last job
-    if not self:is_last_previewing_file_job_id(last_job.job_id) then
+    if not self:is_last_previewing_file_job_id(job_id) then
       return
     end
 
     local function preview_file_impl(contents)
-      if not self:is_last_previewing_file_job_id(last_job.job_id) then
+      if not self:is_last_previewing_file_job_id(job_id) then
         return
       end
       if not self:previewer_is_valid() then
@@ -561,53 +531,35 @@ function BufferPopupWindow:preview_file(job_id, previewer_result, previewer_labe
       -- )
 
       -- Update file type for syntax highlighting.
-      local filetype = vim.filetype.match({ filename = previewer_result.filename }) or ""
-      vim.api.nvim_set_option_value("filetype", filetype, { buf = self.previewer_bufnr })
+      do
+        local filetype = vim.filetype.match({ filename = previewer_result.filename }) or ""
+        vim.api.nvim_set_option_value("filetype", filetype, { buf = self.previewer_bufnr })
+      end
 
       -- Update preview window label.
-      local title_opts = {
-        title = previewer_label_result,
-        title_pos = "center",
-      }
-      vim.api.nvim_win_set_config(self.previewer_winnr, title_opts)
-      local wrap = self._saved_buffer_previewer_opts.fzf_preview_window_opts.wrap
-      _set_previewer_win_opts(self.previewer_winnr, wrap, self._saved_current_winnr)
+      do
+        local label_opts = {
+          title = previewer_label_result,
+          title_pos = "center",
+        }
+        vim.api.nvim_win_set_config(self.previewer_winnr, label_opts)
+        local wrap = self._saved_buffer_previewer_opts.fzf_preview_window_opts.wrap
+        _set_previewer_win_opts(self.previewer_winnr, wrap, self._saved_current_winnr)
+      end
 
       -- Update file contents by lines.
       local LINES_COUNT = #LINES
-      local FIRST_LINE = 1
-      local LAST_LINE = LINES_COUNT
-      local LINES_STEP = math.max(math.ceil(math.sqrt(LINES_COUNT)), MIN_LINE_STEP)
+      local EXTMARKS_NAMESPACE = "fzfx-file-buffer-previewer"
 
-      local line_idx = FIRST_LINE
+      -- Set lines.
+      vim.api.nvim_buf_set_lines(self.previewer_bufnr, 0, LINES_COUNT, false, LINES)
+      if LINES_COUNT > 0 then
+        vim.api.nvim_buf_set_lines(self.previewer_bufnr, LINES_COUNT, -1, false, {})
+      end
 
-      local function set_lines_impl()
-        if not self:is_last_previewing_file_job_id(last_job.job_id) then
-          return
-        end
-        if not self:previewer_is_valid() then
-          return
-        end
-
-        -- Set lines.
-        local start_line = line_idx
-        local end_line = math.min(start_line + LINES_STEP, LAST_LINE)
-        local set_start_line = start_line - 1
-        local set_end_line = end_line - 1
-        local tmplines = {}
-        for i = start_line, end_line do
-          table.insert(tmplines, LINES[i])
-        end
-        vim.api.nvim_buf_set_lines(
-          self.previewer_bufnr,
-          set_start_line,
-          set_end_line,
-          false,
-          tmplines
-        )
-
-        -- Set lineno, i.e. the highlighted line.
-        local extmark_ns = vim.api.nvim_create_namespace("fzfx-buffer-previewer")
+      -- Clear old extmarks.
+      do
+        local extmark_ns = vim.api.nvim_create_namespace(EXTMARKS_NAMESPACE)
         local old_extmarks = vim.api.nvim_buf_get_extmarks(
           self.previewer_bufnr,
           extmark_ns,
@@ -620,71 +572,60 @@ function BufferPopupWindow:preview_file(job_id, previewer_result, previewer_labe
             pcall(vim.api.nvim_buf_del_extmark, self.previewer_bufnr, extmark_ns, m[1])
           end
         end
-        if type(previewer_result.lineno) == "number" and previewer_result.lineno > 0 then
-          local highlighted_line = LINES[previewer_result.lineno]
-          local highlighted_line_len = str.not_empty(highlighted_line)
-              and string.len(highlighted_line)
-            or 0
-          local start_row = previewer_result.lineno - 1
-          local end_row = previewer_result.lineno - 1
-          local start_col = 0
-          local end_col = highlighted_line_len > 0 and highlighted_line_len or nil
-          local ext_opts = {
-            end_row = end_row,
-            end_col = end_col,
-            strict = false,
-            sign_hl_group = "CursorLineSign",
-            number_hl_group = "CursorLineNr",
-            line_hl_group = "Visual",
-          }
-          ---@diagnostic disable-next-line: unused-local
-          local extmark_ok, extmark_result = pcall(
-            vim.api.nvim_buf_set_extmark,
-            self.previewer_bufnr,
-            extmark_ns,
-            start_row,
-            start_col,
-            ext_opts
-          )
-        end
-
-        line_idx = line_idx + LINES_STEP
-        if line_idx <= LINES_COUNT then
-          vim.defer_fn(
-            set_lines_impl,
-            LINES_COUNT >= 500 and math.max(10 - string.len(tostring(LINES_COUNT)) * 2, 1) or 10
-          )
-        else
-          vim.api.nvim_buf_set_lines(self.previewer_bufnr, set_end_line, -1, false, {})
-        end
       end
 
-      table.insert(self.preview_file_contents_queue, {
-        contents = LINES,
-        job_id = last_job.job_id,
-        previewer_result = last_job.previewer_result,
-        previewer_label_result = last_job.previewer_label_result,
-      })
+      -- Set lineno, i.e. the highlighted line.
+      if type(previewer_result.lineno) == "number" and previewer_result.lineno > 0 then
+        local highlighted_line = LINES[previewer_result.lineno]
+        local highlighted_line_len = str.not_empty(highlighted_line)
+            and string.len(highlighted_line)
+          or 0
+        local start_row = previewer_result.lineno - 1
+        local end_row = previewer_result.lineno - 1
+        local start_col = 0
+        local end_col = highlighted_line_len > 0 and highlighted_line_len or nil
+        local ext_opts = {
+          end_row = end_row,
+          end_col = end_col,
+          strict = false,
+          sign_hl_group = "CursorLineSign",
+          number_hl_group = "CursorLineNr",
+          line_hl_group = "Visual",
+        }
+        local extmark_ns = vim.api.nvim_create_namespace(EXTMARKS_NAMESPACE)
+        ---@diagnostic disable-next-line: unused-local
+        local extmark_ok, extmark_result = pcall(
+          vim.api.nvim_buf_set_extmark,
+          self.previewer_bufnr,
+          extmark_ns,
+          start_row,
+          start_col,
+          ext_opts
+        )
+      end
 
-      -- show file contents by lines
-      vim.defer_fn(function()
-        local last_content = self.preview_file_contents_queue[#self.preview_file_contents_queue]
-        self.preview_file_contents_queue = {}
-        self._saved_previewing_file_content_job = last_content
-
-        if not self:is_last_previewing_file_job_id(last_content.job_id) then
-          return
+      -- Update window view.
+      do
+        if type(previewer_result.lineno) == "number" and previewer_result.lineno > 0 then
+          local win_height = vim.api.nvim_win_get_height(self.previewer_winnr)
+          local view = buffer_popup_window_helpers.make_center_view(
+            LINES_COUNT,
+            win_height,
+            previewer_result.lineno
+          )
+          vim.api.nvim_win_call(self.previewer_winnr, function()
+            vim.api.nvim_command(string.format([[call winrestview({'topline':%d})]], 1))
+          end)
+        else
+          vim.api.nvim_win_call(self.previewer_winnr, function()
+            vim.api.nvim_command(string.format([[call winrestview({'topline':%d})]], 1))
+          end)
         end
-        if not self:previewer_is_valid() then
-          return
-        end
-        local view = self:_make_view(last_content)
-        self:preview_file_contents(last_content, view)
-      end, 10)
+      end
     end
 
-    -- read file content
-    fio.asyncreadfile(last_job.previewer_result.filename, {
+    -- Read file content
+    fio.asyncreadfile(previewer_result.filename, {
       on_complete = function(contents)
         preview_file_impl(contents)
       end,
@@ -693,7 +634,7 @@ function BufferPopupWindow:preview_file(job_id, previewer_result, previewer_labe
         preview_file_impl("")
       end,
     })
-  end, 20)
+  end, 100)
 end
 
 --- @alias fzfx.BufferPopupWindowPreviewFileContentJob {contents:string[],job_id:integer,previewer_result:fzfx.BufferPreviewerResult ,previewer_label_result:string?}
