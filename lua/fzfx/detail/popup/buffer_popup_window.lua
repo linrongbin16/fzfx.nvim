@@ -199,8 +199,6 @@ end
 --- @field _rendering boolean
 --- @field _resizing boolean
 --- @field _scrolling boolean
---- @field preview_files_queue fzfx.BufferPopupWindowPreviewFileJob[]
---- @field preview_file_contents_queue fzfx.BufferPopupWindowPreviewFileContentJob[]
 --- @field previewer_is_hidden boolean
 local BufferPopupWindow = {}
 
@@ -320,8 +318,6 @@ function BufferPopupWindow:new(win_opts, buffer_previewer_opts)
     _rendering = false,
     _scrolling = false,
     _resizing = false,
-    preview_files_queue = {},
-    preview_file_contents_queue = {},
     previewer_is_hidden = buffer_previewer_opts.fzf_preview_window_opts.hidden,
   }
   setmetatable(o, self)
@@ -485,7 +481,6 @@ function BufferPopupWindow:_make_view(preview_file_content)
   return view
 end
 
---- @alias fzfx.BufferPopupWindowPreviewFileJob {job_id:integer,previewer_result:fzfx.BufferPreviewerResult ,previewer_label_result:string?}
 --- @param job_id integer
 --- @param previewer_result fzfx.BufferPreviewerResult
 --- @param previewer_label_result string?
