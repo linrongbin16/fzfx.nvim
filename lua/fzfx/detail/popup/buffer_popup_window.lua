@@ -552,8 +552,10 @@ function BufferPopupWindow:preview_file(job_id, previewer_result, previewer_labe
       local EXTMARKS_NAMESPACE = "fzfx-file-buffer-previewer"
 
       -- Set lines.
-      vim.api.nvim_buf_set_lines(self.previewer_bufnr, 0, LINES_COUNT, false, LINES)
-      vim.api.nvim_buf_set_lines(self.previewer_bufnr, LINES_COUNT, -1, false, {})
+      do
+        vim.api.nvim_buf_set_lines(self.previewer_bufnr, 0, LINES_COUNT, false, LINES)
+        vim.api.nvim_buf_set_lines(self.previewer_bufnr, LINES_COUNT, -1, false, {})
+      end
 
       -- Clear old extmarks.
       do
