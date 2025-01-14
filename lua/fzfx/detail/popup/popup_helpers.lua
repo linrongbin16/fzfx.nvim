@@ -217,15 +217,8 @@ end
 --- @param relative_winnr integer
 --- @param relative_win_first_line integer the first line number of window (e.g. the view), from `vim.fn.line("w0")`
 --- @param win_opts {relative:"editor"|"win"|"cursor",height:number,width:number,row:number,col:number}
---- @param fzf_preview_window_opts fzfx.FzfPreviewWindowOpts?
---- @return {height:integer,width:integer,start_row:integer,end_row:integer,start_col:integer,end_col:integer,provider:{height:integer,width:integer,start_row:integer,end_row:integer,start_col:integer,end_col:integer}?,previewer:{height:integer,width:integer,start_row:integer,end_row:integer,start_col:integer,end_col:integer}?}
-M.make_center_layout = function(
-  relative_winnr,
-  ---@diagnostic disable-next-line: unused-local
-  relative_win_first_line,
-  win_opts,
-  fzf_preview_window_opts
-)
+--- @return {height:integer,width:integer,start_row:integer,end_row:integer,start_col:integer,end_col:integer}
+M.make_center_layout = function(relative_winnr, relative_win_first_line, win_opts)
   log.ensure(
     type(relative_winnr) == "number" and vim.api.nvim_win_is_valid(relative_winnr),
     string.format(
@@ -289,10 +282,10 @@ M.make_center_layout = function(
   --   vim.inspect(center_col + (width / 2))
   -- )
 
-  local start_row = math.floor(center_row - (height / 2)) - 1
-  local end_row = math.floor(center_row + (height / 2)) - 1
-  local start_col = math.floor(center_col - (width / 2)) - 1
-  local end_col = math.floor(center_col + (width / 2)) - 1
+  local start_row = (center_row - math.ceil(height / 2)) - 1
+  local end_row = (center_row + math.ceil(height / 2)) - 1
+  local start_col = (center_col - math.ceil(width / 2)) - 1
+  local end_col = (center_col + math.ceil(width / 2)) - 1
 
   local adjust_layout = M._adjust_layout_bound(
     total_height,
@@ -316,25 +309,14 @@ M.make_center_layout = function(
     end_col = end_col,
   }
 
-  -- log.debug(string.format("|make_center_layout| base_layout:%s", vim.inspect(result)))
-  local internal_layout = M._make_internal_layout(result, fzf_preview_window_opts)
-  result.provider = tbl.tbl_get(internal_layout, "provider")
-  result.previewer = tbl.tbl_get(internal_layout, "previewer")
-
   return result
 end
 
 --- @param relative_winnr integer
 --- @param relative_win_first_line integer the first line number of window (e.g. the view), from `vim.fn.line("w0")`
 --- @param win_opts {relative:"editor"|"win"|"cursor",height:number,width:number,row:number,col:number}
---- @param fzf_preview_window_opts fzfx.FzfPreviewWindowOpts?
---- @return {height:integer,width:integer,start_row:integer,end_row:integer,start_col:integer,end_col:integer,provider:{height:integer,width:integer,start_row:integer,end_row:integer,start_col:integer,end_col:integer}?,previewer:{height:integer,width:integer,start_row:integer,end_row:integer,start_col:integer,end_col:integer}?}
-M.make_cursor_layout = function(
-  relative_winnr,
-  relative_win_first_line,
-  win_opts,
-  fzf_preview_window_opts
-)
+--- @return {height:integer,width:integer,start_row:integer,end_row:integer,start_col:integer,end_col:integer}
+M.make_cursor_layout = function(relative_winnr, relative_win_first_line, win_opts)
   log.ensure(
     type(relative_winnr) == "number" and vim.api.nvim_win_is_valid(relative_winnr),
     string.format(
@@ -379,14 +361,15 @@ M.make_cursor_layout = function(
   )
 
   local start_row
+  local end_row
   if win_opts.row > -1 and win_opts.row < 1 then
     start_row = math.floor(total_height * win_opts.row) + cursor_relative_row
   else
     start_row = win_opts.row + cursor_relative_row
   end
 
-  local start_row_plus_height = start_row + height
-  local start_row_minus_3_and_height = start_row - 3 - height
+  local expected_end_row = start_row + height
+  local reversed_expected_start_row = start_row - 1 - height
   -- if cursor based popup window is too beyond bottom, it will cover the cursor
   -- thus we would place it in upper-side of cursor
   log.debug(
@@ -395,21 +378,25 @@ M.make_cursor_layout = function(
       vim.inspect(height),
       vim.inspect(width),
       vim.inspect(start_row),
-      vim.inspect(start_row_plus_height),
+      vim.inspect(expected_end_row),
       vim.inspect(total_height),
-      vim.inspect(start_row_plus_height > total_height),
-      vim.inspect(start_row_minus_3_and_height),
-      vim.inspect(start_row_minus_3_and_height >= 1)
+      vim.inspect(expected_end_row > total_height),
+      vim.inspect(reversed_expected_start_row),
+      vim.inspect(reversed_expected_start_row >= 1)
     )
   )
-  if start_row_plus_height > total_height and start_row_minus_3_and_height >= 1 then
-    start_row = start_row_minus_3_and_height
+  if expected_end_row > total_height and reversed_expected_start_row >= 1 then
+    -- Reverse the anchor, i.e. move the popup window upside of the cursor.
+    start_row = reversed_expected_start_row
+    end_row = start_row + height
+  else
+    -- Keep the anchor, i.e. popup window is still downside of the cursor.
+    end_row = start_row + height
   end
-  local end_row = start_row + height
 
   local center_col = M._get_center_col(win_opts, total_width)
-  local start_col = math.floor(center_col - (width / 2)) - 1
-  local end_col = math.floor(center_col + (width / 2)) - 1
+  local start_col = (center_col - math.ceil(width / 2)) - 1
+  local end_col = (center_col + math.ceil(width / 2)) - 1
 
   local adjust_layout = M._adjust_layout_bound(
     total_height,
@@ -433,139 +420,7 @@ M.make_cursor_layout = function(
     end_col = end_col,
   }
 
-  log.debug(string.format("|make_cursor_layout| base_layout:%s", vim.inspect(result)))
-  local internal_layout = M._make_internal_layout(result, fzf_preview_window_opts)
-  result.provider = tbl.tbl_get(internal_layout, "provider")
-  result.previewer = tbl.tbl_get(internal_layout, "previewer")
-
   return result
-end
-
---- @param base_layout {total_height:integer,total_width:integer,height:integer,width:integer,start_row:integer,end_row:integer,start_col:integer,end_col:integer}
---- @param fzf_preview_window_opts fzfx.FzfPreviewWindowOpts?
---- @return {provider:{height:integer,width:integer,start_row:integer,end_row:integer,start_col:integer,end_col:integer}?,previewer:{height:integer,width:integer,start_row:integer,end_row:integer,start_col:integer,end_col:integer}?}?
-M._make_internal_layout = function(base_layout, fzf_preview_window_opts)
-  --- @param v number
-  --- @return number
-  local function bound_row(v)
-    return num.bound(v, 0, base_layout.total_height - 1)
-  end
-
-  --- @param v number
-  --- @return number
-  local function bound_col(v)
-    return num.bound(v, 0, base_layout.total_width - 1)
-  end
-
-  --- @param v number
-  --- @return number
-  local function bound_height(v)
-    return num.bound(v, 1, base_layout.height)
-  end
-
-  --- @param v number
-  --- @return number
-  local function bound_width(v)
-    return num.bound(v, 1, base_layout.width)
-  end
-
-  if type(fzf_preview_window_opts) == "table" then
-    local provider_layout = {}
-    local previewer_layout = {}
-    if
-      fzf_preview_window_opts.position == "left"
-      or fzf_preview_window_opts.position == "right"
-    then
-      if fzf_preview_window_opts.size_is_percent then
-        previewer_layout.width =
-          bound_width(math.floor((base_layout.width / 100 * fzf_preview_window_opts.size) - 1))
-      else
-        previewer_layout.width = bound_width(fzf_preview_window_opts.size - 1)
-      end
-      provider_layout.width = bound_width(base_layout.width - previewer_layout.width - 2)
-      provider_layout.height = base_layout.height
-      previewer_layout.height = base_layout.height
-
-      -- the layout looks like
-      --
-      -- |      |       |
-      -- | left | right |
-      -- |      |       |
-
-      if fzf_preview_window_opts.position == "left" then
-        -- |           |          |
-        -- | previewer | provider |
-        -- |           |          |
-        previewer_layout.start_col = base_layout.start_col
-        previewer_layout.end_col = bound_col(base_layout.start_col + previewer_layout.width)
-        provider_layout.start_col = bound_col(base_layout.end_col - provider_layout.width)
-        provider_layout.end_col = base_layout.end_col
-      else
-        -- |          |           |
-        -- | provider | previewer |
-        -- |          |           |
-        provider_layout.start_col = base_layout.start_col
-        provider_layout.end_col = bound_col(base_layout.start_col + provider_layout.width)
-        previewer_layout.start_col = bound_col(base_layout.end_col - previewer_layout.width)
-        previewer_layout.end_col = base_layout.end_col
-      end
-      provider_layout.start_row = base_layout.start_row
-      provider_layout.end_row = base_layout.end_row
-      previewer_layout.start_row = base_layout.start_row
-      previewer_layout.end_row = base_layout.end_row
-    elseif
-      fzf_preview_window_opts
-      and (fzf_preview_window_opts.position == "up" or fzf_preview_window_opts.position == "down")
-    then
-      if fzf_preview_window_opts.size_is_percent then
-        previewer_layout.height =
-          bound_height(math.floor(base_layout.height / 100 * fzf_preview_window_opts.size) - 1)
-      else
-        previewer_layout.height = bound_height(fzf_preview_window_opts.size - 1)
-      end
-      provider_layout.height = bound_height(base_layout.height - previewer_layout.height - 2)
-      provider_layout.width = base_layout.width
-      previewer_layout.width = base_layout.width
-
-      -- the layout looks like
-      --
-      -- ---------
-      --    up
-      -- ---------
-      --   down
-      -- ---------
-
-      if fzf_preview_window_opts.position == "up" then
-        -- -------------
-        --   previewer
-        -- -------------
-        --   provider
-        -- -------------
-        previewer_layout.start_row = base_layout.start_row
-        previewer_layout.end_row = bound_row(base_layout.start_row + previewer_layout.height)
-        provider_layout.start_row = bound_row(base_layout.end_row - provider_layout.height)
-        provider_layout.end_row = base_layout.end_row
-      else
-        -- -------------
-        --   provider
-        -- -------------
-        --   previewer
-        -- -------------
-        provider_layout.start_row = base_layout.start_row
-        provider_layout.end_row = bound_row(base_layout.start_row + provider_layout.height)
-        previewer_layout.start_row = bound_row(base_layout.end_row - previewer_layout.height)
-        previewer_layout.end_row = base_layout.end_row
-      end
-      provider_layout.start_col = base_layout.start_col
-      provider_layout.end_col = base_layout.end_col
-      previewer_layout.start_col = base_layout.start_col
-      previewer_layout.end_col = base_layout.end_col
-    end
-    -- log.debug("|get_layout| result-2:%s", vim.inspect(result))
-    return { provider = provider_layout, previewer = previewer_layout }
-  end
-
-  return nil
 end
 
 -- layout }
