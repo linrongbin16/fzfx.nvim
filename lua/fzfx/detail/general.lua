@@ -16,7 +16,7 @@ local ProviderTypeEnum = require("fzfx.schema").ProviderTypeEnum
 local PreviewerTypeEnum = require("fzfx.schema").PreviewerTypeEnum
 local schema = require("fzfx.schema")
 
-local popup = require("fzfx.detail.popup").popup
+local popup = require("fzfx.detail.popup")
 local rpcserver = require("fzfx.detail.rpcserver")
 local fzf_helpers = require("fzfx.detail.fzf_helpers")
 
@@ -1057,7 +1057,7 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
     )
   end
 
-  popup(win_opts or {}, query_command, fzf_opts, actions, context, function(last_query)
+  popup.popup(win_opts or {}, query_command, fzf_opts, actions, context, function(last_query)
     -- On popup exit
 
     -- Unregister RPC calls
