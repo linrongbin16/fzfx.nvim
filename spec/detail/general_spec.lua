@@ -38,6 +38,7 @@ describe("detail.general", function()
       local ps = general.ProviderSwitch:new("single_test", "pipeline", {
         key = "ctrl-k",
         provider = "ls -1",
+        provider_type = ProviderTypeEnum.PLAIN_COMMAND_STRING,
       })
       assert_eq(type(ps), "table")
       assert_false(tbl.tbl_empty(ps))
@@ -64,6 +65,7 @@ describe("detail.general", function()
       local ps = general.ProviderSwitch:new("single_plain_list_test", "pipeline", {
         key = "ctrl-k",
         provider = { "ls", "-lh", "~" },
+        provider_type = ProviderTypeEnum.PLAIN_COMMAND_ARRAY,
       })
       assert_eq(type(ps), "table")
       assert_false(tbl.tbl_empty(ps))
@@ -100,10 +102,12 @@ describe("detail.general", function()
         p1 = {
           key = "ctrl-p",
           provider = "p1",
+          provider_type = ProviderTypeEnum.PLAIN_COMMAND_STRING,
         },
         p2 = {
           key = "ctrl-q",
           provider = { "p2", "p3", "p4" },
+          provider_type = ProviderTypeEnum.PLAIN_COMMAND_ARRAY,
         },
       })
       assert_eq(type(ps), "table")
@@ -260,6 +264,7 @@ describe("detail.general", function()
           previewer = function()
             return "ls -lh"
           end,
+          previewer_type = PreviewerTypeEnum.FUNCTIONAL_COMMAND_STRING,
         },
         p2 = {
           previewer = function()
@@ -284,8 +289,8 @@ describe("detail.general", function()
       ps:switch("p2")
       assert_eq(ps:preview("world", {}), PreviewerTypeEnum.FUNCTIONAL_COMMAND_ARRAY)
       if not github_actions then
-        local meta2 = fio.readfile(general._previewer_metafile(), { trim = true })
-        local result2 = fio.readfile(general._previewer_resultfile(), { trim = true })
+        local meta2 = fio.readfile(general._previewer_metafile(), { trim = true }) --[[@as string]]
+        local result2 = fio.readfile(general._previewer_resultfile(), { trim = true }) --[[@as string]]
         print(string.format("metafile2:%s\n", meta2))
         local metajson2 = vim.json.decode(meta2) --[[@as table]]
         assert_eq(type(metajson2), "table")
@@ -354,6 +359,7 @@ describe("detail.general", function()
         previewer = function()
           return "ls -1"
         end,
+        previewer_type = PreviewerTypeEnum.FUNCTIONAL_COMMAND_STRING,
       }, FZFPORTFILE)
       assert_eq(type(ps), "table")
       assert_false(tbl.tbl_empty(ps))
@@ -374,11 +380,13 @@ describe("detail.general", function()
           previewer = function()
             return "p1"
           end,
+          previewer_type = PreviewerTypeEnum.FUNCTIONAL_COMMAND_STRING,
         },
         p2 = {
           previewer = function()
             return "p2"
           end,
+          previewer_type = PreviewerTypeEnum.FUNCTIONAL_COMMAND_STRING,
         },
       }, FZFPORTFILE)
       assert_eq(type(ps), "table")
