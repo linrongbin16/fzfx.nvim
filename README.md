@@ -1946,7 +1946,9 @@ Please see [Known Issues](https://linrongbin16.github.io/fzfx.nvim/#/KnownIssues
 
 ## 🍀 Alternatives
 
-Note: This plugin doesn't support the nvim native buffer as preview window since v8.x, the v7.x is the last stable version that supports this feature.
+> [!NOTE]
+>
+> This plugin no longer supports nvim native buffer previewer since **v8.x**, I would recommend **fzf-lua** if you need that feature.
 
 - [fzf.vim](https://github.com/junegunn/fzf.vim): Things you can do with [fzf](https://github.com/junegunn/fzf) and Vim.
 - [fzf-lua](https://github.com/ibhagwan/fzf-lua): Improved fzf.vim written in lua.
