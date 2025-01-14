@@ -53,7 +53,7 @@ local Command = {}
 --- @return fzfx.Command
 function Command:run(source)
   local result = CommandResult:new()
-  local sp = spawn.run(source, {
+  local sp = spawn.linewise(source, {
     on_stdout = function(line)
       if str.not_empty(line) then
         table.insert(result.stdout, line)

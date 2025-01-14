@@ -89,7 +89,7 @@ elseif metaopts.previewer_type == PreviewerTypeEnum.COMMAND_ARRAY then
     return
   end
 
-  local sp = spawn.run(cmd_splits, { on_stdout = println, on_stderr = function() end })
+  local sp = spawn.linewise(cmd_splits, { on_stdout = println, on_stderr = function() end })
   shell_helpers.log_ensure(sp ~= nil, "failed to run command:" .. vim.inspect(cmd_splits))
   sp:wait()
 else
