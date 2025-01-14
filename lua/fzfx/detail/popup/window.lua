@@ -1,4 +1,5 @@
 local log = require("fzfx.lib.log")
+
 local popup_helpers = require("fzfx.detail.popup.popup_helpers")
 local window_helpers = require("fzfx.detail.popup.window_helpers")
 
@@ -69,6 +70,7 @@ M._make_center_opts = function(win_opts, relative_winnr, relative_win_first_line
   return result
 end
 
+--- @alias fzfx.NvimFloatWinOpts {anchor:"NW"?,relative:"editor"|"win"|"cursor"|nil,width:integer?,height:integer?,row:integer?,col:integer?,style:"minimal"?,border:"none"|"single"|"double"|"rounded"|"solid"|"shadow"|nil,zindex:integer?,focusable:boolean?}
 --- @param win_opts fzfx.WindowOpts
 --- @param relative_winnr integer
 --- @param relative_win_first_line integer
@@ -139,6 +141,7 @@ function PopupWindow:new(win_opts)
   }
   setmetatable(o, self)
   self.__index = self
+
   return o
 end
 

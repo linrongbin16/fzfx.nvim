@@ -1,9 +1,7 @@
----@diagnostic disable: invisible
-
 local fio = require("fzfx.commons.fio")
 local path = require("fzfx.commons.path")
-local version = require("fzfx.commons.version")
 local uv = require("fzfx.commons.uv")
+local version = require("fzfx.commons.version")
 
 local log = require("fzfx.lib.log")
 local fzf_helpers = require("fzfx.detail.fzf_helpers")
@@ -11,25 +9,13 @@ local fzf_helpers = require("fzfx.detail.fzf_helpers")
 local popup_helpers = require("fzfx.detail.popup.popup_helpers")
 local window_helpers = require("fzfx.detail.popup.window_helpers")
 local PopupWindow = require("fzfx.detail.popup.window").PopupWindow
+local PopupWindowsManager = require("fzfx.detail.popup.window_manager").PopupWindowsManager
 
 local M = {}
 
---- @type table<integer, fzfx.PopupWindow>
-M._PopupWindowInstances = {}
-
---- @alias fzfx.NvimFloatWinOpts {anchor:"NW"?,relative:"editor"|"win"|"cursor"|nil,width:integer?,height:integer?,row:integer?,col:integer?,style:"minimal"?,border:"none"|"single"|"double"|"rounded"|"solid"|"shadow"|nil,zindex:integer?,focusable:boolean?}
---- @alias fzfx.WindowOpts {relative:"editor"|"win"|"cursor",win:integer?,row:number,col:number,height:integer,width:integer,zindex:integer,border:string,title:string?,title_pos:string?,noautocmd:boolean?}
---
---- @class fzfx.Popup
---- @field popup_window fzfx.PopupWindow?
---- @field source string|string[]|nil
---- @field jobid integer|nil
---- @field result string|nil
-local Popup = {}
-
 --- @param actions table<string, any>
 --- @return string[][]
-local function _make_expect_keys(actions)
+M._make_expect_keys = function(actions)
   local expect_keys = {}
   if type(actions) == "table" then
     for name, _ in pairs(actions) do
@@ -42,8 +28,8 @@ end
 --- @param fzf_opts string[]|string[][]
 --- @param actions table<string, any>
 --- @return string[]
-local function _merge_fzf_actions(fzf_opts, actions)
-  local expect_keys = _make_expect_keys(actions)
+M._merge_fzf_actions = function(fzf_opts, actions)
+  local expect_keys = M._make_expect_keys(actions)
   local merged_opts = vim.list_extend(vim.deepcopy(fzf_opts), expect_keys)
   -- log.debug(
   --     "|fzfx.popup - _merge_fzf_actions| fzf_opts:%s, actions:%s, merged_opts:%s",
@@ -58,8 +44,8 @@ end
 --- @param actions fzfx.Options
 --- @param result string
 --- @return string
-local function _make_fzf_command(fzf_opts, actions, result)
-  local final_opts = _merge_fzf_actions(fzf_opts, actions)
+M._make_fzf_command = function(fzf_opts, actions, result)
+  local final_opts = M._merge_fzf_actions(fzf_opts, actions)
   local final_opts_string = fzf_helpers.make_fzf_opts(final_opts)
   -- log.debug(
   --     "|fzfx.popup - _make_fzf_command| final_opts:%s, builder:%s",
@@ -74,6 +60,7 @@ local function _make_fzf_command(fzf_opts, actions, result)
   return command
 end
 
+--- @alias fzfx.WindowOpts {relative:"editor"|"win"|"cursor",win:integer?,row:number,col:number,height:integer,width:integer,zindex:integer,border:string,title:string?,title_pos:string?,noautocmd:boolean?}
 --- @alias fzfx.OnPopupExit fun(last_query:string):nil
 --- @param win_opts fzfx.WindowOpts
 --- @param source string
@@ -81,11 +68,13 @@ end
 --- @param actions fzfx.Options
 --- @param context fzfx.PipelineContext
 --- @param on_close fzfx.OnPopupExit?
---- @return fzfx.Popup
-function Popup:new(win_opts, source, fzf_opts, actions, context, on_close)
+M.popup = function(win_opts, source, fzf_opts, actions, context, on_close)
   local result = vim.fn.tempname() --[[@as string]]
-  local fzf_command = _make_fzf_command(fzf_opts, actions, result)
+  local fzf_command = M._make_fzf_command(fzf_opts, actions, result)
   local popup_window = PopupWindow:new(win_opts)
+
+  assert(M._PopupWindowsManagerInstance ~= nil)
+  M._PopupWindowsManagerInstance:add(popup_window)
 
   local function on_fzf_exit(jobid2, exitcode, event)
     -- log.debug(
@@ -115,6 +104,9 @@ function Popup:new(win_opts, source, fzf_opts, actions, context, on_close)
     end
 
     -- close popup window and restore old window
+
+    assert(M._PopupWindowsManagerInstance ~= nil)
+    M._PopupWindowsManagerInstance:remove(popup_window)
     popup_window:close()
 
     -- -- press <ESC> if in insert mode
@@ -209,75 +201,24 @@ function Popup:new(win_opts, source, fzf_opts, actions, context, on_close)
   vim.env.FZF_DEFAULT_COMMAND = saved_fzf_default_command
   vim.env.FZF_DEFAULT_OPTS = saved_fzf_default_opts
 
-  vim.cmd([[ startinsert ]])
-
-  local o = {
-    popup_window = popup_window,
-    source = source,
-    jobid = jobid,
-    result = result,
-  }
-  setmetatable(o, self)
-  self.__index = self
-  return o
+  vim.cmd([[startinsert]])
 end
 
--- function Popup:close() end
+M._PopupWindowsManagerInstance = PopupWindowsManager:new()
 
--- PopupWindowInstances {
-
---- @return table<integer, fzfx.PopupWindow>
-local function _get_instances()
-  return M._PopupWindowInstances
-end
-
-local function _clear_instances()
-  M._PopupWindowInstances = {}
-end
-
---- @return integer
-local function _count_instances()
-  local n = 0
-  for _, popup_win in pairs(M._PopupWindowInstances) do
-    if popup_win then
-      n = n + 1
-    end
-  end
-  return n
-end
-
-local function _resize_instances()
-  for _, popup_win in pairs(M._PopupWindowInstances) do
-    if popup_win then
-      popup_win:resize()
-    end
-  end
-end
-
--- PopupWindowInstances }
-
-local function setup()
+M.setup = function()
   vim.api.nvim_create_autocmd({ "VimResized" }, {
-    callback = _resize_instances,
+    callback = function()
+      M._PopupWindowsManagerInstance:resize()
+    end,
   })
   if version.ge("0.9") then
     vim.api.nvim_create_autocmd({ "WinResized" }, {
-      callback = _resize_instances,
+      callback = function()
+        M._PopupWindowsManagerInstance:resize()
+      end,
     })
   end
 end
-
-M._get_instances = _get_instances
-M._clear_instances = _clear_instances
-M._count_instances = _count_instances
-M._resize_instances = _resize_instances
-
-M._make_expect_keys = _make_expect_keys
-M._merge_fzf_actions = _merge_fzf_actions
-M._make_fzf_command = _make_fzf_command
-
-M.PopupWindow = PopupWindow
-M.Popup = Popup
-M.setup = setup
 
 return M
