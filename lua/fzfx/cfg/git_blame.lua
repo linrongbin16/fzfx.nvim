@@ -9,6 +9,7 @@ local actions_helper = require("fzfx.helper.actions")
 local previewers_helper = require("fzfx.helper.previewers")
 
 local ProviderTypeEnum = require("fzfx.schema").ProviderTypeEnum
+local PreviewerTypeEnum = require("fzfx.schema").PreviewerTypeEnum
 local CommandFeedEnum = require("fzfx.schema").CommandFeedEnum
 
 local M = {}
@@ -86,6 +87,7 @@ M.providers = {
 M.previewers = {
   default = {
     previewer = previewers_helper.fzf_preview_git_commit,
+    previewer_type = PreviewerTypeEnum.FUNCTIONAL_COMMAND_STRING,
   },
 }
 
