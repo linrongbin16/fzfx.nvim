@@ -59,11 +59,6 @@ local function _fzf_port_file()
   return vim.fn.tempname() --[[@as string]]
 end
 
---- @return string
-local function _buffer_previewer_actions_file()
-  return _make_cache_filename("buffer", "previewer", "actions", "file")
-end
-
 --- @param filename string
 --- @param on_complete function(string?, boolean?):nil
 local function _remove_temp_file(filename, on_complete)
@@ -865,9 +860,6 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
 
   --- cache files
   local fzf_port_file = _fzf_port_file()
-  local buffer_previewer_actions_file = _buffer_previewer_actions_file()
-  local buffer_previewer_actions_fsevent, buffer_previewer_actions_fsevent_err
-  local buffer_previewer_query_fzf_status_start = false
 
   --- @type fzfx.Popup
   local popup = nil
@@ -1113,13 +1105,6 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
       -- log.debug("|general| dump last query:%s", vim.inspect(bytes))
     end)
 
-    -- Stop buffer previewer fsevent
-    if buffer_previewer_actions_fsevent then
-      buffer_previewer_actions_fsevent:stop()
-      buffer_previewer_actions_fsevent = nil
-    end
-    buffer_previewer_query_fzf_status_start = false
-
     -- Clean up temp files
     provider_switch:close()
     previewer_switch:close()
@@ -1128,16 +1113,6 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
       --   string.format(
       --     "Remove fzf_port_file:%s, err:%s, success:%s",
       --     fzf_port_file,
-      --     vim.inspect(err),
-      --     vim.inspect(success)
-      --   )
-      -- )
-    end)
-    _remove_temp_file(buffer_previewer_actions_file, function(err, success)
-      -- log.debug(
-      --   string.format(
-      --     "Remove buffer_previewer_actions_file:%s, err:%s, success:%s",
-      --     buffer_previewer_actions_file,
       --     vim.inspect(err),
       --     vim.inspect(success)
       --   )
@@ -1250,7 +1225,6 @@ local M = {
   _previewer_metafile = _previewer_metafile,
   _previewer_resultfile = _previewer_resultfile,
   _fzf_port_file = _fzf_port_file,
-  _buffer_previewer_actions_file = _buffer_previewer_actions_file,
   make_provider_meta_opts = make_provider_meta_opts,
   make_previewer_meta_opts = make_previewer_meta_opts,
   ProviderSwitch = ProviderSwitch,
