@@ -82,14 +82,6 @@ M.fzf_preview_find = function(line)
   return M._fzf_preview_find(parsed.filename)
 end
 
--- It generates buffer configurations for previewing fd/find results.
---- @param line string
---- @return {filename:string}
-M.buffer_preview_find = function(line)
-  local parsed = parsers_helper.parse_find(line)
-  return { filename = parsed.filename }
-end
-
 -- fd/find }
 
 -- rg/grep {
@@ -143,14 +135,6 @@ M.fzf_preview_grep = function(line)
   return M._fzf_preview_grep(parsed.filename, parsed.lineno)
 end
 
--- It generates buffer configurations for previewing rg/grep results.
---- @param line string
---- @return {filename:string,lineno:integer?}
-M.buffer_preview_grep = function(line)
-  local parsed = parsers_helper.parse_grep(line)
-  return { filename = parsed.filename, lineno = parsed.lineno }
-end
-
 -- rg/grep }
 
 -- rg/grep no filename {
@@ -170,23 +154,6 @@ M.fzf_preview_grep_no_filename = function(line, context)
 
   local parsed = parsers_helper.parse_grep_no_filename(line)
   return M._fzf_preview_grep(filename, parsed.lineno)
-end
-
--- It generates buffer configurations for previewing rg/grep no filename results.
---- @param line string
---- @param context fzfx.PipelineContext
---- @return {filename:string,lineno:integer?}?
-M.buffer_preview_grep_no_filename = function(line, context)
-  local bufnr = tbl.tbl_get(context, "bufnr")
-  if type(bufnr) ~= "number" or not vim.api.nvim_buf_is_valid(bufnr) then
-    return nil
-  end
-
-  local filename = vim.api.nvim_buf_get_name(bufnr)
-  filename = path.normalize(filename, { double_backslash = true, expand = true })
-
-  local parsed = parsers_helper.parse_grep_no_filename(line)
-  return { filename = filename, lineno = parsed.lineno }
 end
 
 -- rg/grep no filename }
@@ -242,8 +209,6 @@ end
 -- So we have to use bat option `--line-range` to truncate other parts of preview contents,
 -- leave only interested text contents around the target line number.
 -- But this also introduce another limitation: it cannot scroll up in preview window.
---
--- When working on Neovim's buffer, this is no longer an issue, the internal buffer previewer engine will handle it.
 --
 --- @param filename string
 --- @param lineno integer

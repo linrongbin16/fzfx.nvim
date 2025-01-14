@@ -86,15 +86,6 @@ describe("helper.previewers", function()
     end)
   end)
 
-  describe("[buffer_preview_find]", function()
-    it("test", function()
-      local line = "README.md"
-      local actual = previewers_helper.buffer_preview_find(line)
-      assert_eq(type(actual), "table")
-      assert_true(str.endswith(actual.filename, "README.md"))
-    end)
-  end)
-
   describe("[_fzf_preview_grep]", function()
     it("case-1", function()
       local filename = "README.md"
@@ -152,16 +143,6 @@ describe("helper.previewers", function()
     end)
   end)
 
-  describe("[buffer_preview_grep]", function()
-    it("test", function()
-      local line = "README.md:13:ok"
-      local actual = previewers_helper.buffer_preview_grep(line)
-      assert_eq(type(actual), "table")
-      assert_true(str.endswith(actual.filename, "README.md"))
-      assert_eq(actual.lineno, 13)
-    end)
-  end)
-
   describe("[fzf_preview_grep_no_filename]", function()
     it("test", function()
       local lines = { "1:1:ok", "2:1: this is the plugin" }
@@ -189,19 +170,6 @@ describe("helper.previewers", function()
         end
         assert_eq(actual[#actual - 1], "--")
         assert_true(str.endswith(actual[#actual], "README.md"))
-      end
-    end)
-  end)
-
-  describe("[buffer_preview_grep_no_filename]", function()
-    it("test", function()
-      local lines = { "1:1:ok", "2:1: this is the plugin" }
-      for i, line in ipairs(lines) do
-        local actual = previewers_helper.buffer_preview_grep_no_filename(line, make_context())
-        local splits = str.split(line, ":")
-        assert_eq(type(actual), "table")
-        assert_true(str.endswith(actual.filename, "README.md"))
-        assert_eq(actual.lineno, tonumber(splits[1]))
       end
     end)
   end)
