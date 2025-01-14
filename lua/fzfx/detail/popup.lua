@@ -1,6 +1,7 @@
 local fio = require("fzfx.commons.fio")
 local path = require("fzfx.commons.path")
 local uv = require("fzfx.commons.uv")
+local version = require("fzfx.commons.version")
 
 local log = require("fzfx.lib.log")
 local fzf_helpers = require("fzfx.detail.fzf_helpers")
@@ -8,6 +9,7 @@ local fzf_helpers = require("fzfx.detail.fzf_helpers")
 local popup_helpers = require("fzfx.detail.popup.popup_helpers")
 local window_helpers = require("fzfx.detail.popup.window_helpers")
 local PopupWindow = require("fzfx.detail.popup.window").PopupWindow
+local PopupWindowsManager = require("fzfx.detail.popup.window_manager").PopupWindowsManager
 
 local M = {}
 
@@ -71,6 +73,9 @@ M.popup = function(win_opts, source, fzf_opts, actions, context, on_close)
   local fzf_command = M._make_fzf_command(fzf_opts, actions, result)
   local popup_window = PopupWindow:new(win_opts)
 
+  assert(M._PopupWindowsManagerInstance ~= nil)
+  M._PopupWindowsManagerInstance:add(popup_window)
+
   local function on_fzf_exit(jobid2, exitcode, event)
     -- log.debug(
     --   string.format(
@@ -99,6 +104,9 @@ M.popup = function(win_opts, source, fzf_opts, actions, context, on_close)
     end
 
     -- close popup window and restore old window
+
+    assert(M._PopupWindowsManagerInstance ~= nil)
+    M._PopupWindowsManagerInstance:remove(popup_window)
     popup_window:close()
 
     -- -- press <ESC> if in insert mode
@@ -194,6 +202,23 @@ M.popup = function(win_opts, source, fzf_opts, actions, context, on_close)
   vim.env.FZF_DEFAULT_OPTS = saved_fzf_default_opts
 
   vim.cmd([[startinsert]])
+end
+
+M._PopupWindowsManagerInstance = PopupWindowsManager:new()
+
+M.setup = function()
+  vim.api.nvim_create_autocmd({ "VimResized" }, {
+    callback = function()
+      M._PopupWindowsManagerInstance:resize()
+    end,
+  })
+  if version.ge("0.9") then
+    vim.api.nvim_create_autocmd({ "WinResized" }, {
+      callback = function()
+        M._PopupWindowsManagerInstance:resize()
+      end,
+    })
+  end
 end
 
 return M
