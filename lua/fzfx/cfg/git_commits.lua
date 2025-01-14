@@ -133,12 +133,12 @@ M.providers = {
   all_commits = {
     key = "ctrl-a",
     provider = all_commits_provider,
-    provider_type = ProviderTypeEnum.FUNCTIONAL_COMMAND_ARRAY,
+    provider_type = ProviderTypeEnum.COMMAND_ARRAY,
   },
   buffer_commits = {
     key = "ctrl-u",
     provider = buffer_commits_provider,
-    provider_type = ProviderTypeEnum.FUNCTIONAL_COMMAND_ARRAY,
+    provider_type = ProviderTypeEnum.COMMAND_ARRAY,
   },
 }
 

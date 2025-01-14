@@ -1878,12 +1878,12 @@ require("fzfx").register("ls", {
     filter_hiddens = {
       key = "ctrl-h",
       provider = { "ls", "--color=always", "-1" },
-      provider_type = "PLAIN_COMMAND_ARRAY",
+      provider_type = "COMMAND_ARRAY",
     },
     include_hiddens = {
       key = "ctrl-u",
       provider = { "ls", "--color=always", "-1a" },
-      provider_type = "PLAIN_COMMAND_ARRAY",
+      provider_type = "COMMAND_ARRAY",
     },
   },
   --- @type table<string, fzfx.PreviewerConfig>

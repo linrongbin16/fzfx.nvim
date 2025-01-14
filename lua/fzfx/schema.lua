@@ -13,13 +13,11 @@
 --- @alias fzfx.DirectProvider fun(query:string?,context:fzfx.PipelineContext?):string[]?
 --- @alias fzfx.Provider fzfx.PlainCommandStringProvider|fzfx.PlainCommandArrayProvider|fzfx.FunctionalCommandStringProvider|fzfx.FunctionalCommandArrayProvider|fzfx.DirectProvider
 ---
---- @alias fzfx.ProviderType "PLAIN_COMMAND_STRING"|"PLAIN_COMMAND_ARRAY"|"FUNCTIONAL_COMMAND_STRING"|"FUNCTIONAL_COMMAND_ARRAY"|"DIRECT"
+--- @alias fzfx.ProviderType "COMMAND_STRING"|"COMMAND_ARRAY"|"DIRECT"
 --- @enum fzfx.ProviderTypeEnum
 local ProviderTypeEnum = {
-  PLAIN_COMMAND_STRING = "PLAIN_COMMAND_STRING",
-  PLAIN_COMMAND_ARRAY = "PLAIN_COMMAND_ARRAY",
-  FUNCTIONAL_COMMAND_STRING = "FUNCTIONAL_COMMAND_STRING",
-  FUNCTIONAL_COMMAND_ARRAY = "FUNCTIONAL_COMMAND_ARRAY",
+  COMMAND_STRING = "COMMAND_STRING",
+  COMMAND_ARRAY = "COMMAND_ARRAY",
   DIRECT = "DIRECT",
 }
 --
@@ -34,11 +32,14 @@ local ProviderTypeEnum = {
 --- @alias fzfx.FunctionalCommandArrayPreviewer fun(line:string?,context:fzfx.PipelineContext?):string[]?
 --- @alias fzfx.Previewer fzfx.FunctionalCommandStringPreviewer|fzfx.FunctionalCommandArrayPreviewer
 ---
---- @alias fzfx.PreviewerType "FUNCTIONAL_COMMAND_STRING"|"FUNCTIONAL_COMMAND_ARRAY"
+--- @alias fzfx.PreviewerType "COMMAND_STRING"|"COMMAND_ARRAY"|"FUNCTIONAL_COMMAND_STRING"|"FUNCTIONAL_COMMAND_ARRAY"
 --- @enum fzfx.PreviewerTypeEnum
 local PreviewerTypeEnum = {
   FUNCTIONAL_COMMAND_STRING = "FUNCTIONAL_COMMAND_STRING",
   FUNCTIONAL_COMMAND_ARRAY = "FUNCTIONAL_COMMAND_ARRAY",
+
+  COMMAND_STRING = "COMMAND_STRING",
+  COMMAND_ARRAY = "COMMAND_ARRAY",
 }
 --
 -- ========== Previewer Label ==========

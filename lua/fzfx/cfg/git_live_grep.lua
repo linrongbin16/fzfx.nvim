@@ -72,7 +72,7 @@ end
 M.providers = {
   key = "default",
   provider = M._provider,
-  provider_type = ProviderTypeEnum.FUNCTIONAL_COMMAND_ARRAY,
+  provider_type = ProviderTypeEnum.COMMAND_ARRAY,
   provider_decorator = { module = _decorator.PREPEND_ICON_GREP },
 }
 

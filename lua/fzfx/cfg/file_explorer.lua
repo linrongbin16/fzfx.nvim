@@ -201,12 +201,12 @@ M.providers = {
   filter_hidden = {
     key = "ctrl-r",
     provider = M._make_provider(),
-    provider_type = ProviderTypeEnum.FUNCTIONAL_COMMAND_STRING,
+    provider_type = ProviderTypeEnum.COMMAND_STRING,
   },
   include_hidden = {
     key = "ctrl-u",
     provider = M._make_provider({ include_hidden = true }),
-    provider_type = ProviderTypeEnum.FUNCTIONAL_COMMAND_STRING,
+    provider_type = ProviderTypeEnum.COMMAND_STRING,
   },
 }
 

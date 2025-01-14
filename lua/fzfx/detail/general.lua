@@ -193,8 +193,8 @@ end
 
 --- @pram provider_config fzfx.ProviderConfig
 --- @return boolean
-function ProviderSwitch:_is_plain_command_string(provider_config)
-  return provider_config.provider_type == ProviderTypeEnum.PLAIN_COMMAND_STRING
+function ProviderSwitch:_is_command_string(provider_config)
+  return provider_config.provider_type == ProviderTypeEnum.COMMAND_STRING
 end
 
 --- @param provider_config fzfx.ProviderConfig
@@ -214,10 +214,55 @@ function ProviderSwitch:_handle_plain_command_string(provider_config)
   end
 end
 
+--- @param provider_config fzfx.ProviderConfig
+--- @param query string?
+--- @param context fzfx.PipelineContext?
+function ProviderSwitch:_handle_functional_command_string(provider_config, query, context)
+  local ok, result = pcall(provider_config.provider --[[@as function]], query, context)
+  log.ensure(
+    result == nil or type(result) == "string",
+    string.format(
+      "|ProviderSwitch:_handle_functional_command_string| provider result must be string?! self:%s, result:%s",
+      vim.inspect(self),
+      vim.inspect(result)
+    )
+  )
+  if not ok then
+    fio.writefile(self.resultfile, "")
+    log.err(
+      string.format(
+        "failed to call pipeline %s (COMMAND_STRING provider %s)! query:%s, context:%s, error:%s",
+        vim.inspect(self.pipeline),
+        vim.inspect(provider_config),
+        vim.inspect(query),
+        vim.inspect(context),
+        vim.inspect(result)
+      )
+    )
+  else
+    if result == nil then
+      fio.writefile(self.resultfile, "")
+    else
+      fio.writefile(self.resultfile, result)
+    end
+  end
+end
+
+--- @param provider_config fzfx.ProviderConfig
+--- @param query string?
+--- @param context fzfx.PipelineContext?
+function ProviderSwitch:_handle_command_string(provider_config, query, context)
+  if provider_config.provider == nil or type(provider_config.provider) == "string" then
+    self:_handle_plain_command_string(provider_config)
+  else
+    self:_handle_functional_command_string(provider_config, query, context)
+  end
+end
+
 --- @pram provider_config fzfx.ProviderConfig
 --- @return boolean
-function ProviderSwitch:_is_plain_command_array(provider_config)
-  return provider_config.provider_type == ProviderTypeEnum.PLAIN_COMMAND_ARRAY
+function ProviderSwitch:_is_command_array(provider_config)
+  return provider_config.provider_type == ProviderTypeEnum.COMMAND_ARRAY
 end
 
 --- @param provider_config fzfx.ProviderConfig
@@ -240,52 +285,6 @@ function ProviderSwitch:_handle_plain_command_array(provider_config)
   end
 end
 
---- @pram provider_config fzfx.ProviderConfig
---- @return boolean
-function ProviderSwitch:_is_functional_command_string(provider_config)
-  return provider_config.provider_type == ProviderTypeEnum.FUNCTIONAL_COMMAND_STRING
-end
-
---- @param provider_config fzfx.ProviderConfig
---- @param query string?
---- @param context fzfx.PipelineContext?
-function ProviderSwitch:_handle_functional_command_string(provider_config, query, context)
-  local ok, result = pcall(provider_config.provider --[[@as function]], query, context)
-  log.ensure(
-    result == nil or type(result) == "string",
-    string.format(
-      "|ProviderSwitch:_handle_functional_command_string| provider result must be string?! self:%s, result:%s",
-      vim.inspect(self),
-      vim.inspect(result)
-    )
-  )
-  if not ok then
-    fio.writefile(self.resultfile, "")
-    log.err(
-      string.format(
-        "failed to call pipeline %s (FUNCTIONAL_COMMAND_STRING provider %s)! query:%s, context:%s, error:%s",
-        vim.inspect(self.pipeline),
-        vim.inspect(provider_config),
-        vim.inspect(query),
-        vim.inspect(context),
-        vim.inspect(result)
-      )
-    )
-  else
-    if result == nil then
-      fio.writefile(self.resultfile, "")
-    else
-      fio.writefile(self.resultfile, result)
-    end
-  end
-end
-
---- @pram provider_config fzfx.ProviderConfig
---- @return boolean
-function ProviderSwitch:_is_functional_command_array(provider_config)
-  return provider_config.provider_type == ProviderTypeEnum.FUNCTIONAL_COMMAND_ARRAY
-end
-
 --- @param provider_config fzfx.ProviderConfig
 --- @param query string?
 --- @param context fzfx.PipelineContext?
@@ -303,7 +302,7 @@ function ProviderSwitch:_handle_functional_command_array(provider_config, query,
     fio.writefile(self.resultfile, "")
     log.err(
       string.format(
-        "failed to call pipeline %s (FUNCTIONAL_COMMAND_ARRAY provider %s)! query:%s, context:%s, error:%s",
+        "failed to call pipeline %s (COMMAND_ARRAY provider %s)! query:%s, context:%s, error:%s",
         vim.inspect(self.pipeline),
         vim.inspect(provider_config),
         vim.inspect(query),
@@ -317,6 +316,17 @@ function ProviderSwitch:_handle_functional_command_array(provider_config, query,
     else
       fio.writefile(self.resultfile, vim.json.encode(result) --[[@as string]])
     end
+  end
+end
+
+--- @param provider_config fzfx.ProviderConfig
+--- @param query string?
+--- @param context fzfx.PipelineContext?
+function ProviderSwitch:_handle_command_array(provider_config, query, context)
+  if provider_config.provider == nil or type(provider_config.provider) == "table" then
+    self:_handle_plain_command_array(provider_config)
+  else
+    self:_handle_functional_command_array(provider_config, query, context)
   end
 end
 
@@ -383,10 +393,8 @@ function ProviderSwitch:provide(query, context)
     )
   )
   log.ensure(
-    provider_config.provider_type == ProviderTypeEnum.PLAIN_COMMAND_STRING
-      or provider_config.provider_type == ProviderTypeEnum.PLAIN_COMMAND_ARRAY
-      or provider_config.provider_type == ProviderTypeEnum.FUNCTIONAL_COMMAND_STRING
-      or provider_config.provider_type == ProviderTypeEnum.FUNCTIONAL_COMMAND_ARRAY
+    provider_config.provider_type == ProviderTypeEnum.COMMAND_STRING
+      or provider_config.provider_type == ProviderTypeEnum.COMMAND_ARRAY
       or provider_config.provider_type == ProviderTypeEnum.DIRECT,
     string.format(
       "invalid provider type in %s! provider type: %s",
@@ -399,14 +407,10 @@ function ProviderSwitch:provide(query, context)
   local metajson = vim.json.encode(metaopts) --[[@as string]]
   fio.writefile(self.metafile, metajson)
 
-  if self:_is_plain_command_string(provider_config) then
-    self:_handle_plain_command_string(provider_config)
-  elseif self:_is_plain_command_array(provider_config) then
-    self:_handle_plain_command_array(provider_config)
-  elseif self:_is_functional_command_string(provider_config) then
-    self:_handle_functional_command_string(provider_config, query, context)
-  elseif self:_is_functional_command_array(provider_config) then
-    self:_handle_functional_command_array(provider_config, query, context)
+  if self:_is_command_string(provider_config) then
+    self:_handle_command_string(provider_config, query, context)
+  elseif self:_is_command_array(provider_config) then
+    self:_handle_command_array(provider_config, query, context)
   elseif self:_is_direct(provider_config) then
     self:_handle_direct(provider_config, query, context)
   else

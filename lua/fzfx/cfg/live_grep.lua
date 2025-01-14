@@ -197,19 +197,19 @@ M.providers = {
   restricted_mode = {
     key = "ctrl-r",
     provider = restricted_provider,
-    provider_type = ProviderTypeEnum.FUNCTIONAL_COMMAND_ARRAY,
+    provider_type = ProviderTypeEnum.COMMAND_ARRAY,
     provider_decorator = { module = _decorator.PREPEND_ICON_GREP },
   },
   unrestricted_mode = {
     key = "ctrl-u",
     provider = unrestricted_provider,
-    provider_type = ProviderTypeEnum.FUNCTIONAL_COMMAND_ARRAY,
+    provider_type = ProviderTypeEnum.COMMAND_ARRAY,
     provider_decorator = { module = _decorator.PREPEND_ICON_GREP },
   },
   buffer_mode = {
     key = "ctrl-o",
     provider = buffer_provider,
-    provider_type = ProviderTypeEnum.FUNCTIONAL_COMMAND_ARRAY,
+    provider_type = ProviderTypeEnum.COMMAND_ARRAY,
     provider_decorator = { module = _decorator.PREPEND_ICON_GREP },
   },
 }

@@ -113,7 +113,7 @@ end
 M.providers = {
   key = "default",
   provider = M._make_provider(),
-  provider_type = ProviderTypeEnum.FUNCTIONAL_COMMAND_ARRAY,
+  provider_type = ProviderTypeEnum.COMMAND_ARRAY,
 }
 
 M.previewers = {
