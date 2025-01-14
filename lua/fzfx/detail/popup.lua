@@ -276,7 +276,6 @@ M._make_expect_keys = _make_expect_keys
 M._merge_fzf_actions = _merge_fzf_actions
 M._make_fzf_command = _make_fzf_command
 
-M.PopupWindow = PopupWindow
 M.Popup = Popup
 M.setup = setup
 
