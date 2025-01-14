@@ -59,17 +59,17 @@ describe("helper.previewers", function()
   describe("[_fzf_preview_find]", function()
     it("test", function()
       local filename = "README.md"
-      local actual = previewers_helper._fzf_preview_find(filename)
+      local actual = previewers_helper._preview_find(filename)
       assert_eq(type(actual), "table")
       if consts.HAS_BAT then
-        local n = #previewers_helper._FZF_PREVIEW_BAT
+        local n = #previewers_helper._PREVIEW_BAT
         for i = 1, n do
-          assert_eq(actual[i], previewers_helper._FZF_PREVIEW_BAT[i])
+          assert_eq(actual[i], previewers_helper._PREVIEW_BAT[i])
         end
       else
-        local n = #previewers_helper._FZF_PREVIEW_CAT
+        local n = #previewers_helper._PREVIEW_CAT
         for i = 1, n do
-          assert_eq(actual[i], previewers_helper._FZF_PREVIEW_CAT[i])
+          assert_eq(actual[i], previewers_helper._PREVIEW_CAT[i])
         end
       end
       assert_eq(actual[#actual - 1], "--")
@@ -80,39 +80,30 @@ describe("helper.previewers", function()
   describe("[fzf_preview_find]", function()
     it("test", function()
       local line = "README.md"
-      local actual = previewers_helper.fzf_preview_find(line)
+      local actual = previewers_helper.preview_find(line)
       assert_eq(type(actual), "table")
       assert_true(actual[1] == consts.BAT or actual[1] == consts.CAT)
     end)
   end)
 
-  describe("[buffer_preview_find]", function()
-    it("test", function()
-      local line = "README.md"
-      local actual = previewers_helper.buffer_preview_find(line)
-      assert_eq(type(actual), "table")
-      assert_true(str.endswith(actual.filename, "README.md"))
-    end)
-  end)
-
-  describe("[_fzf_preview_grep]", function()
+  describe("[_preview_grep]", function()
     it("case-1", function()
       local filename = "README.md"
       local lineno = 12
-      local actual = previewers_helper._fzf_preview_grep(filename, lineno)
+      local actual = previewers_helper._preview_grep(filename, lineno)
       assert_eq(type(actual), "table")
       if consts.HAS_BAT then
-        local n = #previewers_helper._FZF_PREVIEW_BAT
+        local n = #previewers_helper._PREVIEW_BAT
         for i = 1, n do
-          assert_eq(actual[i], previewers_helper._FZF_PREVIEW_BAT[i])
+          assert_eq(actual[i], previewers_helper._PREVIEW_BAT[i])
         end
         assert_true(tbl.List:copy(actual):some(function(a)
           return a == string.format("--highlight-line=%d", lineno)
         end))
       else
-        local n = #previewers_helper._FZF_PREVIEW_CAT
+        local n = #previewers_helper._PREVIEW_CAT
         for i = 1, n do
-          assert_eq(actual[i], previewers_helper._FZF_PREVIEW_CAT[i])
+          assert_eq(actual[i], previewers_helper._PREVIEW_CAT[i])
         end
       end
       assert_eq(actual[#actual - 1], "--")
@@ -121,21 +112,21 @@ describe("helper.previewers", function()
 
     it("case-2", function()
       local filename = "README.md"
-      local actual = previewers_helper._fzf_preview_grep(filename)
+      local actual = previewers_helper._preview_grep(filename)
       assert_eq(type(actual), "table")
       if consts.HAS_BAT then
-        local n = #previewers_helper._FZF_PREVIEW_BAT
+        local n = #previewers_helper._PREVIEW_BAT
         for i = 1, n do
-          assert_eq(actual[i], previewers_helper._FZF_PREVIEW_BAT[i])
+          assert_eq(actual[i], previewers_helper._PREVIEW_BAT[i])
         end
         assert_true(tbl.List:copy(actual):none(function(a)
           local p = str.find(a, "--highlight-line=")
           return type(p) == "number" and p > 0
         end))
       else
-        local n = #previewers_helper._FZF_PREVIEW_CAT
+        local n = #previewers_helper._PREVIEW_CAT
         for i = 1, n do
-          assert_eq(actual[i], previewers_helper._FZF_PREVIEW_CAT[i])
+          assert_eq(actual[i], previewers_helper._PREVIEW_CAT[i])
         end
       end
       assert_eq(actual[#actual - 1], "--")
@@ -143,44 +134,34 @@ describe("helper.previewers", function()
     end)
   end)
 
-  describe("[fzf_preview_grep]", function()
+  describe("[preview_grep]", function()
     it("test", function()
       local line = "README.md:1:ok"
-      local actual = previewers_helper.fzf_preview_grep(line)
+      local actual = previewers_helper.preview_grep(line)
       assert_eq(type(actual), "table")
       assert_true(str.endswith(actual[#actual], "README.md"))
     end)
   end)
 
-  describe("[buffer_preview_grep]", function()
-    it("test", function()
-      local line = "README.md:13:ok"
-      local actual = previewers_helper.buffer_preview_grep(line)
-      assert_eq(type(actual), "table")
-      assert_true(str.endswith(actual.filename, "README.md"))
-      assert_eq(actual.lineno, 13)
-    end)
-  end)
-
-  describe("[fzf_preview_grep_no_filename]", function()
+  describe("[preview_grep_bufnr]", function()
     it("test", function()
       local lines = { "1:1:ok", "2:1: this is the plugin" }
       for i, line in ipairs(lines) do
-        local actual = previewers_helper.fzf_preview_grep_no_filename(line, make_context())
+        local actual = previewers_helper.preview_grep_bufnr(line, make_context())
         assert_eq(type(actual), "table")
         if consts.HAS_BAT then
-          local n = #previewers_helper._FZF_PREVIEW_BAT
+          local n = #previewers_helper._PREVIEW_BAT
           for j = 1, n do
-            assert_eq(actual[j], previewers_helper._FZF_PREVIEW_BAT[j])
+            assert_eq(actual[j], previewers_helper._PREVIEW_BAT[j])
           end
           assert_true(tbl.List:copy(actual):some(function(a)
             local p = str.find(a, "--highlight-line=")
             return type(p) == "number" and p > 0
           end))
         else
-          local n = #previewers_helper._FZF_PREVIEW_CAT
+          local n = #previewers_helper._PREVIEW_CAT
           for j = 1, n do
-            assert_eq(actual[j], previewers_helper._FZF_PREVIEW_CAT[j])
+            assert_eq(actual[j], previewers_helper._PREVIEW_CAT[j])
           end
           assert_true(tbl.List:copy(actual):none(function(a)
             local p = str.find(a, "--highlight-line=")
@@ -193,19 +174,6 @@ describe("helper.previewers", function()
     end)
   end)
 
-  describe("[buffer_preview_grep_no_filename]", function()
-    it("test", function()
-      local lines = { "1:1:ok", "2:1: this is the plugin" }
-      for i, line in ipairs(lines) do
-        local actual = previewers_helper.buffer_preview_grep_no_filename(line, make_context())
-        local splits = str.split(line, ":")
-        assert_eq(type(actual), "table")
-        assert_true(str.endswith(actual.filename, "README.md"))
-        assert_eq(actual.lineno, tonumber(splits[1]))
-      end
-    end)
-  end)
-
   describe("[fzf_preview_git_commit]", function()
     it("commit", function()
       local lines = {
@@ -213,7 +181,7 @@ describe("helper.previewers", function()
         "706e1d6 2023-10-10 linrongbin16 chore",
       }
       for _, line in ipairs(lines) do
-        local actual = previewers_helper.fzf_preview_git_commit(line)
+        local actual = previewers_helper.preview_git_commit(line)
         assert_eq(type(actual), "string")
         assert_true(str.find(actual, "git show") > 0)
         if consts.HAS_DELTA then
@@ -228,7 +196,7 @@ describe("helper.previewers", function()
         "                                | 1:2| fzfx.nvim",
       }
       for _, line in ipairs(lines) do
-        local actual = previewers_helper.fzf_preview_git_commit(line)
+        local actual = previewers_helper.preview_git_commit(line)
         assert_eq(actual, nil)
       end
     end)
@@ -244,7 +212,7 @@ describe("helper.previewers", function()
         "?? ../hello",
       }
       for _, line in ipairs(lines) do
-        local actual = previewers_helper.fzf_preview_git_status(line)
+        local actual = previewers_helper.preview_git_status(line)
         assert_eq(type(actual), "string")
         assert_true(str.startswith(actual, "git diff"))
         if consts.HAS_DELTA then
@@ -256,17 +224,17 @@ describe("helper.previewers", function()
     end)
   end)
 
-  describe("[_fzf_preview_grep_with_line_range]", function()
+  describe("[_preview_grep_line_range]", function()
     it("test", function()
       local filename = "lua/fzfx/config.lua"
       local lineno = 135
-      local actual = previewers_helper._fzf_preview_grep_with_line_range(filename, lineno)
-      print(string.format("fzf_preview_grep_with_line_range:%s\n", vim.inspect(actual)))
+      local actual = previewers_helper._preview_grep_line_range(filename, lineno)
+      print(string.format("_preview_grep_line_range:%s\n", vim.inspect(actual)))
       assert_eq(type(actual), "table")
       if consts.HAS_BAT then
-        local n = #previewers_helper._FZF_PREVIEW_BAT
+        local n = #previewers_helper._PREVIEW_BAT
         for i = 1, n do
-          assert_eq(actual[i], previewers_helper._FZF_PREVIEW_BAT[i])
+          assert_eq(actual[i], previewers_helper._PREVIEW_BAT[i])
         end
         assert_true(tbl.List:copy(actual):some(function(a)
           return a == string.format("--highlight-line=%d", lineno)
@@ -275,9 +243,9 @@ describe("helper.previewers", function()
           return a == "--line-range"
         end))
       else
-        local n = #previewers_helper._FZF_PREVIEW_CAT
+        local n = #previewers_helper._PREVIEW_CAT
         for i = 1, n do
-          assert_eq(actual[i], previewers_helper._FZF_PREVIEW_CAT[i])
+          assert_eq(actual[i], previewers_helper._PREVIEW_CAT[i])
         end
         assert_true(tbl.List:copy(actual):none(function(a)
           return a == string.format("--highlight-line=%d", lineno)

@@ -5,6 +5,7 @@ local num = require("fzfx.commons.num")
 local color_term = require("fzfx.commons.color.term")
 local fio = require("fzfx.commons.fio")
 local uv = require("fzfx.commons.uv")
+local spawn = require("fzfx.commons.spawn")
 
 local constants = require("fzfx.lib.constants")
 local env = require("fzfx.lib.env")
@@ -624,7 +625,7 @@ end
 --- @param port string
 --- @param body string
 local function _send_http_post(port, body)
-  vim.system({
+  spawn.blockwise({
     "curl",
     "-s",
     "-S",
@@ -637,7 +638,7 @@ local function _send_http_post(port, body)
     string.format("127.0.0.1:%s", vim.trim(port)),
     "-d",
     body,
-  }, { text = true }, function(completed) end)
+  }, { on_exit = function(completed) end })
 end
 
 --- @param line string?

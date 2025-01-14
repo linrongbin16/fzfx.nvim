@@ -1,22 +1,47 @@
----@diagnostic disable
 local M = {}
 
---- @alias commons.SpawnLineProcessor fun(line:string):any
---- @alias commons.SpawnOpts {on_stdout:commons.SpawnLineProcessor, on_stderr:commons.SpawnLineProcessor, [string]:any}
 --- @alias commons.SpawnOnExit fun(completed:vim.SystemCompleted):nil
+--- @alias commons.SpawnBlockWiseOpts {on_exit:commons.SpawnOnExit?,[string]:any}
 --- @param cmd string[]
---- @param opts commons.SpawnOpts?  by default {text = true}
---- @param on_exit commons.SpawnOnExit?
+--- @param opts commons.SpawnBlockWiseOpts?
 --- @return vim.SystemObj
-M.run = function(cmd, opts, on_exit)
+M.blockwise = function(cmd, opts)
   opts = opts or {}
   opts.text = type(opts.text) == "boolean" and opts.text or true
 
+  return vim.system(cmd, {
+    cwd = opts.cwd,
+    env = opts.env,
+    clear_env = opts.clear_env,
+    stdin = opts.stdin,
+    text = opts.text,
+    timeout = opts.timeout,
+    detach = opts.detach,
+  }, opts.on_exit)
+end
+
+--- @alias commons.SpawnLineWiseProcessor fun(line:string):any
+--- @alias commons.SpawnLineWiseOpts {on_stdout:commons.SpawnLineWiseProcessor,on_stderr:commons.SpawnLineWiseProcessor?,on_exit:commons.SpawnOnExit?,[string]:any}
+--- @param cmd string[]
+--- @param opts commons.SpawnLineWiseOpts?
+--- @return vim.SystemObj
+M.linewise = function(cmd, opts)
+  opts = opts or {}
+  opts.text = type(opts.text) == "boolean" and opts.text or true
+
+  if type(opts.on_exit) ~= "function" then
+    opts.on_exit = function() end
+  end
+  if type(opts.on_stderr) ~= "function" then
+    opts.on_stderr = function() end
+  end
+
   assert(type(opts.on_stdout) == "function")
   assert(type(opts.on_stderr) == "function")
+  assert(type(opts.on_exit) == "function")
 
   --- @param buffer string
-  --- @param fn_line_processor commons.SpawnLineProcessor
+  --- @param fn_line_processor commons.SpawnLineWiseProcessor
   --- @return integer
   local function _process(buffer, fn_line_processor)
     local str = require("fzfx.commons.str")
@@ -109,7 +134,7 @@ M.run = function(cmd, opts, on_exit)
     text = opts.text,
     timeout = opts.timeout,
     detach = opts.detach,
-  }, on_exit)
+  }, opts.on_exit)
 end
 
 return M

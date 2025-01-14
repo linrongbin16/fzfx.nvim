@@ -117,7 +117,7 @@ M.providers = {
 }
 
 M.previewers = {
-  previewer = previewers_helper.fzf_preview_grep_no_filename,
+  previewer = previewers_helper.preview_grep_bufnr,
   previewer_type = PreviewerTypeEnum.COMMAND_ARRAY,
   previewer_label = constants.HAS_RG and labels_helper.label_rg_no_filename
     or labels_helper.label_grep_no_filename,

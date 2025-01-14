@@ -216,17 +216,17 @@ M.providers = {
 
 M.previewers = {
   restricted_mode = {
-    previewer = previewers_helper.fzf_preview_grep,
+    previewer = previewers_helper.preview_grep,
     previewer_type = PreviewerTypeEnum.COMMAND_ARRAY,
     previewer_label = constants.HAS_RG and labels_helper.label_rg or labels_helper.label_grep,
   },
   unrestricted_mode = {
-    previewer = previewers_helper.fzf_preview_grep,
+    previewer = previewers_helper.preview_grep,
     previewer_type = PreviewerTypeEnum.COMMAND_ARRAY,
     previewer_label = constants.HAS_RG and labels_helper.label_rg or labels_helper.label_grep,
   },
   buffer_mode = {
-    previewer = previewers_helper.fzf_preview_grep,
+    previewer = previewers_helper.preview_grep,
     previewer_type = PreviewerTypeEnum.COMMAND_ARRAY,
     previewer_label = constants.HAS_RG and labels_helper.label_rg or labels_helper.label_grep,
   },
