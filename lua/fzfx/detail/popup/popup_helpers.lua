@@ -6,184 +6,29 @@ local log = require("fzfx.lib.log")
 
 local M = {}
 
--- WindowContext {
+--- @param total_size integer
+--- @param value {start_value:integer,end_value:integer}
+--- @return {start_value:integer,end_value:integer}
+local function _adjust_boundary(total_size, value)
+  local start_value = value.start_value
+  local end_value = value.end_value
 
---- @class fzfx.WindowContext
---- @field tabnr integer
---- @field winnr integer
---- @field win_first_line integer
---- @field win_last_line integer
-local WindowContext = {}
-
---- @return fzfx.WindowContext
-function WindowContext:save()
-  local winnr = vim.api.nvim_get_current_win()
-  local o = {
-    winnr = winnr,
-    win_first_line = vim.fn.line("w0", winnr),
-    win_last_line = vim.fn.line("w$", winnr),
-    tabnr = vim.api.nvim_get_current_tabpage(),
-  }
-  setmetatable(o, self)
-  self.__index = self
-  return o
-end
-
-function WindowContext:restore()
-  if vim.api.nvim_tabpage_is_valid(self.tabnr) then
-    vim.api.nvim_set_current_tabpage(self.tabnr)
-  end
-  if vim.api.nvim_win_is_valid(self.winnr) then
-    vim.api.nvim_set_current_win(self.winnr)
-  end
-end
-
---- @return integer
-function WindowContext:get_winnr()
-  return self.winnr
-end
-
---- @return integer
-function WindowContext:get_win_first_line()
-  return self.win_first_line
-end
-
---- @return integer
-function WindowContext:get_win_last_line()
-  return self.win_last_line
-end
-
---- @return integer
-function WindowContext:get_tabnr()
-  return self.tabnr
-end
-
-M.WindowContext = WindowContext
-
--- WindowContext }
-
--- ShellContext {
-
---- @class fzfx.ShellContext
---- @field shell string?
---- @field shellslash string?
---- @field shellcmdflag string?
---- @field shellxquote string?
---- @field shellquote string?
---- @field shellredir string?
---- @field shellpipe string?
---- @field shellxescape string?
-local ShellContext = {}
-
---- @return fzfx.ShellContext
-function ShellContext:save()
-  local o = constants.IS_WINDOWS
-      and {
-        shell = vim.o.shell,
-        shellslash = vim.o.shellslash,
-        shellcmdflag = vim.o.shellcmdflag,
-        shellxquote = vim.o.shellxquote,
-        shellquote = vim.o.shellquote,
-        shellredir = vim.o.shellredir,
-        shellpipe = vim.o.shellpipe,
-        shellxescape = vim.o.shellxescape,
-      }
-    or {
-      shell = vim.o.shell,
-    }
-  setmetatable(o, self)
-  self.__index = self
-
-  if constants.IS_WINDOWS then
-    vim.o.shell = "cmd.exe"
-    vim.o.shellslash = false
-    vim.o.shellcmdflag = "/s /c"
-    vim.o.shellxquote = '"'
-    vim.o.shellquote = ""
-    vim.o.shellredir = ">%s 2>&1"
-    vim.o.shellpipe = "2>&1| tee"
-    vim.o.shellxescape = ""
-  else
-    vim.o.shell = "sh"
-  end
-
-  return o
-end
-
-function ShellContext:restore()
-  if constants.IS_WINDOWS then
-    vim.o.shell = self.shell
-    vim.o.shellslash = self.shellslash
-    vim.o.shellcmdflag = self.shellcmdflag
-    vim.o.shellxquote = self.shellxquote
-    vim.o.shellquote = self.shellquote
-    vim.o.shellredir = self.shellredir
-    vim.o.shellpipe = self.shellpipe
-    vim.o.shellxescape = self.shellxescape
-  else
-    vim.o.shell = self.shell
-  end
-end
-
-M.ShellContext = ShellContext
-
--- ShellContext }
-
--- layout {
-
---- @param total_height integer
---- @param total_width integer
---- @param layout {start_row:integer,end_row:integer,start_col:integer,end_col:integer}
---- @return {start_row:integer,end_row:integer,start_col:integer,end_col:integer}
-M._adjust_layout_bound = function(total_height, total_width, layout)
-  --- @param v number
-  --- @return number
-  local function bound_row(v)
-    return num.bound(v, 0, total_height - 1)
-  end
-
-  --- @param v number
-  --- @return number
-  local function bound_col(v)
-    return num.bound(v, 0, total_width - 1)
-  end
-
-  local start_row = layout.start_row
-  local end_row = layout.end_row
-  local start_col = layout.start_col
-  local end_col = layout.end_col
-
-  if start_row <= 0 then
-    -- too up
-    local diff_row = math.floor(math.abs(start_row))
-    start_row = 0
-    end_row = end_row + diff_row
-  elseif end_row >= total_height - 1 then
+  if start_value < 0 then
+    -- Too up
+    local diff = math.floor(math.abs(start_value))
+    start_value = 0
+    end_value = end_value + diff
+  elseif end_value > total_size - 1 then
     -- too down
-    local diff_row = math.floor(math.abs(end_row - total_height + 1))
-    end_row = total_height - 1
-    start_row = start_row - diff_row
+    local diff = math.floor(math.abs(end_value - total_size + 1))
+    end_value = total_size - 1
+    start_value = start_value - diff
   end
 
-  start_row = bound_row(start_row)
-  end_row = bound_row(end_row)
+  start_value = num.bound(start_value, 0, total_size - 1)
+  end_value = num.bound(end_value, 0, total_size - 1)
 
-  if start_col <= 0 then
-    -- too left
-    local diff_col = math.floor(math.abs(start_col))
-    start_col = 0
-    end_col = end_col + diff_col
-  elseif end_col >= total_width - 1 then
-    -- too right
-    local diff_col = math.floor(math.abs(end_col - total_width + 1))
-    end_col = total_width - 1
-    start_col = start_col - diff_col
-  end
-
-  start_col = bound_col(start_col)
-  end_col = bound_col(end_col)
-
-  return { start_row = start_row, end_row = end_row, start_col = start_col, end_col = end_col }
+  return { start_value = start_value, end_value = end_value }
 end
 
 --- @param win_opts {relative:"editor"|"win"|"cursor",height:number,width:number,row:number,col:number}
@@ -214,18 +59,172 @@ M._get_center_col = function(win_opts, total_width)
   return center_col
 end
 
+--- @param relative "editor"|"win"|"cursor"
+--- @param relative_winnr integer
+--- @return integer
+local function _get_total_width(relative, relative_winnr)
+  if relative == "editor" then
+    return vim.o.columns
+  else
+    return vim.api.nvim_win_get_width(relative_winnr)
+  end
+end
+
+--- @param relative "editor"|"win"|"cursor"
+--- @param relative_winnr integer
+--- @return integer
+local function _get_total_height(relative, relative_winnr)
+  if relative == "editor" then
+    return vim.o.lines
+  else
+    return vim.api.nvim_win_get_height(relative_winnr)
+  end
+end
+
+--- @param width_opt number
+--- @param total_width integer
+--- @return integer
+local function _get_width(width_opt, total_width)
+  local value
+  if width_opt > 1 then
+    -- Absolute value
+    value = width_opt
+  else
+    -- Relative value, i.e. percentage
+    value = math.floor(width_opt * total_width)
+  end
+  return num.bound(value, 1, total_width)
+end
+
+--- @param height_opt number
+--- @param total_height integer
+--- @return integer
+local function _get_height(height_opt, total_height)
+  local value
+  if height_opt > 1 then
+    -- Absolute value
+    value = height_opt
+  else
+    -- Relative value, i.e. percentage
+    value = math.floor(height_opt * total_height)
+  end
+  return num.bound(value, 1, total_height)
+end
+
+--- @param opt number
+--- @param total_size integer
+--- @param opt_name string
+--- @return integer
+local function _get_center(opt, total_size, opt_name)
+  log.ensure(
+    (opt >= -0.5 and opt <= 0.5) or opt <= -1 or opt >= 1,
+    string.format(
+      "Popup window %s (%s) opts must in range [-0.5, 0.5] or (-inf, -1] or [1, +inf]",
+      opt_name,
+      vim.inspect(opt)
+    )
+  )
+
+  local center
+  if opt >= -0.5 and opt <= 0.5 then
+    -- Relative value, i.e. percentage
+    center = opt + 0.5
+    center = total_size * center
+  else
+    -- Absolute value
+    center = total_size * 0.5 + opt
+  end
+
+  return center
+end
+
+--- @param row_opt number
+--- @param height integer
+--- @param total_height integer
+--- @return {start_row:integer,end_row:integer}
+local function _get_row(row_opt, height, total_height)
+  local center_row = _get_center(row_opt, total_height, "row")
+
+  -- Note: row/col in `nvim_open_win` API is 0-indexed, so here minus 1.
+  local start_row = math.floor(center_row - (height / 2)) - 1
+  local end_row = math.floor(center_row + (height / 2)) - 1
+  local adjusted = _adjust_boundary(total_height, { start_value = start_row, end_value = end_row })
+
+  return { start_row = adjusted.start_value, end_row = adjusted.end_value }
+end
+
+--- @param col_opt number
+--- @param width integer
+--- @param total_width integer
+--- @return {start_col:integer,end_col:integer}
+local function _get_col(col_opt, width, total_width)
+  local center_col = _get_center(col_opt, total_width, "col")
+
+  -- Note: row/col in `nvim_open_win` API is 0-indexed, so here minus 1.
+  local start_col = math.floor(center_col - (width / 2)) - 1
+  local end_col = math.floor(center_col + (width / 2)) - 1
+  local adjusted = _adjust_boundary(total_width, { start_value = start_col, end_value = end_col })
+
+  return { start_col = adjusted.start_value, end_col = adjusted.end_value }
+end
+
+--- @param row_opt number
+--- @param height integer
+--- @param total_height integer
+--- @param cursor_relative_row integer
+--- @return {start_row:integer,end_row:integer}
+local function _get_cursor_row(row_opt, height, total_height, cursor_relative_row)
+  local start_row
+  if row_opt > -1 and row_opt < 1 then
+    start_row = math.floor(total_height * row_opt) + cursor_relative_row
+  else
+    start_row = row_opt + cursor_relative_row
+  end
+
+  local expected_end_row = start_row + height
+  local reversed_expected_start_row = start_row - 1 - height
+  -- If the popup window is outside of window bottom, it will overwrite/cover the cursor
+  -- thus we would place it in upper-side of cursor
+  if expected_end_row > total_height and reversed_expected_start_row >= 1 then
+    -- Reverse the anchor, i.e. move the popup window upside of the cursor.
+    start_row = reversed_expected_start_row
+  else
+    -- Keep the anchor, i.e. popup window is still downside of the cursor.
+  end
+
+  local end_row = start_row + height
+  local adjusted = _adjust_boundary(total_height, { start_value = start_row, end_value = end_row })
+
+  return { start_row = adjusted.start_value, end_row = adjusted.end_value }
+end
+
+--- @param col_opt number
+--- @param width integer
+--- @param total_width integer
+--- @param cursor_relative_col integer
+--- @return {start_col:integer,end_col:integer}
+local function _get_cursor_col(col_opt, width, total_width, cursor_relative_col)
+  local center_col = _get_center(col_opt, total_width, "col")
+
+  -- Note: row/col in `nvim_open_win` API is 0-indexed, so here minus 1.
+  local start_col = math.floor(center_col - (width / 2)) - 1
+  local end_col = math.floor(center_col + (width / 2)) - 1
+
+  -- Difference between center-based and cursor-based.
+  local diff = cursor_relative_col - start_col
+  start_col = cursor_relative_col
+  end_col = end_col + diff
+
+  local adjusted = _adjust_boundary(total_width, { start_value = start_col, end_value = end_col })
+
+  return { start_col = adjusted.start_value, end_col = adjusted.end_value }
+end
+
 --- @param relative_winnr integer
 --- @param relative_win_first_line integer the first line number of window (e.g. the view), from `vim.fn.line("w0")`
 --- @param win_opts {relative:"editor"|"win"|"cursor",height:number,width:number,row:number,col:number}
---- @param fzf_preview_window_opts fzfx.FzfPreviewWindowOpts?
---- @return {height:integer,width:integer,start_row:integer,end_row:integer,start_col:integer,end_col:integer,provider:{height:integer,width:integer,start_row:integer,end_row:integer,start_col:integer,end_col:integer}?,previewer:{height:integer,width:integer,start_row:integer,end_row:integer,start_col:integer,end_col:integer}?}
-M.make_center_layout = function(
-  relative_winnr,
-  ---@diagnostic disable-next-line: unused-local
-  relative_win_first_line,
-  win_opts,
-  fzf_preview_window_opts
-)
+--- @return {height:integer,width:integer,start_row:integer,end_row:integer,start_col:integer,end_col:integer}
+M.make_center_layout = function(relative_winnr, relative_win_first_line, win_opts)
   log.ensure(
     type(relative_winnr) == "number" and vim.api.nvim_win_is_valid(relative_winnr),
     string.format(
@@ -241,85 +240,28 @@ M.make_center_layout = function(
     )
   )
 
-  local total_width = win_opts.relative == "editor" and vim.o.columns
-    or vim.api.nvim_win_get_width(relative_winnr)
-  local total_height = win_opts.relative == "editor" and vim.o.lines
-    or vim.api.nvim_win_get_height(relative_winnr)
+  -- Total width/height
+  local total_width = _get_total_width(win_opts.relative, relative_winnr)
+  local total_height = _get_total_height(win_opts.relative, relative_winnr)
 
-  local width = num.bound(
-    win_opts.width > 1 and win_opts.width or math.floor(win_opts.width * total_width),
-    1,
-    total_width
-  )
-  local height = num.bound(
-    win_opts.height > 1 and win_opts.height or math.floor(win_opts.height * total_height),
-    1,
-    total_height
-  )
+  -- Width/height
+  local width = _get_width(win_opts.width, total_width)
+  local height = _get_height(win_opts.height, total_height)
 
-  log.ensure(
-    (win_opts.row >= -0.5 and win_opts.row <= 0.5) or win_opts.row <= -1 or win_opts.row >= 1,
-    string.format(
-      "popup window row (%s) opts must in range [-0.5, 0.5] or (-inf, -1] or [1, +inf]",
-      vim.inspect(win_opts.row)
-    )
-  )
-  log.ensure(
-    (win_opts.col >= -0.5 and win_opts.col <= 0.5) or win_opts.col <= -1 or win_opts.col >= 1,
-    string.format(
-      "popup window col (%s) opts must in range [-0.5, 0.5] or (-inf, -1] or [1, +inf]",
-      vim.inspect(win_opts.col)
-    )
-  )
-
-  local center_row = M._get_center_row(win_opts, total_height)
-  local center_col = M._get_center_col(win_opts, total_width)
-  -- log.debug(
-  --   "|get_layout| win_opts:%s, center(row/col):%s/%s, height/width:%s/%s, total(height/width):%s/%s, row(start/end):%s/%s, col(start/end):%s/%s",
-  --   vim.inspect(win_opts),
-  --   vim.inspect(center_row),
-  --   vim.inspect(center_col),
-  --   vim.inspect(height),
-  --   vim.inspect(width),
-  --   vim.inspect(total_height),
-  --   vim.inspect(total_width),
-  --   vim.inspect(center_row - (height / 2)),
-  --   vim.inspect(center_row + (height / 2)),
-  --   vim.inspect(center_col - (width / 2)),
-  --   vim.inspect(center_col + (width / 2))
-  -- )
-
-  local start_row = math.floor(center_row - (height / 2)) - 1
-  local end_row = math.floor(center_row + (height / 2)) - 1
-  local start_col = math.floor(center_col - (width / 2)) - 1
-  local end_col = math.floor(center_col + (width / 2)) - 1
-
-  local adjust_layout = M._adjust_layout_bound(
-    total_height,
-    total_width,
-    { start_row = start_row, end_row = end_row, start_col = start_col, end_col = end_col }
-  )
-
-  start_row = adjust_layout.start_row
-  end_row = adjust_layout.end_row
-  start_col = adjust_layout.start_col
-  end_col = adjust_layout.end_col
+  -- Row/column
+  local row = _get_row(win_opts.row, height, total_height)
+  local col = _get_col(win_opts.col, width, total_width)
 
   local result = {
     total_height = total_height,
     total_width = total_width,
     height = height,
     width = width,
-    start_row = start_row,
-    end_row = end_row,
-    start_col = start_col,
-    end_col = end_col,
+    start_row = row.start_row,
+    end_row = row.end_row,
+    start_col = col.start_col,
+    end_col = col.end_col,
   }
-
-  -- log.debug(string.format("|make_center_layout| base_layout:%s", vim.inspect(result)))
-  local internal_layout = M._make_internal_layout(result, fzf_preview_window_opts)
-  result.provider = tbl.tbl_get(internal_layout, "provider")
-  result.previewer = tbl.tbl_get(internal_layout, "previewer")
 
   return result
 end
@@ -327,14 +269,8 @@ end
 --- @param relative_winnr integer
 --- @param relative_win_first_line integer the first line number of window (e.g. the view), from `vim.fn.line("w0")`
 --- @param win_opts {relative:"editor"|"win"|"cursor",height:number,width:number,row:number,col:number}
---- @param fzf_preview_window_opts fzfx.FzfPreviewWindowOpts?
---- @return {height:integer,width:integer,start_row:integer,end_row:integer,start_col:integer,end_col:integer,provider:{height:integer,width:integer,start_row:integer,end_row:integer,start_col:integer,end_col:integer}?,previewer:{height:integer,width:integer,start_row:integer,end_row:integer,start_col:integer,end_col:integer}?}
-M.make_cursor_layout = function(
-  relative_winnr,
-  relative_win_first_line,
-  win_opts,
-  fzf_preview_window_opts
-)
+--- @return {height:integer,width:integer,start_row:integer,end_row:integer,start_col:integer,end_col:integer}
+M.make_cursor_layout = function(relative_winnr, relative_win_first_line, win_opts)
   log.ensure(
     type(relative_winnr) == "number" and vim.api.nvim_win_is_valid(relative_winnr),
     string.format(
@@ -349,233 +285,43 @@ M.make_cursor_layout = function(
       vim.inspect(relative_win_first_line)
     )
   )
+  log.ensure(
+    win_opts.relative == "cursor",
+    string.format(
+      "|make_cursor_layout| relative (%s) must be cursor",
+      vim.inspect(win_opts.relative)
+    )
+  )
 
-  local total_width = vim.api.nvim_win_get_width(relative_winnr)
-  local total_height = vim.api.nvim_win_get_height(relative_winnr)
+  -- Total width/height.
+  local total_width = _get_total_width(win_opts.relative, relative_winnr)
+  local total_height = _get_total_height(win_opts.relative, relative_winnr)
+
+  -- Cursor.
   local cursor_pos = vim.api.nvim_win_get_cursor(relative_winnr)
   local cursor_relative_row = cursor_pos[1] - relative_win_first_line
   local cursor_relative_col = cursor_pos[2]
-  log.debug(
-    string.format(
-      "|make_cursor_layout| total height/width:%s/%s, cursor:%s, relative_win_first_line:%s, cursor relative row/col:%s/%s",
-      vim.inspect(total_height),
-      vim.inspect(total_width),
-      vim.inspect(cursor_pos),
-      vim.inspect(relative_win_first_line),
-      vim.inspect(cursor_relative_row),
-      vim.inspect(cursor_relative_col)
-    )
-  )
 
-  local width = num.bound(
-    win_opts.width > 1 and win_opts.width or math.floor(win_opts.width * total_width),
-    1,
-    total_width
-  )
-  local height = num.bound(
-    win_opts.height > 1 and win_opts.height or math.floor(win_opts.height * total_height),
-    1,
-    total_height
-  )
+  -- Width/height.
+  local width = _get_width(win_opts.width, total_width)
+  local height = _get_height(win_opts.height, total_height)
 
-  local start_row
-  if win_opts.row > -1 and win_opts.row < 1 then
-    start_row = math.floor(total_height * win_opts.row) + cursor_relative_row
-  else
-    start_row = win_opts.row + cursor_relative_row
-  end
-
-  local start_row_plus_height = start_row + height
-  local start_row_minus_3_and_height = start_row - 3 - height
-  -- if cursor based popup window is too beyond bottom, it will cover the cursor
-  -- thus we would place it in upper-side of cursor
-  log.debug(
-    string.format(
-      "|make_cursor_layout| height/width:%s/%s, start_row:%s, start_row + height(%s) > total_height(%s):%s, start_row - 3 - height(%s) >= 1:%s",
-      vim.inspect(height),
-      vim.inspect(width),
-      vim.inspect(start_row),
-      vim.inspect(start_row_plus_height),
-      vim.inspect(total_height),
-      vim.inspect(start_row_plus_height > total_height),
-      vim.inspect(start_row_minus_3_and_height),
-      vim.inspect(start_row_minus_3_and_height >= 1)
-    )
-  )
-  if start_row_plus_height > total_height and start_row_minus_3_and_height >= 1 then
-    start_row = start_row_minus_3_and_height
-  end
-  local end_row = start_row + height
-
-  local center_col = M._get_center_col(win_opts, total_width)
-  local start_col = math.floor(center_col - (width / 2)) - 1
-  local end_col = math.floor(center_col + (width / 2)) - 1
-
-  local adjust_layout = M._adjust_layout_bound(
-    total_height,
-    total_width,
-    { start_row = start_row, end_row = end_row, start_col = start_col, end_col = end_col }
-  )
-
-  start_row = adjust_layout.start_row
-  end_row = adjust_layout.end_row
-  start_col = adjust_layout.start_col
-  end_col = adjust_layout.end_col
+  -- Row/col.
+  local row = _get_cursor_row(win_opts.row, height, total_height, cursor_relative_row)
+  local col = _get_cursor_col(win_opts.col, width, total_width, cursor_relative_col)
 
   local result = {
     total_height = total_height,
     total_width = total_width,
     height = height,
     width = width,
-    start_row = start_row,
-    end_row = end_row,
-    start_col = start_col,
-    end_col = end_col,
+    start_row = row.start_row,
+    end_row = row.end_row,
+    start_col = col.start_col,
+    end_col = col.end_col,
   }
-
-  log.debug(string.format("|make_cursor_layout| base_layout:%s", vim.inspect(result)))
-  local internal_layout = M._make_internal_layout(result, fzf_preview_window_opts)
-  result.provider = tbl.tbl_get(internal_layout, "provider")
-  result.previewer = tbl.tbl_get(internal_layout, "previewer")
 
   return result
 end
-
---- @param base_layout {total_height:integer,total_width:integer,height:integer,width:integer,start_row:integer,end_row:integer,start_col:integer,end_col:integer}
---- @param fzf_preview_window_opts fzfx.FzfPreviewWindowOpts?
---- @return {provider:{height:integer,width:integer,start_row:integer,end_row:integer,start_col:integer,end_col:integer}?,previewer:{height:integer,width:integer,start_row:integer,end_row:integer,start_col:integer,end_col:integer}?}?
-M._make_internal_layout = function(base_layout, fzf_preview_window_opts)
-  --- @param v number
-  --- @return number
-  local function bound_row(v)
-    return num.bound(v, 0, base_layout.total_height - 1)
-  end
-
-  --- @param v number
-  --- @return number
-  local function bound_col(v)
-    return num.bound(v, 0, base_layout.total_width - 1)
-  end
-
-  --- @param v number
-  --- @return number
-  local function bound_height(v)
-    return num.bound(v, 1, base_layout.height)
-  end
-
-  --- @param v number
-  --- @return number
-  local function bound_width(v)
-    return num.bound(v, 1, base_layout.width)
-  end
-
-  if type(fzf_preview_window_opts) == "table" then
-    local provider_layout = {}
-    local previewer_layout = {}
-    if
-      fzf_preview_window_opts.position == "left"
-      or fzf_preview_window_opts.position == "right"
-    then
-      if fzf_preview_window_opts.size_is_percent then
-        previewer_layout.width =
-          bound_width(math.floor((base_layout.width / 100 * fzf_preview_window_opts.size) - 1))
-      else
-        previewer_layout.width = bound_width(fzf_preview_window_opts.size - 1)
-      end
-      provider_layout.width = bound_width(base_layout.width - previewer_layout.width - 2)
-      provider_layout.height = base_layout.height
-      previewer_layout.height = base_layout.height
-
-      -- the layout looks like
-      --
-      -- |      |       |
-      -- | left | right |
-      -- |      |       |
-
-      if fzf_preview_window_opts.position == "left" then
-        -- |           |          |
-        -- | previewer | provider |
-        -- |           |          |
-        previewer_layout.start_col = base_layout.start_col
-        previewer_layout.end_col = bound_col(base_layout.start_col + previewer_layout.width)
-        provider_layout.start_col = bound_col(base_layout.end_col - provider_layout.width)
-        provider_layout.end_col = base_layout.end_col
-      else
-        -- |          |           |
-        -- | provider | previewer |
-        -- |          |           |
-        provider_layout.start_col = base_layout.start_col
-        provider_layout.end_col = bound_col(base_layout.start_col + provider_layout.width)
-        previewer_layout.start_col = bound_col(base_layout.end_col - previewer_layout.width)
-        previewer_layout.end_col = base_layout.end_col
-      end
-      provider_layout.start_row = base_layout.start_row
-      provider_layout.end_row = base_layout.end_row
-      previewer_layout.start_row = base_layout.start_row
-      previewer_layout.end_row = base_layout.end_row
-    elseif
-      fzf_preview_window_opts
-      and (fzf_preview_window_opts.position == "up" or fzf_preview_window_opts.position == "down")
-    then
-      if fzf_preview_window_opts.size_is_percent then
-        previewer_layout.height =
-          bound_height(math.floor(base_layout.height / 100 * fzf_preview_window_opts.size) - 1)
-      else
-        previewer_layout.height = bound_height(fzf_preview_window_opts.size - 1)
-      end
-      provider_layout.height = bound_height(base_layout.height - previewer_layout.height - 2)
-      provider_layout.width = base_layout.width
-      previewer_layout.width = base_layout.width
-
-      -- the layout looks like
-      --
-      -- ---------
-      --    up
-      -- ---------
-      --   down
-      -- ---------
-
-      if fzf_preview_window_opts.position == "up" then
-        -- -------------
-        --   previewer
-        -- -------------
-        --   provider
-        -- -------------
-        previewer_layout.start_row = base_layout.start_row
-        previewer_layout.end_row = bound_row(base_layout.start_row + previewer_layout.height)
-        provider_layout.start_row = bound_row(base_layout.end_row - provider_layout.height)
-        provider_layout.end_row = base_layout.end_row
-      else
-        -- -------------
-        --   provider
-        -- -------------
-        --   previewer
-        -- -------------
-        provider_layout.start_row = base_layout.start_row
-        provider_layout.end_row = bound_row(base_layout.start_row + provider_layout.height)
-        previewer_layout.start_row = bound_row(base_layout.end_row - previewer_layout.height)
-        previewer_layout.end_row = base_layout.end_row
-      end
-      provider_layout.start_col = base_layout.start_col
-      provider_layout.end_col = base_layout.end_col
-      previewer_layout.start_col = base_layout.start_col
-      previewer_layout.end_col = base_layout.end_col
-    end
-    -- log.debug("|get_layout| result-2:%s", vim.inspect(result))
-    return { provider = provider_layout, previewer = previewer_layout }
-  end
-
-  return nil
-end
-
--- layout }
-
--- constants {
-
-M.FLOAT_WIN_STYLE = "minimal"
-M.FLOAT_WIN_ZINDEX = 60
-M.FLOAT_WIN_BORDER = "none"
-
--- constants }
 
 return M

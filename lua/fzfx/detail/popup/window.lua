@@ -1,6 +1,6 @@
 local log = require("fzfx.lib.log")
-local fzf_helpers = require("fzfx.detail.fzf_helpers")
 local popup_helpers = require("fzfx.detail.popup.popup_helpers")
+local window_helpers = require("fzfx.detail.popup.window_helpers")
 
 local M = {}
 
@@ -24,9 +24,9 @@ M._make_cursor_opts = function(win_opts, relative_winnr, relative_win_first_line
     height = layout.height,
     row = layout.start_row,
     col = layout.start_col,
-    style = popup_helpers.FLOAT_WIN_STYLE,
-    border = popup_helpers.FLOAT_WIN_BORDER,
-    zindex = popup_helpers.FLOAT_WIN_ZINDEX,
+    style = window_helpers.FLOAT_WIN_STYLE,
+    border = window_helpers.FLOAT_WIN_BORDER,
+    zindex = window_helpers.FLOAT_WIN_ZINDEX,
   }
 
   -- if win_opts.relative == "win" then
@@ -57,9 +57,9 @@ M._make_center_opts = function(win_opts, relative_winnr, relative_win_first_line
     height = layout.height,
     row = layout.start_row,
     col = layout.start_col,
-    style = popup_helpers.FLOAT_WIN_STYLE,
-    border = popup_helpers.FLOAT_WIN_BORDER,
-    zindex = popup_helpers.FLOAT_WIN_ZINDEX,
+    style = window_helpers.FLOAT_WIN_STYLE,
+    border = window_helpers.FLOAT_WIN_BORDER,
+    zindex = window_helpers.FLOAT_WIN_ZINDEX,
   }
 
   if win_opts.relative == "win" then
@@ -87,9 +87,9 @@ M.make_opts = function(win_opts, relative_winnr, relative_win_first_line)
     or M._make_center_opts(win_opts, relative_winnr, relative_win_first_line)
 end
 
--- FzfPopupWindow {
+-- PopupWindow {
 
---- @class fzfx.FzfPopupWindow
+--- @class fzfx.PopupWindow
 --- @field saved_win_ctx fzfx.WindowContext?
 --- @field bufnr integer?
 --- @field winnr integer?
@@ -97,17 +97,16 @@ end
 --- @field _saved_current_win_first_line integer
 --- @field _saved_win_opts fzfx.WindowOpts
 --- @field _resizing boolean
-local FzfPopupWindow = {}
+local PopupWindow = {}
 
---- @package
 --- @param win_opts fzfx.WindowOpts
---- @return fzfx.FzfPopupWindow
-function FzfPopupWindow:new(win_opts)
+--- @return fzfx.PopupWindow
+function PopupWindow:new(win_opts)
   local current_winnr = vim.api.nvim_get_current_win()
   local current_win_first_line = vim.fn.line("w0")
 
   -- save current window context
-  local saved_win_ctx = popup_helpers.WindowContext:save()
+  local saved_win_ctx = window_helpers.WindowContext:save()
 
   --- @type integer
   local bufnr = vim.api.nvim_create_buf(false, true)
@@ -143,7 +142,7 @@ function FzfPopupWindow:new(win_opts)
   return o
 end
 
-function FzfPopupWindow:close()
+function PopupWindow:close()
   -- log.debug("|fzfx.popup - Popup:close| self:%s", vim.inspect(self))
 
   if vim.api.nvim_win_is_valid(self.winnr) then
@@ -155,7 +154,7 @@ function FzfPopupWindow:close()
   self.saved_win_ctx:restore()
 end
 
-function FzfPopupWindow:is_valid()
+function PopupWindow:is_valid()
   if vim.in_fast_event() then
     return type(self.winnr) == "number" and type(self.bufnr) == "number"
   else
@@ -166,7 +165,7 @@ function FzfPopupWindow:is_valid()
   end
 end
 
-function FzfPopupWindow:resize()
+function PopupWindow:resize()
   if self._resizing then
     return
   end
@@ -184,12 +183,12 @@ function FzfPopupWindow:resize()
 end
 
 --- @return integer
-function FzfPopupWindow:handle()
+function PopupWindow:handle()
   return self.winnr
 end
 
-M.FzfPopupWindow = FzfPopupWindow
+M.PopupWindow = PopupWindow
 
--- FzfPopupWindow }
+-- PopupWindow }
 
 return M
