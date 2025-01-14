@@ -9,6 +9,7 @@ local LogLevels = require("fzfx.lib.log").LogLevels
 local actions_helper = require("fzfx.helper.actions")
 
 local ProviderTypeEnum = require("fzfx.schema").ProviderTypeEnum
+local PreviewerTypeEnum = require("fzfx.schema").PreviewerTypeEnum
 local CommandFeedEnum = require("fzfx.schema").CommandFeedEnum
 
 local _git = require("fzfx.cfg._git")
@@ -146,9 +147,11 @@ end
 M.previewers = {
   local_branch = {
     previewer = M._previewer,
+    previewer_type = PreviewerTypeEnum.FUNCTIONAL_COMMAND_STRING,
   },
   remote_branch = {
     previewer = M._previewer,
+    previewer_type = PreviewerTypeEnum.FUNCTIONAL_COMMAND_STRING,
   },
 }
 

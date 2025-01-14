@@ -78,13 +78,13 @@ local CommandFeedEnum = {
 -- Note:
 -- 1. The "key" option is to press and switch to this provider. For example in "FzfxFiles" command, user press "CTRL-U" to switch to **unrestricted mode**, press "CTRL-R" to switch to **restricted mode** (here a **mode** is actually a provider).
 -- 2. The "provider" option is the **provider** we mentioned above, that provides the data source, i.e. the lines (in the left side) of fzf binary.
--- 3. The "provider_type" option by default is "plain" or "plain_list". Also see "get_provider_type_or_default" function in below.
+-- 3. The "provider_type" option is mandatory.
 -- 4. The "provider_decorator" option is optional.
 --- @alias fzfx.ProviderConfig {key:fzfx.ActionKey,provider:fzfx.Provider,provider_type:fzfx.ProviderType?,provider_decorator:fzfx.ProviderDecorator?}
 --
 -- Note:
 -- 1. The "previewer" option is the **previewer** we mentioned above, that previews the content of the current line, i.e. generates lines (in the right side) of fzf binary.
--- 2. The "previewer_type" option by default "command". Also see "get_previewer_type_or_default" function in below.
+-- 2. The "previewer_type" option is mandatory.
 -- 3. The "previewer_label" option is optional.
 --- @alias fzfx.PreviewerConfig {previewer:fzfx.Previewer,previewer_type:fzfx.PreviewerType?,previewer_label:fzfx.PreviewerLabel?}
 ---
@@ -148,24 +148,6 @@ local function is_previewer_config(cfg)
     )
 end
 
--- Get provider type or default.
---- @param provider_config fzfx.ProviderConfig
---- @return fzfx.ProviderType
-local function get_provider_type_or_default(provider_config)
-  return provider_config.provider_type
-    or (
-      type(provider_config.provider) == "string" and ProviderTypeEnum.PLAIN_COMMAND_STRING
-      or ProviderTypeEnum.PLAIN_COMMAND_ARRAY
-    )
-end
-
--- Get previewer type or default.
---- @param previewer_config fzfx.PreviewerConfig
---- @return fzfx.PreviewerType
-local function get_previewer_type_or_default(previewer_config)
-  return previewer_config.previewer_type or PreviewerTypeEnum.FUNCTIONAL_COMMAND_STRING
-end
-
 local M = {
   ProviderTypeEnum = ProviderTypeEnum,
   PreviewerTypeEnum = PreviewerTypeEnum,
@@ -174,9 +156,6 @@ local M = {
   is_variant_config = is_variant_config,
   is_provider_config = is_provider_config,
   is_previewer_config = is_previewer_config,
-
-  get_provider_type_or_default = get_provider_type_or_default,
-  get_previewer_type_or_default = get_previewer_type_or_default,
 }
 
 return M

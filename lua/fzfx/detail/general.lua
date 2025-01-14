@@ -441,8 +441,6 @@ function PreviewerSwitch:new(name, pipeline, previewer_configs, fzf_port_file)
   if
     schema.is_previewer_config(previewer_configs --[[@as fzfx.PreviewerConfig]])
   then
-    previewer_configs.previewer_type =
-      schema.get_previewer_type_or_default(previewer_configs --[[@as fzfx.PreviewerConfig]])
     previewer_configs_map[DEFAULT_PIPELINE] = previewer_configs
   else
     for previewer_name, previewer_opts in pairs(previewer_configs) do
@@ -455,8 +453,6 @@ function PreviewerSwitch:new(name, pipeline, previewer_configs, fzf_port_file)
           vim.inspect(previewer_opts)
         )
       )
-      previewer_opts.previewer_type =
-        schema.get_previewer_type_or_default(previewer_opts --[[@as fzfx.PreviewerConfig]])
       previewer_configs_map[previewer_name] = previewer_opts
     end
   end
