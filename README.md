@@ -211,7 +211,7 @@ lua require('fzfx').setup()
 
 There're multiple commands provided, named with prefix `Fzfx`. The sub commands indicates the user query's input method, (i.e. the variants) named with below conventions:
 
-- **Basic** variant is named with `args`, accepts the following arguments as query content. For example searching a file named "README.md" with `:FzfxFiles args readme`, searching a word "fzfx" with `FzfxLiveGrep args fzfx`.
+- **Basic** variant is named with `args`, accepts the following arguments as query content. For example searching a file named "README.md" with `:FzfxFiles args readme<CR>`, searching a word "fzfx" with `:FzfxLiveGrep args fzfx<CR>`.
 - **Visual select** variant is named with `visual`, uses visual selection as query content.
 - **Cursor word** variant is named with `cword`, uses the word text under cursor as query content.
 - **Put** (i.e. yank text) variant is named with `put` (just like press the `p` key), uses the yank text as query content.
