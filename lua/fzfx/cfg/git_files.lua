@@ -103,13 +103,13 @@ M.providers = {
   current_folder = {
     key = "ctrl-u",
     provider = current_folder_provider,
-    provider_type = ProviderTypeEnum.FUNCTIONAL_COMMAND_ARRAY,
+    provider_type = ProviderTypeEnum.COMMAND_ARRAY,
     provider_decorator = { module = _decorator.PREPEND_ICON_FIND },
   },
   workspace = {
     key = "ctrl-w",
     provider = workspace_provider,
-    provider_type = ProviderTypeEnum.FUNCTIONAL_COMMAND_ARRAY,
+    provider_type = ProviderTypeEnum.COMMAND_ARRAY,
     provider_decorator = { module = _decorator.PREPEND_ICON_FIND },
   },
 }
@@ -117,12 +117,12 @@ M.providers = {
 M.previewers = {
   current_folder = {
     previewer = previewers_helper.fzf_preview_find,
-    previewer_type = PreviewerTypeEnum.FUNCTIONAL_COMMAND_ARRAY,
+    previewer_type = PreviewerTypeEnum.COMMAND_ARRAY,
     previewer_label = labels_helper.label_find,
   },
   workspace = {
     previewer = previewers_helper.fzf_preview_find,
-    previewer_type = PreviewerTypeEnum.FUNCTIONAL_COMMAND_ARRAY,
+    previewer_type = PreviewerTypeEnum.COMMAND_ARRAY,
     previewer_label = labels_helper.label_find,
   },
 }

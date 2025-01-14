@@ -133,23 +133,23 @@ M.providers = {
   all_commits = {
     key = "ctrl-a",
     provider = all_commits_provider,
-    provider_type = ProviderTypeEnum.FUNCTIONAL_COMMAND_ARRAY,
+    provider_type = ProviderTypeEnum.COMMAND_ARRAY,
   },
   buffer_commits = {
     key = "ctrl-u",
     provider = buffer_commits_provider,
-    provider_type = ProviderTypeEnum.FUNCTIONAL_COMMAND_ARRAY,
+    provider_type = ProviderTypeEnum.COMMAND_ARRAY,
   },
 }
 
 M.previewers = {
   all_commits = {
     previewer = previewers_helper.fzf_preview_git_commit,
-    previewer_type = PreviewerTypeEnum.FUNCTIONAL_COMMAND_STRING,
+    previewer_type = PreviewerTypeEnum.COMMAND_STRING,
   },
   buffer_commits = {
     previewer = previewers_helper.fzf_preview_git_commit,
-    previewer_type = PreviewerTypeEnum.FUNCTIONAL_COMMAND_STRING,
+    previewer_type = PreviewerTypeEnum.COMMAND_STRING,
   },
 }
 

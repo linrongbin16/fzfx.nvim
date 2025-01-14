@@ -201,12 +201,12 @@ M.providers = {
   filter_hidden = {
     key = "ctrl-r",
     provider = M._make_provider(),
-    provider_type = ProviderTypeEnum.FUNCTIONAL_COMMAND_STRING,
+    provider_type = ProviderTypeEnum.COMMAND_STRING,
   },
   include_hidden = {
     key = "ctrl-u",
     provider = M._make_provider({ include_hidden = true }),
-    provider_type = ProviderTypeEnum.FUNCTIONAL_COMMAND_STRING,
+    provider_type = ProviderTypeEnum.COMMAND_STRING,
   },
 }
 
@@ -311,12 +311,12 @@ end
 M.previewers = {
   filter_hidden = {
     previewer = M._previewer,
-    previewer_type = PreviewerTypeEnum.FUNCTIONAL_COMMAND_ARRAY,
+    previewer_type = PreviewerTypeEnum.COMMAND_ARRAY,
     previewer_label = previewer_label,
   },
   include_hidden = {
     previewer = M._previewer,
-    previewer_type = PreviewerTypeEnum.FUNCTIONAL_COMMAND_ARRAY,
+    previewer_type = PreviewerTypeEnum.COMMAND_ARRAY,
     previewer_label = previewer_label,
   },
 }

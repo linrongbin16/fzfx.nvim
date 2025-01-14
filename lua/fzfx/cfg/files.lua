@@ -138,13 +138,13 @@ M.providers = {
   restricted_mode = {
     key = "ctrl-r",
     provider = restricted_provider,
-    provider_type = ProviderTypeEnum.PLAIN_COMMAND_ARRAY,
+    provider_type = ProviderTypeEnum.COMMAND_ARRAY,
     provider_decorator = { module = _decorator.PREPEND_ICON_FIND },
   },
   unrestricted_mode = {
     key = "ctrl-u",
     provider = unrestricted_provider,
-    provider_type = ProviderTypeEnum.PLAIN_COMMAND_ARRAY,
+    provider_type = ProviderTypeEnum.COMMAND_ARRAY,
     provider_decorator = { module = _decorator.PREPEND_ICON_FIND },
   },
 }
@@ -152,12 +152,12 @@ M.providers = {
 M.previewers = {
   restricted_mode = {
     previewer = previewers_helper.fzf_preview_find,
-    previewer_type = PreviewerTypeEnum.FUNCTIONAL_COMMAND_ARRAY,
+    previewer_type = PreviewerTypeEnum.COMMAND_ARRAY,
     previewer_label = labels_helper.label_find,
   },
   unrestricted_mode = {
     previewer = previewers_helper.fzf_preview_find,
-    previewer_type = PreviewerTypeEnum.FUNCTIONAL_COMMAND_ARRAY,
+    previewer_type = PreviewerTypeEnum.COMMAND_ARRAY,
     previewer_label = labels_helper.label_find,
   },
 }

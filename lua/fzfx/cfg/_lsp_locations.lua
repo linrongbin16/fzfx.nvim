@@ -549,7 +549,7 @@ end
 
 M.previewers = {
   previewer = previewers_helper.fzf_preview_grep,
-  previewer_type = PreviewerTypeEnum.FUNCTIONAL_COMMAND_ARRAY,
+  previewer_type = PreviewerTypeEnum.COMMAND_ARRAY,
   previewer_label = labels_helper.label_rg,
 }
 

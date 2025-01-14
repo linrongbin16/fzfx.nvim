@@ -31,7 +31,6 @@ https://github.com/linrongbin16/fzfx.nvim/assets/6496887/b5e2b0dc-4dd6-4c18-b1da
   - [Misc](#misc)
 - [Recommended Key Mappings](#-recommended-key-mappings)
 - [Configuration](#-configuration)
-  - [Feature Flags](#feature-flags)
   - [Create Your Own Command](#create-your-own-command)
   - [API References](#api-references)
 - [Known Issues](#-known-issues)
@@ -1857,7 +1856,7 @@ https://github.com/linrongbin16/fzfx.nvim/assets/6496887/c704e5b2-d82a-45f2-8920
 require("fzfx").setup()
 
 require("fzfx").register("ls", {
-  --- @type CommandConfig
+  --- @type fzfx.CommandConfig
   command = {
     name = "FzfxLs",
     desc = "File Explorer (ls -1)",
@@ -1874,18 +1873,20 @@ require("fzfx").register("ls", {
       default_provider = "include_hiddens",
     },
   },
-  --- @type table<string, ProviderConfig>
+  --- @type table<string, fzfx.ProviderConfig>
   providers = {
     filter_hiddens = {
       key = "ctrl-h",
       provider = { "ls", "--color=always", "-1" },
+      provider_type = "COMMAND_ARRAY",
     },
     include_hiddens = {
       key = "ctrl-u",
       provider = { "ls", "--color=always", "-1a" },
+      provider_type = "COMMAND_ARRAY",
     },
   },
-  --- @type table<string, PreviewerConfig>
+  --- @type table<string, fzfx.PreviewerConfig>
   previewers = {
     filter_hiddens = {
       previewer = function(line)
@@ -1893,14 +1894,14 @@ require("fzfx").register("ls", {
         return vim.fn.isdirectory(line) > 0 and { "ls", "--color=always", "-lha", line }
           or { "cat", line }
       end,
-      previewer_type = "FUNCTIONAL_COMMAND_ARRAY",
+      previewer_type = "COMMAND_ARRAY",
     },
     include_hiddens = {
       previewer = function(line)
         return vim.fn.isdirectory(line) > 0 and { "ls", "--color=always", "-lha", line }
           or { "cat", line }
       end,
-      previewer_type = "FUNCTIONAL_COMMAND_ARRAY",
+      previewer_type = "COMMAND_ARRAY",
     },
   },
   actions = {

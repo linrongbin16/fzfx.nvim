@@ -112,10 +112,7 @@ local function println(line)
 end
 
 local ProviderTypeEnum = schema.ProviderTypeEnum
-if
-  metaopts.provider_type == ProviderTypeEnum.PLAIN_COMMAND_STRING
-  or metaopts.provider_type == ProviderTypeEnum.FUNCTIONAL_COMMAND_STRING
-then
+if metaopts.provider_type == ProviderTypeEnum.COMMAND_STRING then
   --- @type string
   local cmd = fio.readfile(resultfile, { trim = true }) --[[@as string]]
   -- shell_helpers.log_debug("plain/command cmd:%s", vim.inspect(cmd))
@@ -132,10 +129,7 @@ then
   end
   ---@diagnostic disable-next-line: need-check-nil
   p:close()
-elseif
-  metaopts.provider_type == ProviderTypeEnum.PLAIN_COMMAND_ARRAY
-  or metaopts.provider_type == ProviderTypeEnum.FUNCTIONAL_COMMAND_ARRAY
-then
+elseif metaopts.provider_type == ProviderTypeEnum.COMMAND_ARRAY then
   local cmd = fio.readfile(resultfile, { trim = true }) --[[@as string]]
   -- shell_helpers.log_debug("plain_list/command_list cmd:%s", vim.inspect(cmd))
   if str.empty(cmd) then

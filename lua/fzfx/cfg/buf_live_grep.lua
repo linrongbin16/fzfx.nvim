@@ -113,12 +113,12 @@ end
 M.providers = {
   key = "default",
   provider = M._make_provider(),
-  provider_type = ProviderTypeEnum.FUNCTIONAL_COMMAND_ARRAY,
+  provider_type = ProviderTypeEnum.COMMAND_ARRAY,
 }
 
 M.previewers = {
   previewer = previewers_helper.fzf_preview_grep_no_filename,
-  previewer_type = PreviewerTypeEnum.FUNCTIONAL_COMMAND_ARRAY,
+  previewer_type = PreviewerTypeEnum.COMMAND_ARRAY,
   previewer_label = constants.HAS_RG and labels_helper.label_rg_no_filename
     or labels_helper.label_grep_no_filename,
 }

@@ -80,14 +80,14 @@ M.providers = {
   default = {
     key = "default",
     provider = M._provider,
-    provider_type = ProviderTypeEnum.FUNCTIONAL_COMMAND_STRING,
+    provider_type = ProviderTypeEnum.COMMAND_STRING,
   },
 }
 
 M.previewers = {
   default = {
     previewer = previewers_helper.fzf_preview_git_commit,
-    previewer_type = PreviewerTypeEnum.FUNCTIONAL_COMMAND_STRING,
+    previewer_type = PreviewerTypeEnum.COMMAND_STRING,
   },
 }
 

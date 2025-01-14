@@ -68,7 +68,7 @@ local function println(l)
 end
 
 local PreviewerTypeEnum = schema.PreviewerTypeEnum
-if metaopts.previewer_type == PreviewerTypeEnum.FUNCTIONAL_COMMAND_STRING then
+if metaopts.previewer_type == PreviewerTypeEnum.COMMAND_STRING then
   local cmd = fio.readfile(resultfile, { trim = true })
   shell_helpers.log_debug("cmd:" .. vim.inspect(cmd))
   if str.empty(cmd) then
@@ -76,7 +76,7 @@ if metaopts.previewer_type == PreviewerTypeEnum.FUNCTIONAL_COMMAND_STRING then
   else
     os.execute(cmd)
   end
-elseif metaopts.previewer_type == PreviewerTypeEnum.FUNCTIONAL_COMMAND_ARRAY then
+elseif metaopts.previewer_type == PreviewerTypeEnum.COMMAND_ARRAY then
   local cmd = fio.readfile(resultfile, { trim = true })
   shell_helpers.log_debug("cmd:" .. vim.inspect(cmd))
   if str.empty(cmd) then

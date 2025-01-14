@@ -124,23 +124,23 @@ M.providers = {
   current_folder = {
     key = "ctrl-u",
     provider = current_folder_provider,
-    provider_type = ProviderTypeEnum.FUNCTIONAL_COMMAND_ARRAY,
+    provider_type = ProviderTypeEnum.COMMAND_ARRAY,
   },
   workspace = {
     key = "ctrl-w",
     provider = workspace_provider,
-    provider_type = ProviderTypeEnum.FUNCTIONAL_COMMAND_ARRAY,
+    provider_type = ProviderTypeEnum.COMMAND_ARRAY,
   },
 }
 
 M.previewers = {
   current_folder = {
     previewer = previewers_helper.fzf_preview_git_status,
-    previewer_type = PreviewerTypeEnum.FUNCTIONAL_COMMAND_STRING,
+    previewer_type = PreviewerTypeEnum.COMMAND_STRING,
   },
   workspace = {
     previewer = previewers_helper.fzf_preview_git_status,
-    previewer_type = PreviewerTypeEnum.FUNCTIONAL_COMMAND_STRING,
+    previewer_type = PreviewerTypeEnum.COMMAND_STRING,
   },
 }
 
