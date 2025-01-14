@@ -75,7 +75,9 @@ local function _remove_temp_file(filename, on_complete)
     end
   end
 
+  ---@diagnostic disable-next-line: undefined-field
   if uv.fs_stat(filename) then
+    ---@diagnostic disable-next-line: undefined-field
     uv.fs_unlink(filename, on_complete)
   end
 end
