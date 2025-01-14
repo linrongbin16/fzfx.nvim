@@ -1,6 +1,6 @@
 local cwd = vim.fn.getcwd()
 
-describe("detail.popup.fzf_popup_window", function()
+describe("detail.popup.window", function()
   local assert_eq = assert.is_equal
   local assert_true = assert.is_true
   local assert_false = assert.is_false
@@ -27,7 +27,7 @@ describe("detail.popup.fzf_popup_window", function()
   end)
 
   local num = require("fzfx.commons.num")
-  local fzf_popup_window = require("fzfx.detail.popup.fzf_popup_window")
+  local pwindow = require("fzfx.detail.popup.window")
   require("fzfx").setup({
     debug = {
       enable = true,
@@ -47,7 +47,7 @@ describe("detail.popup.fzf_popup_window", function()
         test_height = i
         test_width = j
         it("test", function()
-          local actual = fzf_popup_window._make_cursor_opts(
+          local actual = pwindow._make_cursor_opts(
             vim.tbl_deep_extend("force", vim.deepcopy(WIN_OPTS), { relative = "cursor" }),
             0,
             1
@@ -74,7 +74,7 @@ describe("detail.popup.fzf_popup_window", function()
         test_height = i
         test_width = j
         it("test", function()
-          local actual = fzf_popup_window._make_center_opts(
+          local actual = pwindow._make_center_opts(
             vim.tbl_deep_extend("force", vim.deepcopy(WIN_OPTS), { relative = "win" }),
             0,
             1
@@ -112,8 +112,8 @@ describe("detail.popup.fzf_popup_window", function()
         test_height = i
         test_width = j
         it("test", function()
-          local actual1 = fzf_popup_window.make_opts(WIN_OPTS, 0, 1)
-          local actual2 = fzf_popup_window._make_center_opts(WIN_OPTS, 0, 1)
+          local actual1 = pwindow.make_opts(WIN_OPTS, 0, 1)
+          local actual2 = pwindow._make_center_opts(WIN_OPTS, 0, 1)
           print(
             string.format(
               "fzf_popup_window.make_opts:%s, _make_center_opts:%s\n",
