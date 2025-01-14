@@ -318,15 +318,32 @@ local function _get_cursor_row(row_opt, height, total_height, cursor_relative_ro
   end
 
   local end_row = start_row + height
-  return { start_row = start_row, end_row = end_row }
+  local adjusted = _adjust_boundary(total_height, { start_value = start_row, end_value = end_row })
+
+  return { start_row = adjusted.start_value, end_row = adjusted.end_value }
 end
 
 --- @param col_opt number
 --- @param width integer
 --- @param total_width integer
 --- @param cursor_relative_col integer
---- @return {start_row:integer,end_row:integer}
-local function _get_cursor_col(col_opt, width, total_width, cursor_relative_col) end
+--- @return {start_col:integer,end_col:integer}
+local function _get_cursor_col(col_opt, width, total_width, cursor_relative_col)
+  local center_col = _get_center(col_opt, total_width, "col")
+
+  -- Note: row/col in `nvim_open_win` API is 0-indexed, so here minus 1.
+  local start_col = math.floor(center_col - (width / 2)) - 1
+  local end_col = math.floor(center_col + (width / 2)) - 1
+
+  -- Difference between center-based and cursor-based.
+  local diff = cursor_relative_col - start_col
+  start_col = cursor_relative_col
+  end_col = end_col + diff
+
+  local adjusted = _adjust_boundary(total_width, { start_value = start_col, end_value = end_col })
+
+  return { start_col = adjusted.start_value, end_col = adjusted.end_value }
+end
 
 --- @param relative_winnr integer
 --- @param relative_win_first_line integer the first line number of window (e.g. the view), from `vim.fn.line("w0")`
@@ -415,64 +432,18 @@ M.make_cursor_layout = function(relative_winnr, relative_win_first_line, win_opt
   local height = _get_height(win_opts.height, total_height)
 
   -- Row/col.
-  local start_row
-  local end_row
-  if win_opts.row > -1 and win_opts.row < 1 then
-    start_row = math.floor(total_height * win_opts.row) + cursor_relative_row
-  else
-    start_row = win_opts.row + cursor_relative_row
-  end
-
-  local expected_end_row = start_row + height
-  local reversed_expected_start_row = start_row - 1 - height
-  -- if cursor based popup window is too beyond bottom, it will cover the cursor
-  -- thus we would place it in upper-side of cursor
-  log.debug(
-    string.format(
-      "|make_cursor_layout| height/width:%s/%s, start_row:%s, start_row + height(%s) > total_height(%s):%s, start_row - 3 - height(%s) >= 1:%s",
-      vim.inspect(height),
-      vim.inspect(width),
-      vim.inspect(start_row),
-      vim.inspect(expected_end_row),
-      vim.inspect(total_height),
-      vim.inspect(expected_end_row > total_height),
-      vim.inspect(reversed_expected_start_row),
-      vim.inspect(reversed_expected_start_row >= 1)
-    )
-  )
-  if expected_end_row > total_height and reversed_expected_start_row >= 1 then
-    -- Reverse the anchor, i.e. move the popup window upside of the cursor.
-    start_row = reversed_expected_start_row
-    end_row = start_row + height
-  else
-    -- Keep the anchor, i.e. popup window is still downside of the cursor.
-    end_row = start_row + height
-  end
-
-  local center_col = M._get_center_col(win_opts, total_width)
-  local start_col = (center_col - math.ceil(width / 2)) - 1
-  local end_col = (center_col + math.ceil(width / 2)) - 1
-
-  local adjust_layout = M._adjust_col_boundary(
-    total_height,
-    total_width,
-    { start_row = start_row, end_row = end_row, start_col = start_col, end_col = end_col }
-  )
-
-  start_row = adjust_layout.start_row
-  end_row = adjust_layout.end_row
-  start_col = adjust_layout.start_col
-  end_col = adjust_layout.end_col
+  local row = _get_cursor_row(win_opts.row, height, total_height, cursor_relative_row)
+  local col = _get_cursor_col(win_opts.col, width, total_width, cursor_relative_col)
 
   local result = {
     total_height = total_height,
     total_width = total_width,
     height = height,
     width = width,
-    start_row = start_row,
-    end_row = end_row,
-    start_col = start_col,
-    end_col = end_col,
+    start_row = row.start_row,
+    end_row = row.end_row,
+    start_col = col.start_col,
+    end_col = col.end_col,
   }
 
   return result
