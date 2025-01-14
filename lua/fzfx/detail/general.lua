@@ -817,30 +817,6 @@ local function get_pipeline_size(pipeline_configs)
   return n
 end
 
---- @param fzf_opts fzfx.FzfOpt[]
---- @return fzfx.FzfOpt[], string
-local function mock_non_buffer_previewer_fzf_border_opts(fzf_opts)
-  local new_fzf_opts = {}
-  local border_opts = fzf_helpers.FZF_DEFAULT_BORDER_OPTS
-  for _, o in ipairs(fzf_opts) do
-    local mocked = false
-    if type(o) == "table" and str.not_empty(o[1]) and str.startswith(o[1], "--border") then
-      border_opts = o[2]
-      mocked = true
-    elseif
-      str.not_empty(o) and str.startswith(o --[[@as string]], "--border")
-    then
-      border_opts = string.sub(o --[[@as string]], string.len("--border") + 2)
-      mocked = true
-    end
-    if not mocked then
-      table.insert(new_fzf_opts, o)
-    end
-  end
-
-  return new_fzf_opts, border_opts
-end
-
 --- @return fzfx.PipelineContext
 local function _make_default_context()
   return {
