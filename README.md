@@ -1984,6 +1984,8 @@ Please see [Known Issues](https://linrongbin16.github.io/fzfx.nvim/#/KnownIssues
 
 ## 🍀 Alternatives
 
+Note: This plugin doesn't support the nvim native buffer as preview window since v8.x, the v7.x is the last stable version that supports this feature.
+
 - [fzf.vim](https://github.com/junegunn/fzf.vim): Things you can do with [fzf](https://github.com/junegunn/fzf) and Vim.
 - [fzf-lua](https://github.com/ibhagwan/fzf-lua): Improved fzf.vim written in lua.
 - [telescope.nvim](https://github.com/nvim-telescope/telescope.nvim): Find, Filter, Preview, Pick. All lua, all the time.

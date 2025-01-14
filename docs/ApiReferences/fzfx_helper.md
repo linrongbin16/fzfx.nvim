@@ -193,17 +193,6 @@ It prepends file type icons for `rg`/`grep`/`git grep` results.
 
 This module contains most all the shared previewers used by different configurations in `fzfx.cfg` package.
 
-There're two kinds of previewer implementations: fzf's builtin preview window, and Neovim's buffer.
-
-- fzf's builtin preview window are named with prefix `fzf_`.
-- Neovim's buffer are named with prefix `buffer_`.
-
-To enable fzf's builtin preview window, set feature flag: `vim.g.fzfx_disable_buffer_previewer=1`. To enable Neovim's buffer, unset it.
-
-The fzf's builtin preview window is natively supported by the fzf command via `--preview-window` option, it has the best performance. But we have to use `bat` or `cat` when previewing file contents, which doesn't support a compatible colorscheme with the nvim editor.
-
-On the other hand, the Neovim buffer natively supports colorscheme, and it's only needed when previewing the files. Since there's a huge gap between it and the fzf command, thus brings more development effort and architectural fragmentation, also limits some flexibility of the engine. But anyway, people love their colorschemes.
-
 ### [`fzf_preview_find`](https://github.com/linrongbin16/fzfx.nvim/blob/f99404575d7af6a54a6274a3edb9fc9d77905ed5/lua/fzfx/helper/previewers.lua?plain=1#L114)/[`buffer_preview_find`](https://github.com/linrongbin16/fzfx.nvim/blob/f99404575d7af6a54a6274a3edb9fc9d77905ed5/lua/fzfx/helper/previewers.lua?plain=1#L122)
 
 They preview the current line's text content for `fd`/`find` query results. `fzf_preview_find` works with fzf builtin preview window, `buffer_preview_find` works with Neovim buffer.
