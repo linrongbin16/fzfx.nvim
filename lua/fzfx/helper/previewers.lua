@@ -173,9 +173,15 @@ M.preview_git_commit = function(line)
   local commit_id = line:sub(1, first_space_pos - 1) --[[@as string]]
   if consts.HAS_DELTA then
     if consts.IS_WINDOWS then
-      return string.format("git show %s | delta -n --tabs 4 --width %%FZF_PREVIEW_COLUMNS%%", commit_id)
+      return string.format(
+        "git show %s | delta -n --tabs 4 --width %%FZF_PREVIEW_COLUMNS%%",
+        commit_id
+      )
     else
-      return string.format("git show %s | delta -n --tabs 4 --width $FZF_PREVIEW_COLUMNS", commit_id)
+      return string.format(
+        "git show %s | delta -n --tabs 4 --width $FZF_PREVIEW_COLUMNS",
+        commit_id
+      )
     end
   else
     return string.format("git show --color=always %s", commit_id)
