@@ -35,13 +35,13 @@ describe("schema", function()
       local plain = {
         key = plain_key,
         provider = plain_provider,
+        provider_type = ProviderTypeEnum.PLAIN_COMMAND_ARRAY,
       }
       assert_eq(type(plain), "table")
       assert_true(schema.is_provider_config(plain))
       assert_eq(plain.key, plain_key)
       assert_eq(plain.provider, plain_provider)
-      assert_true(plain.provider_type == nil)
-      assert_eq(schema.get_provider_type_or_default(plain), ProviderTypeEnum.PLAIN_COMMAND_ARRAY)
+      assert_true(plain.provider_type == ProviderTypeEnum.PLAIN_COMMAND_ARRAY)
     end)
   end)
   describe("[PreviewerConfig]", function()
@@ -59,7 +59,6 @@ describe("schema", function()
       assert_eq(type(command.previewer), "function")
       assert_eq(command.previewer(), command_previewer())
       assert_eq(command.previewer_type, command_previewer_type)
-      assert_eq(schema.get_previewer_type_or_default(command), command_previewer_type)
     end)
   end)
   describe("[VariantConfig]", function()
@@ -184,91 +183,6 @@ describe("schema", function()
         name = "FzfxLiveGrep",
       }
       assert_false(schema.is_previewer_config(p2))
-    end)
-  end)
-  describe("[get_provider_type_or_default]", function()
-    it("fallback to default", function()
-      assert_eq(
-        schema.get_provider_type_or_default({
-          key = "p1",
-          provider = "ls",
-        }),
-        ProviderTypeEnum.PLAIN_COMMAND_STRING
-      )
-      assert_eq(
-        schema.get_provider_type_or_default({
-          key = "p2",
-          provider = { "ls" },
-        }),
-        ProviderTypeEnum.PLAIN_COMMAND_ARRAY
-      )
-    end)
-    it("use existed", function()
-      assert_eq(
-        schema.get_provider_type_or_default({
-          key = "p1",
-          provider = "ls",
-          provider_type = ProviderTypeEnum.PLAIN_COMMAND_STRING,
-        }),
-        ProviderTypeEnum.PLAIN_COMMAND_STRING
-      )
-      assert_eq(
-        schema.get_provider_type_or_default({
-          key = "p2",
-          provider = { "ls" },
-          provider_type = ProviderTypeEnum.PLAIN_COMMAND_ARRAY,
-        }),
-        ProviderTypeEnum.PLAIN_COMMAND_ARRAY
-      )
-      assert_eq(
-        schema.get_provider_type_or_default({
-          key = "p4",
-          provider = { "ls" },
-          provider_type = ProviderTypeEnum.PLAIN_COMMAND_STRING,
-        }),
-        ProviderTypeEnum.PLAIN_COMMAND_STRING
-      )
-    end)
-  end)
-  describe("[get_previewer_type_or_default]", function()
-    it("fallback to default", function()
-      assert_eq(
-        schema.get_previewer_type_or_default({
-          previewer = function()
-            return "ls"
-          end,
-        }),
-        PreviewerTypeEnum.FUNCTIONAL_COMMAND_STRING
-      )
-      assert_eq(
-        schema.get_previewer_type_or_default({
-          key = "p2",
-          previewer = function()
-            return { "ls" }
-          end,
-        }),
-        PreviewerTypeEnum.FUNCTIONAL_COMMAND_STRING
-      )
-    end)
-    it("use existed", function()
-      assert_eq(
-        schema.get_previewer_type_or_default({
-          previewer = function()
-            return "ls"
-          end,
-          previewer_type = PreviewerTypeEnum.FUNCTIONAL_COMMAND_STRING,
-        }),
-        PreviewerTypeEnum.FUNCTIONAL_COMMAND_STRING
-      )
-      assert_eq(
-        schema.get_previewer_type_or_default({
-          previewer = function()
-            return { "ls" }
-          end,
-          previewer_type = PreviewerTypeEnum.FUNCTIONAL_COMMAND_ARRAY,
-        }),
-        PreviewerTypeEnum.FUNCTIONAL_COMMAND_ARRAY
-      )
     end)
   end)
 end)
