@@ -131,59 +131,29 @@ M.ShellContext = ShellContext
 
 -- layout {
 
---- @param total_height integer
---- @param total_width integer
---- @param layout {start_row:integer,end_row:integer,start_col:integer,end_col:integer}
---- @return {start_row:integer,end_row:integer,start_col:integer,end_col:integer}
-M._adjust_layout_bound = function(total_height, total_width, layout)
-  --- @param v number
-  --- @return number
-  local function bound_row(v)
-    return num.bound(v, 0, total_height - 1)
-  end
+--- @param total_size integer
+--- @param value {start_value:integer,end_value:integer}
+--- @return {start_value:integer,end_value:integer}
+local function _adjust_boundary(total_size, value)
+  local start_value = value.start_value
+  local end_value = value.end_value
 
-  --- @param v number
-  --- @return number
-  local function bound_col(v)
-    return num.bound(v, 0, total_width - 1)
-  end
-
-  local start_row = layout.start_row
-  local end_row = layout.end_row
-  local start_col = layout.start_col
-  local end_col = layout.end_col
-
-  if start_row <= 0 then
-    -- too up
-    local diff_row = math.floor(math.abs(start_row))
-    start_row = 0
-    end_row = end_row + diff_row
-  elseif end_row >= total_height - 1 then
+  if start_value < 0 then
+    -- Too up
+    local diff = math.floor(math.abs(start_value))
+    start_value = 0
+    end_value = end_value + diff
+  elseif end_value > total_size - 1 then
     -- too down
-    local diff_row = math.floor(math.abs(end_row - total_height + 1))
-    end_row = total_height - 1
-    start_row = start_row - diff_row
+    local diff = math.floor(math.abs(end_value - total_size + 1))
+    end_value = total_size - 1
+    start_value = start_value - diff
   end
 
-  start_row = bound_row(start_row)
-  end_row = bound_row(end_row)
+  start_value = num.bound(start_value, 0, total_size - 1)
+  end_value = num.bound(end_value, 0, total_size - 1)
 
-  if start_col <= 0 then
-    -- too left
-    local diff_col = math.floor(math.abs(start_col))
-    start_col = 0
-    end_col = end_col + diff_col
-  elseif end_col >= total_width - 1 then
-    -- too right
-    local diff_col = math.floor(math.abs(end_col - total_width + 1))
-    end_col = total_width - 1
-    start_col = start_col - diff_col
-  end
-
-  start_col = bound_col(start_col)
-  end_col = bound_col(end_col)
-
-  return { start_row = start_row, end_row = end_row, start_col = start_col, end_col = end_col }
+  return { start_value = start_value, end_value = end_value }
 end
 
 --- @param win_opts {relative:"editor"|"win"|"cursor",height:number,width:number,row:number,col:number}
@@ -214,6 +184,150 @@ M._get_center_col = function(win_opts, total_width)
   return center_col
 end
 
+--- @param relative "editor"|"win"|"cursor"
+--- @param relative_winnr integer
+--- @return integer
+local function _get_total_width(relative, relative_winnr)
+  if relative == "editor" then
+    return vim.o.columns
+  else
+    return vim.api.nvim_win_get_width(relative_winnr)
+  end
+end
+
+--- @param relative "editor"|"win"|"cursor"
+--- @param relative_winnr integer
+--- @return integer
+local function _get_total_height(relative, relative_winnr)
+  if relative == "editor" then
+    return vim.o.lines
+  else
+    return vim.api.nvim_win_get_height(relative_winnr)
+  end
+end
+
+--- @param width_opt number
+--- @param total_width integer
+--- @return integer
+local function _get_width(width_opt, total_width)
+  local value
+  if width_opt > 1 then
+    -- Absolute value
+    value = width_opt
+  else
+    -- Relative value, i.e. percentage
+    value = math.floor(width_opt * total_width)
+  end
+  return num.bound(value, 1, total_width)
+end
+
+--- @param height_opt number
+--- @param total_height integer
+--- @return integer
+local function _get_height(height_opt, total_height)
+  local value
+  if height_opt > 1 then
+    -- Absolute value
+    value = height_opt
+  else
+    -- Relative value, i.e. percentage
+    value = math.floor(height_opt * total_height)
+  end
+  return num.bound(value, 1, total_height)
+end
+
+--- @param opt number
+--- @param total_size integer
+--- @param opt_name string
+--- @return integer
+local function _get_center(opt, total_size, opt_name)
+  log.ensure(
+    (opt >= -0.5 and opt <= 0.5) or opt <= -1 or opt >= 1,
+    string.format(
+      "Popup window %s (%s) opts must in range [-0.5, 0.5] or (-inf, -1] or [1, +inf]",
+      opt_name,
+      vim.inspect(opt)
+    )
+  )
+
+  local center
+  if opt >= -0.5 and opt <= 0.5 then
+    -- Relative value, i.e. percentage
+    center = opt + 0.5
+    center = total_size * center
+  else
+    -- Absolute value
+    center = total_size * 0.5 + opt
+  end
+
+  return center
+end
+
+--- @param row_opt number
+--- @param height integer
+--- @param total_height integer
+--- @return {start_row:integer,end_row:integer}
+local function _get_row(row_opt, height, total_height)
+  local center_row = _get_center(row_opt, total_height, "row")
+
+  -- Note: row/col in `nvim_open_win` API is 0-indexed, so here minus 1.
+  local start_row = math.floor(center_row - (height / 2)) - 1
+  local end_row = math.floor(center_row + (height / 2)) - 1
+  local adjusted = _adjust_boundary(total_height, { start_value = start_row, end_value = end_row })
+
+  return { start_row = adjusted.start_value, end_row = adjusted.end_value }
+end
+
+--- @param col_opt number
+--- @param width integer
+--- @param total_width integer
+--- @return {start_col:integer,end_col:integer}
+local function _get_col(col_opt, width, total_width)
+  local center_col = _get_center(col_opt, total_width, "col")
+
+  -- Note: row/col in `nvim_open_win` API is 0-indexed, so here minus 1.
+  local start_col = math.floor(center_col - (width / 2)) - 1
+  local end_col = math.floor(center_col + (width / 2)) - 1
+  local adjusted = _adjust_boundary(total_width, { start_value = start_col, end_value = end_col })
+
+  return { start_col = adjusted.start_value, end_col = adjusted.end_value }
+end
+
+--- @param row_opt number
+--- @param height integer
+--- @param total_height integer
+--- @param cursor_relative_row integer
+--- @return {start_row:integer,end_row:integer}
+local function _get_cursor_row(row_opt, height, total_height, cursor_relative_row)
+  local start_row
+  if row_opt > -1 and row_opt < 1 then
+    start_row = math.floor(total_height * row_opt) + cursor_relative_row
+  else
+    start_row = row_opt + cursor_relative_row
+  end
+
+  local expected_end_row = start_row + height
+  local reversed_expected_start_row = start_row - 1 - height
+  -- If the popup window is outside of window bottom, it will overwrite/cover the cursor
+  -- thus we would place it in upper-side of cursor
+  if expected_end_row > total_height and reversed_expected_start_row >= 1 then
+    -- Reverse the anchor, i.e. move the popup window upside of the cursor.
+    start_row = reversed_expected_start_row
+  else
+    -- Keep the anchor, i.e. popup window is still downside of the cursor.
+  end
+
+  local end_row = start_row + height
+  return { start_row = start_row, end_row = end_row }
+end
+
+--- @param col_opt number
+--- @param width integer
+--- @param total_width integer
+--- @param cursor_relative_col integer
+--- @return {start_row:integer,end_row:integer}
+local function _get_cursor_col(col_opt, width, total_width, cursor_relative_col) end
+
 --- @param relative_winnr integer
 --- @param relative_win_first_line integer the first line number of window (e.g. the view), from `vim.fn.line("w0")`
 --- @param win_opts {relative:"editor"|"win"|"cursor",height:number,width:number,row:number,col:number}
@@ -234,79 +348,27 @@ M.make_center_layout = function(relative_winnr, relative_win_first_line, win_opt
     )
   )
 
-  local total_width = win_opts.relative == "editor" and vim.o.columns
-    or vim.api.nvim_win_get_width(relative_winnr)
-  local total_height = win_opts.relative == "editor" and vim.o.lines
-    or vim.api.nvim_win_get_height(relative_winnr)
+  -- Total width/height
+  local total_width = _get_total_width(win_opts.relative, relative_winnr)
+  local total_height = _get_total_height(win_opts.relative, relative_winnr)
 
-  local width = num.bound(
-    win_opts.width > 1 and win_opts.width or math.floor(win_opts.width * total_width),
-    1,
-    total_width
-  )
-  local height = num.bound(
-    win_opts.height > 1 and win_opts.height or math.floor(win_opts.height * total_height),
-    1,
-    total_height
-  )
+  -- Width/height
+  local width = _get_width(win_opts.width, total_width)
+  local height = _get_height(win_opts.height, total_height)
 
-  log.ensure(
-    (win_opts.row >= -0.5 and win_opts.row <= 0.5) or win_opts.row <= -1 or win_opts.row >= 1,
-    string.format(
-      "popup window row (%s) opts must in range [-0.5, 0.5] or (-inf, -1] or [1, +inf]",
-      vim.inspect(win_opts.row)
-    )
-  )
-  log.ensure(
-    (win_opts.col >= -0.5 and win_opts.col <= 0.5) or win_opts.col <= -1 or win_opts.col >= 1,
-    string.format(
-      "popup window col (%s) opts must in range [-0.5, 0.5] or (-inf, -1] or [1, +inf]",
-      vim.inspect(win_opts.col)
-    )
-  )
-
-  local center_row = M._get_center_row(win_opts, total_height)
-  local center_col = M._get_center_col(win_opts, total_width)
-  -- log.debug(
-  --   "|get_layout| win_opts:%s, center(row/col):%s/%s, height/width:%s/%s, total(height/width):%s/%s, row(start/end):%s/%s, col(start/end):%s/%s",
-  --   vim.inspect(win_opts),
-  --   vim.inspect(center_row),
-  --   vim.inspect(center_col),
-  --   vim.inspect(height),
-  --   vim.inspect(width),
-  --   vim.inspect(total_height),
-  --   vim.inspect(total_width),
-  --   vim.inspect(center_row - (height / 2)),
-  --   vim.inspect(center_row + (height / 2)),
-  --   vim.inspect(center_col - (width / 2)),
-  --   vim.inspect(center_col + (width / 2))
-  -- )
-
-  local start_row = (center_row - math.ceil(height / 2)) - 1
-  local end_row = (center_row + math.ceil(height / 2)) - 1
-  local start_col = (center_col - math.ceil(width / 2)) - 1
-  local end_col = (center_col + math.ceil(width / 2)) - 1
-
-  local adjust_layout = M._adjust_layout_bound(
-    total_height,
-    total_width,
-    { start_row = start_row, end_row = end_row, start_col = start_col, end_col = end_col }
-  )
-
-  start_row = adjust_layout.start_row
-  end_row = adjust_layout.end_row
-  start_col = adjust_layout.start_col
-  end_col = adjust_layout.end_col
+  -- Row/column
+  local row = _get_row(win_opts.row, height, total_height)
+  local col = _get_col(win_opts.col, width, total_width)
 
   local result = {
     total_height = total_height,
     total_width = total_width,
     height = height,
     width = width,
-    start_row = start_row,
-    end_row = end_row,
-    start_col = start_col,
-    end_col = end_col,
+    start_row = row.start_row,
+    end_row = row.end_row,
+    start_col = col.start_col,
+    end_col = col.end_col,
   }
 
   return result
@@ -331,35 +393,28 @@ M.make_cursor_layout = function(relative_winnr, relative_win_first_line, win_opt
       vim.inspect(relative_win_first_line)
     )
   )
-
-  local total_width = vim.api.nvim_win_get_width(relative_winnr)
-  local total_height = vim.api.nvim_win_get_height(relative_winnr)
-  local cursor_pos = vim.api.nvim_win_get_cursor(relative_winnr)
-  local cursor_relative_row = cursor_pos[1] - relative_win_first_line
-  local cursor_relative_col = cursor_pos[2]
-  log.debug(
+  log.ensure(
+    win_opts.relative == "cursor",
     string.format(
-      "|make_cursor_layout| total height/width:%s/%s, cursor:%s, relative_win_first_line:%s, cursor relative row/col:%s/%s",
-      vim.inspect(total_height),
-      vim.inspect(total_width),
-      vim.inspect(cursor_pos),
-      vim.inspect(relative_win_first_line),
-      vim.inspect(cursor_relative_row),
-      vim.inspect(cursor_relative_col)
+      "|make_cursor_layout| relative (%s) must be cursor",
+      vim.inspect(win_opts.relative)
     )
   )
 
-  local width = num.bound(
-    win_opts.width > 1 and win_opts.width or math.floor(win_opts.width * total_width),
-    1,
-    total_width
-  )
-  local height = num.bound(
-    win_opts.height > 1 and win_opts.height or math.floor(win_opts.height * total_height),
-    1,
-    total_height
-  )
+  -- Total width/height.
+  local total_width = _get_total_width(win_opts.relative, relative_winnr)
+  local total_height = _get_total_height(win_opts.relative, relative_winnr)
 
+  -- Cursor.
+  local cursor_pos = vim.api.nvim_win_get_cursor(relative_winnr)
+  local cursor_relative_row = cursor_pos[1] - relative_win_first_line
+  local cursor_relative_col = cursor_pos[2]
+
+  -- Width/height.
+  local width = _get_width(win_opts.width, total_width)
+  local height = _get_height(win_opts.height, total_height)
+
+  -- Row/col.
   local start_row
   local end_row
   if win_opts.row > -1 and win_opts.row < 1 then
@@ -398,7 +453,7 @@ M.make_cursor_layout = function(relative_winnr, relative_win_first_line, win_opt
   local start_col = (center_col - math.ceil(width / 2)) - 1
   local end_col = (center_col + math.ceil(width / 2)) - 1
 
-  local adjust_layout = M._adjust_layout_bound(
+  local adjust_layout = M._adjust_col_boundary(
     total_height,
     total_width,
     { start_row = start_row, end_row = end_row, start_col = start_col, end_col = end_col }
