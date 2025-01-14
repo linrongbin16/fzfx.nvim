@@ -64,8 +64,8 @@ https://github.com/linrongbin16/fzfx.nvim/assets/6496887/b5e2b0dc-4dd6-4c18-b1da
 
 - Neovim &ge; 0.10.
 - [fzf](https://github.com/junegunn/fzf) (**mandatory**).
-- [curl](https://man7.org/linux/man-pages/man1/curl.1.html) (**optional** for preview window label).
 - [nerd-fonts](https://www.nerdfonts.com/) (**optional** for icons).
+- [curl](https://man7.org/linux/man-pages/man1/curl.1.html) (**optional** for preview window label).
 - [rg](https://github.com/BurntSushi/ripgrep) (**optional** for live grep, by default use [grep](https://man7.org/linux/man-pages/man1/grep.1.html)).
 - [fd](https://github.com/sharkdp/fd) (**optional** for find files, by default use [find](https://man7.org/linux/man-pages/man1/find.1.html)).
 - [bat](https://github.com/sharkdp/bat) (**optional** for preview files, by default use [cat](https://man7.org/linux/man-pages/man1/cat.1.html)).
@@ -222,6 +222,8 @@ There're multiple commands provided, named with prefix `Fzfx`. The sub commands 
 > The `args` sub command can be omitted, for example `:FzfxFiles<CR>` is equivalent to `:FzfxFiles args<CR>`.
 >
 > To specify query text, for example `asdf`, you will have to type `:FzfxFiles args asdf<CR>`.
+>
+> The **visual select** variant is the only variant that works in visual mode, other variants work in normal mode.
 
 Below keys are binded by default:
 
