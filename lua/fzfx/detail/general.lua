@@ -539,8 +539,8 @@ function PreviewerSwitch:preview(line, context)
     )
   )
   log.ensure(
-    previewer_config.previewer_type == PreviewerTypeEnum.FUNCTIONAL_COMMAND_STRING
-      or previewer_config.previewer_type == PreviewerTypeEnum.FUNCTIONAL_COMMAND_ARRAY,
+    previewer_config.previewer_type == PreviewerTypeEnum.COMMAND_STRING
+      or previewer_config.previewer_type == PreviewerTypeEnum.COMMAND_ARRAY,
     string.format(
       "invalid previewer type in %s! previewer type: %s",
       vim.inspect(self.pipeline),
@@ -552,7 +552,7 @@ function PreviewerSwitch:preview(line, context)
   local metajson = vim.json.encode(metaopts) --[[@as string]]
   fio.writefile(self.metafile, metajson)
 
-  if previewer_config.previewer_type == PreviewerTypeEnum.FUNCTIONAL_COMMAND_STRING then
+  if previewer_config.previewer_type == PreviewerTypeEnum.COMMAND_STRING then
     local ok, result = pcall(previewer_config.previewer, line, context)
     if not ok then
       fio.writefile(self.resultfile, "")
@@ -581,7 +581,7 @@ function PreviewerSwitch:preview(line, context)
         fio.writefile(self.resultfile, result --[[@as string]])
       end
     end
-  elseif previewer_config.previewer_type == PreviewerTypeEnum.FUNCTIONAL_COMMAND_ARRAY then
+  elseif previewer_config.previewer_type == PreviewerTypeEnum.COMMAND_ARRAY then
     local ok, result = pcall(previewer_config.previewer, line, context)
     if not ok then
       fio.writefile(self.resultfile, "")

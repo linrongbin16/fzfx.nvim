@@ -530,22 +530,22 @@ end
 M.previewers = {
   all_mode = {
     previewer = M._previewer,
-    previewer_type = PreviewerTypeEnum.FUNCTIONAL_COMMAND_ARRAY,
+    previewer_type = PreviewerTypeEnum.COMMAND_ARRAY,
     previewer_label = labels_helper.label_vim_keymap,
   },
   n_mode = {
     previewer = M._previewer,
-    previewer_type = PreviewerTypeEnum.FUNCTIONAL_COMMAND_ARRAY,
+    previewer_type = PreviewerTypeEnum.COMMAND_ARRAY,
     previewer_label = labels_helper.label_vim_keymap,
   },
   i_mode = {
     previewer = M._previewer,
-    previewer_type = PreviewerTypeEnum.FUNCTIONAL_COMMAND_ARRAY,
+    previewer_type = PreviewerTypeEnum.COMMAND_ARRAY,
     previewer_label = labels_helper.label_vim_keymap,
   },
   v_mode = {
     previewer = M._previewer,
-    previewer_type = PreviewerTypeEnum.FUNCTIONAL_COMMAND_ARRAY,
+    previewer_type = PreviewerTypeEnum.COMMAND_ARRAY,
     previewer_label = labels_helper.label_vim_keymap,
   },
 }

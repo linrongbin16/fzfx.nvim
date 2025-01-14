@@ -147,11 +147,11 @@ end
 M.previewers = {
   local_branch = {
     previewer = M._previewer,
-    previewer_type = PreviewerTypeEnum.FUNCTIONAL_COMMAND_STRING,
+    previewer_type = PreviewerTypeEnum.COMMAND_STRING,
   },
   remote_branch = {
     previewer = M._previewer,
-    previewer_type = PreviewerTypeEnum.FUNCTIONAL_COMMAND_STRING,
+    previewer_type = PreviewerTypeEnum.COMMAND_STRING,
   },
 }
 

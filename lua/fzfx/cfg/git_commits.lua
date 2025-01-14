@@ -145,11 +145,11 @@ M.providers = {
 M.previewers = {
   all_commits = {
     previewer = previewers_helper.fzf_preview_git_commit,
-    previewer_type = PreviewerTypeEnum.FUNCTIONAL_COMMAND_STRING,
+    previewer_type = PreviewerTypeEnum.COMMAND_STRING,
   },
   buffer_commits = {
     previewer = previewers_helper.fzf_preview_git_commit,
-    previewer_type = PreviewerTypeEnum.FUNCTIONAL_COMMAND_STRING,
+    previewer_type = PreviewerTypeEnum.COMMAND_STRING,
   },
 }
 

@@ -1894,14 +1894,14 @@ require("fzfx").register("ls", {
         return vim.fn.isdirectory(line) > 0 and { "ls", "--color=always", "-lha", line }
           or { "cat", line }
       end,
-      previewer_type = "FUNCTIONAL_COMMAND_ARRAY",
+      previewer_type = "COMMAND_ARRAY",
     },
     include_hiddens = {
       previewer = function(line)
         return vim.fn.isdirectory(line) > 0 and { "ls", "--color=always", "-lha", line }
           or { "cat", line }
       end,
-      previewer_type = "FUNCTIONAL_COMMAND_ARRAY",
+      previewer_type = "COMMAND_ARRAY",
     },
   },
   actions = {

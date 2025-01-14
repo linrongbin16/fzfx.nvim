@@ -152,12 +152,12 @@ M.providers = {
 M.previewers = {
   restricted_mode = {
     previewer = previewers_helper.fzf_preview_find,
-    previewer_type = PreviewerTypeEnum.FUNCTIONAL_COMMAND_ARRAY,
+    previewer_type = PreviewerTypeEnum.COMMAND_ARRAY,
     previewer_label = labels_helper.label_find,
   },
   unrestricted_mode = {
     previewer = previewers_helper.fzf_preview_find,
-    previewer_type = PreviewerTypeEnum.FUNCTIONAL_COMMAND_ARRAY,
+    previewer_type = PreviewerTypeEnum.COMMAND_ARRAY,
     previewer_label = labels_helper.label_find,
   },
 }

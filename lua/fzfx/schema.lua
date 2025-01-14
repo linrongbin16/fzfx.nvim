@@ -10,8 +10,10 @@
 --- @alias fzfx.PlainCommandArrayProvider string[]?
 --- @alias fzfx.FunctionalCommandStringProvider fun(query:string?,context:fzfx.PipelineContext?):string?
 --- @alias fzfx.FunctionalCommandArrayProvider fun(query:string?,context:fzfx.PipelineContext?):string[]?
+--- @alias fzfx.CommandStringProvider fzfx.PlainCommandStringProvider|fzfx.FunctionalCommandStringProvider
+--- @alias fzfx.CommandArrayProvider fzfx.PlainCommandArrayProvider|fzfx.FunctionalCommandArrayProvider
 --- @alias fzfx.DirectProvider fun(query:string?,context:fzfx.PipelineContext?):string[]?
---- @alias fzfx.Provider fzfx.PlainCommandStringProvider|fzfx.PlainCommandArrayProvider|fzfx.FunctionalCommandStringProvider|fzfx.FunctionalCommandArrayProvider|fzfx.DirectProvider
+--- @alias fzfx.Provider fzfx.CommandStringProvider|fzfx.CommandArrayProvider|fzfx.DirectProvider
 ---
 --- @alias fzfx.ProviderType "COMMAND_STRING"|"COMMAND_ARRAY"|"DIRECT"
 --- @enum fzfx.ProviderTypeEnum
@@ -30,14 +32,13 @@ local ProviderTypeEnum = {
 --
 --- @alias fzfx.FunctionalCommandStringPreviewer fun(line:string?,context:fzfx.PipelineContext?):string?
 --- @alias fzfx.FunctionalCommandArrayPreviewer fun(line:string?,context:fzfx.PipelineContext?):string[]?
---- @alias fzfx.Previewer fzfx.FunctionalCommandStringPreviewer|fzfx.FunctionalCommandArrayPreviewer
+--- @alias fzfx.CommandStringPreviewer fzfx.FunctionalCommandStringPreviewer
+--- @alias fzfx.CommandArrayPreviewer fzfx.FunctionalCommandArrayPreviewer
+--- @alias fzfx.Previewer fzfx.CommandStringPreviewer|fzfx.CommandArrayPreviewer
 ---
---- @alias fzfx.PreviewerType "COMMAND_STRING"|"COMMAND_ARRAY"|"FUNCTIONAL_COMMAND_STRING"|"FUNCTIONAL_COMMAND_ARRAY"
+--- @alias fzfx.PreviewerType "COMMAND_STRING"|"COMMAND_ARRAY"
 --- @enum fzfx.PreviewerTypeEnum
 local PreviewerTypeEnum = {
-  FUNCTIONAL_COMMAND_STRING = "FUNCTIONAL_COMMAND_STRING",
-  FUNCTIONAL_COMMAND_ARRAY = "FUNCTIONAL_COMMAND_ARRAY",
-
   COMMAND_STRING = "COMMAND_STRING",
   COMMAND_ARRAY = "COMMAND_ARRAY",
 }
