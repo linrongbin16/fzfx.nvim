@@ -4,6 +4,7 @@ local consts = require("fzfx.lib.constants")
 local actions_helper = require("fzfx.helper.actions")
 local labels_helper = require("fzfx.helper.previewer_labels")
 local previewers_helper = require("fzfx.helper.previewers")
+local ProviderTypeEnum = require("fzfx.schema").ProviderTypeEnum
 local PreviewerTypeEnum = require("fzfx.schema").PreviewerTypeEnum
 local CommandFeedEnum = require("fzfx.schema").CommandFeedEnum
 local _decorator = require("fzfx.cfg._decorator")
@@ -137,11 +138,13 @@ M.providers = {
   restricted_mode = {
     key = "ctrl-r",
     provider = restricted_provider,
+    provider_type = ProviderTypeEnum.PLAIN_COMMAND_ARRAY,
     provider_decorator = { module = _decorator.PREPEND_ICON_FIND },
   },
   unrestricted_mode = {
     key = "ctrl-u",
     provider = unrestricted_provider,
+    provider_type = ProviderTypeEnum.PLAIN_COMMAND_ARRAY,
     provider_decorator = { module = _decorator.PREPEND_ICON_FIND },
   },
 }

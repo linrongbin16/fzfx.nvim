@@ -135,7 +135,6 @@ local ProviderSwitch = {}
 function ProviderSwitch:new(name, pipeline, provider_configs)
   local provider_configs_map = {}
   if schema.is_provider_config(provider_configs) then
-    provider_configs.provider_type = schema.get_provider_type_or_default(provider_configs)
     provider_configs_map[DEFAULT_PIPELINE] = provider_configs
   else
     for provider_name, provider_opts in pairs(provider_configs) do
@@ -148,7 +147,6 @@ function ProviderSwitch:new(name, pipeline, provider_configs)
           vim.inspect(provider_opts)
         )
       )
-      provider_opts.provider_type = schema.get_provider_type_or_default(provider_opts)
       provider_configs_map[provider_name] = provider_opts
     end
   end
