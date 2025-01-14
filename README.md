@@ -230,7 +230,7 @@ Below keys are binded by default:
   - `esc`: quit.
   - `double-click`/`enter`: open/jump to file (behave different on some specific commands).
 - Preview keys
-  - `alt-p`: toggle preview.
+  - `ctrl-k`: toggle preview.
   - `ctrl-f`: preview half page down.
   - `ctrl-b`: preview half page up.
 - Select keys
