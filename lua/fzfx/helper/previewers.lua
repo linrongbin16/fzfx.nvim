@@ -143,7 +143,7 @@ end
 --- @param line string
 --- @param context fzfx.PipelineContext
 --- @return string[]|nil
-M.preview_grep_no_filename = function(line, context)
+M.preview_grep_bufnr = function(line, context)
   local bufnr = tbl.tbl_get(context, "bufnr")
   if type(bufnr) ~= "number" or not vim.api.nvim_buf_is_valid(bufnr) then
     return nil
@@ -213,7 +213,7 @@ end
 --- @param filename string
 --- @param lineno integer
 --- @return string[]
-M._preview_grep_with_line_range = function(filename, lineno)
+M._preview_grep_line_range = function(filename, lineno)
   if consts.HAS_BAT then
     -- "%s --style=%s --theme=%s --color=always --pager=never --highlight-line=%s -- %s"
     local results = vim.deepcopy(M._PREVIEW_BAT)

@@ -86,7 +86,7 @@ describe("helper.previewers", function()
     end)
   end)
 
-  describe("[_fzf_preview_grep]", function()
+  describe("[_preview_grep]", function()
     it("case-1", function()
       local filename = "README.md"
       local lineno = 12
@@ -134,7 +134,7 @@ describe("helper.previewers", function()
     end)
   end)
 
-  describe("[fzf_preview_grep]", function()
+  describe("[preview_grep]", function()
     it("test", function()
       local line = "README.md:1:ok"
       local actual = previewers_helper.preview_grep(line)
@@ -143,11 +143,11 @@ describe("helper.previewers", function()
     end)
   end)
 
-  describe("[fzf_preview_grep_no_filename]", function()
+  describe("[preview_grep_bufnr]", function()
     it("test", function()
       local lines = { "1:1:ok", "2:1: this is the plugin" }
       for i, line in ipairs(lines) do
-        local actual = previewers_helper.preview_grep_no_filename(line, make_context())
+        local actual = previewers_helper.preview_grep_bufnr(line, make_context())
         assert_eq(type(actual), "table")
         if consts.HAS_BAT then
           local n = #previewers_helper._PREVIEW_BAT
@@ -224,12 +224,12 @@ describe("helper.previewers", function()
     end)
   end)
 
-  describe("[_fzf_preview_grep_with_line_range]", function()
+  describe("[_preview_grep_line_range]", function()
     it("test", function()
       local filename = "lua/fzfx/config.lua"
       local lineno = 135
-      local actual = previewers_helper._preview_grep_with_line_range(filename, lineno)
-      print(string.format("fzf_preview_grep_with_line_range:%s\n", vim.inspect(actual)))
+      local actual = previewers_helper._preview_grep_line_range(filename, lineno)
+      print(string.format("_preview_grep_line_range:%s\n", vim.inspect(actual)))
       assert_eq(type(actual), "table")
       if consts.HAS_BAT then
         local n = #previewers_helper._PREVIEW_BAT
