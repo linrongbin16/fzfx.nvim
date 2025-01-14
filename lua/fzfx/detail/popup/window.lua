@@ -1,5 +1,6 @@
 local log = require("fzfx.lib.log")
 local popup_helpers = require("fzfx.detail.popup.popup_helpers")
+local window_helpers = require("fzfx.detail.popup.window_helpers")
 
 local M = {}
 
@@ -23,9 +24,9 @@ M._make_cursor_opts = function(win_opts, relative_winnr, relative_win_first_line
     height = layout.height,
     row = layout.start_row,
     col = layout.start_col,
-    style = popup_helpers.FLOAT_WIN_STYLE,
-    border = popup_helpers.FLOAT_WIN_BORDER,
-    zindex = popup_helpers.FLOAT_WIN_ZINDEX,
+    style = window_helpers.FLOAT_WIN_STYLE,
+    border = window_helpers.FLOAT_WIN_BORDER,
+    zindex = window_helpers.FLOAT_WIN_ZINDEX,
   }
 
   -- if win_opts.relative == "win" then
@@ -56,9 +57,9 @@ M._make_center_opts = function(win_opts, relative_winnr, relative_win_first_line
     height = layout.height,
     row = layout.start_row,
     col = layout.start_col,
-    style = popup_helpers.FLOAT_WIN_STYLE,
-    border = popup_helpers.FLOAT_WIN_BORDER,
-    zindex = popup_helpers.FLOAT_WIN_ZINDEX,
+    style = window_helpers.FLOAT_WIN_STYLE,
+    border = window_helpers.FLOAT_WIN_BORDER,
+    zindex = window_helpers.FLOAT_WIN_ZINDEX,
   }
 
   if win_opts.relative == "win" then
@@ -105,7 +106,7 @@ function PopupWindow:new(win_opts)
   local current_win_first_line = vim.fn.line("w0")
 
   -- save current window context
-  local saved_win_ctx = popup_helpers.WindowContext:save()
+  local saved_win_ctx = window_helpers.WindowContext:save()
 
   --- @type integer
   local bufnr = vim.api.nvim_create_buf(false, true)

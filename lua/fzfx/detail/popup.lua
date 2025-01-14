@@ -9,6 +9,7 @@ local log = require("fzfx.lib.log")
 local fzf_helpers = require("fzfx.detail.fzf_helpers")
 
 local popup_helpers = require("fzfx.detail.popup.popup_helpers")
+local window_helpers = require("fzfx.detail.popup.window_helpers")
 local PopupWindow = require("fzfx.detail.popup.window").PopupWindow
 
 local M = {}
@@ -190,7 +191,7 @@ function Popup:new(win_opts, source, fzf_opts, actions, context, on_close)
   end -- on_fzf_exit
 
   -- save fzf/shell context
-  local saved_shell_ctx = popup_helpers.ShellContext:save()
+  local saved_shell_ctx = window_helpers.ShellContext:save()
   local saved_fzf_default_command = vim.env.FZF_DEFAULT_COMMAND
   local saved_fzf_default_opts = vim.env.FZF_DEFAULT_OPTS
   vim.env.FZF_DEFAULT_OPTS = fzf_helpers.make_fzf_default_opts()
