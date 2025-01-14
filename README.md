@@ -64,8 +64,8 @@ https://github.com/linrongbin16/fzfx.nvim/assets/6496887/b5e2b0dc-4dd6-4c18-b1da
 > This plugins supports latest stable and (possibly) nightly Neovim version.
 
 - Neovim &ge; 0.10.
-- [fzf](https://github.com/junegunn/fzf).
-- [curl](https://man7.org/linux/man-pages/man1/curl.1.html) (for query fzf status or update preview label).
+- [fzf](https://github.com/junegunn/fzf) (**mandatory**).
+- [curl](https://man7.org/linux/man-pages/man1/curl.1.html) (**optional** for preview window label).
 - [nerd-fonts](https://www.nerdfonts.com/) (**optional** for icons).
 - [rg](https://github.com/BurntSushi/ripgrep) (**optional** for live grep, by default use [grep](https://man7.org/linux/man-pages/man1/grep.1.html)).
 - [fd](https://github.com/sharkdp/fd) (**optional** for find files, by default use [find](https://man7.org/linux/man-pages/man1/find.1.html)).
