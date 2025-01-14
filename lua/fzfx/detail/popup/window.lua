@@ -1,4 +1,6 @@
 local log = require("fzfx.lib.log")
+local version = require("fzfx.commons.version")
+
 local popup_helpers = require("fzfx.detail.popup.popup_helpers")
 local window_helpers = require("fzfx.detail.popup.window_helpers")
 
@@ -139,11 +141,17 @@ function PopupWindow:new(win_opts)
   }
   setmetatable(o, self)
   self.__index = self
+
+  assert(M._PopupWindowsManagerInstance ~= nil)
+  M._PopupWindowsManagerInstance:add(o)
+
   return o
 end
 
 function PopupWindow:close()
   -- log.debug("|fzfx.popup - Popup:close| self:%s", vim.inspect(self))
+
+  M._PopupWindowsManagerInstance:remove(self)
 
   if vim.api.nvim_win_is_valid(self.winnr) then
     vim.api.nvim_win_close(self.winnr, true)
@@ -190,5 +198,59 @@ end
 M.PopupWindow = PopupWindow
 
 -- PopupWindow }
+
+-- PopupWindowManager {
+
+--- @class fzfx.PopupWindowsManager
+--- @field instances table<integer, fzfx.PopupWindow>
+local PopupWindowsManager = {}
+
+function PopupWindowsManager:new()
+  local o = {
+    instances = {},
+  }
+  setmetatable(o, self)
+  self.__index = self
+  return o
+end
+
+--- @param obj fzfx.PopupWindow
+function PopupWindowsManager:add(obj)
+  self.instances[obj:handle()] = obj
+end
+
+--- @param obj fzfx.PopupWindow
+function PopupWindowsManager:remove(obj)
+  self.instances[obj:handle()] = nil
+end
+
+function PopupWindowsManager:resize()
+  for _, obj in pairs(self.instances) do
+    if obj then
+      vim.schedule(function()
+        obj:resize()
+      end)
+    end
+  end
+end
+
+-- PopupWindowManager }
+
+M._PopupWindowsManagerInstance = PopupWindowsManager:new()
+
+M.setup = function()
+  vim.api.nvim_create_autocmd({ "VimResized" }, {
+    callback = function()
+      M._PopupWindowsManagerInstance:resize()
+    end,
+  })
+  if version.ge("0.9") then
+    vim.api.nvim_create_autocmd({ "WinResized" }, {
+      callback = function()
+        M._PopupWindowsManagerInstance:resize()
+      end,
+    })
+  end
+end
 
 return M

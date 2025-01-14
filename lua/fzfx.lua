@@ -35,7 +35,7 @@ M.setup = function(opts)
   require("fzfx.detail.module").setup()
   require("fzfx.detail.rpcserver").setup()
   require("fzfx.detail.yanks").setup()
-  require("fzfx.detail.popup").setup()
+  require("fzfx.detail.popup.window").setup()
   require("fzfx.detail.fzf_helpers").setup()
 
   -- files & buffers

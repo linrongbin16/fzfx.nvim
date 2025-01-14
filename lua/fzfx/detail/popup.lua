@@ -1,8 +1,5 @@
----@diagnostic disable: invisible
-
 local fio = require("fzfx.commons.fio")
 local path = require("fzfx.commons.path")
-local version = require("fzfx.commons.version")
 local uv = require("fzfx.commons.uv")
 
 local log = require("fzfx.lib.log")
@@ -13,9 +10,6 @@ local window_helpers = require("fzfx.detail.popup.window_helpers")
 local PopupWindow = require("fzfx.detail.popup.window").PopupWindow
 
 local M = {}
-
---- @type table<integer, fzfx.PopupWindow>
-M._PopupWindowInstances = {}
 
 --- @alias fzfx.NvimFloatWinOpts {anchor:"NW"?,relative:"editor"|"win"|"cursor"|nil,width:integer?,height:integer?,row:integer?,col:integer?,style:"minimal"?,border:"none"|"single"|"double"|"rounded"|"solid"|"shadow"|nil,zindex:integer?,focusable:boolean?}
 --- @alias fzfx.WindowOpts {relative:"editor"|"win"|"cursor",win:integer?,row:number,col:number,height:integer,width:integer,zindex:integer,border:string,title:string?,title_pos:string?,noautocmd:boolean?}
@@ -209,7 +203,7 @@ function Popup:new(win_opts, source, fzf_opts, actions, context, on_close)
   vim.env.FZF_DEFAULT_COMMAND = saved_fzf_default_command
   vim.env.FZF_DEFAULT_OPTS = saved_fzf_default_opts
 
-  vim.cmd([[ startinsert ]])
+  vim.cmd([[startinsert]])
 
   local o = {
     popup_window = popup_window,
@@ -224,59 +218,10 @@ end
 
 -- function Popup:close() end
 
--- PopupWindowInstances {
-
---- @return table<integer, fzfx.PopupWindow>
-local function _get_instances()
-  return M._PopupWindowInstances
-end
-
-local function _clear_instances()
-  M._PopupWindowInstances = {}
-end
-
---- @return integer
-local function _count_instances()
-  local n = 0
-  for _, popup_win in pairs(M._PopupWindowInstances) do
-    if popup_win then
-      n = n + 1
-    end
-  end
-  return n
-end
-
-local function _resize_instances()
-  for _, popup_win in pairs(M._PopupWindowInstances) do
-    if popup_win then
-      popup_win:resize()
-    end
-  end
-end
-
--- PopupWindowInstances }
-
-local function setup()
-  vim.api.nvim_create_autocmd({ "VimResized" }, {
-    callback = _resize_instances,
-  })
-  if version.ge("0.9") then
-    vim.api.nvim_create_autocmd({ "WinResized" }, {
-      callback = _resize_instances,
-    })
-  end
-end
-
-M._get_instances = _get_instances
-M._clear_instances = _clear_instances
-M._count_instances = _count_instances
-M._resize_instances = _resize_instances
-
 M._make_expect_keys = _make_expect_keys
 M._merge_fzf_actions = _merge_fzf_actions
 M._make_fzf_command = _make_fzf_command
 
 M.Popup = Popup
-M.setup = setup
 
 return M
