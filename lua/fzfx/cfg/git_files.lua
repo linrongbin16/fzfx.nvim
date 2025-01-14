@@ -116,12 +116,12 @@ M.providers = {
 
 M.previewers = {
   current_folder = {
-    previewer = previewers_helper.fzf_preview_find,
+    previewer = previewers_helper.preview_find,
     previewer_type = PreviewerTypeEnum.COMMAND_ARRAY,
     previewer_label = labels_helper.label_find,
   },
   workspace = {
-    previewer = previewers_helper.fzf_preview_find,
+    previewer = previewers_helper.preview_find,
     previewer_type = PreviewerTypeEnum.COMMAND_ARRAY,
     previewer_label = labels_helper.label_find,
   },

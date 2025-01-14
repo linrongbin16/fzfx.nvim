@@ -135,11 +135,11 @@ M.providers = {
 
 M.previewers = {
   current_folder = {
-    previewer = previewers_helper.fzf_preview_git_status,
+    previewer = previewers_helper.preview_git_status,
     previewer_type = PreviewerTypeEnum.COMMAND_STRING,
   },
   workspace = {
-    previewer = previewers_helper.fzf_preview_git_status,
+    previewer = previewers_helper.preview_git_status,
     previewer_type = PreviewerTypeEnum.COMMAND_STRING,
   },
 }

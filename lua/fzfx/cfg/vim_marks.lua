@@ -271,7 +271,7 @@ M._previewer = function(line, context)
     --   "|fzfx.config - _vim_marks_previewer| loc:%s",
     --   vim.inspect(parsed)
     -- )
-    return previewers_helper._fzf_preview_grep_with_line_range(parsed.filename, parsed.lineno)
+    return previewers_helper._preview_grep_with_line_range(parsed.filename, parsed.lineno)
   elseif constants.HAS_ECHO and tbl.tbl_not_empty(parsed) then
     -- log.debug(
     --   "|fzfx.config - _vim_marks_previewer| desc:%s",

@@ -42,23 +42,23 @@ end
 
 -- fd/find {
 
-M._FZF_PREVIEW_BAT = {
+M._PREVIEW_BAT = {
   consts.BAT,
   "--color=always",
   "--pager=never",
 }
 
-M._FZF_PREVIEW_CAT = {
+M._PREVIEW_CAT = {
   consts.CAT,
   "-n",
 }
 
 --- @param filename string
 --- @return string[]
-M._fzf_preview_find = function(filename)
+M._preview_find = function(filename)
   if consts.HAS_BAT then
     -- "bat --style=%s --theme=%s --color=always --pager=never -- %s"
-    local results = vim.deepcopy(M._FZF_PREVIEW_BAT)
+    local results = vim.deepcopy(M._PREVIEW_BAT)
 
     local style = M._bat_style()
     table.insert(results, style)
@@ -67,7 +67,7 @@ M._fzf_preview_find = function(filename)
     return results
   else
     -- "cat -n -- %s"
-    local results = vim.deepcopy(M._FZF_PREVIEW_CAT)
+    local results = vim.deepcopy(M._PREVIEW_CAT)
     table.insert(results, "--")
     table.insert(results, filename)
     return results
@@ -77,9 +77,9 @@ end
 -- It generates the cat/bat shell command in strings list, for previewing fd/find results.
 --- @param line string
 --- @return string[]
-M.fzf_preview_find = function(line)
+M.preview_find = function(line)
   local parsed = parsers_helper.parse_find(line)
-  return M._fzf_preview_find(parsed.filename)
+  return M._preview_find(parsed.filename)
 end
 
 -- fd/find }
@@ -104,10 +104,10 @@ end
 --- @param filename string
 --- @param lineno integer?
 --- @return string[]
-M._fzf_preview_grep = function(filename, lineno)
+M._preview_grep = function(filename, lineno)
   if consts.HAS_BAT then
     -- "bat --style=%s --theme=%s --color=always --pager=never --highlight-line=%s -- %s"
-    local results = vim.deepcopy(M._FZF_PREVIEW_BAT)
+    local results = vim.deepcopy(M._PREVIEW_BAT)
 
     local style = M._bat_style()
     if type(lineno) == "number" then
@@ -122,7 +122,7 @@ M._fzf_preview_grep = function(filename, lineno)
     -- But cat doesn't support highlight a specific line number.
 
     -- "cat -n -- %s"
-    local results = vim.deepcopy(M._FZF_PREVIEW_CAT)
+    local results = vim.deepcopy(M._PREVIEW_CAT)
     table.insert(results, "--")
     table.insert(results, filename)
     return results
@@ -130,9 +130,9 @@ M._fzf_preview_grep = function(filename, lineno)
 end
 
 -- It generates the cat/bat shell command in strings list, for previewing rg/grep results.
-M.fzf_preview_grep = function(line)
+M.preview_grep = function(line)
   local parsed = parsers_helper.parse_grep(line)
-  return M._fzf_preview_grep(parsed.filename, parsed.lineno)
+  return M._preview_grep(parsed.filename, parsed.lineno)
 end
 
 -- rg/grep }
@@ -143,7 +143,7 @@ end
 --- @param line string
 --- @param context fzfx.PipelineContext
 --- @return string[]|nil
-M.fzf_preview_grep_no_filename = function(line, context)
+M.preview_grep_no_filename = function(line, context)
   local bufnr = tbl.tbl_get(context, "bufnr")
   if type(bufnr) ~= "number" or not vim.api.nvim_buf_is_valid(bufnr) then
     return nil
@@ -153,7 +153,7 @@ M.fzf_preview_grep_no_filename = function(line, context)
   filename = path.normalize(filename, { double_backslash = true, expand = true })
 
   local parsed = parsers_helper.parse_grep_no_filename(line)
-  return M._fzf_preview_grep(filename, parsed.lineno)
+  return M._preview_grep(filename, parsed.lineno)
 end
 
 -- rg/grep no filename }
@@ -163,7 +163,7 @@ end
 -- It generates 'git show' (with 'delta') shell command for git log/blame results.
 --- @param line string
 --- @return string?
-M.fzf_preview_git_commit = function(line)
+M.preview_git_commit = function(line)
   -- If the first character is whitespace, return `nil` shell command.
   if str.isspace(line:sub(1, 1)) then
     return nil
@@ -185,7 +185,7 @@ end
 -- It generates 'git diff' (with 'delta') shell command for git status results.
 --- @param line string
 --- @return string
-M.fzf_preview_git_status = function(line)
+M.preview_git_status = function(line)
   local parsed = parsers_helper.parse_git_status(line)
   if consts.HAS_DELTA and not consts.IS_WINDOWS then
     return string.format(
@@ -213,10 +213,10 @@ end
 --- @param filename string
 --- @param lineno integer
 --- @return string[]
-M._fzf_preview_grep_with_line_range = function(filename, lineno)
+M._preview_grep_with_line_range = function(filename, lineno)
   if consts.HAS_BAT then
     -- "%s --style=%s --theme=%s --color=always --pager=never --highlight-line=%s -- %s"
-    local results = vim.deepcopy(M._FZF_PREVIEW_BAT)
+    local results = vim.deepcopy(M._PREVIEW_BAT)
 
     local style = M._bat_style()
     table.insert(results, style)
