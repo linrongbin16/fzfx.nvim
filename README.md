@@ -1844,44 +1844,6 @@ For complete default options, please see [config.lua](https://github.com/linrong
 
 For advanced configurations, please check [Advanced Configuration](https://github.com/linrongbin16/fzfx.nvim/wiki/Advanced-Configuration).
 
-### Feature Flags
-
-To enable/disable some features, please define below global variables before setup this plugin:
-
-- `vim.g.fzfx_disable_buffer_previewer`: Disable nvim buffer for previewing file contents, use fzf builtin preview window via `bat` with best performance. By default this feature is enabled.
-
-   <details>
-   <summary><i>Click here to see how to configure</i></summary>
-
-  ```vim
-  " vim scripts
-  let g:fzfx_disable_buffer_previewer = 1 " or v:true
-  ```
-
-  ```lua
-  -- lua scripts
-  vim.g.fzfx_disable_buffer_previewer = 1 -- or true
-  ```
-
-   </details>
-
-- `vim.g.fzfx_enable_bat_theme_autogen`: Enable [bat themes](https://github.com/sharkdp/bat#adding-new-themes) auto generation for fzf's builtin preview window, it generates the [TextMate `.tmTheme` file](https://macromates.com/manual/en/themes) (widely used by text editors such as [Sublime Text](https://www.sublimetext.com/docs/color_schemes_tmtheme.html), [VS Code](https://code.visualstudio.com/docs/getstarted/themes) and `bat` command) for `bat` based on current Neovim's colorscheme, thus makes a closer looking to Neovim's buffer. By default this feature is disabled.
-
-   <details>
-   <summary><i>Click here to see how to configure</i></summary>
-
-  ```vim
-  " vim scripts
-  let g:fzfx_enable_bat_theme_autogen = 1 " or v:true
-  ```
-
-  ```lua
-  -- lua scripts
-  vim.g.fzfx_enable_bat_theme_autogen = 1 -- or true
-  ```
-
-   </details>
-
 ### Create Your Own Command
 
 Here's a minimal example that implement the `ls -1` like `FzfxLs` command:
