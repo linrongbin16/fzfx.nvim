@@ -9,54 +9,12 @@ local log = require("fzfx.lib.log")
 local fzf_helpers = require("fzfx.detail.fzf_helpers")
 
 local popup_helpers = require("fzfx.detail.popup.popup_helpers")
-local fzf_popup_window = require("fzfx.detail.popup.fzf_popup_window")
+local PopupWindow = require("fzfx.detail.popup.window").PopupWindow
 
 local M = {}
 
 --- @type table<integer, fzfx.PopupWindow>
 M._PopupWindowInstances = {}
-
---- @class fzfx.PopupWindow
---- @field instance fzfx.FzfPopupWindow
-local PopupWindow = {}
-
---- @package
---- @param win_opts fzfx.WindowOpts
---- @return fzfx.PopupWindow
-function PopupWindow:new(win_opts)
-  -- check executables
-  fzf_helpers.nvim_exec()
-  fzf_helpers.fzf_exec()
-
-  --- @type fzfx.FzfPopupWindow
-  local instance = fzf_popup_window.FzfPopupWindow:new(win_opts)
-
-  local o = {
-    instance = instance,
-  }
-  setmetatable(o, self)
-  self.__index = self
-
-  M._PopupWindowInstances[instance:handle()] = o
-
-  return o
-end
-
-function PopupWindow:close()
-  -- log.debug("|fzfx.popup - Popup:close| self:%s", vim.inspect(self))
-
-  if self.instance then
-    M._PopupWindowInstances[self.instance:handle()] = nil
-    self.instance:close()
-    self.instance = nil
-  end
-end
-
-function PopupWindow:resize()
-  if self.instance then
-    self.instance:resize()
-  end
-end
 
 --- @alias fzfx.NvimFloatWinOpts {anchor:"NW"?,relative:"editor"|"win"|"cursor"|nil,width:integer?,height:integer?,row:integer?,col:integer?,style:"minimal"?,border:"none"|"single"|"double"|"rounded"|"solid"|"shadow"|nil,zindex:integer?,focusable:boolean?}
 --- @alias fzfx.WindowOpts {relative:"editor"|"win"|"cursor",win:integer?,row:number,col:number,height:integer,width:integer,zindex:integer,border:string,title:string?,title_pos:string?,noautocmd:boolean?}
