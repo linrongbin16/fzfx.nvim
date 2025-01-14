@@ -211,7 +211,7 @@ lua require('fzfx').setup()
 
 There're multiple commands provided, named with prefix `Fzfx`. The sub commands indicates the user query's input method, (i.e. the variants) named with below conventions:
 
-- **Basic** variant is named with `args`, accepts the following arguments as query content.
+- **Basic** variant is named with `args`, accepts the following arguments as query content. For example searching a file named "README.md" with `:FzfxFiles args readme`, searching a word "fzfx" with `FzfxLiveGrep args fzfx`.
 - **Visual select** variant is named with `visual`, uses visual selection as query content.
 - **Cursor word** variant is named with `cword`, uses the word text under cursor as query content.
 - **Put** (i.e. yank text) variant is named with `put` (just like press the `p` key), uses the yank text as query content.
@@ -219,11 +219,9 @@ There're multiple commands provided, named with prefix `Fzfx`. The sub commands 
 
 > [!NOTE]
 >
-> The `args` sub command can be omitted, for example `:FzfxFiles<CR>` is equivalent to `:FzfxFiles args<CR>`.
+> The `args` sub command can be omitted if there is no query text, i.e. `:FzfxFiles<CR>` is equivalent to `:FzfxFiles args<CR>`.
 >
-> To specify query text, for example `asdf`, you will have to type `:FzfxFiles args asdf<CR>`.
->
-> The **visual select** variant is the only variant that works in visual mode, other variants work in normal mode.
+> The **visual select** variant is the only variant that works in **visual** mode, other variants work in **normal** mode.
 
 Below keys are binded by default:
 
