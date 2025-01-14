@@ -11,19 +11,9 @@ local PopupWindow = require("fzfx.detail.popup.window").PopupWindow
 
 local M = {}
 
---- @alias fzfx.NvimFloatWinOpts {anchor:"NW"?,relative:"editor"|"win"|"cursor"|nil,width:integer?,height:integer?,row:integer?,col:integer?,style:"minimal"?,border:"none"|"single"|"double"|"rounded"|"solid"|"shadow"|nil,zindex:integer?,focusable:boolean?}
---- @alias fzfx.WindowOpts {relative:"editor"|"win"|"cursor",win:integer?,row:number,col:number,height:integer,width:integer,zindex:integer,border:string,title:string?,title_pos:string?,noautocmd:boolean?}
---
---- @class fzfx.Popup
---- @field popup_window fzfx.PopupWindow?
---- @field source string|string[]|nil
---- @field jobid integer|nil
---- @field result string|nil
-local Popup = {}
-
 --- @param actions table<string, any>
 --- @return string[][]
-local function _make_expect_keys(actions)
+M._make_expect_keys = function(actions)
   local expect_keys = {}
   if type(actions) == "table" then
     for name, _ in pairs(actions) do
@@ -36,8 +26,8 @@ end
 --- @param fzf_opts string[]|string[][]
 --- @param actions table<string, any>
 --- @return string[]
-local function _merge_fzf_actions(fzf_opts, actions)
-  local expect_keys = _make_expect_keys(actions)
+M._merge_fzf_actions = function(fzf_opts, actions)
+  local expect_keys = M._make_expect_keys(actions)
   local merged_opts = vim.list_extend(vim.deepcopy(fzf_opts), expect_keys)
   -- log.debug(
   --     "|fzfx.popup - _merge_fzf_actions| fzf_opts:%s, actions:%s, merged_opts:%s",
@@ -52,8 +42,8 @@ end
 --- @param actions fzfx.Options
 --- @param result string
 --- @return string
-local function _make_fzf_command(fzf_opts, actions, result)
-  local final_opts = _merge_fzf_actions(fzf_opts, actions)
+M._make_fzf_command = function(fzf_opts, actions, result)
+  local final_opts = M._merge_fzf_actions(fzf_opts, actions)
   local final_opts_string = fzf_helpers.make_fzf_opts(final_opts)
   -- log.debug(
   --     "|fzfx.popup - _make_fzf_command| final_opts:%s, builder:%s",
@@ -68,6 +58,7 @@ local function _make_fzf_command(fzf_opts, actions, result)
   return command
 end
 
+--- @alias fzfx.WindowOpts {relative:"editor"|"win"|"cursor",win:integer?,row:number,col:number,height:integer,width:integer,zindex:integer,border:string,title:string?,title_pos:string?,noautocmd:boolean?}
 --- @alias fzfx.OnPopupExit fun(last_query:string):nil
 --- @param win_opts fzfx.WindowOpts
 --- @param source string
@@ -75,10 +66,9 @@ end
 --- @param actions fzfx.Options
 --- @param context fzfx.PipelineContext
 --- @param on_close fzfx.OnPopupExit?
---- @return fzfx.Popup
-function Popup:new(win_opts, source, fzf_opts, actions, context, on_close)
+M.popup = function(win_opts, source, fzf_opts, actions, context, on_close)
   local result = vim.fn.tempname() --[[@as string]]
-  local fzf_command = _make_fzf_command(fzf_opts, actions, result)
+  local fzf_command = M._make_fzf_command(fzf_opts, actions, result)
   local popup_window = PopupWindow:new(win_opts)
 
   local function on_fzf_exit(jobid2, exitcode, event)
@@ -204,24 +194,6 @@ function Popup:new(win_opts, source, fzf_opts, actions, context, on_close)
   vim.env.FZF_DEFAULT_OPTS = saved_fzf_default_opts
 
   vim.cmd([[startinsert]])
-
-  local o = {
-    popup_window = popup_window,
-    source = source,
-    jobid = jobid,
-    result = result,
-  }
-  setmetatable(o, self)
-  self.__index = self
-  return o
 end
-
--- function Popup:close() end
-
-M._make_expect_keys = _make_expect_keys
-M._merge_fzf_actions = _merge_fzf_actions
-M._make_fzf_command = _make_fzf_command
-
-M.Popup = Popup
 
 return M

@@ -16,7 +16,7 @@ local ProviderTypeEnum = require("fzfx.schema").ProviderTypeEnum
 local PreviewerTypeEnum = require("fzfx.schema").PreviewerTypeEnum
 local schema = require("fzfx.schema")
 
-local Popup = require("fzfx.detail.popup").Popup
+local popup = require("fzfx.detail.popup").popup
 local rpcserver = require("fzfx.detail.rpcserver")
 local fzf_helpers = require("fzfx.detail.fzf_helpers")
 
@@ -833,12 +833,7 @@ end
 --- @param default_pipeline fzfx.PipelineName?
 local function general(name, query, bang, pipeline_configs, default_pipeline)
   local pipeline_size = get_pipeline_size(pipeline_configs)
-
-  --- cache files
   local fzf_port_file = _fzf_port_file()
-
-  --- @type fzfx.Popup
-  local popup = nil
 
   local default_provider_action_key = nil
   if default_pipeline == nil or pipeline_configs.providers[default_pipeline] == nil then
@@ -1062,7 +1057,7 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
     )
   end
 
-  popup = Popup:new(win_opts or {}, query_command, fzf_opts, actions, context, function(last_query)
+  popup(win_opts or {}, query_command, fzf_opts, actions, context, function(last_query)
     -- On popup exit
 
     -- Unregister RPC calls
