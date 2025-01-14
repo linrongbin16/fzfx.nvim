@@ -23,7 +23,7 @@ Executable shell command utilities.
     - `function CommandResult:failed():boolean`: Whether the shell command is failed, it's `true` when the exit code is not `0`, or there's error messages printed in `stderr`. Otherwise it's `false`.
 - [`@class fzfx.Command`](https://github.com/linrongbin16/fzfx.nvim/blob/6cde87c522460d4da2a9c657ce4615ce619cca45/lua/fzfx/lib/commands.lua?plain=1#L50): The executable shell command.
   - Fields
-    - `@field source string[]`: The shell command splitted by whitespaces.
+    - `@field source string[]`: The shell command split by whitespaces.
     - `@field result fzfx.CommandResult?`: The executed result.
   - Methods
     - `function Command:run(source):fzfx.Command`: Make a new command and run it synchronously. Note: this method will block the editor.
