@@ -1,10 +1,3 @@
--- Note:
--- The previewers works with fzf's builtin preview window, are named with prefix `fzf_`.
--- To enable them, set feature flag: `vim.g.fzfx_disable_buffer_previewer=1`.
---
--- The previewers works with Neovim's buffer, are named with prefix `buffer_`.
--- To enable them, unset feature flag: `vim.g.fzfx_disable_buffer_previewer`.
-
 local str = require("fzfx.commons.str")
 local path = require("fzfx.commons.path")
 local tbl = require("fzfx.commons.tbl")

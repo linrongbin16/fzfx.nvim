@@ -32,16 +32,13 @@ local ProviderTypeEnum = {
 --
 --- @alias fzfx.FunctionalCommandStringPreviewer fun(line:string?,context:fzfx.PipelineContext?):string?
 --- @alias fzfx.FunctionalCommandArrayPreviewer fun(line:string?,context:fzfx.PipelineContext?):string[]?
---- @alias fzfx.BufferPreviewerResult  {filename:string,lineno:integer?,column:integer?}
---- @alias fzfx.BufferPreviewer    fun(line:string?,context:fzfx.PipelineContext?):fzfx.BufferPreviewerResult?
---- @alias fzfx.Previewer fzfx.FunctionalCommandStringPreviewer|fzfx.FunctionalCommandArrayPreviewer|fzfx.BufferPreviewer
+--- @alias fzfx.Previewer fzfx.FunctionalCommandStringPreviewer|fzfx.FunctionalCommandArrayPreviewer
 ---
---- @alias fzfx.PreviewerType "FUNCTIONAL_COMMAND_STRING"|"FUNCTIONAL_COMMAND_ARRAY"|"BUFFER"
+--- @alias fzfx.PreviewerType "FUNCTIONAL_COMMAND_STRING"|"FUNCTIONAL_COMMAND_ARRAY"
 --- @enum fzfx.PreviewerTypeEnum
 local PreviewerTypeEnum = {
   FUNCTIONAL_COMMAND_STRING = "FUNCTIONAL_COMMAND_STRING",
   FUNCTIONAL_COMMAND_ARRAY = "FUNCTIONAL_COMMAND_ARRAY",
-  BUFFER = "BUFFER",
 }
 --
 -- ========== Previewer Label ==========

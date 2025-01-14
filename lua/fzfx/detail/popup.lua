@@ -10,32 +10,26 @@ local fzf_helpers = require("fzfx.detail.fzf_helpers")
 
 local popup_helpers = require("fzfx.detail.popup.popup_helpers")
 local fzf_popup_window = require("fzfx.detail.popup.fzf_popup_window")
-local buffer_popup_window = require("fzfx.detail.popup.buffer_popup_window")
+
+local M = {}
 
 --- @type table<integer, fzfx.PopupWindow>
-local PopupWindowInstances = {}
+M._PopupWindowInstances = {}
 
 --- @class fzfx.PopupWindow
---- @field instance fzfx.FzfPopupWindow|fzfx.BufferPopupWindow
+--- @field instance fzfx.FzfPopupWindow
 local PopupWindow = {}
 
 --- @package
 --- @param win_opts fzfx.WindowOpts
---- @param window_type "fzf"|"buffer"
---- @param buffer_previewer_opts fzfx.BufferPreviewerOpts
 --- @return fzfx.PopupWindow
-function PopupWindow:new(win_opts, window_type, buffer_previewer_opts)
+function PopupWindow:new(win_opts)
   -- check executables
   fzf_helpers.nvim_exec()
   fzf_helpers.fzf_exec()
 
-  --- @type fzfx.FzfPopupWindow|fzfx.BufferPopupWindow
-  local instance = nil
-  if window_type == "fzf" then
-    instance = fzf_popup_window.FzfPopupWindow:new(win_opts, buffer_previewer_opts)
-  elseif window_type == "buffer" then
-    instance = buffer_popup_window.BufferPopupWindow:new(win_opts, buffer_previewer_opts)
-  end
+  --- @type fzfx.FzfPopupWindow
+  local instance = fzf_popup_window.FzfPopupWindow:new(win_opts)
 
   local o = {
     instance = instance,
@@ -43,7 +37,7 @@ function PopupWindow:new(win_opts, window_type, buffer_previewer_opts)
   setmetatable(o, self)
   self.__index = self
 
-  PopupWindowInstances[instance:handle()] = o
+  M._PopupWindowInstances[instance:handle()] = o
 
   return o
 end
@@ -52,7 +46,7 @@ function PopupWindow:close()
   -- log.debug("|fzfx.popup - Popup:close| self:%s", vim.inspect(self))
 
   if self.instance then
-    PopupWindowInstances[self.instance:handle()] = nil
+    M._PopupWindowInstances[self.instance:handle()] = nil
     self.instance:close()
     self.instance = nil
   end
@@ -62,31 +56,6 @@ function PopupWindow:resize()
   if self.instance then
     self.instance:resize()
   end
-end
-
---- @param job_id integer
---- @param previewer_result fzfx.BufferPreviewerResult
---- @param previewer_label_result string?
-function PopupWindow:preview_file(job_id, previewer_result, previewer_label_result)
-  self.instance:preview_file(job_id, previewer_result, previewer_label_result)
-end
-
---- @param action_name string
-function PopupWindow:preview_action(action_name)
-  self.instance:preview_action(action_name)
-end
-
-function PopupWindow:previewer_is_valid()
-  return self.instance ~= nil and self.instance:previewer_is_valid()
-end
-
-function PopupWindow:provider_is_valid()
-  return self.instance ~= nil and self.instance:provider_is_valid()
-end
-
---- @param jobid integer
-function PopupWindow:set_current_previewing_file_job_id(jobid)
-  self.instance:set_current_previewing_file_job_id(jobid)
 end
 
 --- @alias fzfx.NvimFloatWinOpts {anchor:"NW"?,relative:"editor"|"win"|"cursor"|nil,width:integer?,height:integer?,row:integer?,col:integer?,style:"minimal"?,border:"none"|"single"|"double"|"rounded"|"solid"|"shadow"|nil,zindex:integer?,focusable:boolean?}
@@ -153,23 +122,11 @@ end
 --- @param actions fzfx.Options
 --- @param context fzfx.PipelineContext
 --- @param on_close fzfx.OnPopupExit?
---- @param use_buffer_previewer boolean?
---- @param buffer_previewer_opts fzfx.BufferPreviewerOpts
 --- @return fzfx.Popup
-function Popup:new(
-  win_opts,
-  source,
-  fzf_opts,
-  actions,
-  context,
-  on_close,
-  use_buffer_previewer,
-  buffer_previewer_opts
-)
+function Popup:new(win_opts, source, fzf_opts, actions, context, on_close)
   local result = vim.fn.tempname() --[[@as string]]
   local fzf_command = _make_fzf_command(fzf_opts, actions, result)
-  local popup_window =
-    PopupWindow:new(win_opts, use_buffer_previewer and "buffer" or "fzf", buffer_previewer_opts)
+  local popup_window = PopupWindow:new(win_opts)
 
   local function on_fzf_exit(jobid2, exitcode, event)
     -- log.debug(
@@ -251,7 +208,9 @@ function Popup:new(
       )
 
       -- Clean up temp files
+      ---@diagnostic disable-next-line: undefined-field
       if uv.fs_stat(result) then
+        ---@diagnostic disable-next-line: undefined-field
         uv.fs_unlink(result, function(err, success)
           -- log.debug(
           --   string.format(
@@ -306,29 +265,21 @@ end
 
 -- function Popup:close() end
 
-function Popup:previewer_is_valid()
-  return self.popup_window ~= nil and self.popup_window:previewer_is_valid()
-end
-
-function Popup:provider_is_valid()
-  return self.popup_window ~= nil and self.popup_window:provider_is_valid()
-end
-
 -- PopupWindowInstances {
 
 --- @return table<integer, fzfx.PopupWindow>
 local function _get_instances()
-  return PopupWindowInstances
+  return M._PopupWindowInstances
 end
 
 local function _clear_instances()
-  PopupWindowInstances = {}
+  M._PopupWindowInstances = {}
 end
 
 --- @return integer
 local function _count_instances()
   local n = 0
-  for _, popup_win in pairs(PopupWindowInstances) do
+  for _, popup_win in pairs(M._PopupWindowInstances) do
     if popup_win then
       n = n + 1
     end
@@ -337,7 +288,7 @@ local function _count_instances()
 end
 
 local function _resize_instances()
-  for _, popup_win in pairs(PopupWindowInstances) do
+  for _, popup_win in pairs(M._PopupWindowInstances) do
     if popup_win then
       popup_win:resize()
     end
@@ -357,19 +308,17 @@ local function setup()
   end
 end
 
-local M = {
-  _get_instances = _get_instances,
-  _clear_instances = _clear_instances,
-  _count_instances = _count_instances,
-  _resize_instances = _resize_instances,
+M._get_instances = _get_instances
+M._clear_instances = _clear_instances
+M._count_instances = _count_instances
+M._resize_instances = _resize_instances
 
-  _make_expect_keys = _make_expect_keys,
-  _merge_fzf_actions = _merge_fzf_actions,
-  _make_fzf_command = _make_fzf_command,
+M._make_expect_keys = _make_expect_keys
+M._merge_fzf_actions = _merge_fzf_actions
+M._make_fzf_command = _make_fzf_command
 
-  PopupWindow = PopupWindow,
-  Popup = Popup,
-  setup = setup,
-}
+M.PopupWindow = PopupWindow
+M.Popup = Popup
+M.setup = setup
 
 return M

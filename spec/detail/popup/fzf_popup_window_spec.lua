@@ -49,7 +49,6 @@ describe("detail.popup.fzf_popup_window", function()
         it("test", function()
           local actual = fzf_popup_window._make_cursor_opts(
             vim.tbl_deep_extend("force", vim.deepcopy(WIN_OPTS), { relative = "cursor" }),
-            { fzf_border_opts = "rounded" },
             0,
             1
           )
@@ -77,7 +76,6 @@ describe("detail.popup.fzf_popup_window", function()
         it("test", function()
           local actual = fzf_popup_window._make_center_opts(
             vim.tbl_deep_extend("force", vim.deepcopy(WIN_OPTS), { relative = "win" }),
-            { fzf_border_opts = "rounded" },
             0,
             1
           )
@@ -114,10 +112,8 @@ describe("detail.popup.fzf_popup_window", function()
         test_height = i
         test_width = j
         it("test", function()
-          local actual1 =
-            fzf_popup_window.make_opts(WIN_OPTS, { fzf_border_opts = "rounded" }, 0, 1)
-          local actual2 =
-            fzf_popup_window._make_center_opts(WIN_OPTS, { fzf_border_opts = "rounded" }, 0, 1)
+          local actual1 = fzf_popup_window.make_opts(WIN_OPTS, 0, 1)
+          local actual2 = fzf_popup_window._make_center_opts(WIN_OPTS, 0, 1)
           print(
             string.format(
               "fzf_popup_window.make_opts:%s, _make_center_opts:%s\n",

@@ -34,18 +34,6 @@ Fzfx heavily uses disk caches, e.g. read/write files a lot. If you encounter an 
 ulimit -n 200000
 ```
 
-## Previewer
-
-### 1. Cannot use both nvim buffer previewer and fzf's builtin-previewer in the same command?
-
-Yes, this is a limitation for previewer: the technical gap between nvim buffer and fzf builtin preview window is quite big, the whole architecture is different, switching previewers across these two types requires a lot of effort.
-
-While we usually only need nvim buffer to preview files, so it should not be a serious issue. Please avoid such kind of configurations.
-
-### 2. Buffer previewer is slow for showing file content on big files?
-
-Yes, this is a limitation for buffer previewer. Since nvim buffer needs to render all the lines before a specific line number, the rendering time increases as the line number becomes very big (in a big file). Please set `vim.g.fzfx_disable_buffer_previewer=1`, it will disable the buffer previewer and use fzf's builtin previewer for the best performance.
-
 ## File Explorer
 
 ### 1. Cannot go upper in empty directory?

@@ -64,8 +64,8 @@ https://github.com/linrongbin16/fzfx.nvim/assets/6496887/b5e2b0dc-4dd6-4c18-b1da
 > This plugins supports latest stable and (possibly) nightly Neovim version.
 
 - Neovim &ge; 0.10.
-- [fzf](https://github.com/junegunn/fzf).
-- [curl](https://man7.org/linux/man-pages/man1/curl.1.html) (for query fzf status or update preview label).
+- [fzf](https://github.com/junegunn/fzf) (**mandatory**).
+- [curl](https://man7.org/linux/man-pages/man1/curl.1.html) (**optional** for preview window label).
 - [nerd-fonts](https://www.nerdfonts.com/) (**optional** for icons).
 - [rg](https://github.com/BurntSushi/ripgrep) (**optional** for live grep, by default use [grep](https://man7.org/linux/man-pages/man1/grep.1.html)).
 - [fd](https://github.com/sharkdp/fd) (**optional** for find files, by default use [find](https://man7.org/linux/man-pages/man1/find.1.html)).
@@ -230,7 +230,7 @@ Below keys are binded by default:
   - `esc`: quit.
   - `double-click`/`enter`: open/jump to file (behave different on some specific commands).
 - Preview keys
-  - `alt-p`: toggle preview.
+  - `ctrl-k`: toggle preview.
   - `ctrl-f`: preview half page down.
   - `ctrl-b`: preview half page up.
 - Select keys
@@ -1844,44 +1844,6 @@ For complete default options, please see [config.lua](https://github.com/linrong
 
 For advanced configurations, please check [Advanced Configuration](https://github.com/linrongbin16/fzfx.nvim/wiki/Advanced-Configuration).
 
-### Feature Flags
-
-To enable/disable some features, please define below global variables before setup this plugin:
-
-- `vim.g.fzfx_disable_buffer_previewer`: Disable nvim buffer for previewing file contents, use fzf builtin preview window via `bat` with best performance. By default this feature is enabled.
-
-   <details>
-   <summary><i>Click here to see how to configure</i></summary>
-
-  ```vim
-  " vim scripts
-  let g:fzfx_disable_buffer_previewer = 1 " or v:true
-  ```
-
-  ```lua
-  -- lua scripts
-  vim.g.fzfx_disable_buffer_previewer = 1 -- or true
-  ```
-
-   </details>
-
-- `vim.g.fzfx_enable_bat_theme_autogen`: Enable [bat themes](https://github.com/sharkdp/bat#adding-new-themes) auto generation for fzf's builtin preview window, it generates the [TextMate `.tmTheme` file](https://macromates.com/manual/en/themes) (widely used by text editors such as [Sublime Text](https://www.sublimetext.com/docs/color_schemes_tmtheme.html), [VS Code](https://code.visualstudio.com/docs/getstarted/themes) and `bat` command) for `bat` based on current Neovim's colorscheme, thus makes a closer looking to Neovim's buffer. By default this feature is disabled.
-
-   <details>
-   <summary><i>Click here to see how to configure</i></summary>
-
-  ```vim
-  " vim scripts
-  let g:fzfx_enable_bat_theme_autogen = 1 " or v:true
-  ```
-
-  ```lua
-  -- lua scripts
-  vim.g.fzfx_enable_bat_theme_autogen = 1 -- or true
-  ```
-
-   </details>
-
 ### Create Your Own Command
 
 Here's a minimal example that implement the `ls -1` like `FzfxLs` command:
@@ -1983,6 +1945,10 @@ Please see [API References](https://linrongbin16.github.io/fzfx.nvim/#) for more
 Please see [Known Issues](https://linrongbin16.github.io/fzfx.nvim/#/KnownIssues) if you encountered any issue.
 
 ## 🍀 Alternatives
+
+> [!NOTE]
+>
+> This plugin no longer supports nvim native buffer previewer since **v8.x**, I would recommend **fzf-lua** if you need it.
 
 - [fzf.vim](https://github.com/junegunn/fzf.vim): Things you can do with [fzf](https://github.com/junegunn/fzf) and Vim.
 - [fzf-lua](https://github.com/ibhagwan/fzf-lua): Improved fzf.vim written in lua.
