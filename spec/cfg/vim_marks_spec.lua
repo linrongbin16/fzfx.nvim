@@ -90,7 +90,7 @@ describe("fzfx.cfg.vim_marks", function()
                 return a == "--line-range"
               end))
               assert_true(tbl.List:copy(actual):some(function(a)
-                return a == "--color=always"
+                return a == "-f"
               end))
               assert_true(tbl.List:copy(actual):some(function(a)
                 return a == "--pager=never"
@@ -109,7 +109,7 @@ describe("fzfx.cfg.vim_marks", function()
                 return a == "--line-range"
               end))
               assert_true(tbl.List:copy(actual):none(function(a)
-                return a == "--color=always"
+                return a == "-f"
               end))
               assert_true(tbl.List:copy(actual):none(function(a)
                 return a == "--pager=never"
