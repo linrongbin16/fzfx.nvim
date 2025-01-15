@@ -61,7 +61,7 @@ describe("helper.previewer_labels", function()
     end)
   end)
 
-  describe("[label_rg_no_filename]", function()
+  describe("[label_rg_bufnr]", function()
     it("test", function()
       local lines = {
         "1:1:ok",
@@ -72,7 +72,7 @@ describe("helper.previewer_labels", function()
       }
       for _, line in ipairs(lines) do
         local ctx = make_context()
-        local actual = previewer_labels_helper.label_rg_no_filename(line, ctx)
+        local actual = previewer_labels_helper.label_rg_bufnr(line, ctx)
         local splits = str.split(line, ":")
         assert_eq(type(actual), "string")
         assert_true(str.endswith(actual, string.format("%s:%s", splits[1], splits[2])))
@@ -102,7 +102,7 @@ describe("helper.previewer_labels", function()
     end)
   end)
 
-  describe("[label_grep_no_filename]", function()
+  describe("[label_grep_bufnr]", function()
     it("test", function()
       local lines = {
         "73",
@@ -113,7 +113,7 @@ describe("helper.previewer_labels", function()
       }
       for _, line in ipairs(lines) do
         local ctx = make_context()
-        local actual = previewer_labels_helper.label_grep_no_filename(line, ctx)
+        local actual = previewer_labels_helper.label_grep_bufnr(line, ctx)
         local splits = str.split(line, ":")
         assert_eq(type(actual), "string")
         assert_true(str.endswith(actual, splits[1]))

@@ -21,7 +21,7 @@ M.nop = function() end
 -- Confirm if discard current editing buffer when it's been modified.
 --- @param bufnr integer
 --- @param callback fun():any
-M._confirm_discard_modified = function(bufnr, callback)
+local function _confirm(bufnr, callback)
   if not vim.o.hidden and vim.api.nvim_get_option_value("modified", { buf = bufnr }) then
     local ok, input = pcall(vim.fn.input, {
       prompt = "[fzfx] buffer has been modified, continue? (y/n) ",
@@ -34,6 +34,53 @@ M._confirm_discard_modified = function(bufnr, callback)
     end
   else
     callback()
+  end
+end
+
+-- Execute either vim commands or lua functions.
+--- @param cmds any[]
+--- @param opts {scheduled:boolean?}?
+local function _execute(cmds, opts)
+  assert(type(cmds) == "table")
+  opts = opts or {}
+
+  local i = 1
+  local n = #cmds
+
+  --- @param f string|function
+  local function exe_impl(f)
+    assert(type(f) == "string" or type(f) == "function")
+    if type(f) == "string" then
+      vim.cmd(f)
+    else
+      f()
+    end
+  end
+
+  local function scheduled_impl()
+    ---@diagnostic disable-next-line: need-check-nil
+    local c = cmds[i] --[[@as string|function]]
+    vim.schedule(function()
+      exe_impl(c)
+      i = i + 1
+      if i <= n then
+        scheduled_impl()
+      end
+    end)
+  end
+
+  local function non_scheduled_impl()
+    for _, c in
+      ipairs(cmds --[[@as any[] ]])
+    do
+      exe_impl(c)
+    end
+  end
+
+  if opts.scheduled then
+    scheduled_impl()
+  else
+    non_scheduled_impl()
   end
 end
 
@@ -57,11 +104,9 @@ end
 --- @param lines string[]
 --- @param context fzfx.PipelineContext
 M.edit_find = function(lines, context)
-  local edits = M._make_edit_find(lines)
-  M._confirm_discard_modified(context.bufnr, function()
-    for _, e in ipairs(edits) do
-      vim.cmd(e)
-    end
+  local cmds = M._make_edit_find(lines)
+  _confirm(context.bufnr, function()
+    _execute(cmds)
   end)
 end
 
@@ -83,10 +128,14 @@ end
 --- @param lines string[]
 M.setqflist_find = function(lines)
   local qfs = M._make_setqflist_find(lines)
-  vim.cmd(":copen")
-  vim.fn.setqflist({}, " ", {
-    nr = "$",
-    items = qfs,
+  _execute({
+    "copen",
+    function()
+      vim.fn.setqflist({}, " ", {
+        nr = "$",
+        items = qfs,
+      })
+    end,
   })
 end
 
@@ -96,15 +145,14 @@ end
 
 -- Make `:edit!` and `:call cursor` commands for rg results.
 --- @param lines string[]
---- @return {edits:string[],moves:string[]}
+--- @return string[]
 M._make_edit_rg = function(lines)
-  local edits = {}
-  local moves = {}
+  local results = {}
   local last_parsed
   for _, line in ipairs(lines) do
     if str.not_empty(line) then
       local parsed = parsers.parse_rg(line)
-      table.insert(edits, string.format("edit! %s", parsed.filename))
+      table.insert(results, string.format("edit! %s", parsed.filename))
       last_parsed = parsed
     end
   end
@@ -112,13 +160,13 @@ M._make_edit_rg = function(lines)
   -- For the last position, move cursor to it.
   if last_parsed ~= nil and last_parsed.lineno ~= nil then
     table.insert(
-      moves,
+      results,
       string.format("call cursor(%d, %d)", last_parsed.lineno, last_parsed.column or 1)
     )
-    table.insert(moves, 'execute "normal! zz"')
+    table.insert(results, 'execute "normal! zz"')
   end
 
-  return { edits = edits, moves = moves }
+  return results
 end
 
 -- Run `:edit!`, `:call cursor` and `:normal! zz` commands for rg results.
@@ -126,15 +174,8 @@ end
 --- @param context fzfx.PipelineContext
 M.edit_rg = function(lines, context)
   local cmds = M._make_edit_rg(lines)
-  M._confirm_discard_modified(context.bufnr, function()
-    for _, e in ipairs(cmds.edits) do
-      vim.cmd(e)
-    end
-    vim.schedule(function()
-      for _, m in ipairs(cmds.moves) do
-        vim.cmd(m)
-      end
-    end)
+  _confirm(context.bufnr, function()
+    _execute(cmds, { scheduled = true })
   end)
 end
 
@@ -157,10 +198,14 @@ end
 --- @param lines string[]
 M.setqflist_rg = function(lines)
   local qfs = M._make_setqflist_rg(lines)
-  vim.cmd(":copen")
-  vim.fn.setqflist({}, " ", {
-    nr = "$",
-    items = qfs,
+  _execute({
+    "copen",
+    function()
+      vim.fn.setqflist({}, " ", {
+        nr = "$",
+        items = qfs,
+      })
+    end,
   })
 end
 
@@ -170,25 +215,24 @@ end
 
 -- Run `:edit!` commands for grep results.
 --- @param lines string[]
---- @return {edits:string[],moves:string[]}
+--- @return string[]
 M._make_edit_grep = function(lines)
-  local edits = {}
-  local moves = {}
+  local results = {}
   local last_parsed
   for _, line in ipairs(lines) do
     if str.not_empty(line) then
       local parsed = parsers.parse_grep(line)
-      table.insert(edits, string.format("edit! %s", parsed.filename))
+      table.insert(results, string.format("edit! %s", parsed.filename))
       last_parsed = parsed
     end
   end
 
   if last_parsed ~= nil and last_parsed.lineno ~= nil then
-    table.insert(moves, string.format("call cursor(%d, %d)", last_parsed.lineno, 1))
-    table.insert(moves, 'execute "normal! zz"')
+    table.insert(results, string.format("call cursor(%d, %d)", last_parsed.lineno, 1))
+    table.insert(results, 'execute "normal! zz"')
   end
 
-  return { edits = edits, moves = moves }
+  return results
 end
 
 -- Run `:edit!`, `:call cursor` and `:normal! zz` commands for grep results.
@@ -196,15 +240,8 @@ end
 --- @param context fzfx.PipelineContext
 M.edit_grep = function(lines, context)
   local cmds = M._make_edit_grep(lines)
-  M._confirm_discard_modified(context.bufnr, function()
-    for _, e in ipairs(cmds.edits) do
-      vim.cmd(e)
-    end
-    vim.schedule(function()
-      for _, m in ipairs(cmds.moves) do
-        vim.cmd(m)
-      end
-    end)
+  _confirm(context.bufnr, function()
+    _execute(cmds, { scheduled = true })
   end)
 end
 
@@ -231,10 +268,14 @@ end
 --- @param lines string[]
 M.setqflist_grep = function(lines)
   local qfs = M._make_setqflist_grep(lines)
-  vim.cmd(":copen")
-  vim.fn.setqflist({}, " ", {
-    nr = "$",
-    items = qfs,
+  _execute({
+    "copen",
+    function()
+      vim.fn.setqflist({}, " ", {
+        nr = "$",
+        items = qfs,
+      })
+    end,
   })
 end
 
@@ -245,7 +286,7 @@ end
 -- Make `:call cursor` and `:normal! zz` commands for rg results (no filename).
 --- @param lines string[]
 --- @return string[]|nil
-M._make_set_cursor_rg_no_filename = function(lines)
+M._make_cursor_move_rg_bufnr = function(lines)
   if tbl.list_empty(lines) then
     return nil
   end
@@ -255,7 +296,7 @@ M._make_set_cursor_rg_no_filename = function(lines)
   end
 
   local results = {}
-  local parsed = parsers.parse_rg_no_filename(line)
+  local parsed = parsers.parse_rg_bufnr(line)
   table.insert(results, string.format("call cursor(%d, %d)", parsed.lineno, parsed.column or 1))
   table.insert(results, 'execute "normal! zz"')
   return results
@@ -264,16 +305,14 @@ end
 -- Run `:call cursor` and `:normal! zz` commands on rg results (no filename).
 --- @param lines string[]
 --- @param context fzfx.PipelineContext
-M.set_cursor_rg_no_filename = function(lines, context)
-  local moves = M._make_set_cursor_rg_no_filename(lines)
-  if not moves then
+M.cursor_move_rg_bufnr = function(lines, context)
+  local cmds = M._make_cursor_move_rg_bufnr(lines)
+  if not cmds then
     return
   end
 
-  M._confirm_discard_modified(context.bufnr, function()
-    for _, m in ipairs(moves) do
-      vim.cmd(m)
-    end
+  _confirm(context.bufnr, function()
+    _execute(cmds)
   end)
 end
 
@@ -281,7 +320,7 @@ end
 --- @param lines string[]
 --- @param context fzfx.PipelineContext?
 --- @return {filename:string,lnum:integer,col:integer,text:string}[]|nil
-M._make_setqflist_rg_no_filename = function(lines, context)
+M._make_setqflist_rg_bufnr = function(lines, context)
   local bufnr = tbl.tbl_get(context, "bufnr")
   if type(bufnr) ~= "number" or not vim.api.nvim_buf_is_valid(bufnr) then
     log.echo(LogLevels.INFO, string.format("invalid buffer(%s).", vim.inspect(bufnr)))
@@ -294,7 +333,7 @@ M._make_setqflist_rg_no_filename = function(lines, context)
   local qfs = {}
   for _, line in ipairs(lines) do
     if str.not_empty(line) then
-      local parsed = parsers.parse_rg_no_filename(line)
+      local parsed = parsers.parse_rg_bufnr(line)
       table.insert(qfs, {
         filename = filename,
         lnum = parsed.lineno,
@@ -310,16 +349,20 @@ end
 -- Run `:setqflist` commands for rg results (no filename).
 --- @param lines string[]
 --- @param context fzfx.PipelineContext?
-M.setqflist_rg_no_filename = function(lines, context)
-  local qfs = M._make_setqflist_rg_no_filename(lines, context)
+M.setqflist_rg_bufnr = function(lines, context)
+  local qfs = M._make_setqflist_rg_bufnr(lines, context)
   if not qfs then
     return
   end
 
-  vim.cmd(":copen")
-  vim.fn.setqflist({}, " ", {
-    nr = "$",
-    items = qfs,
+  _execute({
+    "copen",
+    function()
+      vim.fn.setqflist({}, " ", {
+        nr = "$",
+        items = qfs,
+      })
+    end,
   })
 end
 
@@ -329,7 +372,7 @@ end
 
 --- @param lines string[]
 --- @return string[]|nil
-M._make_set_cursor_grep_no_filename = function(lines)
+M._make_cursor_move_grep_bufnr = function(lines)
   if tbl.list_empty(lines) then
     return nil
   end
@@ -339,7 +382,7 @@ M._make_set_cursor_grep_no_filename = function(lines)
   end
 
   local results = {}
-  local parsed = parsers.parse_grep_no_filename(line)
+  local parsed = parsers.parse_grep_bufnr(line)
   table.insert(results, string.format("call cursor(%d, %d)", parsed.lineno, 1))
   table.insert(results, 'execute "normal! zz"')
   return results
@@ -348,16 +391,14 @@ end
 -- Run `:call cursor` commands on grep results (no filename).
 --- @param lines string[]
 --- @param context fzfx.PipelineContext
-M.set_cursor_grep_no_filename = function(lines, context)
-  local moves = M._make_set_cursor_grep_no_filename(lines)
-  if not moves then
+M.cursor_move_grep_bufnr = function(lines, context)
+  local cmds = M._make_cursor_move_grep_bufnr(lines)
+  if not cmds then
     return
   end
 
-  M._confirm_discard_modified(context.bufnr, function()
-    for _, m in ipairs(moves) do
-      vim.cmd(m)
-    end
+  _confirm(context.bufnr, function()
+    _execute(cmds)
   end)
 end
 
@@ -365,7 +406,7 @@ end
 --- @param lines string[]
 --- @param context fzfx.PipelineContext?
 --- @return {filename:string,lnum:integer,col:integer,text:string}[]|nil
-M._make_setqflist_grep_no_filename = function(lines, context)
+M._make_setqflist_grep_bufnr = function(lines, context)
   local bufnr = tbl.tbl_get(context, "bufnr")
   if type(bufnr) ~= "number" or not vim.api.nvim_buf_is_valid(bufnr) then
     log.echo(LogLevels.INFO, string.format("invalid buffer(%s).", vim.inspect(bufnr)))
@@ -378,7 +419,7 @@ M._make_setqflist_grep_no_filename = function(lines, context)
   local qfs = {}
   for _, line in ipairs(lines) do
     if str.not_empty(line) then
-      local parsed = parsers.parse_grep_no_filename(line)
+      local parsed = parsers.parse_grep_bufnr(line)
       table.insert(qfs, {
         filename = filename,
         lnum = parsed.lineno,
@@ -394,16 +435,20 @@ end
 -- Run `:setqflist` commands for grep results (no filename).
 --- @param lines string[]
 --- @param context fzfx.PipelineContext?
-M.setqflist_grep_no_filename = function(lines, context)
-  local qfs = M._make_setqflist_grep_no_filename(lines, context)
+M.setqflist_grep_bufnr = function(lines, context)
+  local qfs = M._make_setqflist_grep_bufnr(lines, context)
   if not qfs then
     return
   end
 
-  vim.cmd(":copen")
-  vim.fn.setqflist({}, " ", {
-    nr = "$",
-    items = qfs,
+  _execute({
+    "copen",
+    function()
+      vim.fn.setqflist({}, " ", {
+        nr = "$",
+        items = qfs,
+      })
+    end,
   })
 end
 
@@ -440,12 +485,10 @@ end
 --- @param lines string[]
 --- @param context fzfx.FileExplorerPipelineContext
 M.edit_ls = function(lines, context)
-  local edits = M._make_edit_ls(lines, context)
+  local cmds = M._make_edit_ls(lines, context)
 
-  M._confirm_discard_modified(context.bufnr, function()
-    for _, e in ipairs(edits) do
-      vim.cmd(e)
-    end
+  _confirm(context.bufnr, function()
+    _execute(cmds)
   end)
 end
 
@@ -604,25 +647,23 @@ end
 --- @param lines string[]
 --- @return string[]
 M._make_edit_git_status = function(lines)
-  local edits = {}
+  local results = {}
   for _, line in ipairs(lines) do
     if str.not_empty(line) then
       local parsed = parsers.parse_git_status(line)
-      table.insert(edits, string.format("edit! %s", parsed.filename))
+      table.insert(results, string.format("edit! %s", parsed.filename))
     end
   end
-  return edits
+  return results
 end
 
 -- Run `:edit!` commands for gits status results.
 --- @param lines string[]
 --- @param context fzfx.PipelineContext
 M.edit_git_status = function(lines, context)
-  local edits = M._make_edit_git_status(lines)
-  M._confirm_discard_modified(context.bufnr, function()
-    for _, e in ipairs(edits) do
-      vim.cmd(e)
-    end
+  local cmds = M._make_edit_git_status(lines)
+  _confirm(context.bufnr, function()
+    _execute(cmds)
   end)
 end
 
@@ -644,10 +685,14 @@ end
 --- @param lines string[]
 M.setqflist_git_status = function(lines)
   local qfs = M._make_setqflist_git_status(lines)
-  vim.cmd(":copen")
-  vim.fn.setqflist({}, " ", {
-    nr = "$",
-    items = qfs,
+  _execute({
+    "copen",
+    function()
+      vim.fn.setqflist({}, " ", {
+        nr = "$",
+        items = qfs,
+      })
+    end,
   })
 end
 
@@ -684,11 +729,9 @@ end
 --- @param lines string[]
 --- @param context fzfx.VimMarksPipelineContext
 M.edit_vim_mark = function(lines, context)
-  local edits = M._make_edit_vim_mark(lines, context)
-  M._confirm_discard_modified(context.bufnr, function()
-    for _, e in ipairs(edits) do
-      vim.cmd(e)
-    end
+  local cmds = M._make_edit_vim_mark(lines, context)
+  _confirm(context.bufnr, function()
+    _execute(cmds, { scheduled = true })
   end)
 end
 
@@ -726,10 +769,14 @@ end
 --- @param context fzfx.VimMarksPipelineContext
 M.setqflist_vim_mark = function(lines, context)
   local qfs = M._make_setqflist_vim_mark(lines, context)
-  vim.cmd(":copen")
-  vim.fn.setqflist({}, " ", {
-    nr = "$",
-    items = qfs,
+  _execute({
+    "copen",
+    function()
+      vim.fn.setqflist({}, " ", {
+        nr = "$",
+        items = qfs,
+      })
+    end,
   })
 end
 

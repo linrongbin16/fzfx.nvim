@@ -152,7 +152,7 @@ M.preview_grep_bufnr = function(line, context)
   local filename = vim.api.nvim_buf_get_name(bufnr)
   filename = path.normalize(filename, { double_backslash = true, expand = true })
 
-  local parsed = parsers_helper.parse_grep_no_filename(line)
+  local parsed = parsers_helper.parse_grep_bufnr(line)
   return M._preview_grep(filename, parsed.lineno)
 end
 

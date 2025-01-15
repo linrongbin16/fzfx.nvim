@@ -119,14 +119,14 @@ M.providers = {
 M.previewers = {
   previewer = previewers_helper.preview_grep_bufnr,
   previewer_type = PreviewerTypeEnum.COMMAND_ARRAY,
-  previewer_label = constants.HAS_RG and labels_helper.label_rg_no_filename
-    or labels_helper.label_grep_no_filename,
+  previewer_label = constants.HAS_RG and labels_helper.label_rg_bufnr
+    or labels_helper.label_grep_bufnr,
 }
 
-local set_cursor = constants.HAS_RG and actions_helper.set_cursor_rg_no_filename
-  or actions_helper.set_cursor_grep_no_filename
-local setqflist = constants.HAS_RG and actions_helper.setqflist_rg_no_filename
-  or actions_helper.setqflist_grep_no_filename
+local set_cursor = constants.HAS_RG and actions_helper.cursor_move_rg_bufnr
+  or actions_helper.cursor_move_grep_bufnr
+local setqflist = constants.HAS_RG and actions_helper.setqflist_rg_bufnr
+  or actions_helper.setqflist_grep_bufnr
 
 M.actions = {
   ["esc"] = actions_helper.nop,
