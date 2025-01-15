@@ -2,6 +2,7 @@
 --
 --- @alias fzfx.PipelineContext {bufnr:integer,winnr:integer,tabnr:integer}
 --- @alias fzfx.PipelineContextMaker fun():fzfx.PipelineContext
+--- @alias fzfx.PipelineContextShutdown fun(context:fzfx.PipelineContext?):any
 --
 --
 -- ========== Provider ==========

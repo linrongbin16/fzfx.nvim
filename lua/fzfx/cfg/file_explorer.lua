@@ -1,6 +1,7 @@
 local str = require("fzfx.commons.str")
 local path = require("fzfx.commons.path")
 local fio = require("fzfx.commons.fio")
+local uv = require("fzfx.commons.uv")
 
 local consts = require("fzfx.lib.constants")
 local shells = require("fzfx.lib.shells")
@@ -401,8 +402,18 @@ M._context_maker = function()
   return context
 end
 
+--- @param context fzfx.FileExplorerPipelineContext
+M._context_shutdown = function(context)
+  ---@diagnostic disable-next-line: undefined-field
+  if uv.fs_stat(context.cwd) then
+    ---@diagnostic disable-next-line: undefined-field
+    uv.fs_unlink(context.cwd, function() end)
+  end
+end
+
 M.other_opts = {
   context_maker = M._context_maker,
+  context_shutdown = M._context_shutdown,
 }
 
 return M
