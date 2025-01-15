@@ -580,543 +580,90 @@ Below keys are binded by default:
   </small>
 </details>
 
-<table>
-  <thead>
-    <tr>
-      <th>Name</th>
-      <th>Details</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td><code>FzfxLspDefinitions</code></td>
-      <td>
-        <details>
-          <summary>Search definitions.</summary>
-          <small>
-            <ol>
-              <li>
-                The <code>args</code> variant always use cursor word as query
-                content (not command arguments), because the scenario is
-                navigating symbols, i.e. go to definitions.
-              </li>
-              <li>
-                Use protocol
-                <a
-                  href="https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#textDocument_definition"
-                  >textDocument/definition</a
-                >.
-              </li>
-            </ol>
-            <table>
-              <thead>
-                <tr>
-                  <th>Variant</th>
-                  <th>Mode</th>
-                  <th>Select Keys</th>
-                  <th>Preview Keys</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td><code>args</code></td>
-                  <td>N</td>
-                  <td rowspan="6">Yes</td>
-                  <td rowspan="6">Yes</td>
-                </tr>
-              </tbody>
-            </table>
-          </small>
-        </details>
-      </td>
-    </tr>
-    <tr>
-      <td><code>FzfxLspTypeDefinitions</code></td>
-      <td>
-        <details>
-          <summary>Search type definitions.</summary>
-          <small>
-            <ol>
-              <li>
-                The <code>args</code> variant always use cursor word as query
-                content (not command arguments), because the scenario is
-                navigating symbols, i.e. go to type definitions.
-              </li>
-              <li>
-                Use protocol
-                <a
-                  href="https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#textDocument_typeDefinition"
-                  >textDocument/typeDefinition</a
-                >.
-              </li>
-            </ol>
-            <table>
-              <thead>
-                <tr>
-                  <th>Variant</th>
-                  <th>Mode</th>
-                  <th>Select Keys</th>
-                  <th>Preview Keys</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td><code>args</code></td>
-                  <td>N</td>
-                  <td rowspan="6">Yes</td>
-                  <td rowspan="6">Yes</td>
-                </tr>
-              </tbody>
-            </table>
-          </small>
-        </details>
-      </td>
-    </tr>
-    <tr>
-      <td><code>FzfxLspImplementations</code></td>
-      <td>
-        <details>
-          <summary>Search implementations.</summary>
-          <small>
-            <ol>
-              <li>
-                The <code>args</code> variant always use cursor word as query
-                content (not command arguments), because the scenario is
-                navigating symbols, i.e. go to implementations.
-              </li>
-              <li>
-                Use protocol
-                <a
-                  href="https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#textDocument_implementation"
-                  >textDocument/implementation</a
-                >.
-              </li>
-            </ol>
-            <table>
-              <thead>
-                <tr>
-                  <th>Variant</th>
-                  <th>Mode</th>
-                  <th>Select Keys</th>
-                  <th>Preview Keys</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td><code>args</code></td>
-                  <td>N</td>
-                  <td rowspan="6">Yes</td>
-                  <td rowspan="6">Yes</td>
-                </tr>
-              </tbody>
-            </table>
-          </small>
-        </details>
-      </td>
-    </tr>
-    <tr>
-      <td><code>FzfxLspReferences</code></td>
-      <td>
-        <details>
-          <summary>Search references.</summary>
-          <small>
-            <ol>
-              <li>
-                The <code>args</code> variant always use cursor word as query
-                content (not command arguments), because the scenario is
-                navigating symbols, i.e. go to references.
-              </li>
-              <li>
-                Use protocol
-                <a
-                  href="https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#textDocument_references"
-                  >textDocument/references</a
-                >.
-              </li>
-            </ol>
-            <table>
-              <thead>
-                <tr>
-                  <th>Variant</th>
-                  <th>Mode</th>
-                  <th>Select Keys</th>
-                  <th>Preview Keys</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td><code>args</code></td>
-                  <td>N</td>
-                  <td rowspan="6">Yes</td>
-                  <td rowspan="6">Yes</td>
-                </tr>
-              </tbody>
-            </table>
-          </small>
-        </details>
-      </td>
-    </tr>
-    <tr>
-      <td><code>FzfxLspIncomingCalls</code></td>
-      <td>
-        <details>
-          <summary>Search incoming calls.</summary>
-          <small>
-            <ol>
-              <li>
-                The <code>args</code> variant always use cursor word as query
-                content (not command arguments), because the scenario is
-                navigating symbols, i.e. go to incoming calls.
-              </li>
-              <li>
-                Use protocol
-                <a
-                  href="https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#callHierarchy_incomingCalls"
-                  >callHierarchy/incomingCalls</a
-                >.
-              </li>
-            </ol>
-            <table>
-              <thead>
-                <tr>
-                  <th>Variant</th>
-                  <th>Mode</th>
-                  <th>Select Keys</th>
-                  <th>Preview Keys</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td><code>args</code></td>
-                  <td>N</td>
-                  <td rowspan="6">Yes</td>
-                  <td rowspan="6">Yes</td>
-                </tr>
-              </tbody>
-            </table>
-          </small>
-        </details>
-      </td>
-    </tr>
-    <tr>
-      <td><code>FzfxLspOutgoingCalls</code></td>
-      <td>
-        <details>
-          <summary>Search outgoing calls.</summary>
-          <small>
-            <ol>
-              <li>
-                The <code>args</code> variant always use cursor word as query
-                content (not command arguments), because the scenario is
-                navigating symbols, i.e. go to outgoing calls.
-              </li>
-              <li>
-                Use protocol
-                <a
-                  href="https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#callHierarchy_outgoingCalls"
-                  >callHierarchy/outgoingCalls</a
-                >.
-              </li>
-            </ol>
-            <table>
-              <thead>
-                <tr>
-                  <th>Variant</th>
-                  <th>Mode</th>
-                  <th>Select Keys</th>
-                  <th>Preview Keys</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td><code>args</code></td>
-                  <td>N</td>
-                  <td rowspan="6">Yes</td>
-                  <td rowspan="6">Yes</td>
-                </tr>
-              </tbody>
-            </table>
-          </small>
-        </details>
-      </td>
-    </tr>
-    <tr>
-      <td><code>FzfxLspDiagnostics</code></td>
-      <td>
-        <details>
-          <summary>Search diagnostics.</summary>
-          <small>
-            <ol>
-              <li>
-                Use <code>ctrl-q</code> to send selected lines to quickfix
-                window and quit.
-              </li>
-              <li>
-                <b>Current buffer (only)</b> variant is named with
-                <code>buf_</code> suffix.
-              </li>
-            </ol>
-            <table>
-              <thead>
-                <tr>
-                  <th>Variant</th>
-                  <th>Mode</th>
-                  <th>Select Keys</th>
-                  <th>Preview Keys</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td><code>(buf_)args</code></td>
-                  <td>N</td>
-                  <td rowspan="5">Yes</td>
-                  <td rowspan="5">Yes</td>
-                </tr>
-                <tr>
-                  <td><code>(buf_)visual</code></td>
-                  <td>V</td>
-                </tr>
-                <tr>
-                  <td><code>(buf_)cword</code></td>
-                  <td>N</td>
-                </tr>
-                <tr>
-                  <td><code>(buf_)put</code></td>
-                  <td>N</td>
-                </tr>
-                <tr>
-                  <td><code>(buf_)resume</code></td>
-                  <td>N</td>
-                </tr>
-              </tbody>
-            </table>
-          </small>
-        </details>
-      </td>
-    </tr>
-  </tbody>
-</table>
-
 ### Vim
 
-<table>
-  <thead>
-    <tr>
-      <th>Name</th>
-      <th>Details</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td><code>FzfxCommands</code></td>
-      <td>
-        <details>
-          <summary>Search vim commands.</summary>
-          <small>
-            <ol>
-              <li>Use <code>enter</code> to input command.</li>
-              <li>
-                <b>Ex (builtin) commands</b> variant is named with
-                <code>ex_</code> suffix.
-              </li>
-              <li>
-                <b>User commands</b> variant is named with
-                <code>user_</code> suffix.
-              </li>
-            </ol>
-            <table>
-              <thead>
-                <tr>
-                  <th>Variant</th>
-                  <th>Mode</th>
-                  <th>Select Keys</th>
-                  <th>Preview Keys</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td><code>(ex_/user_)args</code></td>
-                  <td>N</td>
-                  <td rowspan="5">No</td>
-                  <td rowspan="5">Yes</td>
-                </tr>
-                <tr>
-                  <td><code>(ex_/user_)visual</code></td>
-                  <td>V</td>
-                </tr>
-                <tr>
-                  <td><code>(ex_/user_)cword</code></td>
-                  <td>N</td>
-                </tr>
-                <tr>
-                  <td><code>(ex_/user_)put</code></td>
-                  <td>N</td>
-                </tr>
-                <tr>
-                  <td><code>(ex_/user_)resume</code></td>
-                  <td>N</td>
-                </tr>
-              </tbody>
-            </table>
-          </small>
-        </details>
-      </td>
-    </tr>
-    <tr>
-      <td><code>FzfxKeyMaps</code></td>
-      <td>
-        <details>
-          <summary>Search vim key mappings.</summary>
-          <small>
-            <ol>
-              <li>Use <code>enter</code> to execute key mapping.</li>
-              <li>
-                <b>Normal mode</b> variant is named with
-                <code>n_mode_</code> suffix.
-              </li>
-              <li>
-                <b>Insert mode</b> variant is named with
-                <code>i_mode_</code> suffix.
-              </li>
-              <li>
-                <b>Visual/select mode</b> variant is named with
-                <code>v_mode_</code> suffix.
-              </li>
-            </ol>
-            <table>
-              <thead>
-                <tr>
-                  <th>Variant</th>
-                  <th>Mode</th>
-                  <th>Select Keys</th>
-                  <th>Preview Keys</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td><code>(n_mode_/i_mode_/v_mode_)args</code></td>
-                  <td>N</td>
-                  <td rowspan="5">No</td>
-                  <td rowspan="5">Yes</td>
-                </tr>
-                <tr>
-                  <td><code>(n_mode_/i_mode_/v_mode_)visual</code></td>
-                  <td>V</td>
-                </tr>
-                <tr>
-                  <td><code>(n_mode_/i_mode_/v_mode_)cword</code></td>
-                  <td>N</td>
-                </tr>
-                <tr>
-                  <td><code>(n_mode_/i_mode_/v_mode_)put</code></td>
-                  <td>N</td>
-                </tr>
-                <tr>
-                  <td><code>(n_mode_/i_mode_/v_mode_)resume</code></td>
-                  <td>N</td>
-                </tr>
-              </tbody>
-            </table>
-          </small>
-        </details>
-      </td>
-    </tr>
-    <tr>
-      <td><code>FzfxMarks</code></td>
-      <td>
-        <details>
-          <summary>Search vim marks.</summary>
-          <small>
-            <ol>
-              <li>
-                Use <code>ctrl-q</code> to send selected lines to quickfix
-                window and quit.
-              </li>
-            </ol>
-            <table>
-              <thead>
-                <tr>
-                  <th>Variant</th>
-                  <th>Mode</th>
-                  <th>Select Keys</th>
-                  <th>Preview Keys</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td><code>args</code></td>
-                  <td>N</td>
-                  <td rowspan="5">No</td>
-                  <td rowspan="5">Yes</td>
-                </tr>
-                <tr>
-                  <td><code>visual</code></td>
-                  <td>V</td>
-                </tr>
-                <tr>
-                  <td><code>cword</code></td>
-                  <td>N</td>
-                </tr>
-                <tr>
-                  <td><code>put</code></td>
-                  <td>N</td>
-                </tr>
-                <tr>
-                  <td><code>resume</code></td>
-                  <td>N</td>
-                </tr>
-              </tbody>
-            </table>
-          </small>
-        </details>
-      </td>
-    </tr>
-    <tr>
-      <td><code>FzfxCommandHistory</code></td>
-      <td>
-        <details>
-          <summary>Search vim command history.</summary>
-          <small>
-            <table>
-              <thead>
-                <tr>
-                  <th>Variant</th>
-                  <th>Mode</th>
-                  <th>Select Keys</th>
-                  <th>Preview Keys</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td><code>args</code></td>
-                  <td>N</td>
-                  <td rowspan="5">No</td>
-                  <td rowspan="5">No</td>
-                </tr>
-                <tr>
-                  <td><code>visual</code></td>
-                  <td>V</td>
-                </tr>
-                <tr>
-                  <td><code>cword</code></td>
-                  <td>N</td>
-                </tr>
-                <tr>
-                  <td><code>put</code></td>
-                  <td>N</td>
-                </tr>
-                <tr>
-                  <td><code>resume</code></td>
-                  <td>N</td>
-                </tr>
-              </tbody>
-            </table>
-          </small>
-        </details>
-      </td>
-    </tr>
-  </tbody>
-</table>
+<details>
+  <summary><code>FzfxCommands</code> (Search vim commands)</summary>
+  <small>
+    <ol>
+      <li>Press <code>enter</code> to feed command into cmdline.</li>
+      <li>
+        <b>Select keys</b> is disabled (since it is not allowed to feed multiple
+        commands into cmdline).
+      </li>
+      <li>
+        <b>Ex (builtin) command</b> variant is named with
+        <code>ex_</code> prefix. <b>User command</b> variant is named with
+        <code>user_</code> prefix. All variants are:
+        <ul>
+          <li><code>(ex_/user_)args</code></li>
+          <li><code>(ex_/user_)visual</code></li>
+          <li><code>(ex_/user_)cword</code></li>
+          <li><code>(ex_/user_)put</code></li>
+          <li><code>(ex_/user_)resume</code></li>
+        </ul>
+      </li>
+    </ol>
+  </small>
+</details>
+
+<details>
+  <summary><code>FzfxKeyMaps</code> (Search vim key mappings)</summary>
+  <small>
+    <ol>
+      <li>Press <code>enter</code> to execute key mapping.</li>
+      <li>
+        <b>Select keys</b> is disabled (since it is not allowed to execute
+        multiple key mappings).
+      </li>
+      <li>
+        <b>Normal mode</b> variant is named with <code>n_mode_</code> prefix.
+        <b>Insert mode</b> variant is named with <code>i_mode_</code> prefix.
+        <b>Visual/select mode</b> variant is named with
+        <code>v_mode_</code> prefix. All variants are:
+        <ul>
+          <li><code>(n_mode_/i_mode_/v_mode_)args</code></li>
+          <li><code>(n_mode_/i_mode_/v_mode_)visual</code></li>
+          <li><code>(n_mode_/i_mode_/v_mode_)cword</code></li>
+          <li><code>(n_mode_/i_mode_/v_mode_)put</code></li>
+          <li><code>(n_mode_/i_mode_/v_mode_)resume</code></li>
+        </ul>
+      </li>
+    </ol>
+  </small>
+</details>
+
+<details>
+  <summary><code>FzfxMarks</code> (Search vim marks)</summary>
+</details>
+
+<details>
+  <summary>
+    <code>FzfxCommandHistory</code> (Search vim command history)
+  </summary>
+  <small>
+    <ol>
+      <li>Press <code>enter</code> to feed command into cmdline.</li>
+      <li>
+        <b>Select keys</b> is disabled (since it is not allowed to feed multiple
+        commands into cmdline). <b>Preview keys</b> is disabled (since there is
+        nothing to preview).
+      </li>
+      <li>
+        <b>Ex (builtin) command</b> variant is named with
+        <code>ex_</code> prefix. <b>User command</b> variant is named with
+        <code>user_</code> prefix. All variants are:
+        <ul>
+          <li><code>(ex_/user_)args</code></li>
+          <li><code>(ex_/user_)visual</code></li>
+          <li><code>(ex_/user_)cword</code></li>
+          <li><code>(ex_/user_)put</code></li>
+          <li><code>(ex_/user_)resume</code></li>
+        </ul>
+      </li>
+    </ol>
+  </small>
+</details>
 
 ### Misc
 
