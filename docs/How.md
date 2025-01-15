@@ -39,7 +39,7 @@ Then, when user press keys and run the binding actions, (since it's running a lu
 
 For example, when we use the `FzfxBuffers` command (similar to `:Buffers` in `fzf.vim` and `:FzfLua buffers` in `fzf-lua`), the lua script connects to Neovim editor and request for the opened buffers list via RPC call. The Neovim editor handles the query logic and send the results to child process, then lua script renders them and prints to `stdout`, and user can see the output in fzf (i.e. the left side of popup window).
 
-?> Special thanks to [@ibhagwan](https://github.com/ibhagwan) and his [fzf-lua](https://github.com/ibhagwan/fzf-lua), I learned this from him.
+> Special thanks to [@ibhagwan](https://github.com/ibhagwan) and his [fzf-lua](https://github.com/ibhagwan/fzf-lua), I learned this from him.
 
 The architecture becomes:
 

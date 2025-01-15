@@ -4,13 +4,13 @@ The modules in `fzfx.cfg` are recommended as a reference when you want to custom
 
 The APIs in `fzfx.helper` and `fzfx.lib` are recommended when you implement something in fzfx, they are supposed to be stable and tested.
 
-!> Except those APIs start with underline `_`, which are exposed for unit tests.
+> Except those APIs start with underline `_`, which are exposed for unit tests.
 
 ## [fzfx.cfg](https://github.com/linrongbin16/fzfx.nvim/lua/fzfx/cfg)
 
 The `fzfx.cfg` module directly provide configurations for all search commands in this plugin.
 
-!> Before continue, you may need to read [A General Schema for Creating FZF Command](https://linrongbin16.github.io/fzfx.nvim/#/GenericSchema.md) to understand why it's structured this way.
+> Before continue, you may need to read [A General Schema for Creating FZF Command](https://linrongbin16.github.io/fzfx.nvim/#/GenericSchema.md) to understand why it's structured this way.
 
 A real-world search command, say `FzfxLiveGrep`, actually defined multiple user commands:
 
@@ -43,7 +43,7 @@ Each group contains below components:
 
 Defines the `FzfxBuffers` command.
 
-?> The data source use same style with `FzfxFiles` command, e.g. the `fd`/`find` result, see [fzfx.cfg.files](#files).
+> The data source use same style with `FzfxFiles` command, e.g. the `fd`/`find` result, see [fzfx.cfg.files](#files).
 
 ### [file_explorer](https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/cfg/file_explorer.lua)
 
@@ -77,7 +77,7 @@ It's implemented with `fd`/`find` utilities:
 
 Defines the `FzfxGBlame` command.
 
-?> The data source use same style with `FzfxGCommits` commands, e.g. the `git log` result, see [fzfx.cfg.git_commits](#git_commits).
+> The data source use same style with `FzfxGCommits` commands, e.g. the `git log` result, see [fzfx.cfg.git_commits](#git_commits).
 
 ### [git_branches](https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/cfg/git_branches.lua)
 
@@ -115,7 +115,7 @@ It's implemented with `git_commit` utilities:
 
 Defines the `FzfxGFiles` command.
 
-?> The data source use same style with `FzfxFiles` commands, e.g. the `fd`/`find` result, see [fzfx.cfg.files](#files).
+> The data source use same style with `FzfxFiles` commands, e.g. the `fd`/`find` result, see [fzfx.cfg.files](#files).
 
 ### [git_live_grep](https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/cfg/git_live_grep.lua)
 
@@ -125,7 +125,7 @@ Defines the `FzfxGLiveGrep` command. The search results from `git grep` looks li
 
 Each line is constructed with **file name** and **line number**, split by colon `":"`, and prepend with file type icon (only when icon is enabled).
 
-?> The `grep` result has no column number, e.g. the 3rd column in `rg` result.
+> The `grep` result has no column number, e.g. the 3rd column in `rg` result.
 
 It's implemented with `grep` utilities:
 
@@ -161,43 +161,43 @@ It's implemented with `rg` or `grep` (when `rg` not found) utilities:
 
 Defines the `FzfxLspDefinitions` command.
 
-?> The data source use same style with `FzfxLiveGrep` commands, e.g. the `rg`/`grep` result, see [fzfx.cfg.live_grep](#live_grep).
+> The data source use same style with `FzfxLiveGrep` commands, e.g. the `rg`/`grep` result, see [fzfx.cfg.live_grep](#live_grep).
 
 ### [lsp_diagnostics](https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/cfg/lsp_diagnostics.lua)
 
 Defines the `FzfxLspDiagnostics` command.
 
-?> The data source use same style with `FzfxLiveGrep` commands, e.g. the `rg`/`grep` result, see [fzfx.cfg.live_grep](#live_grep).
+> The data source use same style with `FzfxLiveGrep` commands, e.g. the `rg`/`grep` result, see [fzfx.cfg.live_grep](#live_grep).
 
 ### [lsp_implementations](https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/cfg/lsp_implementations.lua)
 
 Defines the `FzfxLspImplementations` command.
 
-?> The data source use same style with `FzfxLiveGrep` commands, e.g. the `rg`/`grep` result, see [fzfx.cfg.live_grep](#live_grep).
+> The data source use same style with `FzfxLiveGrep` commands, e.g. the `rg`/`grep` result, see [fzfx.cfg.live_grep](#live_grep).
 
 ### [lsp_incoming_calls](https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/cfg/lsp_incoming_calls.lua)
 
 Defines the `FzfxLspIncomingCalls` command.
 
-?> The data source use same style with `FzfxLiveGrep` commands, e.g. the `rg`/`grep` result, see [fzfx.cfg.live_grep](#live_grep).
+> The data source use same style with `FzfxLiveGrep` commands, e.g. the `rg`/`grep` result, see [fzfx.cfg.live_grep](#live_grep).
 
 ### [lsp_outgoing_calls](https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/cfg/lsp_outgoing_calls.lua)
 
 Defines the `FzfxLspOutgoingCalls` command.
 
-?> The data source use same style with `FzfxLiveGrep` commands, e.g. the `rg`/`grep` result, see [fzfx.cfg.live_grep](#live_grep).
+> The data source use same style with `FzfxLiveGrep` commands, e.g. the `rg`/`grep` result, see [fzfx.cfg.live_grep](#live_grep).
 
 ### [lsp_references](https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/cfg/lsp_references.lua)
 
 Defines the `FzfxLspReferences` command.
 
-?> The data source use same style with `FzfxLiveGrep` commands, e.g. the `rg`/`grep` result, see [fzfx.cfg.live_grep](#live_grep).
+> The data source use same style with `FzfxLiveGrep` commands, e.g. the `rg`/`grep` result, see [fzfx.cfg.live_grep](#live_grep).
 
 ### [lsp_type_definitions](https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/cfg/lsp_type_definitions.lua)
 
 Defines the `FzfxLspTypeDefinitions` command.
 
-?> The data source use same style with `FzfxLiveGrep` commands, e.g. the `rg`/`grep` result, see [fzfx.cfg.live_grep](#live_grep).
+> The data source use same style with `FzfxLiveGrep` commands, e.g. the `rg`/`grep` result, see [fzfx.cfg.live_grep](#live_grep).
 
 ### [vim_commands](https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/cfg/vim_commands.lua)
 
@@ -229,7 +229,7 @@ It's implemented with `vim_keymap` utilities:
 
 The `fzfx.helper` module provide line-oriented helpers for parsing and rendering queries/lines required in all scenarios.
 
-?> Since a search command is actually all about the lines in (both left and right side of) the fzf binary: generate lines, preview lines, invoke callbacks on selected lines, etc.
+> Since a search command is actually all about the lines in (both left and right side of) the fzf binary: generate lines, preview lines, invoke callbacks on selected lines, etc.
 
 ### [parsers](https://github.com/linrongbin16/fzfx.nvim/lua/fzfx/helper/parsers.lua)
 
@@ -247,7 +247,7 @@ Parse the line generated by `rg` (or other sources follow the same style), remov
 
 Parse the line generated by `grep`/`git grep` (or other sources follow the same style), remove the prepend icon if exists.
 
-?> The result from `grep` doesn't have column number (the 3rd column).
+> The result from `grep` doesn't have column number (the 3rd column).
 
 #### [`parse_git_status`](https://github.com/linrongbin16/fzfx.nvim/blob/549984fb1eae6251bb56a2d1e8b85ef8d7742bf5/lua/fzfx/helper/parsers.lua?plain=1#L146)
 
@@ -448,7 +448,7 @@ Use `edit` command to open selected file path on `ls`/`lsd`/`eza`/`exa` results.
 
 ## [fzfx.lib](https://github.com/linrongbin16/fzfx.nvim/lua/fzfx/lib)
 
-?> Most of the `fzfx.lib` modules are extracted to the [commons](https://github.com/linrongbin16/commons.nvim) lua library, please also refer to [commons.nvim's documentation](https://linrongbin16.github.io/commons.nvim/#/).
+> Most of the `fzfx.lib` modules are extracted to the [commons](https://github.com/linrongbin16/commons.nvim) lua library, please also refer to [commons.nvim's documentation](https://linrongbin16.github.io/commons.nvim/#/).
 
 ### [fzfx.lib.commands](/lua/fzfx/lib/commands.lua)
 
@@ -653,7 +653,7 @@ Print deprecation notifications.
 
 ### [fzfx.lib.log](/lua/fzfx/lib/log.lua)
 
-!> This module requires initialize before using its APIs, except the [echo](#echo) API.
+> This module requires initialize before using its APIs, except the [echo](#echo) API.
 
 #### [`LogLevels`/`LogLevelNames`](https://github.com/linrongbin16/fzfx.nvim/blob/b9e31389cfc9ba816efa6603b96eabc5a2320ce1/lua/fzfx/lib/log.lua?plain=1#L5-L7)
 

@@ -18,11 +18,11 @@ But when there're whitespaces on the path, escaping fzf command becomes quite di
 
 1. `C:\Program Files\Neovim\bin\nvim.exe` - Neovim installed in `C:\Program Files` directory.
 
-   ?> Please add executables (`nvim.exe`, `fzf.exe`) to `%PATH%` (`$env:PATH` in PowerShell), so let this plugin find them.
+   > Please add executables (`nvim.exe`, `fzf.exe`) to `%PATH%` (`$env:PATH` in PowerShell), so let this plugin find them.
 
 2. `C:\Users\Lin Rongbin\opt\Neovim\bin\nvim.exe` - User name (`Lin Rongbin`) contains whitespace.
 
-   !> We still cannot handle the 2nd case because all lua scripts in this plugin will thus always contain whitespaces in their path.
+   > We still cannot handle the 2nd case because all lua scripts in this plugin will thus always contain whitespaces in their path.
 
 Please always avoid whitespaces in directories and file names.
 

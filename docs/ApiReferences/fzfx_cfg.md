@@ -35,4 +35,4 @@ Each configuration is structured with:
 - `interactions` (optional): Interactions that press and invoke binded lua function with current line, without quitting the popup window.
 - `other_opts` (optional): Other specific options for some specific features, such as reloading query after interactions, customized contexts, etc.
 
-?> You may want to read [A General Schema for Creating FZF Command](https://linrongbin16.github.io/fzfx.nvim/#/GenericSchema.md) and [`schema.lua`](https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/schema.lua) to understand why it's structured this way.
+> You may want to read [A General Schema for Creating FZF Command](https://linrongbin16.github.io/fzfx.nvim/#/GenericSchema.md) and [`schema.lua`](https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/schema.lua) to understand why it's structured this way.
