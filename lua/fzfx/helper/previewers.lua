@@ -22,20 +22,20 @@ M._bat_style = function()
 end
 
 -- The margin of fzf preview window
-local FZF_PREVIEW_WINDOW_MARGIN = 6
+local PREVIEW_WINDOW_MARGIN = 6
 
 -- Calculate fzf's preview window width.
 --- @return integer
 M._fzf_preview_window_width = function()
   local win_width = vim.api.nvim_win_get_width(0)
-  return math.floor(math.max(3, win_width / 2 - FZF_PREVIEW_WINDOW_MARGIN))
+  return math.floor(math.max(3, win_width / 2 - PREVIEW_WINDOW_MARGIN))
 end
 
 -- Calculate fzf's preview window half height.
 --- @return integer
 M._fzf_preview_window_half_height = function()
   local win_height = vim.api.nvim_win_get_height(0)
-  return math.floor(math.max(3, win_height / 2 - FZF_PREVIEW_WINDOW_MARGIN))
+  return math.floor(math.max(3, win_height / 2 - PREVIEW_WINDOW_MARGIN))
 end
 
 -- utils }
@@ -240,7 +240,7 @@ M._preview_grep_line_range = function(filename, lineno)
     table.insert(results, "--highlight-line=" .. lineno)
 
     local win_height = vim.api.nvim_win_get_height(0)
-    local half_height = math.floor(math.max(3, win_height / 2 - FZF_PREVIEW_WINDOW_MARGIN))
+    local half_height = math.floor(math.max(3, win_height / 2 - PREVIEW_WINDOW_MARGIN))
     local start_lineno = math.max(lineno - half_height, 1)
 
     table.insert(results, "--line-range")
