@@ -1,0 +1,20 @@
+<details>
+  <summary><code>FzfxLspDefinitions</code> (Search lsp definitions)</summary>
+  <small>
+    <ol>
+      <li>
+        There's only 1 <code>args</code> variant, while it behaves like
+        <code>cword</code>, i.e. it always use cursor word as query content
+        (instead of arguments). Because this command is to navigate lsp symbols,
+        i.e. go to definitions.
+      </li>
+      <li>
+        Internal lsp protocol
+        <a
+          href="https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#textDocument_definition"
+          >textDocument/definition</a
+        >.
+      </li>
+    </ol>
+  </small>
+</details>
