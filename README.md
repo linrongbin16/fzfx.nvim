@@ -427,6 +427,159 @@ Below keys are binded by default:
 
 ### Lsp & Diagnostics
 
+<details>
+  <summary><code>FzfxLspDefinitions</code> (Search lsp definitions)</summary>
+  <small>
+    <ol>
+      <li>
+        There's only 1 <code>args</code> variant, while it behaves like
+        <code>cword</code>, i.e. it always use cursor word as query content
+        (instead of arguments). Because this command is to navigate lsp symbols,
+        i.e. go to definitions.
+      </li>
+      <li>
+        Internal lsp protocol
+        <a
+          href="https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#textDocument_definition"
+          >textDocument/definition</a
+        >.
+      </li>
+    </ol>
+  </small>
+</details>
+
+<details>
+  <summary>
+    <code>FzfxLspTypeDefinitions</code> (Search lsp type definitions)
+  </summary>
+  <small>
+    <ol>
+      <li>
+        There's only 1 <code>args</code> variant, while it behaves like
+        <code>cword</code>, i.e. it always use cursor word as query content
+        (instead of arguments). Because this command is to navigate lsp symbols,
+        i.e. go to type definitions.
+      </li>
+      <li>
+        Internal lsp protocol
+        <a
+          href="https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#textDocument_typeDefinition"
+          >textDocument/typeDefinition</a
+        >.
+      </li>
+    </ol>
+  </small>
+</details>
+
+<details>
+  <summary>
+    <code>FzfxLspImplementations</code> (Search lsp implementations)
+  </summary>
+  <small>
+    <ol>
+      <li>
+        There's only 1 <code>args</code> variant, while it behaves like
+        <code>cword</code>, i.e. it always use cursor word as query content
+        (instead of arguments). Because this command is to navigate lsp symbols,
+        i.e. go to implementations.
+      </li>
+      <li>
+        Internal lsp protocol
+        <a
+          href="https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#textDocument_implementation"
+          >textDocument/implementation</a
+        >.
+      </li>
+    </ol>
+  </small>
+</details>
+
+<details>
+  <summary><code>FzfxLspReferences</code> (Search lsp references)</summary>
+  <small>
+    <ol>
+      <li>
+        There's only 1 <code>args</code> variant, while it behaves like
+        <code>cword</code>, i.e. it always use cursor word as query content
+        (instead of arguments). Because this command is to navigate lsp symbols,
+        i.e. go to references.
+      </li>
+      <li>
+        Internal lsp protocol
+        <a
+          href="https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#textDocument_references"
+          >textDocument/references</a
+        >.
+      </li>
+    </ol>
+  </small>
+</details>
+
+<details>
+  <summary>
+    <code>FzfxLspIncomingCalls</code> (Search lsp incoming calls)
+  </summary>
+  <small>
+    <ol>
+      <li>
+        There's only 1 <code>args</code> variant, while it behaves like
+        <code>cword</code>, i.e. it always use cursor word as query content
+        (instead of arguments). Because this command is to navigate lsp symbols,
+        i.e. go to incoming calls.
+      </li>
+      <li>
+        Internal lsp protocol
+        <a
+          href="https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#callHierarchy_incomingCalls"
+          >callHierarchy/incomingCalls</a
+        >.
+      </li>
+    </ol>
+  </small>
+</details>
+
+<details>
+  <summary>
+    <code>FzfxLspOutgoingCalls</code> (Search lsp outgoing calls)
+  </summary>
+  <small>
+    <ol>
+      <li>
+        There's only 1 <code>args</code> variant, while it behaves like
+        <code>cword</code>, i.e. it always use cursor word as query content
+        (instead of arguments). Because this command is to navigate lsp symbols,
+        i.e. go to outgoing calls.
+      </li>
+      <li>
+        Internal lsp protocol
+        <a
+          href="https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#callHierarchy_outgoingCalls"
+          >callHierarchy/outgoingCalls</a
+        >.
+      </li>
+    </ol>
+  </small>
+</details>
+
+<details>
+  <summary><code>FzfxLspDiagnostics</code> (Search lsp diagnostics)</summary>
+  <small>
+    <ol>
+      <li>
+        <b>Current buffer only</b> variant is named with
+        <code>buf_</code> prefix. All variants are:
+        <ul>
+          <li><code>(buf_)args</code></li>
+          <li><code>(buf_)visual</code></li>
+          <li><code>(buf_)cword</code></li>
+          <li><code>(buf_)put</code></li>
+          <li><code>(buf_)resume</code></li>
+        </ul>
+      </li>
+    </ol>
+  </small>
+</details>
+
 <table>
   <thead>
     <tr>
