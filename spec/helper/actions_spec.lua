@@ -194,20 +194,17 @@ describe("helper.actions", function()
       }
       local actual = actions._make_edit_grep(lines)
       assert_eq(type(actual), "table")
-      assert_eq(#actual, #lines + 2)
-      for i, act in ipairs(actual) do
-        if i <= #lines then
-          local expect = string.format(
-            "edit! %s",
-            path.normalize(str.split(lines[i], ":")[1], { double_backslash = true, expand = true })
-          )
-          assert_eq(act, expect)
-        elseif i == #lines + 1 then
-          assert_eq(act, "call setpos('.', [0, 81, 1])")
-        else
-          assert_eq(act, 'execute "normal! zz"')
-        end
+      assert_eq(#actual.edits, #lines)
+      assert_eq(#actual.moves, 2)
+      for i, act in ipairs(actual.edits) do
+        local expect = string.format(
+          "edit! %s",
+          path.normalize(str.split(lines[i], ":")[1], { double_backslash = true, expand = true })
+        )
+        assert_eq(act, expect)
       end
+      assert_eq(actual.moves[1], "call cursor(81, 1)")
+      assert_eq(actual.moves[2], 'execute "normal! zz"')
     end)
     it("make with icon", function()
       vim.env._FZFX_NVIM_DEVICONS_PATH = DEVICONS_PATH
@@ -220,7 +217,8 @@ describe("helper.actions", function()
       }
       local actual = actions._make_edit_grep(lines)
       assert_eq(type(actual), "table")
-      assert_eq(#actual, #lines + 2)
+      assert_eq(#actual.edits, #lines)
+      assert_eq(#actual.moves, 2)
       for i = 1, 5 do
         local line = lines[i]
         local first_space_pos = str.find(line, " ")
@@ -231,10 +229,10 @@ describe("helper.actions", function()
             { double_backslash = true, expand = true }
           )
         )
-        assert_eq(actual[i], expect)
+        assert_eq(actual.edits[i], expect)
       end
-      assert_true(str.find(actual[6], "setpos") > 0)
-      assert_eq(actual[7], 'execute "normal! zz"')
+      assert_true(str.find(actual.moves[1], "cursor") > 0)
+      assert_eq(actual.moves[2], 'execute "normal! zz"')
     end)
     it("run without icon", function()
       vim.env._FZFX_NVIM_DEVICONS_PATH = nil
@@ -280,7 +278,7 @@ describe("helper.actions", function()
         local actual = actions._make_set_cursor_grep_no_filename({ line })
         assert_eq(type(actual), "table")
         assert_eq(#actual, 2)
-        assert_true(str.startswith(actual[1], "call setpos('.'"))
+        assert_true(str.startswith(actual[1], "call cursor"))
         assert_eq(actual[2], 'execute "normal! zz"')
       end
     end)
@@ -439,20 +437,17 @@ describe("helper.actions", function()
       }
       local actual = actions._make_edit_rg(lines)
       assert_eq(type(actual), "table")
-      assert_eq(#actual, #lines + 2)
-      for i, act in ipairs(actual) do
-        if i <= #lines then
-          local expect = string.format(
-            "edit! %s",
-            path.normalize(str.split(lines[i], ":")[1], { double_backslash = true, expand = true })
-          )
-          assert_eq(act, expect)
-        elseif i == #lines + 1 then
-          assert_eq(act, "call setpos('.', [0, 81, 71])")
-        else
-          assert_eq(act, 'execute "normal! zz"')
-        end
+      assert_eq(#actual.edits, #lines)
+      assert_eq(#actual.moves, 2)
+      for i, act in ipairs(actual.edits) do
+        local expect = string.format(
+          "edit! %s",
+          path.normalize(str.split(lines[i], ":")[1], { double_backslash = true, expand = true })
+        )
+        assert_eq(act, expect)
       end
+      assert_eq(actual.moves[1], "call cursor(81, 71)")
+      assert_eq(actual.moves[2], 'execute "normal! zz"')
     end)
     it("make rg with icon", function()
       vim.env._FZFX_NVIM_DEVICONS_PATH = DEVICONS_PATH
@@ -465,25 +460,22 @@ describe("helper.actions", function()
       }
       local actual = actions._make_edit_rg(lines)
       assert_eq(type(actual), "table")
-      assert_eq(#actual, #lines + 2)
-      for i, act in ipairs(actual) do
-        if i <= #lines then
-          local line = lines[i]
-          local first_space_pos = str.find(line, " ")
-          local expect = string.format(
-            "edit! %s",
-            path.normalize(
-              line:sub(first_space_pos + 1, str.find(line, ":", first_space_pos + 1) - 1),
-              { double_backslash = true, expand = true }
-            )
+      assert_eq(#actual.edits, #lines)
+      assert_eq(#actual.moves, 2)
+      for i, act in ipairs(actual.edits) do
+        local line = lines[i]
+        local first_space_pos = str.find(line, " ")
+        local expect = string.format(
+          "edit! %s",
+          path.normalize(
+            line:sub(first_space_pos + 1, str.find(line, ":", first_space_pos + 1) - 1),
+            { double_backslash = true, expand = true }
           )
-          assert_eq(act, expect)
-        elseif i == #lines + 1 then
-          assert_eq(act, "call setpos('.', [0, 81, 72])")
-        else
-          assert_eq(act, 'execute "normal! zz"')
-        end
+        )
+        assert_eq(act, expect)
       end
+      assert_eq(actual.moves[1], "call cursor(81, 72)")
+      assert_eq(actual.moves[2], 'execute "normal! zz"')
     end)
     it("run without icon", function()
       vim.env._FZFX_NVIM_DEVICONS_PATH = nil
@@ -536,7 +528,7 @@ describe("helper.actions", function()
         assert_eq(type(actual), "table")
         assert_eq(#actual, 2)
 
-        assert_true(str.startswith(actual[1], "call setpos('.'"))
+        assert_true(str.startswith(actual[1], "call cursor("))
         assert_eq(actual[2], 'execute "normal! zz"')
       end
     end)
@@ -936,7 +928,7 @@ describe("helper.actions", function()
         if str.not_empty(act) then
           assert_true(
             str.startswith(act, "edit!")
-              or str.startswith(act, "call setpos")
+              or str.startswith(act, "call cursor")
               or str.startswith(act, "execute")
           )
         else
@@ -945,7 +937,7 @@ describe("helper.actions", function()
       end
       local last1 = actual[#actual]
       local last2 = actual[#actual - 1]
-      assert_true(str.startswith(last2, "call setpos('.', "))
+      assert_true(str.startswith(last2, "call cursor"))
       assert_eq(last1, 'execute "normal! zz"')
     end)
     it("run", function()
