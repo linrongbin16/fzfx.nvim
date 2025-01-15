@@ -194,17 +194,18 @@ describe("helper.actions", function()
       }
       local actual = actions._make_edit_grep(lines)
       assert_eq(type(actual), "table")
-      assert_eq(#actual.edits, #lines)
-      assert_eq(#actual.moves, 2)
-      for i, act in ipairs(actual.edits) do
-        local expect = string.format(
-          "edit! %s",
-          path.normalize(str.split(lines[i], ":")[1], { double_backslash = true, expand = true })
-        )
-        assert_eq(act, expect)
+      assert_eq(#actual, #lines + 2)
+      for i, act in ipairs(actual) do
+        if i <= #lines then
+          local expect = string.format(
+            "edit! %s",
+            path.normalize(str.split(lines[i], ":")[1], { double_backslash = true, expand = true })
+          )
+          assert_eq(act, expect)
+        end
       end
-      assert_eq(actual.moves[1], "call cursor(81, 1)")
-      assert_eq(actual.moves[2], 'execute "normal! zz"')
+      assert_eq(actual[#actual - 1], "call cursor(81, 1)")
+      assert_eq(actual[#actual], 'execute "normal! zz"')
     end)
     it("make with icon", function()
       vim.env._FZFX_NVIM_DEVICONS_PATH = DEVICONS_PATH
@@ -217,22 +218,23 @@ describe("helper.actions", function()
       }
       local actual = actions._make_edit_grep(lines)
       assert_eq(type(actual), "table")
-      assert_eq(#actual.edits, #lines)
-      assert_eq(#actual.moves, 2)
-      for i = 1, 5 do
-        local line = lines[i]
-        local first_space_pos = str.find(line, " ")
-        local expect = string.format(
-          "edit! %s",
-          path.normalize(
-            line:sub(first_space_pos + 1, str.find(line, ":", first_space_pos + 1) - 1),
-            { double_backslash = true, expand = true }
+      assert_eq(#actual, #lines + 2)
+      for i, act in ipairs(actual) do
+        if i <= #lines then
+          local line = lines[i]
+          local first_space_pos = str.find(line, " ")
+          local expect = string.format(
+            "edit! %s",
+            path.normalize(
+              line:sub(first_space_pos + 1, str.find(line, ":", first_space_pos + 1) - 1),
+              { double_backslash = true, expand = true }
+            )
           )
-        )
-        assert_eq(actual.edits[i], expect)
+          assert_eq(act, expect)
+        end
       end
-      assert_true(str.find(actual.moves[1], "cursor") > 0)
-      assert_eq(actual.moves[2], 'execute "normal! zz"')
+      assert_true(str.find(actual[#actual - 1], "cursor") > 0)
+      assert_eq(actual[#actual], 'execute "normal! zz"')
     end)
     it("run without icon", function()
       vim.env._FZFX_NVIM_DEVICONS_PATH = nil
@@ -437,17 +439,18 @@ describe("helper.actions", function()
       }
       local actual = actions._make_edit_rg(lines)
       assert_eq(type(actual), "table")
-      assert_eq(#actual.edits, #lines)
-      assert_eq(#actual.moves, 2)
-      for i, act in ipairs(actual.edits) do
-        local expect = string.format(
-          "edit! %s",
-          path.normalize(str.split(lines[i], ":")[1], { double_backslash = true, expand = true })
-        )
-        assert_eq(act, expect)
+      assert_eq(#actual, #lines + 2)
+      for i, act in ipairs(actual) do
+        if i <= #lines then
+          local expect = string.format(
+            "edit! %s",
+            path.normalize(str.split(lines[i], ":")[1], { double_backslash = true, expand = true })
+          )
+          assert_eq(act, expect)
+        end
       end
-      assert_eq(actual.moves[1], "call cursor(81, 71)")
-      assert_eq(actual.moves[2], 'execute "normal! zz"')
+      assert_eq(actual[#actual - 1], "call cursor(81, 71)")
+      assert_eq(actual[#actual], 'execute "normal! zz"')
     end)
     it("make rg with icon", function()
       vim.env._FZFX_NVIM_DEVICONS_PATH = DEVICONS_PATH
@@ -460,22 +463,23 @@ describe("helper.actions", function()
       }
       local actual = actions._make_edit_rg(lines)
       assert_eq(type(actual), "table")
-      assert_eq(#actual.edits, #lines)
-      assert_eq(#actual.moves, 2)
-      for i, act in ipairs(actual.edits) do
-        local line = lines[i]
-        local first_space_pos = str.find(line, " ")
-        local expect = string.format(
-          "edit! %s",
-          path.normalize(
-            line:sub(first_space_pos + 1, str.find(line, ":", first_space_pos + 1) - 1),
-            { double_backslash = true, expand = true }
+      assert_eq(#actual, #lines + 2)
+      for i, act in ipairs(actual) do
+        if i <= #lines then
+          local line = lines[i]
+          local first_space_pos = str.find(line, " ")
+          local expect = string.format(
+            "edit! %s",
+            path.normalize(
+              line:sub(first_space_pos + 1, str.find(line, ":", first_space_pos + 1) - 1),
+              { double_backslash = true, expand = true }
+            )
           )
-        )
-        assert_eq(act, expect)
+          assert_eq(act, expect)
+        end
       end
-      assert_eq(actual.moves[1], "call cursor(81, 72)")
-      assert_eq(actual.moves[2], 'execute "normal! zz"')
+      assert_eq(actual[#actual - 1], "call cursor(81, 72)")
+      assert_eq(actual[#actual], 'execute "normal! zz"')
     end)
     it("run without icon", function()
       vim.env._FZFX_NVIM_DEVICONS_PATH = nil
