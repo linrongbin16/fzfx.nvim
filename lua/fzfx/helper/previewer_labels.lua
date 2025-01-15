@@ -38,7 +38,7 @@ end
 --- @param line string?
 --- @param context fzfx.PipelineContext?
 --- @return string
-M.label_rg_no_filename = function(line, context)
+M.label_rg_bufnr = function(line, context)
   if str.empty(line) then
     return ""
   end
@@ -74,7 +74,7 @@ end
 --- @param line string?
 --- @param context fzfx.PipelineContext?
 --- @return string?
-M.label_grep_no_filename = function(line, context)
+M.label_grep_bufnr = function(line, context)
   if str.empty(line) then
     return ""
   end

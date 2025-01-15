@@ -119,8 +119,8 @@ M.providers = {
 M.previewers = {
   previewer = previewers_helper.preview_grep_bufnr,
   previewer_type = PreviewerTypeEnum.COMMAND_ARRAY,
-  previewer_label = constants.HAS_RG and labels_helper.label_rg_no_filename
-    or labels_helper.label_grep_no_filename,
+  previewer_label = constants.HAS_RG and labels_helper.label_rg_bufnr
+    or labels_helper.label_grep_bufnr,
 }
 
 local set_cursor = constants.HAS_RG and actions_helper.cursor_move_rg_bufnr
