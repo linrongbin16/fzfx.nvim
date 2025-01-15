@@ -821,6 +821,7 @@ end
 --- @param pipeline_configs fzfx.Options
 --- @return fzfx.PipelineContext
 local function _get_context(pipeline_configs)
+  --- @type fzfx.PipelineContextMaker
   local context_maker = function()
     return {
       bufnr = vim.api.nvim_get_current_buf(),
