@@ -169,11 +169,13 @@ M._get_marks_output_in_lines = function()
   ))
   local lines = fio.readlines(tmpfile) --[[@as string[] ]]
 
-  ---@diagnostic disable-next-line: undefined-field
-  if uv.fs_stat(tmpfile) then
+  vim.schedule(function()
     ---@diagnostic disable-next-line: undefined-field
-    uv.fs_unlink(tmpfile, function() end)
-  end
+    if uv.fs_stat(tmpfile) then
+      ---@diagnostic disable-next-line: undefined-field
+      uv.fs_unlink(tmpfile, function() end)
+    end
+  end)
 
   return lines
 end
