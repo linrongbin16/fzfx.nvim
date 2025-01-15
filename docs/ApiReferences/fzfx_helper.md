@@ -193,23 +193,23 @@ It prepends file type icons for `rg`/`grep`/`git grep` results.
 
 This module contains most all the shared previewers used by different configurations in `fzfx.cfg` package.
 
-### [`preview_find`](https://github.com/linrongbin16/fzfx.nvim/blob/f99404575d7af6a54a6274a3edb9fc9d77905ed5/lua/fzfx/helper/previewers.lua?plain=1#L114)
+### [`preview_find`](https://github.com/linrongbin16/fzfx.nvim/blob/6aa42b03c79f4527db61fcfbddd671bdd40bcb69/lua/fzfx/helper/previewers.lua?plain=1#L80)
 
 They preview the current line's text content for `fd`/`find` query results.
 
-### [`preview_grep`](https://github.com/linrongbin16/fzfx.nvim/blob/f99404575d7af6a54a6274a3edb9fc9d77905ed5/lua/fzfx/helper/previewers.lua?plain=1#L177)
+### [`preview_grep`](https://github.com/linrongbin16/fzfx.nvim/blob/6aa42b03c79f4527db61fcfbddd671bdd40bcb69/lua/fzfx/helper/previewers.lua?plain=1#L133)
 
 They preview the current line's text content for `rg`/`grep`/`git grep` query results.
 
-### [`preview_grep_bufnr`](https://github.com/linrongbin16/fzfx.nvim/blob/f99404575d7af6a54a6274a3edb9fc9d77905ed5/lua/fzfx/helper/previewers.lua?plain=1#L198)
+### [`preview_grep_bufnr`](https://github.com/linrongbin16/fzfx.nvim/blob/6aa42b03c79f4527db61fcfbddd671bdd40bcb69/lua/fzfx/helper/previewers.lua?plain=1#L146)
 
 They preview the current line's text content for `rg`/`grep`/`git grep` no filename query results (with `-I` option).
 
-### [`preview_git_commit`](https://github.com/linrongbin16/fzfx.nvim/blob/f99404575d7af6a54a6274a3edb9fc9d77905ed5/lua/fzfx/helper/previewers.lua?plain=1#L235)
+### [`preview_git_commit`](https://github.com/linrongbin16/fzfx.nvim/blob/6aa42b03c79f4527db61fcfbddd671bdd40bcb69/lua/fzfx/helper/previewers.lua?plain=1#L166)
 
 It previews the current line's git commit changes for `git log`/`git blame` query results.
 
-### [`preview_git_status`](https://github.com/linrongbin16/fzfx.nvim/blob/f99404575d7af6a54a6274a3edb9fc9d77905ed5/lua/fzfx/helper/previewers.lua?plain=1#L257)
+### [`preview_git_status`](https://github.com/linrongbin16/fzfx.nvim/blob/6aa42b03c79f4527db61fcfbddd671bdd40bcb69/lua/fzfx/helper/previewers.lua?plain=1#L198)
 
 It previews the current line's git status (changed files) for `git status --short` query results.
 
