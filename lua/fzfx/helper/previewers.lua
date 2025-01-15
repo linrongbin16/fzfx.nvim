@@ -44,8 +44,7 @@ end
 
 M._PREVIEW_BAT = {
   consts.BAT,
-  "--color=always",
-  "--decorations=always",
+  "-f", -- Alias for --color=always, --decorations=always
   "--pager=never",
 }
 
