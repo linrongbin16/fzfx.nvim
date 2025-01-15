@@ -123,10 +123,10 @@ M.previewers = {
     or labels_helper.label_grep_no_filename,
 }
 
-local set_cursor = constants.HAS_RG and actions_helper.set_cursor_rg_no_filename
-  or actions_helper.set_cursor_grep_no_filename
-local setqflist = constants.HAS_RG and actions_helper.setqflist_rg_no_filename
-  or actions_helper.setqflist_grep_no_filename
+local set_cursor = constants.HAS_RG and actions_helper.cursor_move_rg_bufnr
+  or actions_helper.cursor_move_grep_bufnr
+local setqflist = constants.HAS_RG and actions_helper.setqflist_rg_bufnr
+  or actions_helper.setqflist_grep_bufnr
 
 M.actions = {
   ["esc"] = actions_helper.nop,

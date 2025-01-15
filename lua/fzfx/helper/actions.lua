@@ -38,12 +38,11 @@ local function _confirm(bufnr, callback)
 end
 
 -- Execute either vim commands or lua functions.
---- @param cmds any[]|nil
---- @param scheduled boolean?
-local function _execute(cmds, scheduled)
-  if tbl.list_empty(cmds) then
-    return
-  end
+--- @param cmds any[]
+--- @param opts {scheduled:boolean?}?
+local function _execute(cmds, opts)
+  assert(type(cmds) == "table")
+  opts = opts or {}
 
   local i = 1
   local n = #cmds
@@ -78,7 +77,7 @@ local function _execute(cmds, scheduled)
     end
   end
 
-  if scheduled then
+  if opts.scheduled then
     scheduled_impl()
   else
     non_scheduled_impl()
@@ -176,7 +175,7 @@ end
 M.edit_rg = function(lines, context)
   local cmds = M._make_edit_rg(lines)
   _confirm(context.bufnr, function()
-    _execute(cmds, true)
+    _execute(cmds, { scheduled = true })
   end)
 end
 
@@ -216,25 +215,24 @@ end
 
 -- Run `:edit!` commands for grep results.
 --- @param lines string[]
---- @return {edits:string[],moves:string[]}
+--- @return string[]
 M._make_edit_grep = function(lines)
-  local edits = {}
-  local moves = {}
+  local results = {}
   local last_parsed
   for _, line in ipairs(lines) do
     if str.not_empty(line) then
       local parsed = parsers.parse_grep(line)
-      table.insert(edits, string.format("edit! %s", parsed.filename))
+      table.insert(results, string.format("edit! %s", parsed.filename))
       last_parsed = parsed
     end
   end
 
   if last_parsed ~= nil and last_parsed.lineno ~= nil then
-    table.insert(moves, string.format("call cursor(%d, %d)", last_parsed.lineno, 1))
-    table.insert(moves, 'execute "normal! zz"')
+    table.insert(results, string.format("call cursor(%d, %d)", last_parsed.lineno, 1))
+    table.insert(results, 'execute "normal! zz"')
   end
 
-  return { edits = edits, moves = moves }
+  return results
 end
 
 -- Run `:edit!`, `:call cursor` and `:normal! zz` commands for grep results.
@@ -243,14 +241,7 @@ end
 M.edit_grep = function(lines, context)
   local cmds = M._make_edit_grep(lines)
   _confirm(context.bufnr, function()
-    for _, e in ipairs(cmds.edits) do
-      vim.cmd(e)
-    end
-    vim.schedule(function()
-      for _, m in ipairs(cmds.moves) do
-        vim.cmd(m)
-      end
-    end)
+    _execute(cmds, { scheduled = true })
   end)
 end
 
@@ -277,10 +268,14 @@ end
 --- @param lines string[]
 M.setqflist_grep = function(lines)
   local qfs = M._make_setqflist_grep(lines)
-  vim.cmd(":copen")
-  vim.fn.setqflist({}, " ", {
-    nr = "$",
-    items = qfs,
+  _execute({
+    "copen",
+    function()
+      vim.fn.setqflist({}, " ", {
+        nr = "$",
+        items = qfs,
+      })
+    end,
   })
 end
 
@@ -291,7 +286,7 @@ end
 -- Make `:call cursor` and `:normal! zz` commands for rg results (no filename).
 --- @param lines string[]
 --- @return string[]|nil
-M._make_set_cursor_rg_no_filename = function(lines)
+M._make_cursor_move_rg_bufnr = function(lines)
   if tbl.list_empty(lines) then
     return nil
   end
@@ -310,14 +305,14 @@ end
 -- Run `:call cursor` and `:normal! zz` commands on rg results (no filename).
 --- @param lines string[]
 --- @param context fzfx.PipelineContext
-M.set_cursor_rg_no_filename = function(lines, context)
-  local moves = M._make_set_cursor_rg_no_filename(lines)
-  if not moves then
+M.cursor_move_rg_bufnr = function(lines, context)
+  local cmds = M._make_cursor_move_rg_bufnr(lines)
+  if not cmds then
     return
   end
 
   _confirm(context.bufnr, function()
-    for _, m in ipairs(moves) do
+    for _, m in ipairs(cmds) do
       vim.cmd(m)
     end
   end)
@@ -327,7 +322,7 @@ end
 --- @param lines string[]
 --- @param context fzfx.PipelineContext?
 --- @return {filename:string,lnum:integer,col:integer,text:string}[]|nil
-M._make_setqflist_rg_no_filename = function(lines, context)
+M._make_setqflist_rg_bufnr = function(lines, context)
   local bufnr = tbl.tbl_get(context, "bufnr")
   if type(bufnr) ~= "number" or not vim.api.nvim_buf_is_valid(bufnr) then
     log.echo(LogLevels.INFO, string.format("invalid buffer(%s).", vim.inspect(bufnr)))
@@ -356,8 +351,8 @@ end
 -- Run `:setqflist` commands for rg results (no filename).
 --- @param lines string[]
 --- @param context fzfx.PipelineContext?
-M.setqflist_rg_no_filename = function(lines, context)
-  local qfs = M._make_setqflist_rg_no_filename(lines, context)
+M.setqflist_rg_bufnr = function(lines, context)
+  local qfs = M._make_setqflist_rg_bufnr(lines, context)
   if not qfs then
     return
   end
@@ -375,7 +370,7 @@ end
 
 --- @param lines string[]
 --- @return string[]|nil
-M._make_set_cursor_grep_no_filename = function(lines)
+M._make_cursor_move_grep_bufnr = function(lines)
   if tbl.list_empty(lines) then
     return nil
   end
@@ -394,8 +389,8 @@ end
 -- Run `:call cursor` commands on grep results (no filename).
 --- @param lines string[]
 --- @param context fzfx.PipelineContext
-M.set_cursor_grep_no_filename = function(lines, context)
-  local moves = M._make_set_cursor_grep_no_filename(lines)
+M.cursor_move_grep_bufnr = function(lines, context)
+  local moves = M._make_cursor_move_grep_bufnr(lines)
   if not moves then
     return
   end
@@ -411,7 +406,7 @@ end
 --- @param lines string[]
 --- @param context fzfx.PipelineContext?
 --- @return {filename:string,lnum:integer,col:integer,text:string}[]|nil
-M._make_setqflist_grep_no_filename = function(lines, context)
+M._make_setqflist_grep_bufnr = function(lines, context)
   local bufnr = tbl.tbl_get(context, "bufnr")
   if type(bufnr) ~= "number" or not vim.api.nvim_buf_is_valid(bufnr) then
     log.echo(LogLevels.INFO, string.format("invalid buffer(%s).", vim.inspect(bufnr)))
@@ -440,8 +435,8 @@ end
 -- Run `:setqflist` commands for grep results (no filename).
 --- @param lines string[]
 --- @param context fzfx.PipelineContext?
-M.setqflist_grep_no_filename = function(lines, context)
-  local qfs = M._make_setqflist_grep_no_filename(lines, context)
+M.setqflist_grep_bufnr = function(lines, context)
+  local qfs = M._make_setqflist_grep_bufnr(lines, context)
   if not qfs then
     return
   end

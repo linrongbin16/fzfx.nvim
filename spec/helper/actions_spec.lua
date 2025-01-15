@@ -284,7 +284,7 @@ describe("helper.actions", function()
     end)
   end)
 
-  describe("[set_cursor_grep_no_filename]", function()
+  describe("[cursor_move_grep_bufnr]", function()
     it("run", function()
       vim.env._FZFX_NVIM_DEVICONS_PATH = nil
       local lines = {
@@ -294,7 +294,7 @@ describe("helper.actions", function()
         "12:81: goodbye",
         "81:72:9129",
       }
-      actions.set_cursor_grep_no_filename(lines, make_context())
+      actions.cursor_move_grep_bufnr(lines, make_context())
       assert_true(true)
     end)
   end)
@@ -370,7 +370,7 @@ describe("helper.actions", function()
     end)
   end)
 
-  describe("[setqflist_grep_no_filename]", function()
+  describe("[setqflist_grep_bufnr]", function()
     it("make", function()
       local lines = {
         "1:hello world",
@@ -419,7 +419,7 @@ describe("helper.actions", function()
       }
       for i, line in ipairs(lines) do
         local ctx = make_context()
-        actions.setqflist_grep_no_filename(lines, ctx)
+        actions.setqflist_grep_bufnr(lines, ctx)
         assert_true(true)
       end
     end)
@@ -504,7 +504,7 @@ describe("helper.actions", function()
   end)
   describe("[_make_set_cursor_rg_no_filename]", function()
     it("empty", function()
-      local actual = actions._make_set_cursor_rg_no_filename({})
+      local actual = actions._make_cursor_move_rg_bufnr({})
       assert_eq(actual, nil)
     end)
     it("make", function()
@@ -516,7 +516,7 @@ describe("helper.actions", function()
         "81:71:9129",
       }
       for i, line in ipairs(lines) do
-        local actual = actions._make_set_cursor_rg_no_filename({ line })
+        local actual = actions._make_cursor_move_rg_bufnr({ line })
         print(
           string.format(
             "_make_set_cursor_rg_no_filename-%d, line:%s, actual:%s\n",
@@ -533,7 +533,7 @@ describe("helper.actions", function()
       end
     end)
   end)
-  describe("[set_cursor_rg_no_filename]", function()
+  describe("[cursor_move_rg_bufnr]", function()
     it("run", function()
       vim.env._FZFX_NVIM_DEVICONS_PATH = nil
       local lines = {
@@ -543,7 +543,7 @@ describe("helper.actions", function()
         "12:81: goodbye",
         "81:71:9129",
       }
-      actions.set_cursor_rg_no_filename(lines, make_context())
+      actions.cursor_move_rg_bufnr(lines, make_context())
       assert_true(true)
     end)
   end)
@@ -619,7 +619,7 @@ describe("helper.actions", function()
     end)
   end)
 
-  describe("[setqflist_rg_no_filename]", function()
+  describe("[setqflist_rg_bufnr]", function()
     it("make", function()
       local lines = {
         "1:3:hello world",
@@ -628,14 +628,14 @@ describe("helper.actions", function()
         "4:1: print('goodbye world')",
         "3:10: hello world",
       }
-      local actual1 = actions._make_setqflist_rg_no_filename({}, make_context())
+      local actual1 = actions._make_setqflist_rg_bufnr({}, make_context())
       assert_eq(#actual1, 0)
-      local actual2 = actions._make_setqflist_rg_no_filename(lines, nil)
+      local actual2 = actions._make_setqflist_rg_bufnr(lines, nil)
       assert_eq(actual2, nil)
 
       for i, line in ipairs(lines) do
         local ctx = make_context()
-        local actual = actions._make_setqflist_rg_no_filename({ line }, ctx)
+        local actual = actions._make_setqflist_rg_bufnr({ line }, ctx)
         assert_eq(type(actual), "table")
         assert_eq(#actual, 1)
 
@@ -661,7 +661,7 @@ describe("helper.actions", function()
         "3:10: hello world",
       }
       for i, line in ipairs(lines) do
-        actions.setqflist_rg_no_filename(lines, make_context())
+        actions.setqflist_rg_bufnr(lines, make_context())
         assert_true(true)
       end
     end)
