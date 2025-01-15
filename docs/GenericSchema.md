@@ -54,7 +54,7 @@ So we need a way to store the **_current_** buffer/window info in somewhere, so 
 
 A **shutdown** is some operations that will be invoked when a search is complete, it recycles all the resources allocated during the search.
 
-For example the **context** will create a temporary file to dump/pass some data between providers/previewers. Thus it also needs a **shutdown** operation to delete the temporary file when the popup is closed.
+For example the **context** will create a temporary file to help passing data between providers/previewers. Thus it also needs a **shutdown** operation to delete the temporary file when the popup is closed.
 
 ## Provider
 
