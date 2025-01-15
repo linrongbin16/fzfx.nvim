@@ -312,9 +312,7 @@ M.cursor_move_rg_bufnr = function(lines, context)
   end
 
   _confirm(context.bufnr, function()
-    for _, m in ipairs(cmds) do
-      vim.cmd(m)
-    end
+    _execute(cmds)
   end)
 end
 
@@ -357,10 +355,14 @@ M.setqflist_rg_bufnr = function(lines, context)
     return
   end
 
-  vim.cmd(":copen")
-  vim.fn.setqflist({}, " ", {
-    nr = "$",
-    items = qfs,
+  _execute({
+    "copen",
+    function()
+      vim.fn.setqflist({}, " ", {
+        nr = "$",
+        items = qfs,
+      })
+    end,
   })
 end
 
@@ -390,15 +392,13 @@ end
 --- @param lines string[]
 --- @param context fzfx.PipelineContext
 M.cursor_move_grep_bufnr = function(lines, context)
-  local moves = M._make_cursor_move_grep_bufnr(lines)
-  if not moves then
+  local cmds = M._make_cursor_move_grep_bufnr(lines)
+  if not cmds then
     return
   end
 
   _confirm(context.bufnr, function()
-    for _, m in ipairs(moves) do
-      vim.cmd(m)
-    end
+    _execute(cmds)
   end)
 end
 
@@ -441,10 +441,14 @@ M.setqflist_grep_bufnr = function(lines, context)
     return
   end
 
-  vim.cmd(":copen")
-  vim.fn.setqflist({}, " ", {
-    nr = "$",
-    items = qfs,
+  _execute({
+    "copen",
+    function()
+      vim.fn.setqflist({}, " ", {
+        nr = "$",
+        items = qfs,
+      })
+    end,
   })
 end
 
@@ -481,12 +485,10 @@ end
 --- @param lines string[]
 --- @param context fzfx.FileExplorerPipelineContext
 M.edit_ls = function(lines, context)
-  local edits = M._make_edit_ls(lines, context)
+  local cmds = M._make_edit_ls(lines, context)
 
   _confirm(context.bufnr, function()
-    for _, e in ipairs(edits) do
-      vim.cmd(e)
-    end
+    _execute(cmds)
   end)
 end
 
@@ -645,25 +647,23 @@ end
 --- @param lines string[]
 --- @return string[]
 M._make_edit_git_status = function(lines)
-  local edits = {}
+  local results = {}
   for _, line in ipairs(lines) do
     if str.not_empty(line) then
       local parsed = parsers.parse_git_status(line)
-      table.insert(edits, string.format("edit! %s", parsed.filename))
+      table.insert(results, string.format("edit! %s", parsed.filename))
     end
   end
-  return edits
+  return results
 end
 
 -- Run `:edit!` commands for gits status results.
 --- @param lines string[]
 --- @param context fzfx.PipelineContext
 M.edit_git_status = function(lines, context)
-  local edits = M._make_edit_git_status(lines)
+  local cmds = M._make_edit_git_status(lines)
   _confirm(context.bufnr, function()
-    for _, e in ipairs(edits) do
-      vim.cmd(e)
-    end
+    _execute(cmds)
   end)
 end
 
@@ -685,10 +685,14 @@ end
 --- @param lines string[]
 M.setqflist_git_status = function(lines)
   local qfs = M._make_setqflist_git_status(lines)
-  vim.cmd(":copen")
-  vim.fn.setqflist({}, " ", {
-    nr = "$",
-    items = qfs,
+  _execute({
+    "copen",
+    function()
+      vim.fn.setqflist({}, " ", {
+        nr = "$",
+        items = qfs,
+      })
+    end,
   })
 end
 
@@ -725,11 +729,9 @@ end
 --- @param lines string[]
 --- @param context fzfx.VimMarksPipelineContext
 M.edit_vim_mark = function(lines, context)
-  local edits = M._make_edit_vim_mark(lines, context)
+  local cmds = M._make_edit_vim_mark(lines, context)
   _confirm(context.bufnr, function()
-    for _, e in ipairs(edits) do
-      vim.cmd(e)
-    end
+    _execute(cmds, { scheduled = true })
   end)
 end
 
@@ -767,10 +769,14 @@ end
 --- @param context fzfx.VimMarksPipelineContext
 M.setqflist_vim_mark = function(lines, context)
   local qfs = M._make_setqflist_vim_mark(lines, context)
-  vim.cmd(":copen")
-  vim.fn.setqflist({}, " ", {
-    nr = "$",
-    items = qfs,
+  _execute({
+    "copen",
+    function()
+      vim.fn.setqflist({}, " ", {
+        nr = "$",
+        items = qfs,
+      })
+    end,
   })
 end
 

@@ -262,7 +262,7 @@ describe("helper.actions", function()
 
   describe("[_make_set_cursor_grep_no_filename]", function()
     it("empty", function()
-      local actual = actions._make_set_cursor_grep_no_filename({})
+      local actual = actions._make_cursor_move_grep_bufnr({})
       assert_eq(actual, nil)
     end)
     it("make", function()
@@ -275,7 +275,7 @@ describe("helper.actions", function()
       }
 
       for i, line in ipairs(lines) do
-        local actual = actions._make_set_cursor_grep_no_filename({ line })
+        local actual = actions._make_cursor_move_grep_bufnr({ line })
         assert_eq(type(actual), "table")
         assert_eq(#actual, 2)
         assert_true(str.startswith(actual[1], "call cursor"))
@@ -379,14 +379,14 @@ describe("helper.actions", function()
         "4: print('goodbye world')",
         "3: hello world",
       }
-      local actual1 = actions._make_setqflist_grep_no_filename({}, make_context())
+      local actual1 = actions._make_setqflist_grep_bufnr({}, make_context())
       assert_eq(#actual1, 0)
-      local actual2 = actions._make_setqflist_grep_no_filename(lines, nil)
+      local actual2 = actions._make_setqflist_grep_bufnr(lines, nil)
       assert_eq(actual2, nil)
 
       for i, line in ipairs(lines) do
         local ctx = make_context()
-        local actual = actions._make_setqflist_grep_no_filename({ line }, ctx)
+        local actual = actions._make_setqflist_grep_bufnr({ line }, ctx)
         assert_eq(type(actual), "table")
         assert_eq(#actual, 1)
 
