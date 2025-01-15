@@ -3,6 +3,7 @@ local num = require("fzfx.commons.num")
 local str = require("fzfx.commons.str")
 local fio = require("fzfx.commons.fio")
 local path = require("fzfx.commons.path")
+local uv = require("fzfx.commons.uv")
 
 local constants = require("fzfx.lib.constants")
 local log = require("fzfx.lib.log")
@@ -167,6 +168,13 @@ M._get_marks_output_in_lines = function()
     tmpfile
   ))
   local lines = fio.readlines(tmpfile) --[[@as string[] ]]
+
+  ---@diagnostic disable-next-line: undefined-field
+  if uv.fs_stat(tmpfile) then
+    ---@diagnostic disable-next-line: undefined-field
+    uv.fs_unlink(tmpfile, function() end)
+  end
+
   return lines
 end
 
