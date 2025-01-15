@@ -144,8 +144,8 @@ This module contains all the actions. Press the key and quit the searching popup
 
 ### `rg`/`grep` with `bufnr` (without filename)
 
-- [`cursor_move_rg_bufnr`](https://github.com/linrongbin16/fzfx.nvim/blob/8309f62a3ad02b2634ac0fe2885ef1fed83c70f0/lua/fzfx/helper/actions.lua?plain=1#L258) and [`cursor_move_grep_bufnr`](https://github.com/linrongbin16/fzfx.nvim/blob/8309f62a3ad02b2634ac0fe2885ef1fed83c70f0/lua/fzfx/helper/actions.lua?plain=1#L342): It jumps to the last selected location on current buffer (via `:call setpos`) for `rg`/`grep` query results with `-I` option (no filename).
-- [`setqflist_rg_bufnr`](https://github.com/linrongbin16/fzfx.nvim/blob/8309f62a3ad02b2634ac0fe2885ef1fed83c70f0/lua/fzfx/helper/actions.lua?plain=1#L304) and [`setqflist_grep_bufnr`](https://github.com/linrongbin16/fzfx.nvim/blob/8309f62a3ad02b2634ac0fe2885ef1fed83c70f0/lua/fzfx/helper/actions.lua?plain=1#L388): It sends selected location on current buffer (via `:call setqflist`) for `rg`/`grep` query results with `-I` option (no filename).
+- [`cursor_move_rg_bufnr`](https://github.com/linrongbin16/fzfx.nvim/blob/672ce0a5090501ad869bc23f9cbbc0c6a5df0342/lua/fzfx/helper/actions.lua?plain=1#L308) and [`cursor_move_grep_bufnr`](https://github.com/linrongbin16/fzfx.nvim/blob/672ce0a5090501ad869bc23f9cbbc0c6a5df0342/lua/fzfx/helper/actions.lua?plain=1#L394): It jumps to the last selected location on current buffer (via `:call setpos`) for `rg`/`grep` query results with `-I` option (no filename).
+- [`setqflist_rg_bufnr`](https://github.com/linrongbin16/fzfx.nvim/blob/672ce0a5090501ad869bc23f9cbbc0c6a5df0342/lua/fzfx/helper/actions.lua?plain=1#L352) and [`setqflist_grep_bufnr`](https://github.com/linrongbin16/fzfx.nvim/blob/672ce0a5090501ad869bc23f9cbbc0c6a5df0342/lua/fzfx/helper/actions.lua?plain=1#L438): It sends selected location on current buffer (via `:call setqflist`) for `rg`/`grep` query results with `-I` option (no filename).
 
 ### `lsd`/`eza`/`exa`/`ls`
 
