@@ -87,9 +87,8 @@ Similar to provider, previewer also prepares the data contents for the fzf comma
 
 We have several types of previewers:
 
-- Command previewer: A lua function that runs and returns a shell command (as a string or a string list), then executes and generates the contents for fzf's preview window.
-- List previewer: A lua function that runs and directly returns the preview contents (in lines) for fzf.
-- Buffer file previewer: A nvim buffer to show the file contents, which enables support for nvim current colorscheme.
+- Plain command previewer: Similar to **plain command provider**, it is plain lua data types that represents a shell command.
+- Functional command previewer: Similar to the **functional command provider**, it is a lua function that could be invoke and generate result as a shell command.
 
 ### Previewer Label
 
