@@ -225,7 +225,7 @@ It works for `fd`/`find` query results.
 
 `label_rg` works for `rg` query results, `label_grep` works for `grep`/`git grep` query results.
 
-### [`label_rg_bufnr`](https://github.com/linrongbin16/fzfx.nvim/blob/971a1b6bd25c300465aa0c906a971c5efef8d8ea/lua/fzfx/helper/previewer_labels.lua?plain=1#L41)/[`label_grep_bufnr`](https://github.com/linrongbin16/fzfx.nvim/blob/971a1b6bd25c300465aa0c906a971c5efef8d8ea/lua/fzfx/helper/previewer_labels.lua?plain=1#L77)
+### [`label_rg_bufnr`](https://github.com/linrongbin16/fzfx.nvim/blob/1776a623aea024ea437eed3708f0ff865c5a0d78/lua/fzfx/helper/previewer_labels.lua?plain=1#L41)/[`label_grep_bufnr`](https://github.com/linrongbin16/fzfx.nvim/blob/1776a623aea024ea437eed3708f0ff865c5a0d78/lua/fzfx/helper/previewer_labels.lua?plain=1#L77)
 
 They're the same with `label_rg`/`label_grep`, but work for `FzfxBufLiveGrep` command.
 
