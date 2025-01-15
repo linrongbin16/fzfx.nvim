@@ -21,7 +21,7 @@ M.nop = function() end
 -- Confirm if discard current editing buffer when it's been modified.
 --- @param bufnr integer
 --- @param callback fun():any
-M._confirm_discard_modified = function(bufnr, callback)
+local function _confirm(bufnr, callback)
   if not vim.o.hidden and vim.api.nvim_get_option_value("modified", { buf = bufnr }) then
     local ok, input = pcall(vim.fn.input, {
       prompt = "[fzfx] buffer has been modified, continue? (y/n) ",
@@ -35,6 +35,36 @@ M._confirm_discard_modified = function(bufnr, callback)
   else
     callback()
   end
+end
+
+-- Execute either vim commands or lua functions.
+--- @param cmds any[]|nil
+local function _execute(cmds)
+  if tbl.list_empty(cmds) then
+    return
+  end
+
+  local i = 1
+  local n = #cmds
+
+  local function exe_impl()
+    ---@diagnostic disable-next-line: need-check-nil
+    local c = cmds[i] --[[@as string|function]]
+    vim.schedule(function()
+      assert(type(c) == "string" or type(c) == "function")
+      if type(c) == "string" then
+        vim.cmd(c)
+      else
+        c()
+      end
+      i = i + 1
+      if i <= n then
+        exe_impl()
+      end
+    end)
+  end
+
+  exe_impl()
 end
 
 -- fd/find {
@@ -57,11 +87,9 @@ end
 --- @param lines string[]
 --- @param context fzfx.PipelineContext
 M.edit_find = function(lines, context)
-  local edits = M._make_edit_find(lines)
-  M._confirm_discard_modified(context.bufnr, function()
-    for _, e in ipairs(edits) do
-      vim.cmd(e)
-    end
+  local cmds = M._make_edit_find(lines)
+  _confirm(context.bufnr, function()
+    _execute(cmds)
   end)
 end
 
@@ -83,10 +111,14 @@ end
 --- @param lines string[]
 M.setqflist_find = function(lines)
   local qfs = M._make_setqflist_find(lines)
-  vim.cmd(":copen")
-  vim.fn.setqflist({}, " ", {
-    nr = "$",
-    items = qfs,
+  _execute({
+    "copen",
+    function()
+      vim.fn.setqflist({}, " ", {
+        nr = "$",
+        items = qfs,
+      })
+    end,
   })
 end
 
@@ -126,7 +158,7 @@ end
 --- @param context fzfx.PipelineContext
 M.edit_rg = function(lines, context)
   local cmds = M._make_edit_rg(lines)
-  M._confirm_discard_modified(context.bufnr, function()
+  _confirm(context.bufnr, function()
     for _, e in ipairs(cmds.edits) do
       vim.cmd(e)
     end
@@ -196,7 +228,7 @@ end
 --- @param context fzfx.PipelineContext
 M.edit_grep = function(lines, context)
   local cmds = M._make_edit_grep(lines)
-  M._confirm_discard_modified(context.bufnr, function()
+  _confirm(context.bufnr, function()
     for _, e in ipairs(cmds.edits) do
       vim.cmd(e)
     end
@@ -270,7 +302,7 @@ M.set_cursor_rg_no_filename = function(lines, context)
     return
   end
 
-  M._confirm_discard_modified(context.bufnr, function()
+  _confirm(context.bufnr, function()
     for _, m in ipairs(moves) do
       vim.cmd(m)
     end
@@ -354,7 +386,7 @@ M.set_cursor_grep_no_filename = function(lines, context)
     return
   end
 
-  M._confirm_discard_modified(context.bufnr, function()
+  _confirm(context.bufnr, function()
     for _, m in ipairs(moves) do
       vim.cmd(m)
     end
@@ -442,7 +474,7 @@ end
 M.edit_ls = function(lines, context)
   local edits = M._make_edit_ls(lines, context)
 
-  M._confirm_discard_modified(context.bufnr, function()
+  _confirm(context.bufnr, function()
     for _, e in ipairs(edits) do
       vim.cmd(e)
     end
@@ -619,7 +651,7 @@ end
 --- @param context fzfx.PipelineContext
 M.edit_git_status = function(lines, context)
   local edits = M._make_edit_git_status(lines)
-  M._confirm_discard_modified(context.bufnr, function()
+  _confirm(context.bufnr, function()
     for _, e in ipairs(edits) do
       vim.cmd(e)
     end
@@ -685,7 +717,7 @@ end
 --- @param context fzfx.VimMarksPipelineContext
 M.edit_vim_mark = function(lines, context)
   local edits = M._make_edit_vim_mark(lines, context)
-  M._confirm_discard_modified(context.bufnr, function()
+  _confirm(context.bufnr, function()
     for _, e in ipairs(edits) do
       vim.cmd(e)
     end
