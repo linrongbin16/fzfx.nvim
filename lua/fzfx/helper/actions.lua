@@ -28,7 +28,7 @@ M._confirm_discard_modified = function(bufnr, callback)
       cancelreturn = "n",
     })
     if ok and str.not_empty(input) and str.startswith(input, "y", { ignorecase = true }) then
-      callback()
+      vim.schedule(callback)
     else
       log.echo(LogLevels.INFO, "cancelled.")
     end
@@ -94,16 +94,17 @@ end
 
 -- rg {
 
--- Make `:edit!` and `:call setpos` commands for rg results.
+-- Make `:edit!` and `:call cursor` commands for rg results.
 --- @param lines string[]
---- @return {edits:string[],setpos:{lineno:integer,column:integer}?}
+--- @return {edits:string[],moves:string[]}
 M._make_edit_rg = function(lines)
-  local results = {}
+  local edits = {}
+  local moves = {}
   local last_parsed
   for _, line in ipairs(lines) do
     if str.not_empty(line) then
       local parsed = parsers.parse_rg(line)
-      table.insert(results, string.format("edit! %s", parsed.filename))
+      table.insert(edits, string.format("edit! %s", parsed.filename))
       last_parsed = parsed
     end
   end
@@ -111,24 +112,29 @@ M._make_edit_rg = function(lines)
   -- For the last position, move cursor to it.
   if last_parsed ~= nil and last_parsed.lineno ~= nil then
     table.insert(
-      results,
-      string.format("call setpos('.', [0, %d, %d])", last_parsed.lineno, last_parsed.column or 1)
+      moves,
+      string.format("call cursor(%d, %d)", last_parsed.lineno, last_parsed.column or 1)
     )
-    table.insert(results, 'execute "normal! zz"')
+    table.insert(moves, 'execute "normal! zz"')
   end
 
-  return results
+  return { edits = edits, moves = moves }
 end
 
--- Run `:edit!`, `:call setpos` and `:normal! zz` commands for rg results.
+-- Run `:edit!`, `:call cursor` and `:normal! zz` commands for rg results.
 --- @param lines string[]
 --- @param context fzfx.PipelineContext
 M.edit_rg = function(lines, context)
-  local edits = M._make_edit_rg(lines)
+  local cmds = M._make_edit_rg(lines)
   M._confirm_discard_modified(context.bufnr, function()
-    for _, e in ipairs(edits) do
+    for _, e in ipairs(cmds.edits) do
       vim.cmd(e)
     end
+    vim.schedule(function()
+      for _, m in ipairs(cmds.moves) do
+        vim.cmd(m)
+      end
+    end)
   end)
 end
 
@@ -164,35 +170,41 @@ end
 
 -- Run `:edit!` commands for grep results.
 --- @param lines string[]
---- @return string[]
+--- @return {edits:string[],moves:string[]}
 M._make_edit_grep = function(lines)
-  local results = {}
+  local edits = {}
+  local moves = {}
   local last_parsed
   for _, line in ipairs(lines) do
     if str.not_empty(line) then
       local parsed = parsers.parse_grep(line)
-      table.insert(results, string.format("edit! %s", parsed.filename))
+      table.insert(edits, string.format("edit! %s", parsed.filename))
       last_parsed = parsed
     end
   end
 
   if last_parsed ~= nil and last_parsed.lineno ~= nil then
-    table.insert(results, string.format("call setpos('.', [0, %d, %d])", last_parsed.lineno, 1))
-    table.insert(results, 'execute "normal! zz"')
+    table.insert(moves, string.format("call cursor(%d, %d)", last_parsed.lineno, 1))
+    table.insert(moves, 'execute "normal! zz"')
   end
 
-  return results
+  return { edits = edits, moves = moves }
 end
 
--- Run `:edit!`, `:call setpos` and `:normal! zz` commands for grep results.
+-- Run `:edit!`, `:call cursor` and `:normal! zz` commands for grep results.
 --- @param lines string[]
 --- @param context fzfx.PipelineContext
 M.edit_grep = function(lines, context)
-  local edits = M._make_edit_grep(lines)
+  local cmds = M._make_edit_grep(lines)
   M._confirm_discard_modified(context.bufnr, function()
-    for _, e in ipairs(edits) do
+    for _, e in ipairs(cmds.edits) do
       vim.cmd(e)
     end
+    vim.schedule(function()
+      for _, m in ipairs(cmds.moves) do
+        vim.cmd(m)
+      end
+    end)
   end)
 end
 
@@ -230,7 +242,7 @@ end
 
 -- rg no filename {
 
--- Make `:call setpos` and `:normal! zz` commands for rg results (no filename).
+-- Make `:call cursor` and `:normal! zz` commands for rg results (no filename).
 --- @param lines string[]
 --- @return string[]|nil
 M._make_set_cursor_rg_no_filename = function(lines)
@@ -244,15 +256,12 @@ M._make_set_cursor_rg_no_filename = function(lines)
 
   local results = {}
   local parsed = parsers.parse_rg_no_filename(line)
-  table.insert(
-    results,
-    string.format("call setpos('.', [0, %d, %d])", parsed.lineno, parsed.column or 1)
-  )
+  table.insert(results, string.format("call cursor(%d, %d)", parsed.lineno, parsed.column or 1))
   table.insert(results, 'execute "normal! zz"')
   return results
 end
 
--- Run `:call setpos` and `:normal! zz` commands on rg results (no filename).
+-- Run `:call cursor` and `:normal! zz` commands on rg results (no filename).
 --- @param lines string[]
 --- @param context fzfx.PipelineContext
 M.set_cursor_rg_no_filename = function(lines, context)
@@ -331,12 +340,12 @@ M._make_set_cursor_grep_no_filename = function(lines)
 
   local results = {}
   local parsed = parsers.parse_grep_no_filename(line)
-  table.insert(results, string.format("call setpos('.', [0, %d, %d])", parsed.lineno, 1))
+  table.insert(results, string.format("call cursor(%d, %d)", parsed.lineno, 1))
   table.insert(results, 'execute "normal! zz"')
   return results
 end
 
--- Run `:call setpos` commands on grep results (no filename).
+-- Run `:call cursor` commands on grep results (no filename).
 --- @param lines string[]
 --- @param context fzfx.PipelineContext
 M.set_cursor_grep_no_filename = function(lines, context)
@@ -665,10 +674,7 @@ M._make_edit_vim_mark = function(lines, context)
 
   if last_parsed then
     local column = (last_parsed.col or 0) + 1
-    table.insert(
-      results,
-      string.format("call setpos('.', [0, %d, %d])", last_parsed.lineno or 1, column)
-    )
+    table.insert(results, string.format("call cursor(%d, %d)", last_parsed.lineno or 1, column))
     table.insert(results, 'execute "normal! zz"')
   end
   return results
