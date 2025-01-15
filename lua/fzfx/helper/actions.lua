@@ -28,7 +28,7 @@ M._confirm_discard_modified = function(bufnr, callback)
       cancelreturn = "n",
     })
     if ok and str.not_empty(input) and str.startswith(input, "y", { ignorecase = true }) then
-      callback()
+      vim.schedule(callback)
     else
       log.echo(LogLevels.INFO, "cancelled.")
     end
