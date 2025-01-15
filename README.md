@@ -227,7 +227,7 @@ Below keys are binded by default:
 
 - Exit keys (fzf `--expect` option)
   - `esc`: quit.
-  - `double-click`/`enter`: open/jump to file (or other different behaviors for some specific commands).
+  - `double-click`/`enter`: open/jump to file (or other behaviors for some specific commands).
   - `ctrl-q`: send lines to quickfix window.
 - Preview keys
   - `ctrl-]`: toggle preview.
