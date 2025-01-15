@@ -296,7 +296,7 @@ M._make_cursor_move_rg_bufnr = function(lines)
   end
 
   local results = {}
-  local parsed = parsers.parse_rg_no_filename(line)
+  local parsed = parsers.parse_rg_bufnr(line)
   table.insert(results, string.format("call cursor(%d, %d)", parsed.lineno, parsed.column or 1))
   table.insert(results, 'execute "normal! zz"')
   return results
@@ -333,7 +333,7 @@ M._make_setqflist_rg_bufnr = function(lines, context)
   local qfs = {}
   for _, line in ipairs(lines) do
     if str.not_empty(line) then
-      local parsed = parsers.parse_rg_no_filename(line)
+      local parsed = parsers.parse_rg_bufnr(line)
       table.insert(qfs, {
         filename = filename,
         lnum = parsed.lineno,
@@ -382,7 +382,7 @@ M._make_cursor_move_grep_bufnr = function(lines)
   end
 
   local results = {}
-  local parsed = parsers.parse_grep_no_filename(line)
+  local parsed = parsers.parse_grep_bufnr(line)
   table.insert(results, string.format("call cursor(%d, %d)", parsed.lineno, 1))
   table.insert(results, 'execute "normal! zz"')
   return results
@@ -419,7 +419,7 @@ M._make_setqflist_grep_bufnr = function(lines, context)
   local qfs = {}
   for _, line in ipairs(lines) do
     if str.not_empty(line) then
-      local parsed = parsers.parse_grep_no_filename(line)
+      local parsed = parsers.parse_grep_bufnr(line)
       table.insert(qfs, {
         filename = filename,
         lnum = parsed.lineno,

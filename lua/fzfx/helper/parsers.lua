@@ -105,7 +105,7 @@ end
 --
 --- @param line string
 --- @return {lineno:integer?,text:string}
-M.parse_grep_no_filename = function(line)
+M.parse_grep_bufnr = function(line)
   local lineno = nil
   local text = nil
 
@@ -192,7 +192,7 @@ end
 --
 --- @param line string
 --- @return {lineno:integer,column:integer?,text:string}
-M.parse_rg_no_filename = function(line)
+M.parse_rg_bufnr = function(line)
   local lineno = nil
   local column = nil
   local text = nil

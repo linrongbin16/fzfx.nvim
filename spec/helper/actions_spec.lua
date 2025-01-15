@@ -262,7 +262,7 @@ describe("helper.actions", function()
     end)
   end)
 
-  describe("[_make_set_cursor_grep_no_filename]", function()
+  describe("[_make_cursor_move_grep_bufnr]", function()
     it("empty", function()
       local actual = actions._make_cursor_move_grep_bufnr({})
       assert_eq(actual, nil)
@@ -399,7 +399,7 @@ describe("helper.actions", function()
         for _, act in ipairs(actual) do
           print(
             string.format(
-              "setqflist_grep_no_filename-1 act:%s, splits:%s\n",
+              "setqflist_grep_bufnr-1 act:%s, splits:%s\n",
               vim.inspect(act),
               vim.inspect(splits)
             )
@@ -506,7 +506,7 @@ describe("helper.actions", function()
       assert_true(true)
     end)
   end)
-  describe("[_make_set_cursor_rg_no_filename]", function()
+  describe("[_make_cursor_move_rg_bufnr]", function()
     it("empty", function()
       local actual = actions._make_cursor_move_rg_bufnr({})
       assert_eq(actual, nil)
@@ -523,7 +523,7 @@ describe("helper.actions", function()
         local actual = actions._make_cursor_move_rg_bufnr({ line })
         print(
           string.format(
-            "_make_set_cursor_rg_no_filename-%d, line:%s, actual:%s\n",
+            "_make_cursor_move_rg_bufnr-%d, line:%s, actual:%s\n",
             i,
             vim.inspect(line),
             vim.inspect(actual)
@@ -647,7 +647,7 @@ describe("helper.actions", function()
         filename = path.normalize(filename, { double_backslash = true, expand = true })
 
         for _, act in ipairs(actual) do
-          local expect = parsers.parse_rg_no_filename(line)
+          local expect = parsers.parse_rg_bufnr(line)
           assert_eq(type(act), "table")
           assert_eq(act.filename, filename)
           assert_eq(act.lnum, expect.lineno)

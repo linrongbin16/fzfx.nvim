@@ -145,7 +145,7 @@ describe("helper.parsers", function()
     end)
   end)
 
-  describe("[parse_grep_no_filename]", function()
+  describe("[parse_grep_bufnr]", function()
     it("with first colon", function()
       vim.env._FZFX_NVIM_DEVICONS_PATH = nil
       local lines = {
@@ -156,7 +156,7 @@ describe("helper.parsers", function()
         "2:3:hello",
       }
       for _, line in ipairs(lines) do
-        local actual = parsers_helper.parse_grep_no_filename(line)
+        local actual = parsers_helper.parse_grep_bufnr(line)
         assert_eq(type(actual), "table")
         assert_true(actual.filename == nil)
         assert_eq(type(actual.lineno), "number")
@@ -179,7 +179,7 @@ describe("helper.parsers", function()
         "81247",
       }
       for _, line in ipairs(lines) do
-        local actual = parsers_helper.parse_grep_no_filename(line)
+        local actual = parsers_helper.parse_grep_bufnr(line)
         assert_eq(type(actual), "table")
         assert_true(actual.filename == nil)
         assert_eq(actual.text, "")
@@ -197,7 +197,7 @@ describe("helper.parsers", function()
         "81247 query texts ",
       }
       for _, line in ipairs(lines) do
-        local actual = parsers_helper.parse_grep_no_filename(line)
+        local actual = parsers_helper.parse_grep_bufnr(line)
         assert_eq(type(actual), "table")
         assert_true(actual.filename == nil)
         assert_true(actual.lineno == nil)
@@ -312,7 +312,7 @@ describe("helper.parsers", function()
       end
     end)
   end)
-  describe("[parse_rg_no_filename]", function()
+  describe("[parse_rg_bufnr]", function()
     it("test", function()
       local lines = {
         "12:30",
@@ -322,7 +322,7 @@ describe("helper.parsers", function()
         "1:3: ok ok",
       }
       for _, line in ipairs(lines) do
-        local actual = parsers_helper.parse_rg_no_filename(line)
+        local actual = parsers_helper.parse_rg_bufnr(line)
         assert_eq(type(actual), "table")
         assert_eq(actual.filename, nil)
         assert_eq(type(actual.lineno), "number")
@@ -344,7 +344,7 @@ describe("helper.parsers", function()
         "1:3   ",
       }
       for i, line in ipairs(lines) do
-        local actual = parsers_helper.parse_rg_no_filename(line)
+        local actual = parsers_helper.parse_rg_bufnr(line)
         assert_eq(type(actual), "table")
         assert_eq(actual.filename, nil)
         assert_eq(type(actual.lineno), "number")
@@ -361,7 +361,7 @@ describe("helper.parsers", function()
         "13:2   test",
       }
       for i, line in ipairs(lines) do
-        local actual = parsers_helper.parse_rg_no_filename(line)
+        local actual = parsers_helper.parse_rg_bufnr(line)
         assert_eq(type(actual), "table")
         assert_eq(actual.filename, nil)
         assert_eq(type(actual.lineno), "number")

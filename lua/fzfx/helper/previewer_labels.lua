@@ -50,7 +50,7 @@ M.label_rg_bufnr = function(line, context)
   local filename = vim.api.nvim_buf_get_name(bufnr)
   filename = path.normalize(filename, { double_backslash = true, expand = true })
 
-  local parsed = parsers.parse_rg_no_filename(line --[[@as string]])
+  local parsed = parsers.parse_rg_bufnr(line --[[@as string]])
   return string.format(
     "%s:%d%s",
     vim.fn.fnamemodify(filename, ":t"),
@@ -86,7 +86,7 @@ M.label_grep_bufnr = function(line, context)
   local filename = vim.api.nvim_buf_get_name(bufnr)
   filename = path.normalize(filename, { double_backslash = true, expand = true })
 
-  local parsed = parsers.parse_grep_no_filename(line --[[@as string]])
+  local parsed = parsers.parse_grep_bufnr(line --[[@as string]])
   return string.format("%s:%d", vim.fn.fnamemodify(filename, ":t"), parsed.lineno or 1)
 end
 
