@@ -39,7 +39,8 @@ end
 
 -- Execute either vim commands or lua functions.
 --- @param cmds any[]|nil
-local function _execute(cmds)
+--- @param scheduled boolean?
+local function _execute(cmds, scheduled)
   if tbl.list_empty(cmds) then
     return
   end
@@ -47,24 +48,41 @@ local function _execute(cmds)
   local i = 1
   local n = #cmds
 
-  local function exe_impl()
+  --- @param f string|function
+  local function exe_impl(f)
+    assert(type(f) == "string" or type(f) == "function")
+    if type(f) == "string" then
+      vim.cmd(f)
+    else
+      f()
+    end
+  end
+
+  local function scheduled_impl()
     ---@diagnostic disable-next-line: need-check-nil
     local c = cmds[i] --[[@as string|function]]
     vim.schedule(function()
-      assert(type(c) == "string" or type(c) == "function")
-      if type(c) == "string" then
-        vim.cmd(c)
-      else
-        c()
-      end
+      exe_impl(c)
       i = i + 1
       if i <= n then
-        exe_impl()
+        scheduled_impl()
       end
     end)
   end
 
-  exe_impl()
+  local function non_scheduled_impl()
+    for _, c in
+      ipairs(cmds --[[@as any[] ]])
+    do
+      exe_impl(c)
+    end
+  end
+
+  if scheduled then
+    scheduled_impl()
+  else
+    non_scheduled_impl()
+  end
 end
 
 -- fd/find {
@@ -128,15 +146,14 @@ end
 
 -- Make `:edit!` and `:call cursor` commands for rg results.
 --- @param lines string[]
---- @return {edits:string[],moves:string[]}
+--- @return string[]
 M._make_edit_rg = function(lines)
-  local edits = {}
-  local moves = {}
+  local results = {}
   local last_parsed
   for _, line in ipairs(lines) do
     if str.not_empty(line) then
       local parsed = parsers.parse_rg(line)
-      table.insert(edits, string.format("edit! %s", parsed.filename))
+      table.insert(results, string.format("edit! %s", parsed.filename))
       last_parsed = parsed
     end
   end
@@ -144,13 +161,13 @@ M._make_edit_rg = function(lines)
   -- For the last position, move cursor to it.
   if last_parsed ~= nil and last_parsed.lineno ~= nil then
     table.insert(
-      moves,
+      results,
       string.format("call cursor(%d, %d)", last_parsed.lineno, last_parsed.column or 1)
     )
-    table.insert(moves, 'execute "normal! zz"')
+    table.insert(results, 'execute "normal! zz"')
   end
 
-  return { edits = edits, moves = moves }
+  return results
 end
 
 -- Run `:edit!`, `:call cursor` and `:normal! zz` commands for rg results.
@@ -159,14 +176,7 @@ end
 M.edit_rg = function(lines, context)
   local cmds = M._make_edit_rg(lines)
   _confirm(context.bufnr, function()
-    for _, e in ipairs(cmds.edits) do
-      vim.cmd(e)
-    end
-    vim.schedule(function()
-      for _, m in ipairs(cmds.moves) do
-        vim.cmd(m)
-      end
-    end)
+    _execute(cmds, true)
   end)
 end
 
@@ -189,10 +199,14 @@ end
 --- @param lines string[]
 M.setqflist_rg = function(lines)
   local qfs = M._make_setqflist_rg(lines)
-  vim.cmd(":copen")
-  vim.fn.setqflist({}, " ", {
-    nr = "$",
-    items = qfs,
+  _execute({
+    "copen",
+    function()
+      vim.fn.setqflist({}, " ", {
+        nr = "$",
+        items = qfs,
+      })
+    end,
   })
 end
 
