@@ -667,66 +667,31 @@ Below keys are binded by default:
 
 ### Misc
 
-<table>
-  <thead>
-    <tr>
-      <th>Name</th>
-      <th>Details</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td><code>FzfxFileExplorer</code></td>
-      <td>
-        <details>
-          <summary>Navigate around file explorer.</summary>
-          <small>
-            <ol>
-              <li>
-                <b>Include hidden</b> variant is named with
-                <code>hidden_</code> suffix.
-              </li>
-            </ol>
-            <table>
-              <thead>
-                <tr>
-                  <th>Variant</th>
-                  <th>Mode</th>
-                  <th>Select Keys</th>
-                  <th>Preview Keys</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td><code>(hidden_)args</code></td>
-                  <td>N</td>
-                  <td rowspan="5">Yes</td>
-                  <td rowspan="5">Yes</td>
-                </tr>
-                <tr>
-                  <td><code>(hidden_)visual</code></td>
-                  <td>V</td>
-                </tr>
-                <tr>
-                  <td><code>(hidden_)cword</code></td>
-                  <td>N</td>
-                </tr>
-                <tr>
-                  <td><code>(hidden_)put</code></td>
-                  <td>N</td>
-                </tr>
-                <tr>
-                  <td><code>(hidden_)resume</code></td>
-                  <td>N</td>
-                </tr>
-              </tbody>
-            </table>
-          </small>
-        </details>
-      </td>
-    </tr>
-  </tbody>
-</table>
+<details>
+  <summary>
+    <code>FzfxFileExplorer</code> (Search and navigate in file explorer)
+  </summary>
+  <small>
+    <ol>
+      <li>Press <code>enter</code> to feed command into cmdline.</li>
+      <li>
+        <b>Select keys</b> is disabled (since it is not allowed to feed multiple
+        commands into cmdline).
+      </li>
+      <li>
+        <b>Include hidden files</b> variant is named with
+        <code>hidden_</code> prefix. All variants are:
+        <ul>
+          <li><code>(hidden_)args</code></li>
+          <li><code>(hidden_)visual</code></li>
+          <li><code>(hidden_)cword</code></li>
+          <li><code>(hidden_)put</code></li>
+          <li><code>(hidden_)resume</code></li>
+        </ul>
+      </li>
+    </ol>
+  </small>
+</details>
 
 ## 📌 Recommended Key Mappings
 
