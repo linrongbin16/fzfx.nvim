@@ -2,7 +2,7 @@ local constants = require("fzfx.lib.constants")
 
 local M = {}
 
--- Escape **cmd.exe** strings for Windows OS.
+-- Escape the Windows/DOS command line (cmd.exe) strings for Windows OS.
 -- See:
 -- * https://www.robvanderwoude.com/escapechars.php
 -- * https://ss64.com/nt/syntax-esc.html
