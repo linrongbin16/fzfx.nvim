@@ -2,6 +2,10 @@ local constants = require("fzfx.lib.constants")
 
 local M = {}
 
+-- Escape **cmd.exe** strings for Windows OS.
+-- See:
+-- * https://www.robvanderwoude.com/escapechars.php
+-- * https://ss64.com/nt/syntax-esc.html
 --- @param s string
 --- @return string
 M._shellescape_windows = function(s)
@@ -12,6 +16,7 @@ M._shellescape_windows = function(s)
   return result
 end
 
+-- Escape shell strings for POSIX compatible OS.
 --- @param s string
 --- @return string
 M._shellescape_posix = function(s)
