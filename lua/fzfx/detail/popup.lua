@@ -7,8 +7,6 @@ local log = require("fzfx.lib.log")
 local shells = require("fzfx.lib.shells")
 
 local fzf_helpers = require("fzfx.detail.fzf_helpers")
-local popup_helpers = require("fzfx.detail.popup.popup_helpers")
-local window_helpers = require("fzfx.detail.popup.window_helpers")
 local PopupWindow = require("fzfx.detail.popup.window").PopupWindow
 local PopupWindowsManager = require("fzfx.detail.popup.window_manager").PopupWindowsManager
 

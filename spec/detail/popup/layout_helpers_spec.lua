@@ -1,6 +1,6 @@
 local cwd = vim.fn.getcwd()
 
-describe("detail.popup.popup_helpers", function()
+describe("detail.popup.layout_helpers", function()
   local assert_eq = assert.is_equal
   local assert_true = assert.is_true
   local assert_false = assert.is_false
@@ -26,7 +26,7 @@ describe("detail.popup.popup_helpers", function()
     end
   end)
 
-  local popup_helpers = require("fzfx.detail.popup.popup_helpers")
+  local layout_helpers = require("fzfx.detail.popup.layout_helpers")
   require("fzfx").setup({
     debug = {
       enable = true,
@@ -48,7 +48,7 @@ describe("detail.popup.popup_helpers", function()
         end
 
         it("test1 without fzf_preview_window_opts", function()
-          local actual = popup_helpers.make_center_layout(0, 1, {
+          local actual = layout_helpers.make_center_layout(0, 1, {
             relative = "editor",
             height = 0.75,
             width = 0.85,
@@ -68,7 +68,7 @@ describe("detail.popup.popup_helpers", function()
           assert_true(isclose((actual.end_col + actual.start_col) / 2, center_col))
         end)
         it("test2 without fzf_preview_window_opts", function()
-          local actual = popup_helpers.make_center_layout(0, 1, {
+          local actual = layout_helpers.make_center_layout(0, 1, {
             relative = "win",
             height = 0.47,
             width = 0.71,
@@ -97,7 +97,7 @@ describe("detail.popup.popup_helpers", function()
           assert_true(isclose((actual.end_col + actual.start_col) / 2, center_col))
         end)
         it("test3 without fzf_preview_window_opts", function()
-          local actual = popup_helpers.make_center_layout(0, 1, {
+          local actual = layout_helpers.make_center_layout(0, 1, {
             relative = "editor",
             height = 0.77,
             width = 0.81,
@@ -126,7 +126,7 @@ describe("detail.popup.popup_helpers", function()
           assert_true(isclose((actual.end_col + actual.start_col) / 2, center_col))
         end)
         it("test4 with fzf_preview_window_opts", function()
-          local actual = popup_helpers.make_center_layout(0, 1, {
+          local actual = layout_helpers.make_center_layout(0, 1, {
             relative = "editor",
             height = 0.75,
             width = 0.85,
@@ -161,7 +161,7 @@ describe("detail.popup.popup_helpers", function()
           assert_true(isclose(2 * (actual.end_col - center_col), width))
         end)
         it("test5 with fzf_preview_window_opts", function()
-          local actual = popup_helpers.make_center_layout(0, 1, {
+          local actual = layout_helpers.make_center_layout(0, 1, {
             relative = "editor",
             height = 1,
             width = 1,
@@ -193,7 +193,7 @@ describe("detail.popup.popup_helpers", function()
           assert_true(isclose(2 * (actual.end_col - center_col), width))
         end)
         it("test6 with fzf_preview_window_opts", function()
-          local actual = popup_helpers.make_center_layout(0, 1, {
+          local actual = layout_helpers.make_center_layout(0, 1, {
             relative = "win",
             height = 0.9,
             width = 0.85,
@@ -253,7 +253,7 @@ describe("detail.popup.popup_helpers", function()
         end
 
         it("test1 without fzf_preview_window_opts", function()
-          local actual = popup_helpers.make_cursor_layout(0, 1, {
+          local actual = layout_helpers.make_cursor_layout(0, 1, {
             height = 0.75,
             width = 0.85,
             row = 0,
@@ -269,7 +269,7 @@ describe("detail.popup.popup_helpers", function()
           assert_true(isclose(actual.height, height))
         end)
         it("test2 without fzf_preview_window_opts", function()
-          local actual = popup_helpers.make_cursor_layout(0, 1, {
+          local actual = layout_helpers.make_cursor_layout(0, 1, {
             height = 0.47,
             width = 0.71,
             row = 0,
@@ -292,7 +292,7 @@ describe("detail.popup.popup_helpers", function()
           assert_true(isclose(actual.height, height))
         end)
         it("test3 without fzf_preview_window_opts", function()
-          local actual = popup_helpers.make_cursor_layout(0, 1, {
+          local actual = layout_helpers.make_cursor_layout(0, 1, {
             height = 0.77,
             width = 0.81,
             row = -1,
@@ -315,7 +315,7 @@ describe("detail.popup.popup_helpers", function()
           assert_true(isclose(actual.height, height))
         end)
         it("test4 with fzf_preview_window_opts", function()
-          local actual = popup_helpers.make_cursor_layout(0, 1, {
+          local actual = layout_helpers.make_cursor_layout(0, 1, {
             height = 0.75,
             width = 0.85,
             row = 0,
@@ -342,7 +342,7 @@ describe("detail.popup.popup_helpers", function()
           assert_true(isclose(actual.height, height))
         end)
         it("test5 with fzf_preview_window_opts", function()
-          local actual = popup_helpers.make_cursor_layout(0, 1, {
+          local actual = layout_helpers.make_cursor_layout(0, 1, {
             height = 1,
             width = 1,
             row = 0,
@@ -366,7 +366,7 @@ describe("detail.popup.popup_helpers", function()
           assert_true(isclose(actual.height, height))
         end)
         it("test6 with fzf_preview_window_opts", function()
-          local actual = popup_helpers.make_cursor_layout(0, 1, {
+          local actual = layout_helpers.make_cursor_layout(0, 1, {
             height = 0.9,
             width = 0.85,
             row = 1,
