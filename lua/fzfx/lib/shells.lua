@@ -4,15 +4,27 @@ local M = {}
 
 --- @param s string
 --- @return string
+M._shellescape_windows = function(s)
+  local shellslash = vim.o.shellslash
+  vim.o.shellslash = false
+  local result = vim.fn.shellescape(s)
+  vim.o.shellslash = shellslash
+  return result
+end
+
+--- @param s string
+--- @return string
+M._shellescape_posix = function(s)
+  return vim.fn.shellescape(s)
+end
+
+--- @param s string
+--- @return string
 M.shellescape = function(s)
   if constants.IS_WINDOWS then
-    local shellslash = vim.o.shellslash
-    vim.o.shellslash = false
-    local result = vim.fn.shellescape(s)
-    vim.o.shellslash = shellslash
-    return result
+    return M._shellescape_windows(s)
   else
-    return vim.fn.shellescape(s)
+    return M._shellescape_posix(s)
   end
 end
 
