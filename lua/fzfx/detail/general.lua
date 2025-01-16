@@ -818,13 +818,37 @@ local function get_pipeline_size(pipeline_configs)
   return n
 end
 
+--- @param pipeline_configs fzfx.Options
 --- @return fzfx.PipelineContext
-local function _make_default_context()
-  return {
-    bufnr = vim.api.nvim_get_current_buf(),
-    winnr = vim.api.nvim_get_current_win(),
-    tabnr = vim.api.nvim_get_current_tabpage(),
-  }
+local function _get_context(pipeline_configs)
+  --- @type fzfx.PipelineContextMaker
+  local context_maker = function()
+    return {
+      bufnr = vim.api.nvim_get_current_buf(),
+      winnr = vim.api.nvim_get_current_win(),
+      tabnr = vim.api.nvim_get_current_tabpage(),
+    }
+  end
+
+  local context_maker_opt = tbl.tbl_get(pipeline_configs, "other_opts", "context_maker")
+  if context_maker_opt ~= nil and vim.is_callable(context_maker_opt) then
+    context_maker = context_maker_opt
+  end
+
+  return context_maker()
+end
+
+--- @param pipeline_configs fzfx.Options
+--- @return fzfx.PipelineContextShutdown
+local function _get_context_shutdown(pipeline_configs)
+  local context_shutdown = function() end
+
+  local context_shutdown_opt = tbl.tbl_get(pipeline_configs, "other_opts", "context_shutdown")
+  if context_shutdown_opt ~= nil and vim.is_callable(context_shutdown_opt) then
+    context_shutdown = context_shutdown_opt
+  end
+
+  return context_shutdown
 end
 
 --- @param name string
@@ -865,12 +889,9 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
   local previewer_switch =
     PreviewerSwitch:new(name, default_pipeline, pipeline_configs.previewers, fzf_port_file)
 
-  local context_maker = _make_default_context
-  local pipeline_context_maker = tbl.tbl_get(pipeline_configs, "other_opts", "context_maker")
-  if pipeline_context_maker ~= nil and vim.is_callable(pipeline_context_maker) then
-    context_maker = pipeline_context_maker
-  end
-  local context = context_maker()
+  local context = _get_context(pipeline_configs)
+  local context_shutdown = _get_context_shutdown(pipeline_configs)
+
   local rpc_registries = {}
 
   --- @param query_params string
@@ -1090,6 +1111,9 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
       --   )
       -- )
     end)
+
+    -- Shutdown context
+    context_shutdown(context)
   end)
 end
 

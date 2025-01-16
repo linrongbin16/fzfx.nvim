@@ -6,6 +6,7 @@
 
 - [Introduction](#introduction)
 - [Context](#context)
+- [Shutdown](#shutdown)
 - [Provider](#provider)
 - [Provider Decorator](#provider-decorator)
 - [Previewer](#previewer)
@@ -48,6 +49,12 @@ A **context** is some data that passing to pipeline.
 Starting a searching command is actually creating a popup window and a terminal, running a fzf shell command inside it. Thus there's no way to get the current buffer number (`bufnr`) or current window number (`winnr`) you're editing (actually it's the _previous_ buffer/window).
 
 So we need a way to store the **_current_** buffer/window info in somewhere, so we need to create a context before creating the popup window and launching the shell command.
+
+## Shutdown
+
+A **shutdown** is some operations that will be invoked when a search is complete, it recycles all the resources allocated during the search.
+
+For example a **context** create a temporary file to help passing data between providers/previewers. Thus we also needs a **shutdown** to delete the temporary file when the search complete.
 
 ## Provider
 
