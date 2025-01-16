@@ -683,6 +683,6 @@ Whether buffer is valid.
 
 ### [fzfx.lib.shells](https://github.com/linrongbin16/fzfx.nvim/lua/fzfx/lib/shells.lua)
 
-#### [`shellescape`](https://github.com/linrongbin16/fzfx.nvim/blob/4a0fd372be81a5aa506c32c2cacb78a279b460e5/lua/fzfx/lib/shells.lua?plain=1#L71)
+#### [`shellescape`](https://github.com/linrongbin16/fzfx.nvim/blob/f1d8b11d662ed9543c8b59672c796e35d65f08b6/lua/fzfx/lib/shells.lua?plain=1#L23)
 
 Cross-platform escape shell strings.
