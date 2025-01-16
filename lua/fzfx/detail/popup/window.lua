@@ -1,6 +1,6 @@
 local log = require("fzfx.lib.log")
 
-local popup_helpers = require("fzfx.detail.popup.popup_helpers")
+local layout_helpers = require("fzfx.detail.popup.layout_helpers")
 local window_helpers = require("fzfx.detail.popup.window_helpers")
 
 local M = {}
@@ -15,7 +15,8 @@ M._make_cursor_opts = function(win_opts, relative_winnr, relative_win_first_line
   assert(win_opts.relative == "cursor")
   -- win_opts.relative = win_opts.relative or "win"
 
-  local layout = popup_helpers.make_cursor_layout(relative_winnr, relative_win_first_line, win_opts)
+  local layout =
+    layout_helpers.make_cursor_layout(relative_winnr, relative_win_first_line, win_opts)
   log.debug("|_make_cursor_opts| layout:" .. vim.inspect(layout))
 
   local result = {
@@ -48,7 +49,8 @@ M._make_center_opts = function(win_opts, relative_winnr, relative_win_first_line
   win_opts.relative = win_opts.relative or "editor"
   assert(win_opts.relative == "editor" or win_opts.relative == "win")
 
-  local layout = popup_helpers.make_center_layout(relative_winnr, relative_win_first_line, win_opts)
+  local layout =
+    layout_helpers.make_center_layout(relative_winnr, relative_win_first_line, win_opts)
   -- log.debug("|_make_center_opts| layout:%s" .. vim.inspect(layout))
 
   local result = {
