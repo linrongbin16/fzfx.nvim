@@ -43,6 +43,12 @@ local function _provider_resultfile()
 end
 
 --- @return string
+local function _provider_donefile()
+  return _make_cache_filename("provider", "donefile")
+  -- return vim.fn.tempname() --[[@as string]]
+end
+
+--- @return string
 local function _previewer_metafile()
   return _make_cache_filename("previewer", "metafile")
 end
@@ -56,12 +62,6 @@ end
 local function _fzf_port_file()
   -- return _make_cache_filename("fzf", "port", "file")
   return vim.fn.tempname() --[[@as string]]
-end
-
---- @return string
-local function _provider_asyncdonefile()
-  return _make_cache_filename("async", "direct", "done", "file")
-  -- return vim.fn.tempname() --[[@as string]]
 end
 
 --- @param filename string
@@ -131,7 +131,7 @@ end
 --- @field provider_configs fzfx.ProviderConfig|table<fzfx.PipelineName, fzfx.ProviderConfig>
 --- @field metafile string
 --- @field resultfile string
---- @field asyncdonefile string
+--- @field donefile string
 local ProviderSwitch = {}
 
 --- @param name string
@@ -157,12 +157,15 @@ function ProviderSwitch:new(name, pipeline, provider_configs)
     end
   end
 
+  local donefile = _provider_donefile()
+  fio.writefile(donefile, "")
+
   local o = {
     pipeline = pipeline,
     provider_configs = provider_configs_map,
     metafile = _provider_metafile(),
     resultfile = _provider_resultfile(),
-    asyncdonefile = _provider_asyncdonefile(),
+    donefile = donefile,
   }
   setmetatable(o, self)
   self.__index = self
@@ -190,7 +193,7 @@ function ProviderSwitch:close()
     --   )
     -- )
   end)
-  _remove_temp_file(self.asyncdonefile, function(err, success)
+  _remove_temp_file(self.donefile, function(err, success)
     -- log.debug(
     --   string.format(
     --     "Remove provider switch resultfile:%s, err:%s, success:%s",
@@ -422,7 +425,7 @@ function ProviderSwitch:_handle_async_direct(provider_config, query, context)
     end
 
     -- Then notify provider it is ready.
-    fio.writefile(self.asyncdonefile, "done")
+    fio.writefile(self.donefile, "done")
   end
 
   local ok, err = pcall(provider_config.provider --[[@as function]], query, context, _on_complete)
@@ -981,7 +984,7 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
     provide_rpc_id,
     provider_switch.metafile,
     provider_switch.resultfile,
-    provider_switch.asyncdonefile,
+    provider_switch.donefile,
     shell.escape(query)
   )
   -- log.debug("|general| query_command:%s", vim.inspect(query_command))
