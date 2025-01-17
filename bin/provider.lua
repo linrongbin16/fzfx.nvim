@@ -231,6 +231,7 @@ elseif metaopts.provider_type == ProviderTypeEnum.ASYNC_DIRECT then
     end, 1)
   end
 
+  -- Wait until done.
   runloop()
 
   -- direct_print()
