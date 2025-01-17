@@ -10,9 +10,6 @@ if M.IS_WINDOWS then
   vim.o.shellcmdflag = "/s /c"
   vim.o.shellxquote = '"'
   vim.o.shellquote = ""
-  vim.o.shellredir = ">%s 2>&1"
-  vim.o.shellpipe = "2>&1| tee"
-  vim.o.shellxescape = ""
 else
   vim.o.shell = "sh"
 end

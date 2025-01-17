@@ -1,16 +1,14 @@
 local tbl = require("fzfx.commons.tbl")
 local path = require("fzfx.commons.path")
 local str = require("fzfx.commons.str")
-local num = require("fzfx.commons.num")
 local color_term = require("fzfx.commons.color.term")
 local fio = require("fzfx.commons.fio")
 local uv = require("fzfx.commons.uv")
-local spawn = require("fzfx.commons.spawn")
+local shell = require("fzfx.commons.shell")
 
 local constants = require("fzfx.lib.constants")
 local env = require("fzfx.lib.env")
 local log = require("fzfx.lib.log")
-local shells = require("fzfx.lib.shells")
 local config = require("fzfx.config")
 
 local ProviderTypeEnum = require("fzfx.schema").ProviderTypeEnum
@@ -625,7 +623,7 @@ end
 --- @param port string
 --- @param body string
 local function _send_http_post(port, body)
-  spawn.blockwise({
+  vim.system({
     "curl",
     "-s",
     "-S",
@@ -638,7 +636,7 @@ local function _send_http_post(port, body)
     string.format("127.0.0.1:%s", vim.trim(port)),
     "-d",
     body,
-  }, { on_exit = function(completed) end })
+  })
 end
 
 --- @param line string?
@@ -908,7 +906,7 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
     provide_rpc_id,
     provider_switch.metafile,
     provider_switch.resultfile,
-    shells.shellescape(query)
+    shell.escape(query)
   )
   -- log.debug("|general| query_command:%s", vim.inspect(query_command))
   local reload_query_command = string.format(

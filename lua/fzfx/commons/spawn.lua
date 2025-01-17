@@ -1,47 +1,30 @@
 local M = {}
 
---- @alias commons.SpawnOnExit fun(completed:vim.SystemCompleted):nil
---- @alias commons.SpawnBlockWiseOpts {on_exit:commons.SpawnOnExit?,[string]:any}
+--- @alias commons.SpawnOnLine fun(line:string):any
+--- @alias commons.SpawnOnExit fun(result:{exitcode:integer?,signal:integer?}?):nil
+--- @alias commons.SpawnOpts {on_stdout:commons.SpawnOnLine,on_stderr:commons.SpawnOnLine?,[string]:any}
+--- @alias commons.SpawnJob {obj:vim.SystemObj,opts:commons.SpawnOpts,on_exit:commons.SpawnOnExit?}
+
 --- @param cmd string[]
---- @param opts commons.SpawnBlockWiseOpts?
---- @return vim.SystemObj
-M.blockwise = function(cmd, opts)
+--- @param opts commons.SpawnOpts?
+--- @param on_exit commons.SpawnOnExit?
+--- @return commons.SpawnJob
+local function _impl(cmd, opts, on_exit)
   opts = opts or {}
-  opts.text = type(opts.text) == "boolean" and opts.text or true
 
-  return vim.system(cmd, {
-    cwd = opts.cwd,
-    env = opts.env,
-    clear_env = opts.clear_env,
-    stdin = opts.stdin,
-    text = opts.text,
-    timeout = opts.timeout,
-    detach = opts.detach,
-  }, opts.on_exit)
-end
-
---- @alias commons.SpawnLineWiseProcessor fun(line:string):any
---- @alias commons.SpawnLineWiseOpts {on_stdout:commons.SpawnLineWiseProcessor,on_stderr:commons.SpawnLineWiseProcessor?,on_exit:commons.SpawnOnExit?,[string]:any}
---- @param cmd string[]
---- @param opts commons.SpawnLineWiseOpts?
---- @return vim.SystemObj
-M.linewise = function(cmd, opts)
-  opts = opts or {}
-  opts.text = type(opts.text) == "boolean" and opts.text or true
-
-  if type(opts.on_exit) ~= "function" then
-    opts.on_exit = function() end
+  if opts.text == nil then
+    opts.text = true
   end
   if type(opts.on_stderr) ~= "function" then
     opts.on_stderr = function() end
   end
 
-  assert(type(opts.on_stdout) == "function")
-  assert(type(opts.on_stderr) == "function")
-  assert(type(opts.on_exit) == "function")
+  assert(type(opts.on_stdout) == "function", "Spawn job must have 'on_stdout' function in 'opts'")
+  assert(type(opts.on_stderr) == "function", "Spawn job must have 'on_stderr' function in 'opts'")
+  assert(type(on_exit) == "function" or on_exit == nil)
 
   --- @param buffer string
-  --- @param fn_line_processor commons.SpawnLineWiseProcessor
+  --- @param fn_line_processor commons.SpawnOnLine
   --- @return integer
   local function _process(buffer, fn_line_processor)
     local str = require("fzfx.commons.str")
@@ -123,18 +106,98 @@ M.linewise = function(cmd, opts)
     end
   end
 
-  return vim.system(cmd, {
-    cwd = opts.cwd,
-    env = opts.env,
-    clear_env = opts.clear_env,
-    ---@diagnostic disable-next-line: assign-type-mismatch
-    stdin = opts.stdin,
-    stdout = _handle_stdout,
-    stderr = _handle_stderr,
-    text = opts.text,
-    timeout = opts.timeout,
-    detach = opts.detach,
-  }, opts.on_exit)
+  --- @param completed vim.SystemCompleted
+  local function _handle_exit(completed)
+    assert(type(on_exit) == "function")
+    on_exit({ exitcode = completed.code, signal = completed.signal })
+  end
+
+  local obj
+  if type(on_exit) == "function" then
+    obj = vim.system(cmd, {
+      cwd = opts.cwd,
+      env = opts.env,
+      clear_env = opts.clear_env,
+      ---@diagnostic disable-next-line: assign-type-mismatch
+      stdin = opts.stdin,
+      stdout = _handle_stdout,
+      stderr = _handle_stderr,
+      text = opts.text,
+      timeout = opts.timeout,
+      detach = opts.detach,
+    }, _handle_exit)
+  else
+    obj = vim.system(cmd, {
+      cwd = opts.cwd,
+      env = opts.env,
+      clear_env = opts.clear_env,
+      ---@diagnostic disable-next-line: assign-type-mismatch
+      stdin = opts.stdin,
+      stdout = _handle_stdout,
+      stderr = _handle_stderr,
+      text = opts.text,
+      timeout = opts.timeout,
+      detach = opts.detach,
+    })
+  end
+
+  return { obj = obj, opts = opts, on_exit = on_exit }
+end
+
+--- @param cmd string[]
+--- @param opts commons.SpawnOpts?
+--- @param on_exit commons.SpawnOnExit
+--- @return commons.SpawnJob
+M.detached = function(cmd, opts, on_exit)
+  opts = opts or {}
+
+  assert(
+    type(opts.on_stdout) == "function",
+    "Detached spawn job must have 'on_stdout' function in 'opts'"
+  )
+  assert(opts.on_exit == nil, "Detached spawn job cannot have 'on_exit' function in 'opts'")
+  assert(
+    type(on_exit) == "function",
+    "Detached spawn job must have 'on_exit' function in 3rd parameter"
+  )
+
+  return _impl(cmd, opts, on_exit)
+end
+
+--- @param cmd string[]
+--- @param opts commons.SpawnOpts?
+--- @return commons.SpawnJob
+M.waitable = function(cmd, opts)
+  opts = opts or {}
+
+  assert(
+    type(opts.on_stdout) == "function",
+    "Waitable spawn job must have 'on_stdout' function in 'opts'"
+  )
+  assert(opts.on_exit == nil, "Waitable spawn job cannot have 'on_exit' function in 'opts'")
+
+  return _impl(cmd, opts)
+end
+
+--- @param job commons.SpawnJob
+--- @param timeout integer?
+--- @return {exitcode:integer?,signal:integer?}
+M.wait = function(job, timeout)
+  assert(type(job) == "table", "Spawn job must be a 'commons.SpawnJob' object")
+  assert(job.obj ~= nil, "Spawn job must be a 'commons.SpawnJob' object")
+  assert(type(job.opts) == "table", "Spawn job must be a 'commons.SpawnJob' object")
+  assert(
+    job.on_exit == nil,
+    "Detached spawn job cannot 'wait' for its exit, it already has 'on_exit' in 3rd parameter for its exit"
+  )
+
+  local completed
+  if type(timeout) == "number" and timeout >= 0 then
+    completed = job.obj:wait(timeout) --[[@as vim.SystemCompleted]]
+  else
+    completed = job.obj:wait() --[[@as vim.SystemCompleted]]
+  end
+  return { exitcode = completed.code, signal = completed.signal }
 end
 
 return M

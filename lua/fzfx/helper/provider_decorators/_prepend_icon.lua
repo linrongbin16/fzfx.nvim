@@ -50,7 +50,7 @@ M._decorate = function(line, delimiter, index)
     local text, color = M.DEVICONS.get_icon_color(filename, nil, { default = true })
 
     -- log_debug(
-    --     "|fzfx.shell_helpers - render_line_with_icon| ext:%s, icon:%s, icon_color:%s",
+    --     "|_prepend_icon - render_line_with_icon| ext:%s, icon:%s, icon_color:%s",
     --     vim.inspect(ext),
     --     vim.inspect(icon),
     --     vim.inspect(icon_color)

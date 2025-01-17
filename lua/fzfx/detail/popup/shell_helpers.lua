@@ -2,20 +2,6 @@ local constants = require("fzfx.lib.constants")
 
 local M = {}
 
---- @param s string
---- @return string
-M.shellescape = function(s)
-  if constants.IS_WINDOWS then
-    local shellslash = vim.o.shellslash
-    vim.o.shellslash = false
-    local result = vim.fn.shellescape(s)
-    vim.o.shellslash = shellslash
-    return result
-  else
-    return vim.fn.shellescape(s)
-  end
-end
-
 -- ShellContext {
 
 --- @class fzfx.ShellContext
@@ -24,9 +10,6 @@ end
 --- @field shellcmdflag string?
 --- @field shellxquote string?
 --- @field shellquote string?
---- @field shellredir string?
---- @field shellpipe string?
---- @field shellxescape string?
 local ShellContext = {}
 
 --- @return fzfx.ShellContext
@@ -38,9 +21,6 @@ function ShellContext:save()
         shellcmdflag = vim.o.shellcmdflag,
         shellxquote = vim.o.shellxquote,
         shellquote = vim.o.shellquote,
-        shellredir = vim.o.shellredir,
-        shellpipe = vim.o.shellpipe,
-        shellxescape = vim.o.shellxescape,
       }
     or {
       shell = vim.o.shell,
@@ -54,9 +34,6 @@ function ShellContext:save()
     vim.o.shellcmdflag = "/s /c"
     vim.o.shellxquote = '"'
     vim.o.shellquote = ""
-    vim.o.shellredir = ">%s 2>&1"
-    vim.o.shellpipe = "2>&1| tee"
-    vim.o.shellxescape = ""
   else
     vim.o.shell = "sh"
   end
@@ -71,9 +48,6 @@ function ShellContext:restore()
     vim.o.shellcmdflag = self.shellcmdflag
     vim.o.shellxquote = self.shellxquote
     vim.o.shellquote = self.shellquote
-    vim.o.shellredir = self.shellredir
-    vim.o.shellpipe = self.shellpipe
-    vim.o.shellxescape = self.shellxescape
   else
     vim.o.shell = self.shell
   end

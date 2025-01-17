@@ -219,7 +219,7 @@ There're multiple commands provided, named with prefix `Fzfx`. The sub commands 
 
 > [!NOTE]
 >
-> The `args` sub command can be omitted if there is no query text, i.e. `:FzfxFiles<CR>` is equivalent to `:FzfxFiles args<CR>`.
+> The `args` sub command can be omitted if there is no query text, e.g. `:FzfxFiles<CR>` is equivalent to `:FzfxFiles args<CR>`.
 >
 > The **visual select** variant is the only variant that works in **visual** mode, other variants work in **normal** mode.
 

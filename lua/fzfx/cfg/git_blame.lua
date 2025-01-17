@@ -1,5 +1,6 @@
+local shell = require("fzfx.commons.shell")
+
 local constants = require("fzfx.lib.constants")
-local shells = require("fzfx.lib.shells")
 local bufs = require("fzfx.lib.bufs")
 local cmds = require("fzfx.lib.commands")
 local log = require("fzfx.lib.log")
@@ -65,13 +66,13 @@ M._provider = function(query, context)
   if constants.HAS_DELTA then
     return string.format(
       [[git blame %s | delta -n --tabs 4 --blame-format %s]],
-      shells.shellescape(bufpath --[[@as string]]),
-      shells.shellescape("{commit:<8} {author:<15.14} {timestamp:<15}")
+      shell.escape(bufpath --[[@as string]]),
+      shell.escape("{commit:<8} {author:<15.14} {timestamp:<15}")
     )
   else
     return string.format(
       [[git blame --date=short --color-lines %s]],
-      shells.shellescape(bufpath --[[@as string]])
+      shell.escape(bufpath --[[@as string]])
     )
   end
 end

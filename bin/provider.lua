@@ -9,23 +9,23 @@ local tbl = require("fzfx.commons.tbl")
 local fio = require("fzfx.commons.fio")
 local spawn = require("fzfx.commons.spawn")
 local schema = require("fzfx.schema")
-local shell_helpers = require("fzfx.detail.shell_helpers")
-shell_helpers.setup("provider")
+local child_process_helpers = require("fzfx.detail.child_process_helpers")
+child_process_helpers.setup("provider")
 
 local SOCKET_ADDRESS = vim.env._FZFX_NVIM_RPC_SERVER_ADDRESS
-shell_helpers.log_ensure(str.not_empty(SOCKET_ADDRESS), "SOCKET_ADDRESS must not be empty!")
+child_process_helpers.log_ensure(str.not_empty(SOCKET_ADDRESS), "SOCKET_ADDRESS must not be empty!")
 local registry_id = _G.arg[1]
 local metafile = _G.arg[2]
 local resultfile = _G.arg[3]
 local query = _G.arg[4]
--- shell_helpers.log_debug("registry_id:[%s]", registry_id)
--- shell_helpers.log_debug("metafile:[%s]", metafile)
--- shell_helpers.log_debug("resultfile:[%s]", resultfile)
--- shell_helpers.log_debug("query:[%s]", query)
+-- child_process_helpers.log_debug("registry_id:[%s]", registry_id)
+-- child_process_helpers.log_debug("metafile:[%s]", metafile)
+-- child_process_helpers.log_debug("resultfile:[%s]", resultfile)
+-- child_process_helpers.log_debug("query:[%s]", query)
 
 local channel_id = vim.fn.sockconnect("pipe", SOCKET_ADDRESS, { rpc = true })
--- shell_helpers.log_debug("channel_id:%s", vim.inspect(channel_id))
--- shell_helpers.log_ensure(
+-- child_process_helpers.log_debug("channel_id:%s", vim.inspect(channel_id))
+-- child_process_helpers.log_ensure(
 --     channel_id > 0,
 --     "failed to connect socket on SOCKET_ADDRESS:%s",
 --     vim.inspect(SOCKET_ADDRESS)
@@ -49,13 +49,13 @@ vim.rpcrequest(
 vim.fn.chanclose(channel_id)
 
 local metajsonstring = fio.readfile(metafile, { trim = true }) --[[@as string]]
-shell_helpers.log_ensure(
+child_process_helpers.log_ensure(
   str.not_empty(metajsonstring),
   "metajsonstring is not string:" .. vim.inspect(metajsonstring)
 )
 --- @type fzfx.ProviderMetaOpts
 local metaopts = vim.json.decode(metajsonstring) --[[@as fzfx.ProviderMetaOpts]]
--- shell_helpers.log_debug("metaopt:[%s]", vim.inspect(metaopts))
+-- child_process_helpers.log_debug("metaopt:[%s]", vim.inspect(metaopts))
 
 -- decorator
 
@@ -67,13 +67,13 @@ if metaopts.provider_decorator ~= nil then
   if str.not_empty(tbl.tbl_get(metaopts.provider_decorator, "rtp")) then
     vim.opt.runtimepath:append(tbl.tbl_get(metaopts.provider_decorator, "rtp"))
   end
-  shell_helpers.log_ensure(
+  child_process_helpers.log_ensure(
     str.not_empty(tbl.tbl_get(metaopts.provider_decorator, "module")),
     "decorator module cannot be empty:" .. vim.inspect(metaopts.provider_decorator)
   )
   local module_name = metaopts.provider_decorator.module
   local ok, module_or_err = pcall(require, module_name)
-  shell_helpers.log_ensure(
+  child_process_helpers.log_ensure(
     ok and tbl.tbl_not_empty(module_or_err),
     string.format(
       "failed to load decorator:%s, error:%s",
@@ -91,13 +91,13 @@ local function println(line)
   end
   line = str.rtrim(line --[[@as string]])
   if tbl.tbl_not_empty(decorator_module) then
-    -- shell_helpers.log_debug("decorate line:%s", vim.inspect(line))
+    -- child_process_helpers.log_debug("decorate line:%s", vim.inspect(line))
     vim.schedule(function()
       local rendered_ok, rendered_line_or_err = pcall(decorator_module.decorate, line)
       if rendered_ok then
         io.write(string.format("%s\n", rendered_line_or_err))
       else
-        shell_helpers.log_err(
+        child_process_helpers.log_err(
           string.format(
             "failed to render line with decorator:%s, error:%s",
             vim.inspect(decorator_module),
@@ -115,14 +115,14 @@ local ProviderTypeEnum = schema.ProviderTypeEnum
 if metaopts.provider_type == ProviderTypeEnum.COMMAND_STRING then
   --- @type string
   local cmd = fio.readfile(resultfile, { trim = true }) --[[@as string]]
-  -- shell_helpers.log_debug("plain/command cmd:%s", vim.inspect(cmd))
+  -- child_process_helpers.log_debug("plain/command cmd:%s", vim.inspect(cmd))
   if str.empty(cmd) then
     os.exit(0)
     return
   end
 
   local p = io.popen(cmd)
-  shell_helpers.log_ensure(p ~= nil, "failed to open pipe on command:" .. vim.inspect(cmd))
+  child_process_helpers.log_ensure(p ~= nil, "failed to open pipe on command:" .. vim.inspect(cmd))
   ---@diagnostic disable-next-line: need-check-nil
   for line in p:lines("*line") do
     println(line)
@@ -131,7 +131,7 @@ if metaopts.provider_type == ProviderTypeEnum.COMMAND_STRING then
   p:close()
 elseif metaopts.provider_type == ProviderTypeEnum.COMMAND_ARRAY then
   local cmd = fio.readfile(resultfile, { trim = true }) --[[@as string]]
-  -- shell_helpers.log_debug("plain_list/command_list cmd:%s", vim.inspect(cmd))
+  -- child_process_helpers.log_debug("plain_list/command_list cmd:%s", vim.inspect(cmd))
   if str.empty(cmd) then
     os.exit(0)
     return
@@ -143,12 +143,15 @@ elseif metaopts.provider_type == ProviderTypeEnum.COMMAND_ARRAY then
     return
   end
 
-  local sp = spawn.linewise(cmd_splits, { on_stdout = println, on_stderr = function() end })
-  shell_helpers.log_ensure(sp ~= nil, "failed to run command:" .. vim.inspect(cmd_splits))
-  sp:wait()
+  local job = spawn.waitable(cmd_splits, { on_stdout = println, on_stderr = function() end })
+  child_process_helpers.log_ensure(job ~= nil, "failed to run command:" .. vim.inspect(cmd_splits))
+  local _ = spawn.wait(job)
 elseif metaopts.provider_type == ProviderTypeEnum.DIRECT then
   local reader = fio.FileLineReader:open(resultfile) --[[@as commons.FileLineReader ]]
-  shell_helpers.log_ensure(reader ~= nil, "failed to open resultfile:" .. vim.inspect(resultfile))
+  child_process_helpers.log_ensure(
+    reader ~= nil,
+    "failed to open resultfile:" .. vim.inspect(resultfile)
+  )
 
   while reader:has_next() do
     local line = reader:next()
@@ -156,5 +159,5 @@ elseif metaopts.provider_type == ProviderTypeEnum.DIRECT then
   end
   reader:close()
 else
-  shell_helpers.log_throw("unknown provider meta:" .. vim.inspect(metajsonstring))
+  child_process_helpers.log_throw("unknown provider meta:" .. vim.inspect(metajsonstring))
 end
