@@ -14,14 +14,17 @@
 --- @alias fzfx.CommandStringProvider fzfx.PlainCommandStringProvider|fzfx.FunctionalCommandStringProvider
 --- @alias fzfx.CommandArrayProvider fzfx.PlainCommandArrayProvider|fzfx.FunctionalCommandArrayProvider
 --- @alias fzfx.DirectProvider fun(query:string?,context:fzfx.PipelineContext?):string[]?
---- @alias fzfx.Provider fzfx.CommandStringProvider|fzfx.CommandArrayProvider|fzfx.DirectProvider
+--- @alias fzfx.AsyncDirectProviderOnComplete fun(data:string[]?):nil
+--- @alias fzfx.AsyncDirectProvider fun(query:string?,context:fzfx.PipelineContext?,on_complete:fzfx.AsyncDirectProviderOnComplete):nil
+--- @alias fzfx.Provider fzfx.CommandStringProvider|fzfx.CommandArrayProvider|fzfx.DirectProvider|fzfx.AsyncDirectProvider
 ---
---- @alias fzfx.ProviderType "COMMAND_STRING"|"COMMAND_ARRAY"|"DIRECT"
+--- @alias fzfx.ProviderType "COMMAND_STRING"|"COMMAND_ARRAY"|"DIRECT"|"ASYNC_DIRECT"
 --- @enum fzfx.ProviderTypeEnum
 local ProviderTypeEnum = {
   COMMAND_STRING = "COMMAND_STRING",
   COMMAND_ARRAY = "COMMAND_ARRAY",
   DIRECT = "DIRECT",
+  ASYNC_DIRECT = "ASYNC_DIRECT",
 }
 --
 -- ========== Provider Decorator ==========
