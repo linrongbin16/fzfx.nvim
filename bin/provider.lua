@@ -7,7 +7,7 @@ vim.opt.runtimepath:append(SELF_PATH)
 local str = require("fzfx.commons.str")
 local tbl = require("fzfx.commons.tbl")
 local fio = require("fzfx.commons.fio")
-local shell = require("fzfx.commons.shell")
+-- local shell = require("fzfx.commons.shell")
 local spawn = require("fzfx.commons.spawn")
 local schema = require("fzfx.schema")
 local child_process_helpers = require("fzfx.detail.child_process_helpers")
@@ -122,18 +122,18 @@ if metaopts.provider_type == ProviderTypeEnum.COMMAND_STRING then
     return
   end
 
-  local job = shell.waitable(cmd, { on_stdout = println, on_stderr = function() end })
-  child_process_helpers.log_ensure(job ~= nil, "failed to run command:" .. vim.inspect(cmd))
-  shell.wait(job)
+  -- local job = shell.waitable(cmd, { on_stdout = println, on_stderr = function() end })
+  -- child_process_helpers.log_ensure(job ~= nil, "failed to run command:" .. vim.inspect(cmd))
+  -- shell.wait(job)
 
-  -- local p = io.popen(cmd)
-  -- child_process_helpers.log_ensure(p ~= nil, "failed to open pipe on command:" .. vim.inspect(cmd))
-  -- ---@diagnostic disable-next-line: need-check-nil
-  -- for line in p:lines("*line") do
-  --   println(line)
-  -- end
-  -- ---@diagnostic disable-next-line: need-check-nil
-  -- p:close()
+  local p = io.popen(cmd)
+  child_process_helpers.log_ensure(p ~= nil, "failed to open pipe on command:" .. vim.inspect(cmd))
+  ---@diagnostic disable-next-line: need-check-nil
+  for line in p:lines("*line") do
+    println(line)
+  end
+  ---@diagnostic disable-next-line: need-check-nil
+  p:close()
 elseif metaopts.provider_type == ProviderTypeEnum.COMMAND_ARRAY then
   local cmd = fio.readfile(resultfile, { trim = true }) --[[@as string]]
   -- child_process_helpers.log_debug("plain_list/command_list cmd:%s", vim.inspect(cmd))
