@@ -66,13 +66,13 @@ M._provider = function(query, context)
   if constants.HAS_DELTA then
     return string.format(
       [[git blame %s | delta -n --tabs 4 --blame-format %s]],
-      shell.escape(bufpath --[[@as string]]),
+      vim.fn.fnameescape(bufpath --[[@as string]]),
       shell.escape("{commit:<8} {author:<15.14} {timestamp:<15}")
     )
   else
     return string.format(
       [[git blame --date=short --color-lines %s]],
-      shell.escape(bufpath --[[@as string]])
+      vim.fn.fnameescape(bufpath --[[@as string]])
     )
   end
 end
