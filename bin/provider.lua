@@ -122,10 +122,15 @@ if metaopts.provider_type == ProviderTypeEnum.COMMAND_STRING then
     return
   end
 
-  local job = spawn.waitable(
-    { "pwsh.exe", "-NoProfile", "-NonInteractive", "-command", cmd },
-    { on_stdout = println, on_stderr = function() end }
-  )
+  local job
+  if child_process_helpers.IS_WINDOWS then
+    job = spawn.waitable(
+      { "pwsh.exe", "-NoProfile", "-NonInteractive", "-command", cmd },
+      { on_stdout = println, on_stderr = function() end }
+    )
+  else
+    job = spawn.waitable({ "sh", "-c", cmd }, { on_stdout = println, on_stderr = function() end })
+  end
   child_process_helpers.log_ensure(job ~= nil, "failed to run command:" .. vim.inspect(cmd))
   spawn.wait(job)
 
