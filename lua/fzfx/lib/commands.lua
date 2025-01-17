@@ -53,7 +53,7 @@ local Command = {}
 --- @return fzfx.Command
 function Command:run(source)
   local result = CommandResult:new()
-  local sp = spawn.linewise(source, {
+  local job = spawn.waitable(source, {
     on_stdout = function(line)
       if str.not_empty(line) then
         table.insert(result.stdout, line)
@@ -65,12 +65,12 @@ function Command:run(source)
       end
     end,
   })
-  local completed = sp:wait()
-  if tbl.tbl_not_empty(completed) and completed.code then
-    result.code = completed.code
+  local job_result = spawn.wait(job)
+  if tbl.tbl_not_empty(job_result) and job_result.exitcode then
+    result.code = job_result.exitcode
   end
-  if tbl.tbl_not_empty(completed) and completed.signal then
-    result.signal = completed.signal
+  if tbl.tbl_not_empty(job_result) and job_result.signal then
+    result.signal = job_result.signal
   end
 
   local o = {

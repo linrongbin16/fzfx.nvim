@@ -625,7 +625,7 @@ end
 --- @param port string
 --- @param body string
 local function _send_http_post(port, body)
-  spawn.blockwise({
+  vim.system({
     "curl",
     "-s",
     "-S",
@@ -638,7 +638,7 @@ local function _send_http_post(port, body)
     string.format("127.0.0.1:%s", vim.trim(port)),
     "-d",
     body,
-  }, { on_exit = function(completed) end })
+  })
 end
 
 --- @param line string?

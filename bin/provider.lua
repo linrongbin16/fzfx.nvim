@@ -143,9 +143,9 @@ elseif metaopts.provider_type == ProviderTypeEnum.COMMAND_ARRAY then
     return
   end
 
-  local sp = spawn.linewise(cmd_splits, { on_stdout = println, on_stderr = function() end })
-  child_process_helpers.log_ensure(sp ~= nil, "failed to run command:" .. vim.inspect(cmd_splits))
-  sp:wait()
+  local job = spawn.waitable(cmd_splits, { on_stdout = println, on_stderr = function() end })
+  child_process_helpers.log_ensure(job ~= nil, "failed to run command:" .. vim.inspect(cmd_splits))
+  local _ = spawn.wait(job)
 elseif metaopts.provider_type == ProviderTypeEnum.DIRECT then
   local reader = fio.FileLineReader:open(resultfile) --[[@as commons.FileLineReader ]]
   child_process_helpers.log_ensure(
