@@ -24,7 +24,7 @@ M.providers = {
     method = "textDocument/definition",
     capability = "definitionProvider",
   }),
-  provider_type = ProviderTypeEnum.DIRECT,
+  provider_type = ProviderTypeEnum.ASYNC_DIRECT,
   provider_decorator = { module = _decorator.PREPEND_ICON_GREP },
 }
 
