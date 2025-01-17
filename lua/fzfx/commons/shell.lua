@@ -12,7 +12,7 @@ local M = {}
 M._escape_windows = function(s)
   local shellslash = vim.o.shellslash
   vim.o.shellslash = false
-  local result = vim.fn.escape(s)
+  local result = vim.fn.shellescape(s)
   vim.o.shellslash = shellslash
   return result
 end
@@ -21,7 +21,7 @@ end
 --- @param s string
 --- @return string
 M._escape_posix = function(s)
-  return vim.fn.escape(s)
+  return vim.fn.shellescape(s)
 end
 
 --- @param s string
@@ -34,14 +34,14 @@ M.escape = function(s)
   end
 end
 
---- @class commons.ShellContext
+--- @class commons._ShellContext
 --- @field shell string?
 --- @field shellslash string?
 --- @field shellcmdflag string?
-local ShellContext = {}
+local _ShellContext = {}
 
---- @return commons.ShellContext
-function ShellContext:save()
+--- @return commons._ShellContext
+function _ShellContext:save()
   local is_win = require("fzfx.commons.platform").IS_WINDOWS
 
   local o
@@ -71,7 +71,7 @@ function ShellContext:save()
   return o
 end
 
-function ShellContext:restore()
+function _ShellContext:restore()
   local is_win = require("fzfx.commons.platform").IS_WINDOWS
 
   if is_win then
@@ -103,7 +103,7 @@ local function _impl(cmd, opts, on_exit)
   assert(type(opts.on_stderr) == "function", "Shell job must have 'on_stderr' function in 'opts'")
   assert(type(on_exit) == "function" or on_exit == nil)
 
-  local saved_ctx = ShellContext:save()
+  local saved_ctx = _ShellContext:save()
 
   local stdout_buffer = { "" }
 
