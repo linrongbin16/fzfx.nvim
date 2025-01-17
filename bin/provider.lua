@@ -4,6 +4,7 @@ if type(SELF_PATH) ~= "string" or string.len(SELF_PATH) == 0 then
 end
 vim.opt.runtimepath:append(SELF_PATH)
 
+local num = require("fzfx.commons.num")
 local str = require("fzfx.commons.str")
 local tbl = require("fzfx.commons.tbl")
 local fio = require("fzfx.commons.fio")
@@ -190,6 +191,12 @@ elseif metaopts.provider_type == ProviderTypeEnum.ASYNC_DIRECT then
     donefile,
     {},
     function(err1, donefile1, events1)
+      child_process_helpers.log_debug(
+        string.format("ASYNC_DIRECT fsevent complete, donefile1:%s", vim.inspect(donefile1))
+      )
+      child_process_helpers.log_debug(
+        string.format("ASYNC_DIRECT fsevent complete, events1:%s", vim.inspect(events1))
+      )
       if err1 then
         child_process_helpers.log_err(
           string.format(
@@ -224,6 +231,7 @@ elseif metaopts.provider_type == ProviderTypeEnum.ASYNC_DIRECT then
   )
 
   local function runloop()
+    child_process_helpers.log_debug(string.format("ASYNC_DIRECT loop..."))
     vim.defer_fn(function()
       if not is_done then
         runloop()
@@ -231,10 +239,16 @@ elseif metaopts.provider_type == ProviderTypeEnum.ASYNC_DIRECT then
     end, 1)
   end
 
+  vim.wait(num.INT32_MAX, function()
+    -- child_process_helpers.log_debug(string.format("ASYNC_DIRECT wait..."))
+    return is_done
+  end, 100)
+
   -- Wait until done.
-  runloop()
+  -- runloop()
 
   -- direct_print()
+  child_process_helpers.log_debug(string.format("ASYNC_DIRECT exit..."))
 else
   child_process_helpers.log_throw("unknown provider meta:" .. vim.inspect(metajsonstring))
 end

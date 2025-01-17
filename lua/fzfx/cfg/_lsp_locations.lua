@@ -216,6 +216,9 @@ M._make_lsp_locations_provider = function(opts)
       opts.method,
       context.position_params,
       function(response)
+        log.debug(
+          string.format("|_make_lsp_locations_provider| got response:%s", vim.inspect(response))
+        )
         if tbl.tbl_empty(response) then
           log.echo(LogLevels.INFO, "no lsp locations found.")
           return
