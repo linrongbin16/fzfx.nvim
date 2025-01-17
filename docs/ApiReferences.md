@@ -680,9 +680,3 @@ Write error logs and throw error to user only if `condition` is false.
 #### [`buf_is_valid`](https://github.com/linrongbin16/fzfx.nvim/blob/3ad43c8657d4dc0759a90035dbafa401b2905384/lua/fzfx/lib/bufs.lua?plain=1#L5)
 
 Whether buffer is valid.
-
-### [fzfx.lib.shells](https://github.com/linrongbin16/fzfx.nvim/lua/fzfx/lib/shells.lua)
-
-#### [`shellescape`](https://github.com/linrongbin16/fzfx.nvim/blob/f1d8b11d662ed9543c8b59672c796e35d65f08b6/lua/fzfx/lib/shells.lua?plain=1#L23)
-
-Cross-platform escape shell strings.

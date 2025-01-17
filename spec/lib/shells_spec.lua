@@ -22,49 +22,4 @@ describe("lib.shells", function()
       ctx:restore()
     end)
   end)
-
-  describe("[_shellescape_posix]", function()
-    it("case-1", function()
-      local input = "hello world"
-      local expect = [['hello world']]
-      local actual = shells._shellescape_posix(input)
-      print(
-        string.format(
-          "case-1 input:%s, expect:%s, actual:%s\n",
-          vim.inspect(input),
-          vim.inspect(expect),
-          vim.inspect(actual)
-        )
-      )
-      assert_eq(expect, actual)
-    end)
-    it("case-2", function()
-      local input = "'hello world'"
-      local expect = [[''\''hello world'\''']]
-      local actual = shells._shellescape_posix(input)
-      print(
-        string.format(
-          "case-2 input:%s, expect:%s, actual:%s\n",
-          vim.inspect(input),
-          vim.inspect(expect),
-          vim.inspect(actual)
-        )
-      )
-      assert_eq(expect, actual)
-    end)
-    it("case-3", function()
-      local input = [['"hello world'"]]
-      local expect = [[''\''"hello world'\''"']]
-      local actual = shells._shellescape_posix(input)
-      print(
-        string.format(
-          "normal-case-3 input:%s, expect:%s, actual:%s\n",
-          vim.inspect(input),
-          vim.inspect(expect),
-          vim.inspect(actual)
-        )
-      )
-      assert_eq(expect, actual)
-    end)
-  end)
 end)

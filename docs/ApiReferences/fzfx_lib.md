@@ -81,9 +81,3 @@ Logging APIs, helpful for debugging and development.
 LSP compatible APIs, working across different Neovim versions.
 
 - [`get_clients`](https://github.com/linrongbin16/fzfx.nvim/blob/e136dc76a691a5c6a79d25a8f87d677d41952ea1/lua/fzfx/lib/lsp.lua#L6): Get LSP clients. For Neovim &ge; 0.10 use `vim.lsp.get_clients`, for Neovim &lt; 0.10 use `vim.lsp.get_active_clients`.
-
-## [`fzfx.lib.shells`](https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/lib/shells.lua)
-
-Shell related APIs, working on cross-platform: Windows & \*NIX.
-
-- [`shellescape`](https://github.com/linrongbin16/fzfx.nvim/blob/e136dc76a691a5c6a79d25a8f87d677d41952ea1/lua/fzfx/lib/shells.lua#L8): Escape shell parameters, on \*NIX it's simply wrapped around with single quotes `'`, on Windows it's wrapped around with double quotes `"`.

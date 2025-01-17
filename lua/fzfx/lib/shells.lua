@@ -2,37 +2,6 @@ local constants = require("fzfx.lib.constants")
 
 local M = {}
 
--- Escape the Windows/DOS command line (cmd.exe) strings for Windows OS.
--- References:
--- * https://www.robvanderwoude.com/escapechars.php
--- * https://ss64.com/nt/syntax-esc.html
---- @param s string
---- @return string
-M._shellescape_windows = function(s)
-  local shellslash = vim.o.shellslash
-  vim.o.shellslash = false
-  local result = vim.fn.shellescape(s)
-  vim.o.shellslash = shellslash
-  return result
-end
-
--- Escape shell strings for POSIX compatible OS.
---- @param s string
---- @return string
-M._shellescape_posix = function(s)
-  return vim.fn.shellescape(s)
-end
-
---- @param s string
---- @return string
-M.shellescape = function(s)
-  if constants.IS_WINDOWS then
-    return M._shellescape_windows(s)
-  else
-    return M._shellescape_posix(s)
-  end
-end
-
 -- ShellContext {
 
 --- @class fzfx.ShellContext

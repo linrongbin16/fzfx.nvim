@@ -1,9 +1,9 @@
 local str = require("fzfx.commons.str")
 local path = require("fzfx.commons.path")
 local tbl = require("fzfx.commons.tbl")
+local shell = require("fzfx.commons.shell")
 
 local consts = require("fzfx.lib.constants")
-local shells = require("fzfx.lib.shells")
 local log = require("fzfx.lib.log")
 
 local parsers_helper = require("fzfx.helper.parsers")
@@ -201,16 +201,16 @@ M.preview_git_status = function(line)
     if consts.IS_WINDOWS then
       return string.format(
         "git diff %s | delta -n --tabs 4 --width %%FZF_PREVIEW_COLUMNS%%",
-        shells.shellescape(parsed.filename)
+        shell.escape(parsed.filename)
       )
     else
       return string.format(
         "git diff %s | delta -n --tabs 4 --width $FZF_PREVIEW_COLUMNS",
-        shells.shellescape(parsed.filename)
+        shell.escape(parsed.filename)
       )
     end
   else
-    return string.format("git diff --color=always %s", shells.shellescape(parsed.filename))
+    return string.format("git diff --color=always %s", shell.escape(parsed.filename))
   end
 end
 
