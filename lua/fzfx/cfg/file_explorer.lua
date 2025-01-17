@@ -108,7 +108,12 @@ M._make_provider_lsd = function(opts)
           args,
           vim.fn.fnameescape(cwd)
         )
-        or string.format("%s %s --color=always --header -- %s", consts.LSD, args, vim.fn.fnameescape(cwd))
+      or string.format(
+        "%s %s --color=always --header -- %s",
+        consts.LSD,
+        args,
+        vim.fn.fnameescape(cwd)
+      )
   end
 
   return impl
@@ -136,7 +141,7 @@ M._make_provider_eza = function(opts)
           args,
           vim.fn.fnameescape(cwd)
         )
-        or string.format("%s --color=always %s -- %s", consts.EZA, args, vim.fn.fnameescape(cwd))
+      or string.format("%s --color=always %s -- %s", consts.EZA, args, vim.fn.fnameescape(cwd))
   end
 
   return impl
@@ -160,7 +165,7 @@ M._make_provider_ls = function(opts)
           args,
           vim.fn.fnameescape(cwd)
         )
-        or string.format("%s --color=always %s %s", consts.LS, args, vim.fn.fnameescape(cwd))
+      or string.format("%s --color=always %s %s", consts.LS, args, vim.fn.fnameescape(cwd))
   end
 
   return impl
