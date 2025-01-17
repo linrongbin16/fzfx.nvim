@@ -7,6 +7,7 @@ vim.opt.runtimepath:append(SELF_PATH)
 local str = require("fzfx.commons.str")
 local tbl = require("fzfx.commons.tbl")
 local fio = require("fzfx.commons.fio")
+local shell = require("fzfx.commons.shell")
 local spawn = require("fzfx.commons.spawn")
 local schema = require("fzfx.schema")
 local child_process_helpers = require("fzfx.detail.child_process_helpers")
@@ -121,17 +122,9 @@ if metaopts.provider_type == ProviderTypeEnum.COMMAND_STRING then
     return
   end
 
-  local job
-  if child_process_helpers.IS_WINDOWS then
-    job = spawn.waitable(
-      { "cmd.exe", "/s", "/c", cmd },
-      { on_stdout = println, on_stderr = function() end }
-    )
-  else
-    job = spawn.waitable({ "sh", "-c", cmd }, { on_stdout = println, on_stderr = function() end })
-  end
+  local job = shell.waitable(cmd, { on_stdout = println, on_stderr = function() end })
   child_process_helpers.log_ensure(job ~= nil, "failed to run command:" .. vim.inspect(cmd))
-  local _ = spawn.wait(job)
+  shell.wait(job)
 
   -- local p = io.popen(cmd)
   -- child_process_helpers.log_ensure(p ~= nil, "failed to open pipe on command:" .. vim.inspect(cmd))
