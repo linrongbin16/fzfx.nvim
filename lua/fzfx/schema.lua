@@ -14,7 +14,7 @@
 --- @alias fzfx.CommandStringProvider fzfx.PlainCommandStringProvider|fzfx.FunctionalCommandStringProvider
 --- @alias fzfx.CommandArrayProvider fzfx.PlainCommandArrayProvider|fzfx.FunctionalCommandArrayProvider
 --- @alias fzfx.DirectProvider fun(query:string?,context:fzfx.PipelineContext?):string[]?
---- @alias fzfx.AsyncDirectProviderOnComplete fun(data:string[]?):nil
+--- @alias fzfx.AsyncDirectProviderOnComplete fun(data:string[]?,err:string?):nil
 --- @alias fzfx.AsyncDirectProvider fun(query:string?,context:fzfx.PipelineContext?,on_complete:fzfx.AsyncDirectProviderOnComplete):nil
 --- @alias fzfx.Provider fzfx.CommandStringProvider|fzfx.CommandArrayProvider|fzfx.DirectProvider|fzfx.AsyncDirectProvider
 ---

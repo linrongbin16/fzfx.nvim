@@ -17,7 +17,8 @@ child_process_helpers.log_ensure(str.not_empty(SOCKET_ADDRESS), "SOCKET_ADDRESS 
 local registry_id = _G.arg[1]
 local metafile = _G.arg[2]
 local resultfile = _G.arg[3]
-local query = _G.arg[4]
+local asyncdonefile = _G.arg[4]
+local query = _G.arg[5]
 -- child_process_helpers.log_debug("registry_id:[%s]", registry_id)
 -- child_process_helpers.log_debug("metafile:[%s]", metafile)
 -- child_process_helpers.log_debug("resultfile:[%s]", resultfile)
@@ -147,6 +148,18 @@ elseif metaopts.provider_type == ProviderTypeEnum.COMMAND_ARRAY then
   child_process_helpers.log_ensure(job ~= nil, "failed to run command:" .. vim.inspect(cmd_splits))
   local _ = spawn.wait(job)
 elseif metaopts.provider_type == ProviderTypeEnum.DIRECT then
+  local reader = fio.FileLineReader:open(resultfile) --[[@as commons.FileLineReader ]]
+  child_process_helpers.log_ensure(
+    reader ~= nil,
+    "failed to open resultfile:" .. vim.inspect(resultfile)
+  )
+
+  while reader:has_next() do
+    local line = reader:next()
+    println(line)
+  end
+  reader:close()
+elseif metaopts.provider_type == ProviderTypeEnum.ASYNC_DIRECT then
   local reader = fio.FileLineReader:open(resultfile) --[[@as commons.FileLineReader ]]
   child_process_helpers.log_ensure(
     reader ~= nil,
