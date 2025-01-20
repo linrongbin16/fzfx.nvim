@@ -209,7 +209,7 @@ M._make_lsp_locations_provider = function(opts)
       context.bufnr,
       opts.method,
       context.position_params,
-      opts.timeout or 3000
+      opts.timeout or 1500
     )
     -- log.debug(
     --   "|fzfx.config - _make_lsp_locations_provider| opts:%s, lsp_results:%s, lsp_err:%s",
@@ -418,7 +418,7 @@ M._make_lsp_call_hierarchy_provider = function(opts)
       context.bufnr,
       "textDocument/prepareCallHierarchy",
       context.position_params,
-      opts.timeout or 3000
+      opts.timeout or 1500
     )
     -- log.debug(
     --   string.format(
@@ -458,7 +458,7 @@ M._make_lsp_call_hierarchy_provider = function(opts)
       context.bufnr,
       opts.method,
       { item = prepared_items[1] },
-      opts.timeout or 3000
+      opts.timeout or 1500
     )
     -- log.debug(
     --   string.format(
