@@ -1,5 +1,52 @@
 # Changelog
 
+## [8.0.0](https://github.com/linrongbin16/fzfx.nvim/compare/v7.2.1...v8.0.0) (2025-01-20)
+
+
+### ⚠ BREAKING CHANGES
+
+* **previewer:** rename "fzf_preview_xxx" APIs to "preview_xxx", drop the "fzf_" prefix! ([#788](https://github.com/linrongbin16/fzfx.nvim/issues/788))
+* **keys:** rebind default "toggle-preview" key from "ctrl-k" to "ctrl-]"! ([#788](https://github.com/linrongbin16/fzfx.nvim/issues/788))
+* **previewer:** drop "buffer_preview_xxx" APIs! ([#788](https://github.com/linrongbin16/fzfx.nvim/issues/788))
+* **schema:** simplify schema provider/previewer types! ([#786](https://github.com/linrongbin16/fzfx.nvim/issues/786))
+* **schema:** drop default provider/previewer types detection! ([#785](https://github.com/linrongbin16/fzfx.nvim/issues/785))
+* **popup:** drop unused internal methods! ([#785](https://github.com/linrongbin16/fzfx.nvim/issues/785))
+* **keys:** move toggle-preview key from "alt-p" to "ctrl-k"! ([#783](https://github.com/linrongbin16/fzfx.nvim/issues/783))
+* **buffer:** drop nvim "buffer" previewer! ([#783](https://github.com/linrongbin16/fzfx.nvim/issues/783))
+* **flags:** force "bat" previewers & drop "feature flags"! ([#782](https://github.com/linrongbin16/fzfx.nvim/issues/782))
+* **bat:** drop "bat theme auto-generation" feature! ([#780](https://github.com/linrongbin16/fzfx.nvim/issues/780))
+
+### Features
+
+* **context:** add "context_shutdown" hook to recycle resources on complete ([#796](https://github.com/linrongbin16/fzfx.nvim/issues/796)) ([31eb39c](https://github.com/linrongbin16/fzfx.nvim/commit/31eb39cfbf1440710d092a19effd6b1a0d047546))
+
+
+### Bug Fixes
+
+* **actions:** fix cursor move interruption when open file ([#792](https://github.com/linrongbin16/fzfx.nvim/issues/792)) ([6aa42b0](https://github.com/linrongbin16/fzfx.nvim/commit/6aa42b03c79f4527db61fcfbddd671bdd40bcb69))
+* **git:** fix "FZF_PREVIEW_COLUMNS" environment variable for git-delta on windows ([#789](https://github.com/linrongbin16/fzfx.nvim/issues/789)) ([a47428f](https://github.com/linrongbin16/fzfx.nvim/commit/a47428fd23d45564f2019b0d5f7d34d7d0648f0c))
+* **layout:** fix a edge case in cursor-based layout ([#784](https://github.com/linrongbin16/fzfx.nvim/issues/784)) ([3e938af](https://github.com/linrongbin16/fzfx.nvim/commit/3e938af3b6810e67181aded7af036a0b1765c188))
+* **popup:** fix popup auto-resizing on VimResized/WinResized ([#787](https://github.com/linrongbin16/fzfx.nvim/issues/787)) ([37eb055](https://github.com/linrongbin16/fzfx.nvim/commit/37eb05539e410461221972769089126569fa7b40))
+
+
+### Performance Improvements
+
+* **engine:** use "-i NONE" instead of "--clean" when launch nvim command ([#801](https://github.com/linrongbin16/fzfx.nvim/issues/801)) ([fd76817](https://github.com/linrongbin16/fzfx.nvim/commit/fd76817696f6c14ea3345a4ca9e8b7744d555ad5))
+
+
+### Code Refactoring
+
+* **bat:** drop "bat theme auto-generation" feature! ([#780](https://github.com/linrongbin16/fzfx.nvim/issues/780)) ([c8c3d5c](https://github.com/linrongbin16/fzfx.nvim/commit/c8c3d5cd1ee295e814b9fcc19b286d6f78bd5f64))
+* **buffer:** drop nvim "buffer" previewer! ([#783](https://github.com/linrongbin16/fzfx.nvim/issues/783)) ([d9b518b](https://github.com/linrongbin16/fzfx.nvim/commit/d9b518b5bea28a797be510ace4d7ca9c6a7348b3))
+* **flags:** force "bat" previewers & drop "feature flags"! ([#782](https://github.com/linrongbin16/fzfx.nvim/issues/782)) ([40ebe6b](https://github.com/linrongbin16/fzfx.nvim/commit/40ebe6b6c042c3ccf12dcef08603d748c9f44ca6))
+* **keys:** move toggle-preview key from "alt-p" to "ctrl-k"! ([#783](https://github.com/linrongbin16/fzfx.nvim/issues/783)) ([d9b518b](https://github.com/linrongbin16/fzfx.nvim/commit/d9b518b5bea28a797be510ace4d7ca9c6a7348b3))
+* **keys:** rebind default "toggle-preview" key from "ctrl-k" to "ctrl-]"! ([#788](https://github.com/linrongbin16/fzfx.nvim/issues/788)) ([b798613](https://github.com/linrongbin16/fzfx.nvim/commit/b7986132898dcfe45c07658b994d85500d22d55f))
+* **popup:** drop unused internal methods! ([#785](https://github.com/linrongbin16/fzfx.nvim/issues/785)) ([d1aa5ef](https://github.com/linrongbin16/fzfx.nvim/commit/d1aa5efe0b2d54975f0e52605ba54e81be1c2d2e))
+* **previewer:** drop "buffer_preview_xxx" APIs! ([#788](https://github.com/linrongbin16/fzfx.nvim/issues/788)) ([b798613](https://github.com/linrongbin16/fzfx.nvim/commit/b7986132898dcfe45c07658b994d85500d22d55f))
+* **previewer:** rename "fzf_preview_xxx" APIs to "preview_xxx", drop the "fzf_" prefix! ([#788](https://github.com/linrongbin16/fzfx.nvim/issues/788)) ([b798613](https://github.com/linrongbin16/fzfx.nvim/commit/b7986132898dcfe45c07658b994d85500d22d55f))
+* **schema:** drop default provider/previewer types detection! ([#785](https://github.com/linrongbin16/fzfx.nvim/issues/785)) ([d1aa5ef](https://github.com/linrongbin16/fzfx.nvim/commit/d1aa5efe0b2d54975f0e52605ba54e81be1c2d2e))
+* **schema:** simplify schema provider/previewer types! ([#786](https://github.com/linrongbin16/fzfx.nvim/issues/786)) ([8153e9d](https://github.com/linrongbin16/fzfx.nvim/commit/8153e9d6fa0c40bfb1e6ed68de0d9d160d6d96b8))
+
 ## [7.2.1](https://github.com/linrongbin16/fzfx.nvim/compare/v7.2.0...v7.2.1) (2025-01-12)
 
 
