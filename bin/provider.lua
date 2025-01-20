@@ -166,7 +166,7 @@ elseif metaopts.provider_type == ProviderTypeEnum.ASYNC_DIRECT then
     if not str.empty(done) and done == "done" then
       break
     end
-    vim.wait(100, function()
+    vim.wait(50, function()
       return true
     end)
   end
