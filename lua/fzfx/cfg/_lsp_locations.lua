@@ -297,7 +297,7 @@ M._make_lsp_locations_async_provider = function(opts)
     if not supported then
       log.echo(LogLevels.INFO, vim.inspect(opts.method) .. " not supported.")
       on_complete(vim.inspect(opts.method) .. " not supported.")
-      return nil
+      return
     end
 
     local done = false
@@ -343,6 +343,7 @@ M._make_lsp_locations_async_provider = function(opts)
         if tbl.tbl_empty(results) then
           log.echo(LogLevels.INFO, "no lsp locations found.")
           on_complete("no lsp locations found.")
+          return
         end
 
         on_complete(nil, results)
