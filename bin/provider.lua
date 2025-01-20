@@ -191,9 +191,7 @@ elseif metaopts.provider_type == ProviderTypeEnum.ASYNC_DIRECT then
     donefile,
     {},
     function(err1, donefile1, events1)
-      child_process_helpers.log_debug(
-        string.format("ASYNC_DIRECT fsevent complete, donefile1:%s", vim.inspect(donefile1))
-      )
+      child_process_helpers.log_debug(string.format("donefile1:%s", vim.inspect(donefile1)))
       -- child_process_helpers.log_debug(
       --   string.format("ASYNC_DIRECT fsevent complete, events1:%s", vim.inspect(events1))
       -- )
@@ -213,9 +211,7 @@ elseif metaopts.provider_type == ProviderTypeEnum.ASYNC_DIRECT then
       end
 
       local done = fio.readfile(donefile1)
-      child_process_helpers.log_debug(
-        string.format("ASYNC_DIRECT fsevent complete, donefile1 content:%s", vim.inspect(done))
-      )
+      child_process_helpers.log_debug(string.format("donefile1 content:%s", vim.inspect(done)))
       if done == "done" then
         -- Now the resultfile is ready, start println.
         direct_print()
