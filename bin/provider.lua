@@ -166,9 +166,9 @@ elseif metaopts.provider_type == ProviderTypeEnum.ASYNC_DIRECT then
     if not str.empty(done) and done == "done" then
       break
     end
-    vim.wait(50, function()
+    vim.wait(100, function()
       return true
-    end, 50)
+    end)
   end
 
   local reader = fio.FileLineReader:open(resultfile) --[[@as commons.FileLineReader ]]
