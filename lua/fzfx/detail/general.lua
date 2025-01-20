@@ -173,36 +173,38 @@ function ProviderSwitch:new(name, pipeline, provider_configs)
 end
 
 function ProviderSwitch:close()
-  _remove_temp_file(self.metafile, function(err, success)
-    -- log.debug(
-    --   string.format(
-    --     "Remove provider switch metafile:%s, err:%s, success:%s",
-    --     self.metafile,
-    --     vim.inspect(err),
-    --     vim.inspect(success)
-    --   )
-    -- )
-  end)
-  _remove_temp_file(self.resultfile, function(err, success)
-    -- log.debug(
-    --   string.format(
-    --     "Remove provider switch resultfile:%s, err:%s, success:%s",
-    --     self.resultfile,
-    --     vim.inspect(err),
-    --     vim.inspect(success)
-    --   )
-    -- )
-  end)
-  _remove_temp_file(self.donefile, function(err, success)
-    -- log.debug(
-    --   string.format(
-    --     "Remove provider switch resultfile:%s, err:%s, success:%s",
-    --     self.resultfile,
-    --     vim.inspect(err),
-    --     vim.inspect(success)
-    --   )
-    -- )
-  end)
+  if not env.debug_enabled() then
+    _remove_temp_file(self.metafile, function(err, success)
+      -- log.debug(
+      --   string.format(
+      --     "Remove provider switch metafile:%s, err:%s, success:%s",
+      --     self.metafile,
+      --     vim.inspect(err),
+      --     vim.inspect(success)
+      --   )
+      -- )
+    end)
+    _remove_temp_file(self.resultfile, function(err, success)
+      -- log.debug(
+      --   string.format(
+      --     "Remove provider switch resultfile:%s, err:%s, success:%s",
+      --     self.resultfile,
+      --     vim.inspect(err),
+      --     vim.inspect(success)
+      --   )
+      -- )
+    end)
+    _remove_temp_file(self.donefile, function(err, success)
+      -- log.debug(
+      --   string.format(
+      --     "Remove provider switch resultfile:%s, err:%s, success:%s",
+      --     self.resultfile,
+      --     vim.inspect(err),
+      --     vim.inspect(success)
+      --   )
+      -- )
+    end)
+  end
 end
 
 --- @param next_pipeline fzfx.PipelineName
@@ -406,6 +408,7 @@ function ProviderSwitch:_handle_async_direct(provider_config, query, context)
     log.debug(
       string.format("|async done| data1:%s, err1:%s", vim.inspect(data1), vim.inspect(err1))
     )
+    log.debug(string.format("|async done| donefile:%s", vim.inspect(self.donefile)))
 
     -- When data is ready, write it into `resultfile`.
     if err1 then
@@ -556,26 +559,28 @@ function PreviewerSwitch:new(name, pipeline, previewer_configs, fzf_port_file)
 end
 
 function PreviewerSwitch:close()
-  _remove_temp_file(self.metafile, function(err, success)
-    -- log.debug(
-    --   string.format(
-    --     "Remove provider switch metafile:%s, err:%s, success:%s",
-    --     self.metafile,
-    --     vim.inspect(err),
-    --     vim.inspect(success)
-    --   )
-    -- )
-  end)
-  _remove_temp_file(self.resultfile, function(err, success)
-    -- log.debug(
-    --   string.format(
-    --     "Remove provider switch resultfile:%s, err:%s, success:%s",
-    --     self.resultfile,
-    --     vim.inspect(err),
-    --     vim.inspect(success)
-    --   )
-    -- )
-  end)
+  if not env.debug_enabled() then
+    _remove_temp_file(self.metafile, function(err, success)
+      -- log.debug(
+      --   string.format(
+      --     "Remove provider switch metafile:%s, err:%s, success:%s",
+      --     self.metafile,
+      --     vim.inspect(err),
+      --     vim.inspect(success)
+      --   )
+      -- )
+    end)
+    _remove_temp_file(self.resultfile, function(err, success)
+      -- log.debug(
+      --   string.format(
+      --     "Remove provider switch resultfile:%s, err:%s, success:%s",
+      --     self.resultfile,
+      --     vim.inspect(err),
+      --     vim.inspect(success)
+      --   )
+      -- )
+    end)
+  end
 end
 
 --- @return fzfx.PreviewerConfig
@@ -1183,16 +1188,18 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
     -- Clean up temp files
     provider_switch:close()
     previewer_switch:close()
-    _remove_temp_file(fzf_port_file, function(err, success)
-      -- log.debug(
-      --   string.format(
-      --     "Remove fzf_port_file:%s, err:%s, success:%s",
-      --     fzf_port_file,
-      --     vim.inspect(err),
-      --     vim.inspect(success)
-      --   )
-      -- )
-    end)
+    if not env.debug_enabled() then
+      _remove_temp_file(fzf_port_file, function(err, success)
+        -- log.debug(
+        --   string.format(
+        --     "Remove fzf_port_file:%s, err:%s, success:%s",
+        --     fzf_port_file,
+        --     vim.inspect(err),
+        --     vim.inspect(success)
+        --   )
+        -- )
+      end)
+    end
 
     -- Shutdown context
     context_shutdown(context)

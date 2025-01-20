@@ -186,7 +186,7 @@ elseif metaopts.provider_type == ProviderTypeEnum.ASYNC_DIRECT then
       .. vim.inspect(done_fsevent_err)
   )
 
-  local is_done = false
+  _G._async_is_done = false
   local done_fsevent_start, done_fsevent_start_err = done_fsevent:start(
     donefile,
     {},
@@ -217,7 +217,7 @@ elseif metaopts.provider_type == ProviderTypeEnum.ASYNC_DIRECT then
         direct_print()
 
         done_fsevent:stop()
-        is_done = true
+        _G._async_is_done = true
       end
     end
   )
@@ -229,18 +229,18 @@ elseif metaopts.provider_type == ProviderTypeEnum.ASYNC_DIRECT then
       .. vim.inspect(done_fsevent_start_err)
   )
 
-  local function runloop()
-    -- child_process_helpers.log_debug(string.format("ASYNC_DIRECT loop..."))
-    vim.defer_fn(function()
-      if not is_done then
-        runloop()
-      end
-    end, 1)
-  end
+  -- local function runloop()
+  --   -- child_process_helpers.log_debug(string.format("ASYNC_DIRECT loop..."))
+  --   vim.defer_fn(function()
+  --     if not is_done then
+  --       runloop()
+  --     end
+  --   end, 1)
+  -- end
 
   vim.wait(num.INT32_MAX, function()
     -- child_process_helpers.log_debug(string.format("ASYNC_DIRECT wait..."))
-    return is_done
+    return _G._async_is_done
   end, 100)
 
   -- Wait until done.

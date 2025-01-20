@@ -3,6 +3,7 @@ local path = require("fzfx.commons.path")
 local fio = require("fzfx.commons.fio")
 local uv = require("fzfx.commons.uv")
 
+local env = require("fzfx.lib.env")
 local shells = require("fzfx.lib.shells")
 local consts = require("fzfx.lib.constants")
 local log = require("fzfx.lib.log")
@@ -399,10 +400,12 @@ end
 
 --- @param context fzfx.FileExplorerPipelineContext
 M._context_shutdown = function(context)
-  ---@diagnostic disable-next-line: undefined-field
-  if uv.fs_stat(context.cwd) then
+  if not env.debug_enabled() then
     ---@diagnostic disable-next-line: undefined-field
-    uv.fs_unlink(context.cwd, function() end)
+    if uv.fs_stat(context.cwd) then
+      ---@diagnostic disable-next-line: undefined-field
+      uv.fs_unlink(context.cwd, function() end)
+    end
   end
 end
 

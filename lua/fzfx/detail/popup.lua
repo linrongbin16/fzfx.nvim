@@ -188,8 +188,8 @@ M.popup = function(win_opts, source, fzf_opts, actions, context, on_close)
   vim.env.FZF_DEFAULT_OPTS = fzf_helpers.make_fzf_default_opts()
   vim.env.FZF_DEFAULT_COMMAND = source
 
-  -- log.debug("|Popup:new| $FZF_DEFAULT_OPTS:%s", vim.inspect(vim.env.FZF_DEFAULT_OPTS))
-  -- log.debug("|Popup:new| $FZF_DEFAULT_COMMAND:%s", vim.inspect(vim.env.FZF_DEFAULT_COMMAND))
+  log.debug("|Popup:new| $FZF_DEFAULT_OPTS:" .. vim.inspect(vim.env.FZF_DEFAULT_OPTS))
+  log.debug("|Popup:new| $FZF_DEFAULT_COMMAND:" .. vim.inspect(vim.env.FZF_DEFAULT_COMMAND))
   log.debug("|Popup:new| fzf_command:" .. vim.inspect(fzf_command))
 
   -- launch
