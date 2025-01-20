@@ -970,20 +970,22 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
   table.insert(rpc_registries, provide_rpc_id)
 
   local query_command = string.format(
-    "%s %s %s %s %s",
+    "%s %s %s %s %s %s",
     fzf_helpers.make_lua_command("provider.lua"),
     provide_rpc_id,
     provider_switch.metafile,
     provider_switch.resultfile,
+    provider_switch.donefile,
     shells.escape(query)
   )
   -- log.debug("|general| query_command:%s", vim.inspect(query_command))
   local reload_query_command = string.format(
-    "%s %s %s %s {q}",
+    "%s %s %s %s %s {q}",
     fzf_helpers.make_lua_command("provider.lua"),
     provide_rpc_id,
     provider_switch.metafile,
-    provider_switch.resultfile
+    provider_switch.resultfile,
+    provider_switch.donefile
   )
   -- log.debug(
   --   "|general| reload_query_command:%s",
