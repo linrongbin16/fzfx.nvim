@@ -9,6 +9,7 @@ local shells = require("fzfx.lib.shells")
 local constants = require("fzfx.lib.constants")
 local env = require("fzfx.lib.env")
 local log = require("fzfx.lib.log")
+local LogLevels = require("fzfx.lib.log").LogLevels
 local config = require("fzfx.config")
 
 local ProviderTypeEnum = require("fzfx.schema").ProviderTypeEnum
@@ -397,16 +398,17 @@ function ProviderSwitch:_handle_async_direct(provider_config, query, context)
     -- When data is ready, write it into `resultfile`.
     if err1 then
       fio.writefile(self.resultfile, "")
-      log.err(
-        string.format(
-          "failed to complete pipeline %s (ASYNC_DIRECT provider %s)! query:%s, context:%s, error:%s",
-          vim.inspect(self.pipeline),
-          vim.inspect(provider_config),
-          vim.inspect(query),
-          vim.inspect(context),
-          vim.inspect(err1)
-        )
-      )
+      log.echo(LogLevels.INFO, err1)
+      -- log.err(
+      --   string.format(
+      --     "failed to complete pipeline %s (ASYNC_DIRECT provider %s)! query:%s, context:%s, error:%s",
+      --     vim.inspect(self.pipeline),
+      --     vim.inspect(provider_config),
+      --     vim.inspect(query),
+      --     vim.inspect(context),
+      --     vim.inspect(err1)
+      --   )
+      -- )
     else
       if tbl.tbl_empty(data1) then
         fio.writefile(self.resultfile, "")
