@@ -314,7 +314,7 @@ end
 
 -- fzf opts }
 
---- @return string?
+--- @return string
 local function nvim_exec()
   local exe_list = {}
   table.insert(exe_list, "nvim")
@@ -326,10 +326,11 @@ local function nvim_exec()
     end
   end
   log.throw("failed to found executable 'nvim' on path!")
+  ---@diagnostic disable-next-line: return-type-mismatch
   return nil
 end
 
---- @return string?
+--- @return string
 local function fzf_exec()
   local exe_list = {}
   table.insert(exe_list, "fzf")
@@ -342,12 +343,13 @@ local function fzf_exec()
     end
   end
   log.throw("failed to found executable 'fzf' on path!")
+  ---@diagnostic disable-next-line: return-type-mismatch
   return nil
 end
 
 --- @return string
 local function make_lua_command(...)
-  local nvim_path = nvim_exec()
+  local nvim_path = nvim_exec() --[[@as string]]
   local lua_path = path.join(vim.env._FZFX_NVIM_SELF_PATH --[[@as string]], "bin", ...)
   -- log.debug(
   --     "|fzfx.fzf_helpers - make_lua_command| luascript:%s",
