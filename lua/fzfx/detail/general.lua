@@ -4,8 +4,8 @@ local str = require("fzfx.commons.str")
 local color_term = require("fzfx.commons.color.term")
 local fio = require("fzfx.commons.fio")
 local uv = require("fzfx.commons.uv")
-local shell = require("fzfx.commons.shell")
 
+local shells = require("fzfx.lib.shells")
 local constants = require("fzfx.lib.constants")
 local env = require("fzfx.lib.env")
 local log = require("fzfx.lib.log")
@@ -989,7 +989,7 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
     provider_switch.metafile,
     provider_switch.resultfile,
     provider_switch.donefile,
-    shell.escape(query)
+    shells.escape(query)
   )
   -- log.debug("|general| query_command:%s", vim.inspect(query_command))
   local reload_query_command = string.format(
