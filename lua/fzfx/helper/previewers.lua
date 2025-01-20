@@ -201,16 +201,16 @@ M.preview_git_status = function(line)
     if consts.IS_WINDOWS then
       return string.format(
         "git diff %s | delta -n --tabs 4 --width %%FZF_PREVIEW_COLUMNS%%",
-        shells.escape(parsed.filename)
+        vim.fn.fnameescape(parsed.filename)
       )
     else
       return string.format(
         "git diff %s | delta -n --tabs 4 --width $FZF_PREVIEW_COLUMNS",
-        shells.escape(parsed.filename)
+        vim.fn.fnameescape(parsed.filename)
       )
     end
   else
-    return string.format("git diff --color=always %s", shells.escape(parsed.filename))
+    return string.format("git diff --color=always %s", vim.fn.fnameescape(parsed.filename))
   end
 end
 
