@@ -9,6 +9,7 @@ local shells = require("fzfx.lib.shells")
 local constants = require("fzfx.lib.constants")
 local env = require("fzfx.lib.env")
 local log = require("fzfx.lib.log")
+local LogLevels = require("fzfx.lib.log").LogLevels
 local config = require("fzfx.config")
 
 local ProviderTypeEnum = require("fzfx.schema").ProviderTypeEnum
@@ -40,6 +41,11 @@ end
 --- @return string
 local function _provider_resultfile()
   return _make_cache_filename("provider", "resultfile")
+end
+
+--- @return string
+local function _provider_donefile()
+  return _make_cache_filename("provider", "donefile")
 end
 
 --- @return string
@@ -125,6 +131,7 @@ end
 --- @field provider_configs fzfx.ProviderConfig|table<fzfx.PipelineName, fzfx.ProviderConfig>
 --- @field metafile string
 --- @field resultfile string
+--- @field donefile string
 local ProviderSwitch = {}
 
 --- @param name string
@@ -155,6 +162,7 @@ function ProviderSwitch:new(name, pipeline, provider_configs)
     provider_configs = provider_configs_map,
     metafile = _provider_metafile(),
     resultfile = _provider_resultfile(),
+    donefile = _provider_donefile(),
   }
   setmetatable(o, self)
   self.__index = self
@@ -369,6 +377,66 @@ function ProviderSwitch:_handle_direct(provider_config, query, context)
   end
 end
 
+--- @pram provider_config fzfx.ProviderConfig
+--- @return boolean
+function ProviderSwitch:_is_async_direct(provider_config)
+  return provider_config.provider_type == ProviderTypeEnum.ASYNC_DIRECT
+end
+
+--- @param provider_config fzfx.ProviderConfig
+--- @param query string?
+--- @param context fzfx.PipelineContext?
+function ProviderSwitch:_handle_async_direct(provider_config, query, context)
+  --- @param err1 string?
+  --- @param data1 string[]?
+  local function _on_complete(err1, data1)
+    log.debug(
+      string.format("|async done| data1:%s, err1:%s", vim.inspect(data1), vim.inspect(err1))
+    )
+    log.debug(string.format("|async done| donefile:%s", vim.inspect(self.donefile)))
+
+    -- When data is ready, write it into `resultfile`.
+    if err1 then
+      fio.writefile(self.resultfile, "")
+      log.echo(LogLevels.INFO, err1)
+      -- log.err(
+      --   string.format(
+      --     "failed to complete pipeline %s (ASYNC_DIRECT provider %s)! query:%s, context:%s, error:%s",
+      --     vim.inspect(self.pipeline),
+      --     vim.inspect(provider_config),
+      --     vim.inspect(query),
+      --     vim.inspect(context),
+      --     vim.inspect(err1)
+      --   )
+      -- )
+    else
+      if tbl.tbl_empty(data1) then
+        fio.writefile(self.resultfile, "")
+      else
+        fio.writelines(self.resultfile, data1 --[[@as string[] ]])
+      end
+    end
+
+    -- Then notify provider it is ready.
+    fio.writefile(self.donefile, "done")
+  end
+
+  local ok, err = pcall(provider_config.provider --[[@as function]], query, context, _on_complete)
+  if not ok then
+    -- fio.writefile(self.resultfile, "")
+    log.err(
+      string.format(
+        "failed to call pipeline %s (ASYNC_DIRECT provider %s)! query:%s, context:%s, error:%s",
+        vim.inspect(self.pipeline),
+        vim.inspect(provider_config),
+        vim.inspect(query),
+        vim.inspect(context),
+        vim.inspect(err)
+      )
+    )
+  end
+end
+
 --- @param query string?
 --- @param context fzfx.PipelineContext?
 function ProviderSwitch:provide(query, context)
@@ -394,7 +462,8 @@ function ProviderSwitch:provide(query, context)
   log.ensure(
     provider_config.provider_type == ProviderTypeEnum.COMMAND_STRING
       or provider_config.provider_type == ProviderTypeEnum.COMMAND_ARRAY
-      or provider_config.provider_type == ProviderTypeEnum.DIRECT,
+      or provider_config.provider_type == ProviderTypeEnum.DIRECT
+      or provider_config.provider_type == ProviderTypeEnum.ASYNC_DIRECT,
     string.format(
       "invalid provider type in %s! provider type: %s",
       vim.inspect(self.pipeline),
@@ -412,6 +481,8 @@ function ProviderSwitch:provide(query, context)
     self:_handle_command_array(provider_config, query, context)
   elseif self:_is_direct(provider_config) then
     self:_handle_direct(provider_config, query, context)
+  elseif self:_is_async_direct(provider_config) then
+    self:_handle_async_direct(provider_config, query, context)
   else
     log.throw(
       string.format("|ProviderSwitch:provide| invalid provider type! %s", vim.inspect(self))
@@ -901,20 +972,22 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
   table.insert(rpc_registries, provide_rpc_id)
 
   local query_command = string.format(
-    "%s %s %s %s %s",
+    "%s %s %s %s %s %s",
     fzf_helpers.make_lua_command("provider.lua"),
     provide_rpc_id,
     provider_switch.metafile,
     provider_switch.resultfile,
+    provider_switch.donefile,
     shells.escape(query)
   )
   -- log.debug("|general| query_command:%s", vim.inspect(query_command))
   local reload_query_command = string.format(
-    "%s %s %s %s {q}",
+    "%s %s %s %s %s {q}",
     fzf_helpers.make_lua_command("provider.lua"),
     provide_rpc_id,
     provider_switch.metafile,
-    provider_switch.resultfile
+    provider_switch.resultfile,
+    provider_switch.donefile
   )
   -- log.debug(
   --   "|general| reload_query_command:%s",
