@@ -3,8 +3,8 @@ local tbl = require("fzfx.commons.tbl")
 local path = require("fzfx.commons.path")
 local fio = require("fzfx.commons.fio")
 local color_hl = require("fzfx.commons.color.hl")
-local shell = require("fzfx.commons.shell")
 
+local shells = require("fzfx.lib.shells")
 local constants = require("fzfx.lib.constants")
 local log = require("fzfx.lib.log")
 local yanks = require("fzfx.detail.yanks")
@@ -240,7 +240,7 @@ local function append_fzf_opt(opts, o)
   elseif type(o) == "table" and #o == 2 then
     local k = o[1]
     local v = o[2]
-    table.insert(opts, string.format("%s %s", k, shell.escape(v)))
+    table.insert(opts, string.format("%s %s", k, shells.escape(v)))
   else
     log.throw(string.format("|append_fzf_opt| invalid fzf opt: %s", vim.inspect(o)))
   end
