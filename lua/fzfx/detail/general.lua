@@ -460,7 +460,8 @@ function ProviderSwitch:provide(query, context)
   log.ensure(
     provider_config.provider_type == ProviderTypeEnum.COMMAND_STRING
       or provider_config.provider_type == ProviderTypeEnum.COMMAND_ARRAY
-      or provider_config.provider_type == ProviderTypeEnum.DIRECT,
+      or provider_config.provider_type == ProviderTypeEnum.DIRECT
+      or provider_config.provider_type == ProviderTypeEnum.ASYNC_DIRECT,
     string.format(
       "invalid provider type in %s! provider type: %s",
       vim.inspect(self.pipeline),
