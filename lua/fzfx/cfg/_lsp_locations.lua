@@ -17,7 +17,7 @@ local previewers_helper = require("fzfx.helper.previewers")
 local PreviewerTypeEnum = require("fzfx.schema").PreviewerTypeEnum
 local _lsp = require("fzfx.cfg._lsp")
 
-local REQUEST_TIMEOUT = 1500
+local REQUEST_TIMEOUT = 1000
 
 local M = {}
 
