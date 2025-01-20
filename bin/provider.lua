@@ -168,7 +168,7 @@ elseif metaopts.provider_type == ProviderTypeEnum.ASYNC_DIRECT then
     end
     vim.wait(50, function()
       return true
-    end)
+    end, 50)
   end
 
   local reader = fio.FileLineReader:open(resultfile) --[[@as commons.FileLineReader ]]
