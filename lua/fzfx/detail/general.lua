@@ -403,6 +403,10 @@ function ProviderSwitch:_handle_async_direct(provider_config, query, context)
   --- @param data1 string[]?
   --- @param err1 string?
   local function _on_complete(data1, err1)
+    log.debug(
+      string.format("|async done| data1:%s, err1:%s", vim.inspect(data1), vim.inspect(err1))
+    )
+
     -- When data is ready, write it into `resultfile`.
     if err1 then
       fio.writefile(self.resultfile, "")

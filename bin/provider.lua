@@ -194,9 +194,9 @@ elseif metaopts.provider_type == ProviderTypeEnum.ASYNC_DIRECT then
       child_process_helpers.log_debug(
         string.format("ASYNC_DIRECT fsevent complete, donefile1:%s", vim.inspect(donefile1))
       )
-      child_process_helpers.log_debug(
-        string.format("ASYNC_DIRECT fsevent complete, events1:%s", vim.inspect(events1))
-      )
+      -- child_process_helpers.log_debug(
+      --   string.format("ASYNC_DIRECT fsevent complete, events1:%s", vim.inspect(events1))
+      -- )
       if err1 then
         child_process_helpers.log_err(
           string.format(
@@ -213,6 +213,9 @@ elseif metaopts.provider_type == ProviderTypeEnum.ASYNC_DIRECT then
       end
 
       local done = fio.readfile(donefile1)
+      child_process_helpers.log_debug(
+        string.format("ASYNC_DIRECT fsevent complete, donefile1 content:%s", vim.inspect(done))
+      )
       if done == "done" then
         -- Now the resultfile is ready, start println.
         direct_print()
@@ -231,7 +234,7 @@ elseif metaopts.provider_type == ProviderTypeEnum.ASYNC_DIRECT then
   )
 
   local function runloop()
-    child_process_helpers.log_debug(string.format("ASYNC_DIRECT loop..."))
+    -- child_process_helpers.log_debug(string.format("ASYNC_DIRECT loop..."))
     vim.defer_fn(function()
       if not is_done then
         runloop()
@@ -248,7 +251,7 @@ elseif metaopts.provider_type == ProviderTypeEnum.ASYNC_DIRECT then
   -- runloop()
 
   -- direct_print()
-  child_process_helpers.log_debug(string.format("ASYNC_DIRECT exit..."))
+  -- child_process_helpers.log_debug(string.format("ASYNC_DIRECT exit..."))
 else
   child_process_helpers.log_throw("unknown provider meta:" .. vim.inspect(metajsonstring))
 end

@@ -194,8 +194,10 @@ M._make_lsp_locations_provider = function(opts)
     local lsp_clients = lsp.get_clients({ bufnr = context.bufnr })
     if tbl.tbl_empty(lsp_clients) then
       log.echo(LogLevels.INFO, "no active lsp clients.")
+      on_complete(nil)
       return nil
     end
+
     -- log.debug(
     --   "|fzfx.config - _make_lsp_locations_provider| lsp_clients:%s",
     --   vim.inspect(lsp_clients)
@@ -207,20 +209,28 @@ M._make_lsp_locations_provider = function(opts)
         break
       end
     end
+
     if not supported then
       log.echo(LogLevels.INFO, vim.inspect(opts.method) .. " not supported.")
+      on_complete(nil)
       return nil
     end
+
+    local done = false
+
     local request_handle = vim.lsp.buf_request_all(
       context.bufnr,
       opts.method,
       context.position_params,
       function(response)
+        done = true
+
         log.debug(
           string.format("|_make_lsp_locations_provider| got response:%s", vim.inspect(response))
         )
         if tbl.tbl_empty(response) then
           log.echo(LogLevels.INFO, "no lsp locations found.")
+          on_complete(nil)
           return
         end
 
@@ -257,6 +267,7 @@ M._make_lsp_locations_provider = function(opts)
 
         if tbl.tbl_empty(results) then
           log.echo(LogLevels.INFO, "no lsp locations found.")
+          on_complete(nil)
           return
         end
 
@@ -267,10 +278,10 @@ M._make_lsp_locations_provider = function(opts)
 
     -- Cancel request with a timeout.
     vim.defer_fn(function()
-      if vim.is_callable(request_handle) then
+      if not done and vim.is_callable(request_handle) then
         request_handle()
       end
-    end, opts.timeout or 1000)
+    end, opts.timeout or 1500)
 
     -- log.debug(
     --   "|fzfx.config - _make_lsp_locations_provider| opts:%s, lsp_results:%s, lsp_err:%s",
