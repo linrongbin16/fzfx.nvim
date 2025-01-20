@@ -2,8 +2,8 @@ local str = require("fzfx.commons.str")
 local path = require("fzfx.commons.path")
 local fio = require("fzfx.commons.fio")
 local uv = require("fzfx.commons.uv")
-local shell = require("fzfx.commons.shell")
 
+local shells = require("fzfx.lib.shells")
 local consts = require("fzfx.lib.constants")
 local log = require("fzfx.lib.log")
 local LogLevels = require("fzfx.lib.log").LogLevels
@@ -103,12 +103,17 @@ M._make_provider_lsd = function(opts)
     return consts.HAS_ECHO
         and string.format(
           "echo %s && %s %s --color=always --header -- %s",
-          shell.escape(cwd),
+          vim.fn.fnameescape(cwd),
           consts.LSD,
           args,
-          shell.escape(cwd)
+          vim.fn.fnameescape(cwd)
         )
-      or string.format("%s %s --color=always --header -- %s", consts.LSD, args, shell.escape(cwd))
+      or string.format(
+        "%s %s --color=always --header -- %s",
+        consts.LSD,
+        args,
+        vim.fn.fnameescape(cwd)
+      )
   end
 
   return impl
@@ -131,12 +136,12 @@ M._make_provider_eza = function(opts)
     return consts.HAS_ECHO
         and string.format(
           "echo %s && %s --color=always %s -- %s",
-          shell.escape(cwd),
+          vim.fn.fnameescape(cwd),
           consts.EZA,
           args,
-          shell.escape(cwd)
+          vim.fn.fnameescape(cwd)
         )
-      or string.format("%s --color=always %s -- %s", consts.EZA, args, shell.escape(cwd))
+      or string.format("%s --color=always %s -- %s", consts.EZA, args, vim.fn.fnameescape(cwd))
   end
 
   return impl
@@ -155,12 +160,12 @@ M._make_provider_ls = function(opts)
     return consts.HAS_ECHO
         and string.format(
           "echo %s && %s --color=always %s %s",
-          shell.escape(cwd),
+          vim.fn.fnameescape(cwd),
           consts.LS,
           args,
-          shell.escape(cwd)
+          vim.fn.fnameescape(cwd)
         )
-      or string.format("%s --color=always %s %s", consts.LS, args, shell.escape(cwd))
+      or string.format("%s --color=always %s %s", consts.LS, args, vim.fn.fnameescape(cwd))
   end
 
   return impl

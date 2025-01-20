@@ -241,7 +241,7 @@ describe("detail.fzf_helpers", function()
       assert_true(string.len(actual --[[@as string]]) > 0)
       assert_true(actual:gmatch("rpc") ~= nil)
       assert_true(actual:gmatch("request") ~= nil)
-      assert_true(str.find(actual, "nvim -n -u NONE --clean --headless -l") >= 1)
+      assert_true(str.find(actual, "nvim -n -u NONE -i NONE --headless -l") >= 1)
     end)
   end)
 

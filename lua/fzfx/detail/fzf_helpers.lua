@@ -3,8 +3,8 @@ local tbl = require("fzfx.commons.tbl")
 local path = require("fzfx.commons.path")
 local fio = require("fzfx.commons.fio")
 local color_hl = require("fzfx.commons.color.hl")
-local shell = require("fzfx.commons.shell")
 
+local shells = require("fzfx.lib.shells")
 local constants = require("fzfx.lib.constants")
 local log = require("fzfx.lib.log")
 local yanks = require("fzfx.detail.yanks")
@@ -240,7 +240,7 @@ local function append_fzf_opt(opts, o)
   elseif type(o) == "table" and #o == 2 then
     local k = o[1]
     local v = o[2]
-    table.insert(opts, string.format("%s %s", k, shell.escape(v)))
+    table.insert(opts, string.format("%s %s", k, shells.escape(v)))
   else
     log.throw(string.format("|append_fzf_opt| invalid fzf opt: %s", vim.inspect(o)))
   end
@@ -314,7 +314,7 @@ end
 
 -- fzf opts }
 
---- @return string?
+--- @return string
 local function nvim_exec()
   local exe_list = {}
   table.insert(exe_list, "nvim")
@@ -326,10 +326,11 @@ local function nvim_exec()
     end
   end
   log.throw("failed to found executable 'nvim' on path!")
+  ---@diagnostic disable-next-line: return-type-mismatch
   return nil
 end
 
---- @return string?
+--- @return string
 local function fzf_exec()
   local exe_list = {}
   table.insert(exe_list, "fzf")
@@ -342,18 +343,19 @@ local function fzf_exec()
     end
   end
   log.throw("failed to found executable 'fzf' on path!")
+  ---@diagnostic disable-next-line: return-type-mismatch
   return nil
 end
 
 --- @return string
 local function make_lua_command(...)
-  local nvim_path = nvim_exec()
+  local nvim_path = nvim_exec() --[[@as string]]
   local lua_path = path.join(vim.env._FZFX_NVIM_SELF_PATH --[[@as string]], "bin", ...)
   -- log.debug(
   --     "|fzfx.fzf_helpers - make_lua_command| luascript:%s",
   --     vim.inspect(lua_path)
   -- )
-  local result = string.format("%s -n -u NONE --clean --headless -l %s", nvim_path, lua_path)
+  local result = string.format("%s -n -u NONE -i NONE --headless -l %s", nvim_path, lua_path)
   -- log.debug(
   --     "|fzfx.fzf_helpers - make_lua_command| result:%s",
   --     vim.inspect(result)

@@ -1,7 +1,7 @@
 local tbl = require("fzfx.commons.tbl")
 local str = require("fzfx.commons.str")
-local shell = require("fzfx.commons.shell")
 
+local shells = require("fzfx.lib.shells")
 local cmds = require("fzfx.lib.commands")
 local log = require("fzfx.lib.log")
 local LogLevels = require("fzfx.lib.log").LogLevels
@@ -139,7 +139,7 @@ M._previewer = function(line, context)
   local branch = str.split(line, " ")[1]
   return string.format(
     "git log --pretty=%s --graph --date=short --color=always %s",
-    shell.escape(_git.GIT_LOG_PRETTY_FORMAT),
+    shells.escape(_git.GIT_LOG_PRETTY_FORMAT),
     branch
   )
 end

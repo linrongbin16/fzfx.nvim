@@ -17,6 +17,8 @@ local previewers_helper = require("fzfx.helper.previewers")
 local PreviewerTypeEnum = require("fzfx.schema").PreviewerTypeEnum
 local _lsp = require("fzfx.cfg._lsp")
 
+local REQUEST_TIMEOUT = 1500
+
 local M = {}
 
 -- LSP Range: https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#range
@@ -209,7 +211,7 @@ M._make_lsp_locations_provider = function(opts)
       context.bufnr,
       opts.method,
       context.position_params,
-      opts.timeout or 3000
+      opts.timeout or REQUEST_TIMEOUT
     )
     -- log.debug(
     --   "|fzfx.config - _make_lsp_locations_provider| opts:%s, lsp_results:%s, lsp_err:%s",
@@ -418,7 +420,7 @@ M._make_lsp_call_hierarchy_provider = function(opts)
       context.bufnr,
       "textDocument/prepareCallHierarchy",
       context.position_params,
-      opts.timeout or 3000
+      opts.timeout or REQUEST_TIMEOUT
     )
     -- log.debug(
     --   string.format(
@@ -458,7 +460,7 @@ M._make_lsp_call_hierarchy_provider = function(opts)
       context.bufnr,
       opts.method,
       { item = prepared_items[1] },
-      opts.timeout or 3000
+      opts.timeout or REQUEST_TIMEOUT
     )
     -- log.debug(
     --   string.format(
