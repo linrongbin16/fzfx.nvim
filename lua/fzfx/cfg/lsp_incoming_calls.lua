@@ -18,11 +18,11 @@ M.variants = {
 
 M.providers = {
   key = "default",
-  provider = _lsp_locations._make_lsp_call_hierarchy_provider({
+  provider = _lsp_locations._make_lsp_call_hierarchy_async_provider({
     method = "callHierarchy/incomingCalls",
     capability = "callHierarchyProvider",
   }),
-  provider_type = ProviderTypeEnum.DIRECT,
+  provider_type = ProviderTypeEnum.ASYNC_DIRECT,
   provider_decorator = { module = _decorator.PREPEND_ICON_GREP },
 }
 
