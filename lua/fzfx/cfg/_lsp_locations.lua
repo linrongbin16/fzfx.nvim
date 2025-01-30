@@ -180,6 +180,45 @@ end
 --- @alias fzfx.LspMethod "textDocument/definition"|"textDocument/type_definition"|"textDocument/references"|"textDocument/implementation"|"callHierarchy/incomingCalls"|"callHierarchy/outgoingCalls"|"textDocument/prepareCallHierarchy"
 --- @alias fzfx.LspServerCapability "definitionProvider"|"typeDefinitionProvider"|"referencesProvider"|"implementationProvider"|"callHierarchyProvider"
 
+--- @param response table
+--- @return string[]|nil
+M._process_location_response = function(response)
+  local visited_locations = {}
+  local results = {}
+  for client_id, client_response in pairs(response) do
+    if client_id ~= nil and tbl.tbl_not_empty(tbl.tbl_get(client_response, "result")) then
+      local locations = client_response.result
+      if M._is_lsp_location(locations) then
+        local loc_hash = M._hash_lsp_location(locations)
+        if visited_locations[loc_hash] == nil then
+          visited_locations[loc_hash] = true
+          local line = M._render_lsp_location_to_line(locations)
+          if str.not_empty(line) then
+            table.insert(results, line)
+          end
+        end
+      else
+        for _, loc in ipairs(locations) do
+          local loc_hash = M._hash_lsp_location(loc)
+          if visited_locations[loc_hash] == nil then
+            visited_locations[loc_hash] = true
+            local line = M._render_lsp_location_to_line(loc)
+            if str.not_empty(line) then
+              table.insert(results, line)
+            end
+          end
+        end
+      end
+    end
+  end
+
+  if tbl.tbl_empty(results) then
+    return nil
+  end
+
+  return results
+end
+
 --- @param opts {method:fzfx.LspMethod,capability:fzfx.LspServerCapability,timeout:integer?}
 --- @return fun(query:string,context:fzfx.LspLocationPipelineContext):string[]|nil
 M._make_lsp_locations_provider = function(opts)
@@ -228,36 +267,7 @@ M._make_lsp_locations_provider = function(opts)
       return nil
     end
 
-    local visited_locations = {}
-    local results = {}
-    for client_id, client_response in
-      pairs(response --[[@as table]])
-    do
-      if client_id ~= nil and tbl.tbl_not_empty(tbl.tbl_get(client_response, "result")) then
-        local locations = client_response.result
-        if M._is_lsp_location(locations) then
-          local loc_hash = M._hash_lsp_location(locations)
-          if visited_locations[loc_hash] == nil then
-            visited_locations[loc_hash] = true
-            local line = M._render_lsp_location_to_line(locations)
-            if str.not_empty(line) then
-              table.insert(results, line)
-            end
-          end
-        else
-          for _, loc in ipairs(locations) do
-            local loc_hash = M._hash_lsp_location(loc)
-            if visited_locations[loc_hash] == nil then
-              visited_locations[loc_hash] = true
-              local line = M._render_lsp_location_to_line(loc)
-              if str.not_empty(line) then
-                table.insert(results, line)
-              end
-            end
-          end
-        end
-      end
-    end
+    local results = M._process_location_response(response --[[@as table]])
 
     if tbl.tbl_empty(results) then
       log.echo(LogLevels.INFO, "no lsp locations found.")
@@ -309,36 +319,7 @@ M._make_lsp_locations_async_provider = function(opts)
       function(response)
         done = true
 
-        local visited_locations = {}
-        local results = {}
-        for client_id, client_response in
-          pairs(response --[[@as table]])
-        do
-          if client_id ~= nil and tbl.tbl_not_empty(tbl.tbl_get(client_response, "result")) then
-            local locations = client_response.result
-            if M._is_lsp_location(locations) then
-              local loc_hash = M._hash_lsp_location(locations)
-              if visited_locations[loc_hash] == nil then
-                visited_locations[loc_hash] = true
-                local line = M._render_lsp_location_to_line(locations)
-                if str.not_empty(line) then
-                  table.insert(results, line)
-                end
-              end
-            else
-              for _, loc in ipairs(locations) do
-                local loc_hash = M._hash_lsp_location(loc)
-                if visited_locations[loc_hash] == nil then
-                  visited_locations[loc_hash] = true
-                  local line = M._render_lsp_location_to_line(loc)
-                  if str.not_empty(line) then
-                    table.insert(results, line)
-                  end
-                end
-              end
-            end
-          end
-        end
+        local results = M._process_location_response(response --[[@as table]])
 
         if tbl.tbl_empty(results) then
           log.echo(LogLevels.INFO, "no lsp locations found.")
