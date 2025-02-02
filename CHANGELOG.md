@@ -1,5 +1,18 @@
 # Changelog
 
+## [8.1.0](https://github.com/linrongbin16/fzfx.nvim/compare/v8.0.0...v8.1.0) (2025-02-02)
+
+
+### Features
+
+* **lsp:** make incoming/outgoing calls async ([#805](https://github.com/linrongbin16/fzfx.nvim/issues/805)) ([fd313c1](https://github.com/linrongbin16/fzfx.nvim/commit/fd313c19578615d327fc9292f9d68a472d60c935))
+* **provider:** support new "ASYNC_DIRECT" provider type ([#803](https://github.com/linrongbin16/fzfx.nvim/issues/803)) ([a5c3090](https://github.com/linrongbin16/fzfx.nvim/commit/a5c309040adb448b374a9a63eaed18ef7ffd9081))
+
+
+### Performance Improvements
+
+* **lsp:** use new async provider for 4 lsp location providers to avoid UI blocking ([#803](https://github.com/linrongbin16/fzfx.nvim/issues/803)) ([a5c3090](https://github.com/linrongbin16/fzfx.nvim/commit/a5c309040adb448b374a9a63eaed18ef7ffd9081))
+
 ## [8.0.0](https://github.com/linrongbin16/fzfx.nvim/compare/v7.2.1...v8.0.0) (2025-01-20)
 
 
