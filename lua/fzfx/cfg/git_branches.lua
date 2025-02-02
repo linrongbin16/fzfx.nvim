@@ -1,5 +1,6 @@
 local tbl = require("fzfx.commons.tbl")
 local str = require("fzfx.commons.str")
+local async = require("fzfx.commons.async")
 
 local shells = require("fzfx.lib.shells")
 local cmds = require("fzfx.lib.commands")
@@ -81,18 +82,19 @@ M.variants = {
 
 --- @param opts {remote_branch:boolean?}?
 --- @return fun():string[]|nil
-M._make_provider = function(opts)
+M._make_async_provider = function(opts)
   local remote_branch = tbl.tbl_get(opts, "remote_branch") or false
 
   --- @param query string
   --- @param context fzfx.PipelineContext
-  --- @return string[]|nil
-  local function impl(query, context)
+  --- @param on_complete fzfx.AsyncDirectProviderOnComplete
+  local function impl(query, context, on_complete)
     local git_root_cmd = cmds.GitRootCommand:run()
     if git_root_cmd:failed() then
-      log.echo(LogLevels.INFO, "not in git repo.")
-      return nil
+      on_complete("not in git repo.")
+      return
     end
+
     local git_current_branch_cmd = cmds.GitCurrentBranchCommand:run()
     if git_current_branch_cmd:failed() then
       log.echo(LogLevels.WARN, table.concat(git_current_branch_cmd.result.stderr, " "))
@@ -116,19 +118,19 @@ M._make_provider = function(opts)
   return impl
 end
 
-local local_branch_provider = M._make_provider()
-local remote_branch_provider = M._make_provider({ remote_branch = true })
+local local_branch_provider = M._make_async_provider()
+local remote_branch_provider = M._make_async_provider({ remote_branch = true })
 
 M.providers = {
   local_branch = {
     key = "ctrl-o",
     provider = local_branch_provider,
-    provider_type = ProviderTypeEnum.DIRECT,
+    provider_type = ProviderTypeEnum.ASYNC_DIRECT,
   },
   remote_branch = {
     key = "ctrl-r",
     provider = remote_branch_provider,
-    provider_type = ProviderTypeEnum.DIRECT,
+    provider_type = ProviderTypeEnum.ASYNC_DIRECT,
   },
 }
 
