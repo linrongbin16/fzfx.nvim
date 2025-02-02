@@ -1,6 +1,6 @@
 local str = require("fzfx.commons.str")
-local tbl = require("fzfx.commons.tbl")
 local spawn = require("fzfx.commons.spawn")
+local async = require("fzfx.commons.async")
 
 local M = {}
 
@@ -42,200 +42,70 @@ M.CommandResult = CommandResult
 
 -- CommandResult }
 
--- Command {
-
---- @class fzfx.Command
---- @field source string[]
---- @field result fzfx.CommandResult?
-local Command = {}
+-- Commands {
 
 --- @param source string[]
---- @return fzfx.Command
-function Command:run(source)
-  local result = CommandResult:new()
-  local job = spawn.waitable(source, {
+--- @param on_complete fun(result:fzfx.CommandResult):any
+local function run_impl(source, on_complete)
+  assert(type(on_complete) == "function", "The 2nd parameter must be callback function")
+
+  local stdout_data = {}
+  local stderr_data = {}
+
+  local job = spawn.detached(source, {
     on_stdout = function(line)
       if str.not_empty(line) then
-        table.insert(result.stdout, line)
+        table.insert(stdout_data, line)
       end
     end,
     on_stderr = function(line)
       if str.not_empty(line) then
-        table.insert(result.stderr, line)
+        table.insert(stderr_data, line)
       end
     end,
-  })
-  local job_result = spawn.wait(job)
-  if tbl.tbl_not_empty(job_result) and job_result.exitcode then
-    result.code = job_result.exitcode
+  }, function(completed)
+    local result = CommandResult:new(stdout_data, stderr_data, completed.exitcode, completed.signal)
+    on_complete(result)
+  end)
+end
+
+-- Convert callback-style function 'run_impl' into async-style.
+--- @type async fun(source:string[]):fzfx.CommandResult
+M.run = async.wrap(2, run_impl)
+
+-- Get git repository root path.
+--- @type async fun():fzfx.CommandResult
+M.run_git_root = async.wrap(1, function(on_complete)
+  run_impl({ "git", "rev-parse", "--show-toplevel" }, on_complete)
+end)
+
+-- Get git repository branches.
+--- @type async fun():fzfx.CommandResult
+M.run_git_branches = async.wrap(
+  2,
+  --- @param remote boolean?
+  --- @param on_complete fun(result:fzfx.CommandResult):any
+  function(remote, on_complete)
+    if remote then
+      run_impl({ "git", "branch", "--remotes" }, on_complete)
+    else
+      run_impl({ "git", "branch" }, on_complete)
+    end
   end
-  if tbl.tbl_not_empty(job_result) and job_result.signal then
-    result.signal = job_result.signal
-  end
+)
 
-  local o = {
-    source = source,
-    result = result,
-  }
-  setmetatable(o, self)
-  self.__index = self
-  return o
-end
+-- Get git repository current branch.
+--- @type async fun():fzfx.CommandResult
+M.run_git_current_branch = async.wrap(1, function(on_complete)
+  run_impl({ "git", "rev-parse", "--abbrev-ref", "HEAD" }, on_complete)
+end)
 
---- @return boolean
-function Command:failed()
-  return self.result:failed()
-end
+-- Get git repository remotes.
+--- @type async fun():fzfx.CommandResult
+M.run_git_remotes = async.wrap(1, function(on_complete)
+  run_impl({ "git", "remote" }, on_complete)
+end)
 
-M.Command = Command
-
--- Command }
-
--- GitRootCommand {
-
---- @class fzfx.GitRootCommand
---- @field result fzfx.CommandResult?
-local GitRootCommand = {}
-
---- @return fzfx.GitRootCommand
-function GitRootCommand:run()
-  local cmd = Command:run({ "git", "rev-parse", "--show-toplevel" })
-  local o = {
-    result = cmd.result,
-  }
-  setmetatable(o, self)
-  self.__index = self
-  return o
-end
-
---- @return boolean
-function GitRootCommand:failed()
-  return self.result:failed()
-end
-
---- @return string?
-function GitRootCommand:output()
-  if self:failed() then
-    return nil
-  end
-  return (type(self.result.stdout) == "table" and #self.result.stdout > 0)
-      and vim.trim(self.result.stdout[1])
-    or nil
-end
-
-M.GitRootCommand = GitRootCommand
-
--- GitRootCommand }
-
--- GitBranchesCommand {
-
---- @class fzfx.GitBranchesCommand
---- @field result fzfx.CommandResult?
-local GitBranchesCommand = {}
-
---- @param remotes boolean?
---- @return fzfx.GitBranchesCommand
-function GitBranchesCommand:run(remotes)
-  local cmd = remotes and Command:run({ "git", "branch", "--remotes" })
-    or Command:run({ "git", "branch" })
-
-  local o = {
-    result = cmd.result,
-  }
-  setmetatable(o, self)
-  self.__index = self
-  return o
-end
-
---- @return boolean
-function GitBranchesCommand:failed()
-  return self.result:failed()
-end
-
---- @return string[]?
-function GitBranchesCommand:output()
-  if self:failed() then
-    return nil
-  end
-  return self.result.stdout
-end
-
-M.GitBranchesCommand = GitBranchesCommand
-
--- GitBranchesCommand }
-
--- GitCurrentBranchCommand {
-
---- @class fzfx.GitCurrentBranchCommand
---- @field result fzfx.CommandResult?
-local GitCurrentBranchCommand = {}
-
---- @return fzfx.GitCurrentBranchCommand
-function GitCurrentBranchCommand:run()
-  -- git rev-parse --abbrev-ref HEAD
-  local cmd = Command:run({ "git", "rev-parse", "--abbrev-ref", "HEAD" })
-
-  local o = {
-    result = cmd.result,
-  }
-  setmetatable(o, self)
-  self.__index = self
-  return o
-end
-
---- @return boolean
-function GitCurrentBranchCommand:failed()
-  return self.result:failed()
-end
-
---- @return string?
-function GitCurrentBranchCommand:output()
-  if self:failed() then
-    return nil
-  end
-  return (type(self.result.stdout) == "table" and #self.result.stdout > 0) and self.result.stdout[1]
-    or nil
-end
-
-M.GitCurrentBranchCommand = GitCurrentBranchCommand
-
--- GitCurrentBranchCommand }
-
--- GitRemotesCommand {
-
---- @class fzfx.GitRemotesCommand
---- @field result fzfx.CommandResult?
-local GitRemotesCommand = {}
-
---- @return fzfx.GitRemotesCommand
-function GitRemotesCommand:run()
-  -- git rev-parse --abbrev-ref HEAD
-  local cmd = Command:run({ "git", "remote" })
-
-  local o = {
-    result = cmd.result,
-  }
-  setmetatable(o, self)
-  self.__index = self
-  return o
-end
-
---- @return boolean
-function GitRemotesCommand:failed()
-  return self.result:failed()
-end
-
---- @return string[]|nil
-function GitRemotesCommand:output()
-  if self:failed() then
-    return nil
-  end
-  return (type(self.result.stdout) == "table" and #self.result.stdout > 0) and self.result.stdout
-    or nil
-end
-
-M.GitRemotesCommand = GitRemotesCommand
-
--- GitRemotesCommand }
+-- Commands }
 
 return M
