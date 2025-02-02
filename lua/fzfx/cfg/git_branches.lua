@@ -173,15 +173,22 @@ M.fzf_opts = {
   "--no-multi",
   { "--prompt", "Git Branches > " },
   function()
-    local git_root_cmd = cmds.GitRootCommand:run()
+    local git_root_cmd = cmds.run_git_root_sync()
     if git_root_cmd:failed() then
       return nil
     end
-    local git_current_branch_cmd = cmds.GitCurrentBranchCommand:run()
+    local git_current_branch_cmd = cmds.run_git_current_branch_sync()
     if git_current_branch_cmd:failed() then
       return nil
     end
-    return str.not_empty(git_current_branch_cmd:output()) and "--header-lines=1" or nil
+    if
+      tbl.list_not_empty(git_current_branch_cmd.stdout)
+      and str.not_empty(git_current_branch_cmd.stdout[1])
+    then
+      return "--header-lines=1"
+    else
+      return nil
+    end
   end,
 }
 
@@ -190,11 +197,11 @@ M.fzf_opts = {
 --- @return fzfx.GitBranchesPipelineContext
 M._context_maker = function()
   local ctx = {}
-  local git_remotes_cmd = cmds.GitRemotesCommand:run()
-  if git_remotes_cmd:failed() then
+  local git_remotes_cmd = cmds.run_git_remotes_sync()
+  if git_remotes_cmd:failed() or tbl.list_empty(git_remotes_cmd.stdout) then
     return ctx
   end
-  ctx.remotes = git_remotes_cmd:output()
+  ctx.remotes = git_remotes_cmd.stdout[1]
   return ctx
 end
 
