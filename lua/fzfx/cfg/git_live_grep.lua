@@ -53,7 +53,7 @@ M._GIT_GREP = { "git", "grep", "--color=always", "-n" }
 --- @param context fzfx.PipelineContext
 --- @return string[]|nil
 M._provider = function(query, context)
-  local git_root_cmd = cmds.GitRootCommand:run()
+  local git_root_cmd = cmds.run_git_root_sync()
   if git_root_cmd:failed() then
     log.echo(LogLevels.INFO, "not in git repo.")
     return nil

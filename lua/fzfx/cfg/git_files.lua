@@ -85,7 +85,7 @@ M._GIT_LS_CWD = { "git", "ls-files" }
 M._make_provider = function(opts)
   --- @return string[]|nil
   local function impl()
-    local git_root_cmd = cmds.GitRootCommand:run()
+    local git_root_cmd = cmds.run_git_root_sync()
     if git_root_cmd:failed() then
       log.echo(LogLevels.INFO, "not in git repo.")
       return nil

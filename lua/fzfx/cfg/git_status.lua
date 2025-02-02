@@ -102,7 +102,7 @@ M._make_provider = function(opts)
   --- @param context fzfx.PipelineContext
   --- @return string[]|nil
   local function impl(query, context)
-    local git_root_cmd = cmds.GitRootCommand:run()
+    local git_root_cmd = cmds.run_git_root_sync()
     if git_root_cmd:failed() then
       log.echo(LogLevels.INFO, "not in git repo.")
       return nil
