@@ -52,7 +52,7 @@ local function run_async_impl(source, on_complete)
   local stdout_data = {}
   local stderr_data = {}
 
-  local job = spawn.detached(source, {
+  spawn.detached(source, {
     on_stdout = function(line)
       if str.not_empty(line) then
         table.insert(stdout_data, line)
@@ -71,18 +71,17 @@ end
 
 -- Convert callback-style function 'run_impl' into async-style.
 --- @type async fun(source:string[]):fzfx.CommandResult
-M.run_async = async.wrap(2, run_async_impl)
+M.run_async = async.wrap(run_async_impl, 2)
 
 -- Get git repository root path.
 --- @type async fun():fzfx.CommandResult
-M.run_git_root_async = async.wrap(1, function(on_complete)
+M.run_git_root_async = async.wrap(function(on_complete)
   run_async_impl({ "git", "rev-parse", "--show-toplevel" }, on_complete)
-end)
+end, 1)
 
 -- Get git repository branches.
---- @type async fun():fzfx.CommandResult
+--- @type async fun(remote:boolean?):fzfx.CommandResult
 M.run_git_branches_async = async.wrap(
-  2,
   --- @param remote boolean?
   --- @param on_complete fun(result:fzfx.CommandResult):any
   function(remote, on_complete)
@@ -91,20 +90,21 @@ M.run_git_branches_async = async.wrap(
     else
       run_async_impl({ "git", "branch" }, on_complete)
     end
-  end
+  end,
+  2
 )
 
 -- Get git repository current branch.
 --- @type async fun():fzfx.CommandResult
-M.run_git_current_branch_async = async.wrap(1, function(on_complete)
+M.run_git_current_branch_async = async.wrap(function(on_complete)
   run_async_impl({ "git", "rev-parse", "--abbrev-ref", "HEAD" }, on_complete)
-end)
+end, 1)
 
 -- Get git repository remotes.
 --- @type async fun():fzfx.CommandResult
-M.run_git_remotes_async = async.wrap(1, function(on_complete)
+M.run_git_remotes_async = async.wrap(function(on_complete)
   run_async_impl({ "git", "remote" }, on_complete)
-end)
+end, 1)
 
 -- Async Commands }
 
