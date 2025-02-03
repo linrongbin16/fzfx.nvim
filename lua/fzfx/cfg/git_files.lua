@@ -83,9 +83,11 @@ M._GIT_LS_CWD = { "git", "ls-files" }
 --- @param opts {current_folder:boolean?}?
 --- @return fun():string[]|nil
 M._make_provider = function(opts)
+  --- @param query string
+  --- @param context fzfx.GitFilesPipelineContext
   --- @return string[]|nil
-  local function impl()
-    local git_root_cmd = cmds.run_git_root_sync()
+  local function impl(query, context)
+    local git_root_cmd = context.git_root_cmd
     if git_root_cmd:failed() then
       log.echo(LogLevels.INFO, "not in git repo.")
       return nil
@@ -139,6 +141,23 @@ M.fzf_opts = {
   function()
     return { "--prompt", path.shorten() .. " > " }
   end,
+}
+
+--- @alias fzfx.GitFilesPipelineContext {bufnr:integer,winnr:integer,tabnr:integer,git_root_cmd:fzfx.CommandResult}
+--- @return fzfx.GitFilesPipelineContext
+M._context_maker = function()
+  local git_root_cmd = cmds.run_git_root_sync()
+  local context = {
+    bufnr = vim.api.nvim_get_current_buf(),
+    winnr = vim.api.nvim_get_current_win(),
+    tabnr = vim.api.nvim_get_current_tabpage(),
+    cwd = git_root_cmd,
+  }
+  return context
+end
+
+M.other_opts = {
+  context_maker = M._context_maker,
 }
 
 return M

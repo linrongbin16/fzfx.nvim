@@ -50,10 +50,10 @@ M.variants = {
 M._GIT_GREP = { "git", "grep", "--color=always", "-n" }
 
 --- @param query string?
---- @param context fzfx.PipelineContext
+--- @param context fzfx.GitLiveGrepPipelineContext
 --- @return string[]|nil
 M._provider = function(query, context)
-  local git_root_cmd = cmds.run_git_root_sync()
+  local git_root_cmd = context.git_root_cmd
   if git_root_cmd:failed() then
     log.echo(LogLevels.INFO, "not in git repo.")
     return nil
@@ -99,6 +99,23 @@ M.fzf_opts = {
 
 M.other_opts = {
   reload_on_change = true,
+}
+
+--- @alias fzfx.GitLiveGrepPipelineContext {bufnr:integer,winnr:integer,tabnr:integer,git_root_cmd:fzfx.CommandResult}
+--- @return fzfx.GitLiveGrepPipelineContext
+M._context_maker = function()
+  local git_root_cmd = cmds.run_git_root_sync()
+  local context = {
+    bufnr = vim.api.nvim_get_current_buf(),
+    winnr = vim.api.nvim_get_current_win(),
+    tabnr = vim.api.nvim_get_current_tabpage(),
+    cwd = git_root_cmd,
+  }
+  return context
+end
+
+M.other_opts = {
+  context_maker = M._context_maker,
 }
 
 return M
