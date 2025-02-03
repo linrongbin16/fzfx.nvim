@@ -21,33 +21,11 @@ Executable shell command utilities.
   - Methods
     - `function CommandResult:new(stdout:string[]|nil, stderr:string[]|nil, code:integer, signal:integer):CommandResult`: Make a new command result.
     - `function CommandResult:failed():boolean`: Whether the shell command is failed, it's `true` when the exit code is not `0`, or there's error messages printed in `stderr`. Otherwise it's `false`.
-- [`@class fzfx.Command`](https://github.com/linrongbin16/fzfx.nvim/blob/6cde87c522460d4da2a9c657ce4615ce619cca45/lua/fzfx/lib/commands.lua?plain=1#L50): The executable shell command.
-  - Fields
-    - `@field source string[]`: The shell command split by whitespaces.
-    - `@field result fzfx.CommandResult?`: The executed result.
-  - Methods
-    - `function Command:run(source):fzfx.Command`: Make a new command and run it synchronously. Note: this method will block the editor.
-    - `function Command:failed():boolean`: Whether the shell command is failed. It's a short cut for `Command.result:failed()`.
-- [`@class fzfx.GitRootCommand`](https://github.com/linrongbin16/fzfx.nvim/blob/6cde87c522460d4da2a9c657ce4615ce619cca45/lua/fzfx/lib/commands.lua?plain=1#L98): Run git command to find out the git repository's root directory. This is super helpful to detect whether current working directory is in a git repository.
-  - Methods
-    - `function GitRootCommand:run():fzfx.GitRootCommand`: Run `git rev-parse --show-toplevel` and make a command instance.
-    - `function GitRootCommand:failed():boolean`: Whether this command is failed.
-    - `function GitRootCommand:output():string?`: Get the output of this command.
-- [`@class fzfx.GitBranchesCommand`](https://github.com/linrongbin16/fzfx.nvim/blob/6cde87c522460d4da2a9c657ce4615ce619cca45/lua/fzfx/lib/commands.lua?plain=1#L134): Run git command to find out it's local/remote branches.
-  - Methods
-    - `function GitBranchesCommand:run(remotes:boolean?):fzfx.GitBranchesCommand`: Run `git branch` (for local branches) or `git branches --remotes` (for remote branches) and make a command instance.
-    - `function GitBranchesCommand:failed():boolean`: Whether this command is failed.
-    - `function GitBranchesCommand:output():string[]|nil`: Get the output lines of this command. Each line is a git branch.
-- [`@class fzfx.GitCurrentBranchCommand`](https://github.com/linrongbin16/fzfx.nvim/blob/6cde87c522460d4da2a9c657ce4615ce619cca45/lua/fzfx/lib/commands.lua?plain=1#L171): Run git command to find out current branch name.
-  - Methods
-    - `function GitCurrentBranchCommand:run():fzfx.GitCurrentBranchCommand`: Run `git rev-parse --abbrev-ref HEAD` and make a command instance.
-    - `function GitCurrentBranchCommand:failed():boolean`: Whether this command is failed.
-    - `function GitCurrentBranchCommand:output():string?`: Get the output of this command. The output is the current branch name.
-- [`@class fzfx.GitRemotesCommand`](https://github.com/linrongbin16/fzfx.nvim/blob/6cde87c522460d4da2a9c657ce4615ce619cca45/lua/fzfx/lib/commands.lua?plain=1#L208): Run git command to find out the configured remotes.
-  - Methods
-    - `function GitRemotesCommand:run():fzfx.GitRemotesCommand`: Run `git remote` and make a command instance.
-    - `function GitRemotesCommand:failed():boolean`: Whether this command is failed.
-    - `function GitRemotesCommand:output():string[]|nil`: Get the output lines of this command. Each line is a configured remote, for example `origin`, `upstream`, etc.
+- [`run_async`](https://github.com/linrongbin16/fzfx.nvim/blob/16d618df93a49f5bfc22c49cd67bc867ada818ec/lua/fzfx/lib/commands.lua?plain=1#L74)/[`run_sync`](https://github.com/linrongbin16/fzfx.nvim/blob/16d618df93a49f5bfc22c49cd67bc867ada818ec/lua/fzfx/lib/commands.lua?plain=1#L115): Run shell command in either async or sync way, the API accepts a strings array as shell command. Note: The async-style API uses lua's `coroutine` to turn the original callback-style `vim.uv` APIs into async-style, it doesn't block Neovim UI, but needs to be called within the async context (i.e. the `fzfx.commons.async.void`, please refer to [commons.async](https://linrongbin16.github.io/commons.nvim/#/commons_async) for more details). On the other hand, the sync-style API will block Neovim UI.
+- [`run_git_root_async`](https://github.com/linrongbin16/fzfx.nvim/blob/16d618df93a49f5bfc22c49cd67bc867ada818ec/lua/fzfx/lib/commands.lua?plain=1#L78)/[`run_git_root_sync`](https://github.com/linrongbin16/fzfx.nvim/blob/16d618df93a49f5bfc22c49cd67bc867ada818ec/lua/fzfx/lib/commands.lua?plain=1#L138): Run git command to find out the git repository's root directory in either async or sync way. This is super helpful to detect whether current working directory is in a git repository.
+- [`run_git_branches_async`](https://github.com/linrongbin16/fzfx.nvim/blob/16d618df93a49f5bfc22c49cd67bc867ada818ec/lua/fzfx/lib/commands.lua?plain=1#L84)/[`run_git_branches_sync`](https://github.com/linrongbin16/fzfx.nvim/blob/16d618df93a49f5bfc22c49cd67bc867ada818ec/lua/fzfx/lib/commands.lua?plain=1#L145): Run git command to find out both local and remote branches in either async or sync way.
+- [`run_git_current_branch_async`](https://github.com/linrongbin16/fzfx.nvim/blob/16d618df93a49f5bfc22c49cd67bc867ada818ec/lua/fzfx/lib/commands.lua?plain=1#L99)/[`run_git_current_branch_sync`](https://github.com/linrongbin16/fzfx.nvim/blob/16d618df93a49f5bfc22c49cd67bc867ada818ec/lua/fzfx/lib/commands.lua?plain=1#L155): Run git command to find out current branch name in either async or sync way.
+- [`run_git_remotes_async`](https://github.com/linrongbin16/fzfx.nvim/blob/16d618df93a49f5bfc22c49cd67bc867ada818ec/lua/fzfx/lib/commands.lua?plain=1#L105)/[`run_git_remotes_sync`](https://github.com/linrongbin16/fzfx.nvim/blob/16d618df93a49f5bfc22c49cd67bc867ada818ec/lua/fzfx/lib/commands.lua?plain=1#L161): Run git command to find out the configured remotes in either async or sync way.
 
 ## [`fzfx.lib.constants`](https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/lib/constants.lua)
 
