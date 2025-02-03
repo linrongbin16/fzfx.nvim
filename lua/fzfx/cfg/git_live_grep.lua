@@ -97,10 +97,6 @@ M.fzf_opts = {
   { "--prompt", "Live Git Grep > " },
 }
 
-M.other_opts = {
-  reload_on_change = true,
-}
-
 --- @alias fzfx.GitLiveGrepPipelineContext {bufnr:integer,winnr:integer,tabnr:integer,git_root_cmd:fzfx.CommandResult}
 --- @return fzfx.GitLiveGrepPipelineContext
 M._context_maker = function()
@@ -116,6 +112,7 @@ end
 
 M.other_opts = {
   context_maker = M._context_maker,
+  reload_on_change = true,
 }
 
 return M
