@@ -418,7 +418,9 @@ function ProviderSwitch:_handle_async_direct(provider_config, query, context)
     end
 
     -- Then notify provider it is ready.
-    fio.writefile(self.donefile, "done")
+    ---@diagnostic disable-next-line: undefined-field
+    local secs, microsecs = uv.gettimeofday() --[[@as integer, integer]]
+    fio.writefile(self.donefile, string.format("done-%d-%d", secs, microsecs))
   end
 
   local ok, err = pcall(provider_config.provider --[[@as function]], query, context, _on_complete)

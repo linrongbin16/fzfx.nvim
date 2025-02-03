@@ -8,6 +8,7 @@ local str = require("fzfx.commons.str")
 local tbl = require("fzfx.commons.tbl")
 local fio = require("fzfx.commons.fio")
 local spawn = require("fzfx.commons.spawn")
+local uv = require("fzfx.commons.uv")
 local schema = require("fzfx.schema")
 local child_process_helpers = require("fzfx.detail.child_process_helpers")
 child_process_helpers.setup("provider")
@@ -23,6 +24,25 @@ local query = _G.arg[5]
 -- child_process_helpers.log_debug("metafile:[%s]", metafile)
 -- child_process_helpers.log_debug("resultfile:[%s]", resultfile)
 -- child_process_helpers.log_debug("query:[%s]", query)
+
+---@diagnostic disable-next-line: undefined-field
+local start_secs, start_microsecs = uv.gettimeofday() --[[@as integer, integer]]
+
+-- Whether timestamp1 is greater than or equal to timestamp2.
+--- @param secs1 integer
+--- @param microsecs1 integer
+--- @param secs2 integer
+--- @param microsecs2 integer
+--- @return boolean
+local function timestamp_greater_than_or_equal_to(secs1, microsecs1, secs2, microsecs2)
+  if secs1 > secs2 then
+    return true
+  end
+  if secs1 == secs2 and microsecs1 > microsecs2 then
+    return true
+  end
+  return false
+end
 
 local channel_id = vim.fn.sockconnect("pipe", SOCKET_ADDRESS, { rpc = true })
 -- child_process_helpers.log_debug("channel_id:%s", vim.inspect(channel_id))
@@ -162,9 +182,20 @@ elseif metaopts.provider_type == ProviderTypeEnum.DIRECT then
 elseif metaopts.provider_type == ProviderTypeEnum.ASYNC_DIRECT then
   -- Wait for donefile notify
   while true do
-    local done = fio.readfile(donefile, { trim = true })
-    if not str.empty(done) and done == "done" then
-      break
+    local done = fio.readfile(donefile, { trim = true }) --[[@as string]]
+    if str.not_empty(done) and str.startswith(done, "done") then
+      local split_done = str.split(done, "-", { plain = true, trimempty = true })
+      assert(type(split_done) == "table")
+      assert(#split_done == 3)
+      local is_done = split_done[1]
+      local secs = tonumber(split_done[2]) --[[@as integer]]
+      local microsecs = tonumber(split_done[3]) --[[@as integer]]
+      assert(is_done == "done")
+      assert(type(secs) == "number")
+      assert(type(microsecs) == "number")
+      if timestamp_greater_than_or_equal_to(secs, microsecs, start_secs, start_microsecs) then
+        break
+      end
     end
     vim.wait(100, function()
       return true
