@@ -165,7 +165,7 @@ M._context_maker = function()
     bufnr = vim.api.nvim_get_current_buf(),
     winnr = vim.api.nvim_get_current_win(),
     tabnr = vim.api.nvim_get_current_tabpage(),
-    cwd = git_root_cmd,
+    git_root_cmd = git_root_cmd,
   }
   return context
 end
