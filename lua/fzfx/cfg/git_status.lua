@@ -94,15 +94,15 @@ M._GIT_STATUS_WORKSPACE = {
 }
 
 --- @param opts {current_folder:boolean?}?
---- @return fun(query:string, context:fzfx.PipelineContext):string[]|nil
+--- @return fun(query:string, context:fzfx.GitStatusPipelineContext):string[]|nil
 M._make_provider = function(opts)
   local current_folder_mode = tbl.tbl_get(opts, "current_folder") or false
 
   --- @param query string
-  --- @param context fzfx.PipelineContext
+  --- @param context fzfx.GitStatusPipelineContext
   --- @return string[]|nil
   local function impl(query, context)
-    local git_root_cmd = cmds.run_git_root_sync()
+    local git_root_cmd = context.git_root_cmd
     if git_root_cmd:failed() then
       log.echo(LogLevels.INFO, "not in git repo.")
       return nil
@@ -155,6 +155,23 @@ M.fzf_opts = {
   "--multi",
   { "--preview-window", "wrap" },
   { "--prompt", "Git Status > " },
+}
+
+--- @alias fzfx.GitStatusPipelineContext {bufnr:integer,winnr:integer,tabnr:integer,git_root_cmd:fzfx.CommandResult}
+--- @return fzfx.GitStatusPipelineContext
+M._context_maker = function()
+  local git_root_cmd = cmds.run_git_root_sync()
+  local context = {
+    bufnr = vim.api.nvim_get_current_buf(),
+    winnr = vim.api.nvim_get_current_win(),
+    tabnr = vim.api.nvim_get_current_tabpage(),
+    cwd = git_root_cmd,
+  }
+  return context
+end
+
+M.other_opts = {
+  context_maker = M._context_maker,
 }
 
 return M
