@@ -204,7 +204,7 @@ M._context_maker = function()
   if git_remotes_cmd:failed() or tbl.list_empty(git_remotes_cmd.stdout) then
     return ctx
   end
-  ctx.remotes = git_remotes_cmd.stdout[1]
+  ctx.remotes = git_remotes_cmd.stdout
   return ctx
 end
 
