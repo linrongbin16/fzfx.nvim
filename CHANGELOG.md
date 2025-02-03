@@ -1,5 +1,13 @@
 # Changelog
 
+## [8.1.1](https://github.com/linrongbin16/fzfx.nvim/compare/v8.1.0...v8.1.1) (2025-02-03)
+
+
+### Performance Improvements
+
+* **git:** make git branches command async ([#806](https://github.com/linrongbin16/fzfx.nvim/issues/806)) ([0ee057e](https://github.com/linrongbin16/fzfx.nvim/commit/0ee057e397c6424e0e54dc4f2368312cedb25dd4))
+* **git:** reduce git root commands duplicate running ([#806](https://github.com/linrongbin16/fzfx.nvim/issues/806)) ([0ee057e](https://github.com/linrongbin16/fzfx.nvim/commit/0ee057e397c6424e0e54dc4f2368312cedb25dd4))
+
 ## [8.1.0](https://github.com/linrongbin16/fzfx.nvim/compare/v8.0.0...v8.1.0) (2025-02-02)
 
 
