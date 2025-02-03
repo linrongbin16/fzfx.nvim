@@ -389,9 +389,7 @@ end
 function ProviderSwitch:_handle_async_direct(provider_config, query, context)
   --- @param data1 string[]|nil
   local function _on_complete(data1)
-    log.debug(
-      string.format("|async done| data1:%s", vim.inspect(data1))
-    )
+    log.debug(string.format("|async done| data1:%s", vim.inspect(data1)))
     log.debug(string.format("|async done| donefile:%s", vim.inspect(self.donefile)))
 
     -- When data is ready, write it into `resultfile`.
