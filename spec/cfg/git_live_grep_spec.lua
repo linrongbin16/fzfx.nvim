@@ -22,7 +22,7 @@ describe("fzfx.cfg.git_live_grep", function()
 
   describe("_provider", function()
     it("case-1: without extra options", function()
-      local actual = git_live_grep_cfg._provider("", {})
+      local actual = git_live_grep_cfg._provider("", git_live_grep_cfg._context_maker())
       print(string.format("_provider-1:%s\n", vim.inspect(actual)))
       assert_eq(type(actual), "table")
       local n = #git_live_grep_cfg._GIT_GREP
@@ -31,7 +31,7 @@ describe("fzfx.cfg.git_live_grep", function()
       end
     end)
     it("case-2: with 'fzfx -- -v'", function()
-      local actual = git_live_grep_cfg._provider("fzfx -- -v", {})
+      local actual = git_live_grep_cfg._provider("fzfx -- -v", git_live_grep_cfg._context_maker())
       print(string.format("_provider-2:%s\n", vim.inspect(actual)))
       assert_eq(type(actual), "table")
       local n = #git_live_grep_cfg._GIT_GREP
@@ -46,7 +46,8 @@ describe("fzfx.cfg.git_live_grep", function()
       end))
     end)
     it("case-3: with 'fzfx -- -v -E  ' options", function()
-      local actual = git_live_grep_cfg._provider("fzfx -- -v  -E  ", {})
+      local actual =
+        git_live_grep_cfg._provider("fzfx -- -v  -E  ", git_live_grep_cfg._context_maker())
       print(string.format("_provider-3:%s\n", vim.inspect(actual)))
       assert_eq(type(actual), "table")
       local n = #git_live_grep_cfg._GIT_GREP

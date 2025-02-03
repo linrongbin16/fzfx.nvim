@@ -81,7 +81,7 @@ M._GIT_LS_WORKSPACE = { "git", "ls-files", ":/" }
 M._GIT_LS_CWD = { "git", "ls-files" }
 
 --- @param opts {current_folder:boolean?}?
---- @return fun():string[]|nil
+--- @return fun(query:string,context:fzfx.GitFilesPipelineContext):string[]|nil
 M._make_provider = function(opts)
   --- @param query string
   --- @param context fzfx.GitFilesPipelineContext
