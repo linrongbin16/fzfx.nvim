@@ -398,7 +398,7 @@ function ProviderSwitch:_handle_async_direct(provider_config, query, context)
     -- When data is ready, write it into `resultfile`.
     if err1 then
       fio.writefile(self.resultfile, "")
-      log.echo(LogLevels.WARN, err1)
+      log.echo(LogLevels.INFO, err1)
       -- log.err(
       --   string.format(
       --     "failed to complete pipeline %s (ASYNC_DIRECT provider %s)! query:%s, context:%s, error:%s",
