@@ -29,16 +29,20 @@ local query = _G.arg[5]
 local start_secs, start_microsecs = uv.gettimeofday() --[[@as integer, integer]]
 
 -- Whether timestamp1 is greater than or equal to timestamp2.
---- @param secs1 integer
---- @param microsecs1 integer
---- @param secs2 integer
---- @param microsecs2 integer
+--- @param ts1 {secs:integer, microsecs:integer}
+--- @param ts2 {secs:integer, microsecs:integer}
 --- @return boolean
-local function timestamp_greater_than_or_equal_to(secs1, microsecs1, secs2, microsecs2)
-  if secs1 > secs2 then
+local function timestamp_greater_than_or_equal_to(ts1, ts2)
+  assert(type(ts1) == "table")
+  assert(type(ts2) == "table")
+  assert(type(ts1.secs) == "number")
+  assert(type(ts1.microsecs) == "number")
+  assert(type(ts2.secs) == "number")
+  assert(type(ts2.microsecs) == "number")
+
+  if ts1.secs > ts2.secs then
     return true
-  end
-  if secs1 == secs2 and microsecs1 > microsecs2 then
+  elseif ts1.secs == ts2.secs and ts1.microsecs >= ts2.microsecs then
     return true
   end
   return false
@@ -193,7 +197,12 @@ elseif metaopts.provider_type == ProviderTypeEnum.ASYNC_DIRECT then
       assert(is_done == "done")
       assert(type(secs) == "number")
       assert(type(microsecs) == "number")
-      if timestamp_greater_than_or_equal_to(secs, microsecs, start_secs, start_microsecs) then
+      if
+        timestamp_greater_than_or_equal_to(
+          { secs = secs, microsecs = microsecs },
+          { secs = start_secs, microsecs = start_microsecs }
+        )
+      then
         break
       end
     end

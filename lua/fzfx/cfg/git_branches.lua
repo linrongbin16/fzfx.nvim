@@ -81,60 +81,62 @@ M.variants = {
 }
 
 --- @param opts {remote_branch:boolean?}?
---- @return fun(query:string,context:fzfx.PipelineContext):string[]|nil
-M._make_provider = function(opts)
+--- @return fun(query:string,context:fzfx.GitBranchesPipelineContext,on_complete:fzfx.AsyncDirectProviderOnComplete):nil
+M._make_async_provider = function(opts)
   local remote_branch = tbl.tbl_get(opts, "remote_branch") or false
 
   --- @param query string
-  --- @param context fzfx.PipelineContext
-  --- @return string[]|nil
-  local function impl(query, context)
-    local git_root_cmd = cmds.run_git_root_async()
-    if git_root_cmd:failed() then
-      log.echo(LogLevels.INFO, "not in git repo.")
-      return nil
-    end
-
-    local git_current_branch_cmd = cmds.run_git_current_branch_async()
-    if git_current_branch_cmd:failed() then
-      log.echo(LogLevels.WARN, table.concat(git_current_branch_cmd.stderr, " "))
-      return nil
-    end
-
-    local results = {}
-    table.insert(results, string.format("* %s", git_current_branch_cmd.stdout[1]))
-
-    local git_branches_cmd = cmds.run_git_branches_async(remote_branch)
-    if git_branches_cmd:failed() then
-      log.echo(LogLevels.WARN, table.concat(git_branches_cmd.stderr, " "))
-      return nil
-    end
-
-    for _, line in ipairs(git_branches_cmd.stdout) do
-      if vim.trim(line):sub(1, 1) ~= "*" then
-        table.insert(results, string.format("  %s", vim.trim(line)))
+  --- @param context fzfx.GitBranchesPipelineContext
+  --- @param on_complete fzfx.AsyncDirectProviderOnComplete
+  local function impl(query, context, on_complete)
+    async.void(function()
+      local git_root_cmd = context.git_root_cmd
+      if git_root_cmd:failed() then
+        on_complete("not in git repo.")
+        return
       end
-    end
 
-    return results
+      local git_current_branch_cmd = cmds.run_git_current_branch_async()
+      if git_current_branch_cmd:failed() then
+        on_complete(table.concat(git_current_branch_cmd.stderr, " "))
+        return
+      end
+
+      local results = {}
+      table.insert(results, string.format("* %s", git_current_branch_cmd.stdout[1]))
+
+      local git_branches_cmd = cmds.run_git_branches_async(remote_branch)
+      if git_branches_cmd:failed() then
+        on_complete(table.concat(git_branches_cmd.stderr, " "))
+        return
+      end
+
+      for _, line in ipairs(git_branches_cmd.stdout) do
+        if vim.trim(line):sub(1, 1) ~= "*" then
+          table.insert(results, string.format("  %s", vim.trim(line)))
+        end
+      end
+
+      on_complete(nil, results)
+    end)()
   end
 
   return impl
 end
 
-local local_branch_provider = M._make_provider()
-local remote_branch_provider = M._make_provider({ remote_branch = true })
+local local_branch_async_provider = M._make_async_provider()
+local remote_branch_async_provider = M._make_async_provider({ remote_branch = true })
 
 M.providers = {
   local_branch = {
     key = "ctrl-o",
-    provider = local_branch_provider,
-    provider_type = ProviderTypeEnum.DIRECT,
+    provider = local_branch_async_provider,
+    provider_type = ProviderTypeEnum.ASYNC_DIRECT,
   },
   remote_branch = {
     key = "ctrl-r",
-    provider = remote_branch_provider,
-    provider_type = ProviderTypeEnum.DIRECT,
+    provider = remote_branch_async_provider,
+    provider_type = ProviderTypeEnum.ASYNC_DIRECT,
   },
 }
 
@@ -191,10 +193,13 @@ M.fzf_opts = {
 }
 
 -- This is actually for the "git checkout" actions.
---- @alias fzfx.GitBranchesPipelineContext {remotes:string[]|nil}
+--- @alias fzfx.GitBranchesPipelineContext {git_root_cmd:fzfx.CommandResult,remotes:string[]|nil}
 --- @return fzfx.GitBranchesPipelineContext
 M._context_maker = function()
   local ctx = {}
+
+  local git_root_cmd = cmds.run_git_root_sync()
+  ctx.git_root_cmd = git_root_cmd
   local git_remotes_cmd = cmds.run_git_remotes_sync()
   if git_remotes_cmd:failed() or tbl.list_empty(git_remotes_cmd.stdout) then
     return ctx
