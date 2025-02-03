@@ -22,7 +22,7 @@ describe("fzfx.cfg.git_files", function()
   describe("_make_provider", function()
     it("workspace", function()
       local f = git_files_cfg._make_provider()
-      local actual = f()
+      local actual = f("", git_files_cfg._context_maker())
       assert_eq(type(actual), "table")
       local n = #git_files_cfg._GIT_LS_WORKSPACE
       for i = 1, n do
@@ -31,7 +31,7 @@ describe("fzfx.cfg.git_files", function()
     end)
     it("current_folder", function()
       local f = git_files_cfg._make_provider({ current_folder = true })
-      local actual = f()
+      local actual = f("", git_files_cfg._context_maker())
       assert_eq(type(actual), "table")
       local n = #git_files_cfg._GIT_LS_CWD
       for i = 1, n do

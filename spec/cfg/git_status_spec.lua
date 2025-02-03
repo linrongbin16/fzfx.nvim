@@ -18,14 +18,17 @@ describe("fzfx.cfg.git_status", function()
 
   describe("[git_status]", function()
     it("_make_provider", function()
-      local actual1 = git_status_cfg._make_provider()("", nil)
+      local actual1 = git_status_cfg._make_provider()("", git_status_cfg._context_maker())
       local n1 = #git_status_cfg._GIT_STATUS_WORKSPACE
       assert_eq(type(actual1), "table")
       for i = 1, n1 do
         assert_eq(actual1[i], git_status_cfg._GIT_STATUS_WORKSPACE[i])
       end
 
-      local actual2 = git_status_cfg._make_provider({ current_folder = true })("", nil)
+      local actual2 = git_status_cfg._make_provider({ current_folder = true })(
+        "",
+        git_status_cfg._context_maker()
+      )
       local n2 = #git_status_cfg._GIT_STATUS_CURRENT_DIR
       assert_eq(type(actual2), "table")
       for i = 1, n2 do
