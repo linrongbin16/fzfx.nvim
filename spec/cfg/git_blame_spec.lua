@@ -21,18 +21,9 @@ describe("fzfx.cfg.git_blame", function()
 
   require("fzfx").setup()
 
-  --- @return fzfx.PipelineContext
-  local function make_context()
-    return {
-      bufnr = vim.api.nvim_get_current_buf(),
-      winnr = vim.api.nvim_get_current_win(),
-      tabnr = vim.api.nvim_get_current_tabpage(),
-    }
-  end
-
   describe("git_blame", function()
     it("_provider", function()
-      local actual = git_blame_cfg._provider("", make_context())
+      local actual = git_blame_cfg._provider("", git_blame_cfg._context_maker())
       assert_eq(type(actual), "string")
       assert_true(str.find(actual, "git blame") > 0)
       if consts.HAS_DELTA then
