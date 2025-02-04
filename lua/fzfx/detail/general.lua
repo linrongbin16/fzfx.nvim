@@ -387,34 +387,16 @@ end
 --- @param query string?
 --- @param context fzfx.PipelineContext?
 function ProviderSwitch:_handle_async_direct(provider_config, query, context)
-  --- @param err1 string?
-  --- @param data1 string[]?
-  local function _on_complete(err1, data1)
-    log.debug(
-      string.format("|async done| data1:%s, err1:%s", vim.inspect(data1), vim.inspect(err1))
-    )
+  --- @param data1 string[]|nil
+  local function _on_complete(data1)
+    log.debug(string.format("|async done| data1:%s", vim.inspect(data1)))
     log.debug(string.format("|async done| donefile:%s", vim.inspect(self.donefile)))
 
     -- When data is ready, write it into `resultfile`.
-    if err1 then
+    if tbl.tbl_empty(data1) then
       fio.writefile(self.resultfile, "")
-      log.echo(LogLevels.INFO, err1)
-      -- log.err(
-      --   string.format(
-      --     "failed to complete pipeline %s (ASYNC_DIRECT provider %s)! query:%s, context:%s, error:%s",
-      --     vim.inspect(self.pipeline),
-      --     vim.inspect(provider_config),
-      --     vim.inspect(query),
-      --     vim.inspect(context),
-      --     vim.inspect(err1)
-      --   )
-      -- )
     else
-      if tbl.tbl_empty(data1) then
-        fio.writefile(self.resultfile, "")
-      else
-        fio.writelines(self.resultfile, data1 --[[@as string[] ]])
-      end
+      fio.writelines(self.resultfile, data1 --[[@as string[] ]])
     end
 
     -- Then notify provider it is ready.

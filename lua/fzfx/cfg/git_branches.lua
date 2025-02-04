@@ -92,13 +92,15 @@ M._make_async_provider = function(opts)
     async.void(function()
       local git_root_cmd = context.git_root_cmd
       if git_root_cmd:failed() then
-        on_complete("not in git repo.")
+        log.echo(LogLevels.INFO, "not in git repo.")
+        on_complete(nil)
         return
       end
 
       local git_current_branch_cmd = cmds.run_git_current_branch_async()
       if git_current_branch_cmd:failed() then
-        on_complete(table.concat(git_current_branch_cmd.stderr, " "))
+        log.echo(LogLevels.INFO, table.concat(git_current_branch_cmd.stderr, " "))
+        on_complete(nil)
         return
       end
 
@@ -107,7 +109,8 @@ M._make_async_provider = function(opts)
 
       local git_branches_cmd = cmds.run_git_branches_async(remote_branch)
       if git_branches_cmd:failed() then
-        on_complete(table.concat(git_branches_cmd.stderr, " "))
+        log.echo(LogLevels.INFO, table.concat(git_branches_cmd.stderr, " "))
+        on_complete(nil)
         return
       end
 
@@ -117,7 +120,7 @@ M._make_async_provider = function(opts)
         end
       end
 
-      on_complete(nil, results)
+      on_complete(results)
     end)()
   end
 

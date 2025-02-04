@@ -290,7 +290,8 @@ M._make_lsp_locations_async_provider = function(opts)
   local function impl(query, context, on_complete)
     local lsp_clients = lsp.get_clients({ bufnr = context.bufnr })
     if tbl.tbl_empty(lsp_clients) then
-      on_complete("no active lsp clients.")
+      log.echo(LogLevels.INFO, "no active lsp clients.")
+      on_complete(nil)
       return
     end
 
@@ -307,7 +308,7 @@ M._make_lsp_locations_async_provider = function(opts)
     end
     if not supported then
       log.echo(LogLevels.INFO, vim.inspect(opts.method) .. " not supported.")
-      on_complete(vim.inspect(opts.method) .. " not supported.")
+      on_complete(nil)
       return
     end
 
@@ -324,11 +325,11 @@ M._make_lsp_locations_async_provider = function(opts)
 
         if tbl.tbl_empty(results) then
           log.echo(LogLevels.INFO, "no lsp locations found.")
-          on_complete("no lsp locations found.")
+          on_complete(nil)
           return
         end
 
-        on_complete(nil, results)
+        on_complete(results)
       end
     )
 
@@ -644,7 +645,8 @@ M._make_lsp_call_hierarchy_async_provider = function(opts)
   local function impl(query, context, on_complete)
     local lsp_clients = lsp.get_clients({ bufnr = context.bufnr })
     if tbl.tbl_empty(lsp_clients) then
-      on_complete("no active lsp clients.")
+      log.echo(LogLevels.INFO, "no active lsp clients.")
+      on_complete(nil)
       return
     end
     -- log.debug(
@@ -659,7 +661,8 @@ M._make_lsp_call_hierarchy_async_provider = function(opts)
       end
     end
     if not supported then
-      on_complete(vim.inspect(opts.method) .. " not supported.")
+      log.echo(LogLevels.INFO, vim.inspect(opts.method) .. " not supported.")
+      on_complete(nil)
       return
     end
 
@@ -676,7 +679,8 @@ M._make_lsp_call_hierarchy_async_provider = function(opts)
           M._process_prepare_call_hierarchy_response(response1 --[[@as table? ]])
 
         if prepared_item == nil then
-          on_complete("no lsp call hierarchy found.")
+          log.echo(LogLevels.INFO, "no lsp call hierarchy found.")
+          on_complete(nil)
           return
         end
 
@@ -692,11 +696,12 @@ M._make_lsp_call_hierarchy_async_provider = function(opts)
             local results = M._process_call_hierarchy_response(response2 --[[@as table? ]], opts)
 
             if tbl.tbl_empty(results) then
-              on_complete("no lsp call hierarchy found.")
+              log.echo(LogLevels.INFO, "no lsp call hierarchy found.")
+              on_complete(nil)
               return
             end
 
-            on_complete(nil, results)
+            on_complete(results)
           end
         )
 
