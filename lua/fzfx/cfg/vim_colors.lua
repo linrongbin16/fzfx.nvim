@@ -91,7 +91,7 @@ M.previewers = {
 
 M.actions = {
   ["esc"] = actions_helper.nop,
-  ["enter"] = actions_helper.feed_vim_command,
+  ["enter"] = actions_helper.feed_vim_color,
   ["double-click"] = actions_helper.feed_vim_command,
 }
 
@@ -105,9 +105,8 @@ M.interactions = {
 
 M.fzf_opts = {
   "--no-multi",
-  "--header-lines=1",
-  { "--preview-window", "~1" },
-  { "--prompt", "Commands > " },
+  { "--preview-window", "hidden" },
+  { "--prompt", "Colors > " },
 }
 
 --- @alias fzfx.VimColorsPipelineContext {bufnr:integer,winnr:integer,tabnr:integer,saved_color:string,colors:string[]}
