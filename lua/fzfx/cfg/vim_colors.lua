@@ -70,61 +70,46 @@ M._get_colorscheme_filenames = function()
   return colors
 end
 
---- @param colorfile string?
---- @return string?
-M._convert_filename_to_colorname = function(colorfile)
-  if str.empty(colorfile) then
-    return nil
-  end
-  local normalized = path.normalize(
-    colorfile --[[@as string]],
-    { double_backslash = true, expand = true, resolve = true }
-  )
-  if str.empty(normalized) then
-    return nil
-  end
-  local lastpart = vim.fn.fnamemodify(normalized, ":t")
-  if str.empty(lastpart) then
-    return nil
-  end
-  local n = string.len(lastpart)
-  if n >= 4 and str.endswith(lastpart, ".vim") then
-    return string.sub(lastpart, 1, n - 4)
-  end
-  return nil
-end
-
 --- @param query string
 --- @param context fzfx.VimColorsPipelineContext
 --- @return string[]|nil
 local function _provider(query, context)
   local colorfiles = M._get_colorscheme_filenames()
+  -- Convert color filenames to color names.
   local colornames = tbl.List
     :move(colorfiles)
     :filter(function(c)
       return str.not_empty(c)
     end)
     :map(function(c)
+      -- Normalize filepath.
       return path.normalize(c, { double_backslash = true })
     end)
     :filter(function(c)
       return str.not_empty(c)
     end)
     :map(function(c)
+      -- Get the tail of filename.
       return vim.fn.fnamemodify(c, ":t")
     end)
     :filter(function(c)
+      -- Detect if color filename ends with '.vim' extension.
       return str.not_empty(c) and string.len(c) >= 4 and str.endswith(c, ".vim")
     end)
     :map(function(c)
+      -- Remove '.vim' extension and get the color name.
       return string.sub(c, 1, string.len(c) - 4)
     end)
+    :filter(function(c)
+      -- Don't show current colorscheme here.
+      return c ~= context.saved_color
+    end)
     :data()
-  if tbl.list_not_empty(colornames) then
-    return colornames
-  else
-    return nil
-  end
+
+  -- Show current colorscheme at top line.
+  table.insert(colornames, 1, context.saved_color)
+
+  return colornames
 end
 
 M.providers = {
@@ -183,6 +168,12 @@ M.fzf_opts = {
   "--no-multi",
   { "--preview-window", "hidden" },
   { "--prompt", "Colors > " },
+  function()
+    if str.not_empty(vim.g.colors_name) then
+      return "--header-lines=1"
+    end
+    return nil
+  end,
 }
 
 --- @alias fzfx.VimColorsPipelineContext {bufnr:integer,winnr:integer,tabnr:integer,saved_color:string,colors:string[],cancelled:boolean?}
@@ -193,7 +184,6 @@ M._context_maker = function()
     winnr = vim.api.nvim_get_current_win(),
     tabnr = vim.api.nvim_get_current_tabpage(),
     saved_color = vim.g.colors_name,
-    cancelled = nil,
   }
 
   return ctx
