@@ -52,6 +52,24 @@ M.variants = {
   },
 }
 
+--- @return string[]
+local function _get_colorscheme_filenames()
+  local colors = vim.fn.split(vim.fn.globpath(vim.o.runtimepath, "colors/*.vim"), "\n")
+  if vim.fn.has("packages") > 0 then
+    local package_colors =
+      vim.fn.split(vim.fn.globpath(vim.o.packpath, "pack/*/opt/*/colors/*.vim"), "\n")
+    if tbl.list_not_empty(package_colors) then
+      for _, c in ipairs(package_colors) do
+        if str.not_empty(c) then
+          table.insert(colors, c)
+        end
+      end
+    end
+  end
+
+  return colors
+end
+
 --- @param query string
 --- @param context fzfx.VimColorsPipelineContext
 --- @return string[]
@@ -84,20 +102,15 @@ M.fzf_opts = {
   { "--prompt", "Commands > " },
 }
 
---- @alias fzfx.VimColorsPipelineContext {bufnr:integer,winnr:integer,tabnr:integer,output_lines:string[],name_column_width:integer,opts_column_width:integer}
+--- @alias fzfx.VimColorsPipelineContext {bufnr:integer,winnr:integer,tabnr:integer,colors:string[]}
 --- @return fzfx.VimColorsPipelineContext
 M._context_maker = function()
   local ctx = {
     bufnr = vim.api.nvim_get_current_buf(),
     winnr = vim.api.nvim_get_current_win(),
     tabnr = vim.api.nvim_get_current_tabpage(),
+    colors = _get_colorscheme_filenames(),
   }
-
-  ctx.output_lines = M._get_commands_output_in_lines()
-  local commands = M._get_commands(ctx, { ex_commands = true, user_commands = true })
-  local name_column_width, opts_column_width = M._calculate_column_widths(commands)
-  ctx.name_column_width = name_column_width
-  ctx.opts_column_width = opts_column_width
 
   return ctx
 end
