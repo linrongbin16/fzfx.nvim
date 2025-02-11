@@ -635,6 +635,11 @@ Below keys are binded by default:
 
 <details>
   <summary><code>FzfxMarks</code> (Search vim marks)</summary>
+  <small>
+    <ol>
+      <li>Press <code>enter</code> to open mark's location.</li>
+    </ol>
+  </small>
 </details>
 
 <details>
@@ -660,6 +665,20 @@ Below keys are binded by default:
           <li><code>(ex_/user_)put</code></li>
           <li><code>(ex_/user_)resume</code></li>
         </ul>
+      </li>
+    </ol>
+  </small>
+</details>
+
+<details>
+  <summary><code>FzfxColors</code> (Search vim colorschemes)</summary>
+  <small>
+    <ol>
+      <li>Press <code>enter</code> to feed colorscheme into cmdline.</li>
+      <li>
+        <b>Select keys</b> is disabled (since it is not allowed to feed multiple
+        colorschemes into cmdline). <b>Preview keys</b> is disabled (since there
+        is nothing to preview).
       </li>
     </ol>
   </small>
