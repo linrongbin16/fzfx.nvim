@@ -293,11 +293,11 @@ Below keys are binded by default:
   <summary><code>FzfxLiveGrep</code> (Live grep)</summary>
   <small>
     <ol>
-      <li>Press <code>ctrl-q</code> to send lines to quickfix window.</li>
       <li>
         Use <code>--</code> flag to pass raw options to search command
         (<code>rg</code>/<code>grep</code>).
       </li>
+      <li>Press <code>ctrl-q</code> to send lines to quickfix window.</li>
       <li>
         <b>Unrestricted</b> variant is added and named with
         <code>unres_</code> prefix. <b>Current buffer only</b> variant is added
@@ -340,12 +340,12 @@ Below keys are binded by default:
   </summary>
   <small>
     <ol>
-      <li>Press <code>ctrl-q</code> to send lines to quickfix window.</li>
       <li>
         Use <code>--</code> flag to pass raw options to search command (<code
           >git grep</code
         >).
       </li>
+      <li>Press <code>ctrl-q</code> to send lines to quickfix window.</li>
     </ol>
   </small>
 </details>
