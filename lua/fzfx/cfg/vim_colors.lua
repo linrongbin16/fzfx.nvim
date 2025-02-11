@@ -95,6 +95,14 @@ M.actions = {
   ["double-click"] = actions_helper.feed_vim_command,
 }
 
+M.interactions = {
+  preview = {
+    key = "ctrl-l",
+    interaction = M._cd,
+    reload_after_execute = true,
+  },
+}
+
 M.fzf_opts = {
   "--no-multi",
   "--header-lines=1",
@@ -102,21 +110,32 @@ M.fzf_opts = {
   { "--prompt", "Commands > " },
 }
 
---- @alias fzfx.VimColorsPipelineContext {bufnr:integer,winnr:integer,tabnr:integer,colors:string[]}
+--- @alias fzfx.VimColorsPipelineContext {bufnr:integer,winnr:integer,tabnr:integer,saved_color:string,colors:string[]}
 --- @return fzfx.VimColorsPipelineContext
 M._context_maker = function()
   local ctx = {
     bufnr = vim.api.nvim_get_current_buf(),
     winnr = vim.api.nvim_get_current_win(),
     tabnr = vim.api.nvim_get_current_tabpage(),
+    saved_color = vim.g.colors_name,
     colors = _get_colorscheme_filenames(),
   }
 
   return ctx
 end
 
+--- @param context fzfx.VimColorsPipelineContext
+M._context_shutdown = function(context)
+  vim.schedule(function()
+    if str.not_empty(context.saved_color) and vim.g.colors_name ~= context.saved_color then
+      vim.cmd(string.format([[colorscheme %s]], context.saved_color))
+    end
+  end)
+end
+
 M.other_opts = {
   context_maker = M._context_maker,
+  context_shutdown = M._context_shutdown,
 }
 
 return M
