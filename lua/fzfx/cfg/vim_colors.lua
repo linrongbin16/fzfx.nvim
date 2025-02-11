@@ -53,7 +53,7 @@ M.variants = {
 }
 
 --- @return string[]
-local function _get_colorscheme_filenames()
+M._get_colorscheme_filenames = function()
   local colors = vim.fn.split(vim.fn.globpath(vim.o.runtimepath, "colors/*.vim"), "\n")
   if vim.fn.has("packages") > 0 then
     local package_colors =
@@ -70,12 +70,61 @@ local function _get_colorscheme_filenames()
   return colors
 end
 
+--- @param colorfile string?
+--- @return string?
+M._convert_filename_to_colorname = function(colorfile)
+  if str.empty(colorfile) then
+    return nil
+  end
+  local normalized = path.normalize(
+    colorfile --[[@as string]],
+    { double_backslash = true, expand = true, resolve = true }
+  )
+  if str.empty(normalized) then
+    return nil
+  end
+  local lastpart = vim.fn.fnamemodify(normalized, ":t")
+  if str.empty(lastpart) then
+    return nil
+  end
+  local n = string.len(lastpart)
+  if n >= 4 and str.endswith(lastpart, ".vim") then
+    return string.sub(lastpart, 1, n - 4)
+  end
+  return nil
+end
+
 --- @param query string
 --- @param context fzfx.VimColorsPipelineContext
---- @return string[]
+--- @return string[]|nil
 local function _provider(query, context)
-  local commands = M._get_commands(context, { ex_commands = true, user_commands = true })
-  return M._render_lines(commands, context)
+  local colorfiles = M._get_colorscheme_filenames()
+  local colornames = tbl.List
+    :move(colorfiles)
+    :filter(function(c)
+      return str.not_empty(c)
+    end)
+    :map(function(c)
+      return path.normalize(c, { double_backslash = true })
+    end)
+    :filter(function(c)
+      return str.not_empty(c)
+    end)
+    :map(function(c)
+      return vim.fn.fnamemodify(c, ":t")
+    end)
+    :filter(function(c)
+      return str.not_empty(c) and string.len(c) >= 4 and str.endswith(c, ".vim")
+    end)
+    :map(function(c)
+      return string.sub(c, 1, string.len(c) - 4)
+    end)
+    :data()
+  if tbl.list_not_empty(colornames) then
+    return colornames
+  else
+    return nil
+  end
 end
 
 M.providers = {
@@ -89,8 +138,14 @@ M.previewers = {
   previewer_type = PreviewerTypeEnum.COMMAND_ARRAY,
 }
 
+--- @param lines string[]
+--- @param context fzfx.VimColorsPipelineContext
+M._cancel_action = function(lines, context)
+  context.cancelled = true
+end
+
 M.actions = {
-  ["esc"] = actions_helper.nop,
+  ["esc"] = M._cancel_action,
   ["enter"] = actions_helper.feed_vim_color,
   ["double-click"] = actions_helper.feed_vim_color,
 }
@@ -130,7 +185,7 @@ M.fzf_opts = {
   { "--prompt", "Colors > " },
 }
 
---- @alias fzfx.VimColorsPipelineContext {bufnr:integer,winnr:integer,tabnr:integer,saved_color:string,colors:string[]}
+--- @alias fzfx.VimColorsPipelineContext {bufnr:integer,winnr:integer,tabnr:integer,saved_color:string,colors:string[],cancelled:boolean?}
 --- @return fzfx.VimColorsPipelineContext
 M._context_maker = function()
   local ctx = {
@@ -138,7 +193,7 @@ M._context_maker = function()
     winnr = vim.api.nvim_get_current_win(),
     tabnr = vim.api.nvim_get_current_tabpage(),
     saved_color = vim.g.colors_name,
-    colors = _get_colorscheme_filenames(),
+    cancelled = nil,
   }
 
   return ctx
@@ -146,11 +201,15 @@ end
 
 --- @param context fzfx.VimColorsPipelineContext
 M._context_shutdown = function(context)
-  vim.schedule(function()
-    if str.not_empty(context.saved_color) and vim.g.colors_name ~= context.saved_color then
-      vim.cmd(string.format([[colorscheme %s]], context.saved_color))
-    end
-  end)
+  -- If action is cancelled, and current color is not the saved color,
+  -- then we need to revert back to user's original color.
+  if context.cancelled then
+    vim.schedule(function()
+      if str.not_empty(context.saved_color) and vim.g.colors_name ~= context.saved_color then
+        vim.cmd(string.format([[colorscheme %s]], context.saved_color))
+      end
+    end)
+  end
 end
 
 M.other_opts = {
