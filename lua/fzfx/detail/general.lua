@@ -940,8 +940,12 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
 
   local provider_switch =
     ProviderSwitch:new(name, default_pipeline --[[@as string]], pipeline_configs.providers)
-  local previewer_switch =
-    PreviewerSwitch:new(name, default_pipeline, pipeline_configs.previewers, fzf_port_file)
+  local previewer_switch = PreviewerSwitch:new(
+    name,
+    default_pipeline --[[@as string]],
+    pipeline_configs.previewers,
+    fzf_port_file
+  )
 
   local context = _get_context(pipeline_configs)
   local context_shutdown = _get_context_shutdown(pipeline_configs)
