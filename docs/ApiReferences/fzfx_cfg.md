@@ -20,6 +20,7 @@ The `fzfx.cfg` package contains all top-level configurations that been directly 
 - [`lsp_outgoing_calls.lua`](https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/cfg/lsp_outgoing_calls.lua): `FzfxLspOutgoingCalls`.
 - [`lsp_references.lua`](https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/cfg/lsp_references.lua): `FzfxLspReferences`.
 - [`lsp_type_definitations.lua`](https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/cfg/lsp_type_definitations.lua): `FzfxLspTypeDefinitations`.
+- [`vim_colors.lua`](https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/cfg/vim_colors.lua): `FzfxColors`.
 - [`vim_commands.lua`](https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/cfg/vim_commands.lua): `FzfxCommands`.
 - [`vim_keymaps.lua`](https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/cfg/vim_keymaps.lua): `FzfxKeyMaps`.
 - [`vim_marks.lua`](https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/cfg/vim_marks.lua): `FzfxMarks`.
