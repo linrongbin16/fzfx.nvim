@@ -938,7 +938,8 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
     default_provider_action_key = provider_opts.key
   end
 
-  local provider_switch = ProviderSwitch:new(name, default_pipeline, pipeline_configs.providers)
+  local provider_switch =
+    ProviderSwitch:new(name, default_pipeline --[[@as string]], pipeline_configs.providers)
   local previewer_switch =
     PreviewerSwitch:new(name, default_pipeline, pipeline_configs.previewers, fzf_port_file)
 
@@ -1014,7 +1015,7 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
 
   -- have interactions or pipelines >= 2
   if type(pipeline_configs.interactions) == "table" or pipeline_size > 1 then
-    local header = header_switch:get_header(default_pipeline)
+    local header = header_switch:get_header(default_pipeline --[[@as string]])
     table.insert(fzf_opts, {
       "--header",
       header,
