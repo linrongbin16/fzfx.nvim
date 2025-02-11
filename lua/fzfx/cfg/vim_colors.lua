@@ -92,14 +92,35 @@ M.previewers = {
 M.actions = {
   ["esc"] = actions_helper.nop,
   ["enter"] = actions_helper.feed_vim_color,
-  ["double-click"] = actions_helper.feed_vim_command,
+  ["double-click"] = actions_helper.feed_vim_color,
 }
 
+local colorscheme_is_applying = false
+
+--- @param line string
+--- @param context fzfx.VimColorsPipelineContext
+M._try_color = function(line, context)
+  if colorscheme_is_applying then
+    return
+  end
+
+  local parsed = parsers_helper.parse_vim_color(line, context)
+
+  if str.not_empty(parsed.colorname) then
+    vim.schedule(function()
+      colorscheme_is_applying = true
+      vim.cmd(string.format([[colorscheme %s]], parsed.colorname))
+      vim.schedule(function()
+        colorscheme_is_applying = false
+      end)
+    end)
+  end
+end
+
 M.interactions = {
-  preview = {
+  try_color = {
     key = "ctrl-l",
-    interaction = M._cd,
-    reload_after_execute = true,
+    interaction = M._try_color,
   },
 }
 
