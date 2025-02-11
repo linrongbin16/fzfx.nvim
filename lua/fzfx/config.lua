@@ -73,6 +73,11 @@ local Defaults = {
   --- @type fzfx.GroupConfig
   vim_command_history = require("fzfx.cfg.vim_command_history"),
 
+  -- Search vim colorschemes, i.e. the 'FzfxColors' command.
+  --
+  --- @type fzfx.GroupConfig
+  vim_colors = require("fzfx.cfg.vim_colors"),
+
   -- Search (LSP) diagnostics, i.e. the 'FzfxLspDiagnostics' command.
   --
   --- @type fzfx.GroupConfig
