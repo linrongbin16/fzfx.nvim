@@ -68,6 +68,7 @@ M.setup = function(opts)
   M.register("vim_keymaps", configs.vim_keymaps)
   M.register("vim_marks", configs.vim_marks)
   M.register("vim_command_history", configs.vim_command_history)
+  M.register("vim_colors", configs.vim_colors)
 
   -- file explorer
   M.register("file_explorer", configs.file_explorer)

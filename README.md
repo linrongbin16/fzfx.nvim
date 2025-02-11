@@ -63,7 +63,7 @@ https://github.com/linrongbin16/fzfx.nvim/assets/6496887/b5e2b0dc-4dd6-4c18-b1da
 > This plugins supports latest stable and (possibly) nightly Neovim version.
 
 - Neovim &ge; 0.10.
-- [fzf](https://github.com/junegunn/fzf) (**mandatory**).
+- [fzf](https://github.com/junegunn/fzf).
 - [nerd-fonts](https://www.nerdfonts.com/) (**optional** for icons).
 - [curl](https://man7.org/linux/man-pages/man1/curl.1.html) (**optional** for preview window label).
 - [rg](https://github.com/BurntSushi/ripgrep) (**optional** for live grep, by default use [grep](https://man7.org/linux/man-pages/man1/grep.1.html)).
@@ -228,7 +228,6 @@ Below keys are binded by default:
 - Exit keys (fzf `--expect` option)
   - `esc`: quit.
   - `double-click`/`enter`: open/jump to file (or other behaviors for some specific commands).
-  - `ctrl-q`: send lines to quickfix window.
 - Preview keys
   - `ctrl-]`: toggle preview.
   - `ctrl-f`: preview half page down.
@@ -243,6 +242,7 @@ Below keys are binded by default:
   <summary><code>FzfxFiles</code> (Find files)</summary>
   <small>
     <ol>
+      <li>Press <code>ctrl-q</code> to send lines to quickfix window.</li>
       <li>
         <b>Unrestricted</b> variant is added and named with
         <code>unres_</code> prefix, all variants are:
@@ -260,12 +260,18 @@ Below keys are binded by default:
 
 <details>
   <summary><code>FzfxBuffers</code> (Find buffers)</summary>
+  <small>
+    <ol>
+      <li>Press <code>ctrl-q</code> to send lines to quickfix window.</li>
+    </ol>
+  </small>
 </details>
 
 <details>
   <summary><code>FzfxGFiles</code> (Find git files)</summary>
   <small>
     <ol>
+      <li>Press <code>ctrl-q</code> to send lines to quickfix window.</li>
       <li>
         <b>Current directory only</b> variant is added and named with
         <code>cwd_</code> prefix, all variants are:
@@ -291,6 +297,7 @@ Below keys are binded by default:
         Use <code>--</code> flag to pass raw options to search command
         (<code>rg</code>/<code>grep</code>).
       </li>
+      <li>Press <code>ctrl-q</code> to send lines to quickfix window.</li>
       <li>
         <b>Unrestricted</b> variant is added and named with
         <code>unres_</code> prefix. <b>Current buffer only</b> variant is added
@@ -322,6 +329,7 @@ Below keys are binded by default:
         Use <code>--</code> flag to pass raw options to search command
         (<code>rg</code>/<code>grep</code>).
       </li>
+      <li>Press <code>ctrl-q</code> to send lines to quickfix window.</li>
     </ol>
   </small>
 </details>
@@ -337,6 +345,7 @@ Below keys are binded by default:
           >git grep</code
         >).
       </li>
+      <li>Press <code>ctrl-q</code> to send lines to quickfix window.</li>
     </ol>
   </small>
 </details>
@@ -349,6 +358,7 @@ Below keys are binded by default:
   </summary>
   <small>
     <ol>
+      <li>Press <code>ctrl-q</code> to send lines to quickfix window.</li>
       <li>
         <b>Current directory only</b> variant is added and named with
         <code>cwd_</code> prefix. All variants are:
@@ -565,6 +575,7 @@ Below keys are binded by default:
   <summary><code>FzfxLspDiagnostics</code> (Search lsp diagnostics)</summary>
   <small>
     <ol>
+      <li>Press <code>ctrl-q</code> to send lines to quickfix window.</li>
       <li>
         <b>Current buffer only</b> variant is named with
         <code>buf_</code> prefix. All variants are:
@@ -635,6 +646,12 @@ Below keys are binded by default:
 
 <details>
   <summary><code>FzfxMarks</code> (Search vim marks)</summary>
+  <small>
+    <ol>
+      <li>Press <code>enter</code> to open mark's location.</li>
+      <li>Press <code>ctrl-q</code> to send lines to quickfix window.</li>
+    </ol>
+  </small>
 </details>
 
 <details>
@@ -660,6 +677,20 @@ Below keys are binded by default:
           <li><code>(ex_/user_)put</code></li>
           <li><code>(ex_/user_)resume</code></li>
         </ul>
+      </li>
+    </ol>
+  </small>
+</details>
+
+<details>
+  <summary><code>FzfxColors</code> (Search vim colorschemes)</summary>
+  <small>
+    <ol>
+      <li>Press <code>enter</code> to feed colorscheme into cmdline.</li>
+      <li>
+        <b>Select keys</b> is disabled (since it is not allowed to feed multiple
+        colorschemes into cmdline). <b>Preview keys</b> is disabled (since there
+        is nothing to preview).
       </li>
     </ol>
   </small>

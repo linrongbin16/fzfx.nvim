@@ -737,4 +737,21 @@ M.parse_vim_mark = function(line, context)
   end
 end
 
+-- Parse vim colorscheme, it looks like:
+--
+-- ```
+-- tokyonight-moon
+-- default
+-- blue
+-- ```
+--
+--- @param line string
+--- @param context fzfx.VimColorsPipelineContext
+--- @return {colorname:string}
+M.parse_vim_color = function(line, context)
+  local colorname = str.trim(line)
+  assert(str.not_blank(colorname), string.format("failed to parse vim color:%s", vim.inspect(line)))
+  return { colorname = colorname }
+end
+
 return M

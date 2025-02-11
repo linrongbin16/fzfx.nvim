@@ -813,4 +813,35 @@ end
 
 -- command history }
 
+-- colors {
+
+-- Make `:feedkeys` commands for vim colors results.
+--- @param lines string[]
+--- @param context fzfx.VimColorsPipelineContext
+--- @return {input:string, mode:string}?
+M._make_feed_vim_color = function(lines, context)
+  if tbl.list_empty(lines) then
+    return nil
+  end
+  local line = lines[#lines]
+  if str.empty(line) then
+    return nil
+  end
+
+  local parsed = parsers.parse_vim_color(line, context)
+  return { input = string.format(":color %s", parsed.colorname), mode = "n" }
+end
+
+-- Run `:feedkeys` commands for vim colors results.
+--- @param lines string[]
+--- @param context fzfx.VimColorsPipelineContext
+M.feed_vim_color = function(lines, context)
+  local feed = M._make_feed_vim_color(lines, context) --[[@as table]]
+  if tbl.tbl_not_empty(feed) then
+    vim.fn.feedkeys(feed.input, feed.mode)
+  end
+end
+
+-- colors }
+
 return M
