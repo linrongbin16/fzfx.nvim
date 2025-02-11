@@ -42,6 +42,7 @@ jobs:
               - [ ] FzfxCommandHistory
               - [ ] FzfxKeyMaps
               - [ ] FzfxMarks
+              - [ ] FzfxColors
               - [ ] FzfxFileExplorer
             `
             })
