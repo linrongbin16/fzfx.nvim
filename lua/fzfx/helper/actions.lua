@@ -829,7 +829,7 @@ M._make_feed_vim_color = function(lines, context)
   end
 
   local parsed = parsers.parse_vim_color(line, context)
-  return { input = string.format(":colorscheme %s", parsed.colorname), mode = "n" }
+  return { input = string.format(":color %s", parsed.colorname), mode = "n" }
 end
 
 -- Run `:feedkeys` commands for vim colors results.

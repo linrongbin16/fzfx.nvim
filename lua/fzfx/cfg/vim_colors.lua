@@ -149,7 +149,7 @@ M._try_color = function(line, context)
   if str.not_empty(parsed.colorname) then
     vim.schedule(function()
       colorscheme_is_applying = true
-      vim.cmd(string.format([[colorscheme %s]], parsed.colorname))
+      vim.cmd(string.format([[color %s]], parsed.colorname))
       vim.schedule(function()
         colorscheme_is_applying = false
       end)
@@ -196,7 +196,7 @@ M._context_shutdown = function(context)
   if context.cancelled then
     vim.schedule(function()
       if str.not_empty(context.saved_color) and vim.g.colors_name ~= context.saved_color then
-        vim.cmd(string.format([[colorscheme %s]], context.saved_color))
+        vim.cmd(string.format([[color %s]], context.saved_color))
       end
     end)
   end
