@@ -1080,4 +1080,18 @@ describe("helper.actions", function()
       end
     end)
   end)
+
+  describe("[feed_vim_color]", function()
+    local CONTEXT = require("fzfx.cfg.vim_colors")._context_maker()
+    local LINES = { "blue", "default" }
+    it("make", function()
+      local actual = actions._make_feed_vim_color(LINES, CONTEXT)
+      assert_eq(type(actual), "table")
+      assert_eq(type(actual.input), "string")
+      assert(str.startswith(actual.input, ":colorscheme moonlight"))
+    end)
+    it("run", function()
+      actions.feed_vim_color(LINES, CONTEXT)
+    end)
+  end)
 end)
