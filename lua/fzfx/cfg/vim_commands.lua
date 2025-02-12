@@ -288,9 +288,7 @@ M._get_commands_output_in_lines = function()
   local lines = fio.readlines(tmpfile) --[[@as string[] ]]
 
   vim.schedule(function()
-    ---@diagnostic disable-next-line: undefined-field
     if uv.fs_stat(tmpfile) then
-      ---@diagnostic disable-next-line: undefined-field
       uv.fs_unlink(tmpfile, function() end)
     end
   end)

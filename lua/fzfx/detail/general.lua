@@ -80,9 +80,7 @@ local function _remove_temp_file(filename, on_complete)
     end
   end
 
-  ---@diagnostic disable-next-line: undefined-field
   if uv.fs_stat(filename) then
-    ---@diagnostic disable-next-line: undefined-field
     uv.fs_unlink(filename, on_complete)
   end
 end
@@ -400,8 +398,7 @@ function ProviderSwitch:_handle_async_direct(provider_config, query, context)
     end
 
     -- Then notify provider it is ready.
-    ---@diagnostic disable-next-line: undefined-field
-    local secs, microsecs = uv.gettimeofday() --[[@as integer, integer]]
+    local secs, microsecs = uv.gettimeofday()
     fio.writefile(self.donefile, string.format("done-%d-%d", secs, microsecs))
   end
 

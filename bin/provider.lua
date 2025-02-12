@@ -8,7 +8,7 @@ local str = require("fzfx.commons.str")
 local tbl = require("fzfx.commons.tbl")
 local fio = require("fzfx.commons.fio")
 local spawn = require("fzfx.commons.spawn")
-local uv = require("fzfx.commons.uv")
+local uv = require("fzfx.commons.uv") --[[@as uv]]
 local schema = require("fzfx.schema")
 local child_process_helpers = require("fzfx.detail.child_process_helpers")
 child_process_helpers.setup("provider")
@@ -25,8 +25,7 @@ local query = _G.arg[5]
 -- child_process_helpers.log_debug("resultfile:[%s]", resultfile)
 -- child_process_helpers.log_debug("query:[%s]", query)
 
----@diagnostic disable-next-line: undefined-field
-local start_secs, start_microsecs = uv.gettimeofday() --[[@as integer, integer]]
+local start_secs, start_microsecs = uv.gettimeofday()
 
 -- Whether timestamp1 is greater than or equal to timestamp2.
 --- @param ts1 {secs:integer, microsecs:integer}

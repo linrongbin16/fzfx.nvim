@@ -404,9 +404,7 @@ end
 
 --- @param context fzfx.FileExplorerPipelineContext
 M._context_shutdown = function(context)
-  ---@diagnostic disable-next-line: undefined-field
   if uv.fs_stat(context.cwd) then
-    ---@diagnostic disable-next-line: undefined-field
     uv.fs_unlink(context.cwd, function() end)
   end
 end
