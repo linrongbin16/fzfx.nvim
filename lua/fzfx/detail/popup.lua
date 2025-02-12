@@ -158,9 +158,7 @@ M.popup = function(win_opts, source, fzf_opts, actions, context, on_close)
       )
 
       -- Clean up temp files
-      ---@diagnostic disable-next-line: undefined-field
       if uv.fs_stat(result) then
-        ---@diagnostic disable-next-line: undefined-field
         uv.fs_unlink(result, function(err, success)
           -- log.debug(
           --   string.format(
