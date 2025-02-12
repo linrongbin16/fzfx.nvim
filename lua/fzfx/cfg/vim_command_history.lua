@@ -95,4 +95,15 @@ M.fzf_opts = {
   { "--prompt", "Command History(:) > " },
 }
 
+M.win_opts = {
+  height = function()
+    local editor_height = vim.o.lines
+    return math.max(15, math.floor(editor_height * 0.4))
+  end,
+  width = function()
+    local editor_width = vim.o.columns
+    return math.max(25, math.floor(editor_width * 0.6))
+  end,
+}
+
 return M
