@@ -209,9 +209,9 @@ M.other_opts = {
 
 M.win_opts = function()
   local editor_height = vim.o.lines
-  local height = math.max(15, math.floor(editor_height * 0.3))
+  local height = math.max(15, math.floor(editor_height * 0.4))
   local editor_width = vim.o.columns
-  local width = math.max(30, math.floor(editor_width * 0.4))
+  local width = math.max(40, math.floor(editor_width * 0.5))
 
   return {
     height = height,
