@@ -8,7 +8,7 @@ local path = require("fzfx.commons.path")
 local fio = require("fzfx.commons.fio")
 local color_term = require("fzfx.commons.color.term")
 
-local constants = require("fzfx.lib.constants")
+local consts = require("fzfx.lib.constants")
 local log = require("fzfx.lib.log")
 local LogLevels = require("fzfx.lib.log").LogLevels
 local lsp = require("fzfx.lib.lsp")
@@ -755,7 +755,7 @@ M._lsp_position_context_maker = function()
   }
 
   local offset_encoding = nil
-  if constants.NVIM_VERSION_0_11 then
+  if consts.NVIM_VERSION_0_11 then
     offset_encoding = "utf-16"
     local clients = vim.lsp.get_clients({ bufnr = context.bufnr })
     if tbl.list_not_empty(clients) and clients[1] ~= nil and clients[1].offset_encoding ~= nil then

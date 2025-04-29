@@ -1,6 +1,5 @@
 local tbl = require("fzfx.commons.tbl")
 local str = require("fzfx.commons.str")
-local num = require("fzfx.commons.num")
 local path = require("fzfx.commons.path")
 
 local consts = require("fzfx.lib.constants")
@@ -132,7 +131,6 @@ M.setqflist_find = function(lines)
     "copen",
     function()
       vim.fn.setqflist({}, " ", {
-        nr = "$",
         items = qfs,
       })
     end,
@@ -202,7 +200,6 @@ M.setqflist_rg = function(lines)
     "copen",
     function()
       vim.fn.setqflist({}, " ", {
-        nr = "$",
         items = qfs,
       })
     end,
@@ -272,7 +269,6 @@ M.setqflist_grep = function(lines)
     "copen",
     function()
       vim.fn.setqflist({}, " ", {
-        nr = "$",
         items = qfs,
       })
     end,
@@ -359,7 +355,6 @@ M.setqflist_rg_bufnr = function(lines, context)
     "copen",
     function()
       vim.fn.setqflist({}, " ", {
-        nr = "$",
         items = qfs,
       })
     end,
@@ -445,7 +440,6 @@ M.setqflist_grep_bufnr = function(lines, context)
     "copen",
     function()
       vim.fn.setqflist({}, " ", {
-        nr = "$",
         items = qfs,
       })
     end,
@@ -689,7 +683,6 @@ M.setqflist_git_status = function(lines)
     "copen",
     function()
       vim.fn.setqflist({}, " ", {
-        nr = "$",
         items = qfs,
       })
     end,
@@ -773,7 +766,6 @@ M.setqflist_vim_mark = function(lines, context)
     "copen",
     function()
       vim.fn.setqflist({}, " ", {
-        nr = "$",
         items = qfs,
       })
     end,
