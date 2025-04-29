@@ -71,4 +71,7 @@ M.ECHO = "echo"
 M.HAS_CURL = vim.fn.executable("curl") > 0
 M.CURL = "curl"
 
+-- neovim version
+M.NVIM_VERSION_0_11 = vim.fn.has("nvim-0.11") > 0
+
 return M

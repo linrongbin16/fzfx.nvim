@@ -58,10 +58,6 @@ https://github.com/linrongbin16/fzfx.nvim/assets/6496887/b5e2b0dc-4dd6-4c18-b1da
 
 ## ✅ Requirements
 
-> [!NOTE]
->
-> This plugins supports latest stable and (possibly) nightly Neovim version.
-
 - Neovim &ge; 0.10.
 - [fzf](https://github.com/junegunn/fzf).
 - [nerd-fonts](https://www.nerdfonts.com/) (**optional** for icons).
