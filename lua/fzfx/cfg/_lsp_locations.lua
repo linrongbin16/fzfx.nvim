@@ -754,8 +754,9 @@ M._lsp_position_context_maker = function()
     tabnr = vim.api.nvim_get_current_tabpage(),
   }
 
-  local offset_encoding = "utf-16"
+  local offset_encoding = nil
   if NVIM_VERSION_0_11 then
+    offset_encoding = "utf-16"
     local clients = vim.lsp.get_clients({ bufnr = context.bufnr })
     if tbl.list_not_empty(clients) and clients[1] ~= nil and clients[1].offset_encoding ~= nil then
       offset_encoding = clients[1].offset_encoding
