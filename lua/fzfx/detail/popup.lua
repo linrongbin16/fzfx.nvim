@@ -4,6 +4,7 @@ local uv = require("fzfx.commons.uv")
 local version = require("fzfx.commons.version")
 
 local log = require("fzfx.lib.log")
+local consts = require("fzfx.lib.constants")
 
 local ShellContext = require("fzfx.detail.popup.shell_helpers").ShellContext
 local fzf_helpers = require("fzfx.detail.fzf_helpers")
@@ -191,7 +192,13 @@ M.popup = function(win_opts, source, fzf_opts, actions, context, on_close)
   log.debug("|Popup:new| fzf_command:" .. vim.inspect(fzf_command))
 
   -- launch
-  local jobid = vim.fn.termopen(fzf_command, { on_exit = on_fzf_exit }) --[[@as integer ]]
+  local jobid
+  if consts.NVIM_VERSION_0_11 then
+    jobid = vim.fn.jobstart(fzf_command, { on_exit = on_fzf_exit, term = true }) --[[@as integer ]]
+  else
+    ---@diagnostic disable-next-line: deprecated
+    jobid = vim.fn.termopen(fzf_command, { on_exit = on_fzf_exit }) --[[@as integer ]]
+  end
 
   -- restore fzf/shell context
   saved_shell_ctx:restore()

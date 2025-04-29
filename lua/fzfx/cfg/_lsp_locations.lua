@@ -8,6 +8,7 @@ local path = require("fzfx.commons.path")
 local fio = require("fzfx.commons.fio")
 local color_term = require("fzfx.commons.color.term")
 
+local consts = require("fzfx.lib.constants")
 local log = require("fzfx.lib.log")
 local LogLevels = require("fzfx.lib.log").LogLevels
 local lsp = require("fzfx.lib.lsp")
@@ -752,7 +753,19 @@ M._lsp_position_context_maker = function()
     winnr = vim.api.nvim_get_current_win(),
     tabnr = vim.api.nvim_get_current_tabpage(),
   }
-  context.position_params = vim.lsp.util.make_position_params(context.winnr, nil)
+
+  local offset_encoding = nil
+  if consts.NVIM_VERSION_0_11 then
+    offset_encoding = "utf-16"
+    local clients = vim.lsp.get_clients({ bufnr = context.bufnr })
+    if tbl.list_not_empty(clients) and clients[1] ~= nil and clients[1].offset_encoding ~= nil then
+      offset_encoding = clients[1].offset_encoding
+    end
+  end
+  ---@diagnostic disable-next-line: param-type-mismatch
+  context.position_params = vim.lsp.util.make_position_params(context.winnr, offset_encoding)
+
+  ---@diagnostic disable-next-line: inject-field
   context.position_params.context = {
     includeDeclaration = true,
   }
