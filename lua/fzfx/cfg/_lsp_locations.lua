@@ -18,6 +18,7 @@ local PreviewerTypeEnum = require("fzfx.schema").PreviewerTypeEnum
 local _lsp = require("fzfx.cfg._lsp")
 
 local REQUEST_TIMEOUT = 1000
+local NVIM_VERSION_0_11 = vim.fn.has("nvim-0.11") > 0
 
 local M = {}
 
@@ -752,7 +753,17 @@ M._lsp_position_context_maker = function()
     winnr = vim.api.nvim_get_current_win(),
     tabnr = vim.api.nvim_get_current_tabpage(),
   }
-  context.position_params = vim.lsp.util.make_position_params(context.winnr, nil)
+
+  local offset_encoding = "utf-16"
+  if NVIM_VERSION_0_11 then
+    local clients = vim.lsp.get_clients({ bufnr = context.bufnr })
+    if tbl.list_not_empty(clients) and clients[1] ~= nil and clients[1].offset_encoding ~= nil then
+      offset_encoding = clients[1].offset_encoding
+    end
+  end
+  context.position_params = vim.lsp.util.make_position_params(context.winnr, offset_encoding)
+
+  ---@diagnostic disable-next-line: inject-field
   context.position_params.context = {
     includeDeclaration = true,
   }
