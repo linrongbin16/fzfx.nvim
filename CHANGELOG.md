@@ -1,5 +1,12 @@
 # Changelog
 
+## [8.2.0](https://github.com/linrongbin16/fzfx.nvim/compare/v8.1.1...v8.2.0) (2025-04-29)
+
+
+### Features
+
+* **colors:** add "FzfxColors" command ([#811](https://github.com/linrongbin16/fzfx.nvim/issues/811)) ([4109aca](https://github.com/linrongbin16/fzfx.nvim/commit/4109acaed935edf32c8eb4cb4b12d75b6dee92d3))
+
 ## [8.1.1](https://github.com/linrongbin16/fzfx.nvim/compare/v8.1.0...v8.1.1) (2025-02-03)
 
 
