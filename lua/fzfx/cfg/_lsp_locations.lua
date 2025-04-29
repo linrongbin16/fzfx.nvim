@@ -762,6 +762,7 @@ M._lsp_position_context_maker = function()
       offset_encoding = clients[1].offset_encoding
     end
   end
+  ---@diagnostic disable-next-line: param-type-mismatch
   context.position_params = vim.lsp.util.make_position_params(context.winnr, offset_encoding)
 
   ---@diagnostic disable-next-line: inject-field
