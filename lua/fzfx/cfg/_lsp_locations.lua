@@ -755,7 +755,7 @@ M._lsp_position_context_maker = function()
   }
 
   local offset_encoding = nil
-  if consts.NVIM_VERSION_0_11 then
+  if consts.NVIM_VERSION_0_11_0 then
     offset_encoding = "utf-16"
     local clients = vim.lsp.get_clients({ bufnr = context.bufnr })
     if tbl.list_not_empty(clients) and clients[1] ~= nil and clients[1].offset_encoding ~= nil then
