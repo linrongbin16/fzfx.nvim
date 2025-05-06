@@ -193,12 +193,12 @@ M.popup = function(win_opts, source, fzf_opts, actions, context, on_close)
 
   -- launch
   local jobid
-  if consts.NVIM_VERSION_0_11 then
-    jobid = vim.fn.jobstart(fzf_command, { on_exit = on_fzf_exit, term = true }) --[[@as integer ]]
-  else
-    ---@diagnostic disable-next-line: deprecated
-    jobid = vim.fn.termopen(fzf_command, { on_exit = on_fzf_exit }) --[[@as integer ]]
-  end
+  -- if consts.NVIM_VERSION_0_11_0 then
+  --   jobid = vim.fn.jobstart(fzf_command, { on_exit = on_fzf_exit, term = true }) --[[@as integer ]]
+  -- else
+  ---@diagnostic disable-next-line: deprecated
+  jobid = vim.fn.termopen(fzf_command, { on_exit = on_fzf_exit }) --[[@as integer ]]
+  -- end
 
   -- restore fzf/shell context
   saved_shell_ctx:restore()
