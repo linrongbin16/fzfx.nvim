@@ -1,5 +1,12 @@
 # Changelog
 
+## [8.2.1](https://github.com/linrongbin16/fzfx.nvim/compare/v8.2.0...v8.2.1) (2025-05-06)
+
+
+### Bug Fixes
+
+* **term:** revert to 'termopen' for nvim-0.11.1 bugs on fzf ([#820](https://github.com/linrongbin16/fzfx.nvim/issues/820)) ([1b17691](https://github.com/linrongbin16/fzfx.nvim/commit/1b17691390775605c15519c03818f0396e8165f5))
+
 ## [8.2.0](https://github.com/linrongbin16/fzfx.nvim/compare/v8.1.1...v8.2.0) (2025-04-29)
 
 
