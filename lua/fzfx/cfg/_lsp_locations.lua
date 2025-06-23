@@ -754,21 +754,18 @@ M._lsp_position_context_maker = function()
     tabnr = vim.api.nvim_get_current_tabpage(),
   }
 
-  local offset_encoding = nil
+  local params_context = { includeDeclaration = true }
   if consts.NVIM_VERSION_0_11_0 then
-    offset_encoding = "utf-16"
-    local clients = vim.lsp.get_clients({ bufnr = context.bufnr })
-    if tbl.list_not_empty(clients) and clients[1] ~= nil and clients[1].offset_encoding ~= nil then
-      offset_encoding = clients[1].offset_encoding
+    context.position_params = function(client)
+      local ret = vim.lsp.util.make_position_params(context.winnr, client.offset_encoding)
+      return vim.tbl_extend("force", ret, { context = params_context })
     end
+  else
+    ---@diagnostic disable-next-line
+    local ret = vim.lsp.util.make_position_params(context.winnr)
+    context.position_params = vim.tbl_extend("force", ret, { context = params_context })
   end
-  ---@diagnostic disable-next-line: param-type-mismatch
-  context.position_params = vim.lsp.util.make_position_params(context.winnr, offset_encoding)
 
-  ---@diagnostic disable-next-line: inject-field
-  context.position_params.context = {
-    includeDeclaration = true,
-  }
   return context
 end
 
