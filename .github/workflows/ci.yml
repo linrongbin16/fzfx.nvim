@@ -70,7 +70,7 @@ jobs:
           version: ${{ matrix.nvim_version }}
       - uses: leafo/gh-actions-lua@v11
         with:
-          luaVersion: "luajit-2.1"
+          luaVersion: "luajit-openresty"
       - uses: leafo/gh-actions-luarocks@v5
       - name: Run Tests
         run: |
