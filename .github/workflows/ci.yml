@@ -59,7 +59,7 @@ jobs:
     name: Unit Test
     strategy:
       matrix:
-        nvim_version: [stable, nightly]
+        nvim_version: [v0.10.4, stable, nightly]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -68,13 +68,17 @@ jobs:
         with:
           neovim: true
           version: ${{ matrix.nvim_version }}
-      - uses: leafo/gh-actions-lua@v10
+      - uses: leafo/gh-actions-lua@v11
         with:
-          luaVersion: "luajit-openresty"
-      - uses: leafo/gh-actions-luarocks@v4
+          luaVersion: "5.1.5"
+      - uses: leafo/gh-actions-luarocks@v5
       - name: Run Tests
         run: |
-          sudo apt-get -y -qq install bat
+          sudo apt-get update
+          sudo apt-get install -q -y fd-find
+          sudo apt-get install -q -y bat
+          sudo ln -s $(which fdfind) /usr/local/bin/fd
+          sudo ln -s $(which batcat) /usr/local/bin/bat
           sudo apt-get -y -qq install fzf
           luarocks install luacov
           luarocks install luacov-reporter-lcov
