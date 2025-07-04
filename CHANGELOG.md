@@ -1,5 +1,12 @@
 # Changelog
 
+## [8.2.2](https://github.com/linrongbin16/fzfx.nvim/compare/v8.2.1...v8.2.2) (2025-07-04)
+
+
+### Bug Fixes
+
+* **lsp:** fix 'make_position_params()' with function 'position_params' ([#823](https://github.com/linrongbin16/fzfx.nvim/issues/823)) ([b9425aa](https://github.com/linrongbin16/fzfx.nvim/commit/b9425aac6ef13d5fdb1acd7be25600c9203b75f9))
+
 ## [8.2.1](https://github.com/linrongbin16/fzfx.nvim/compare/v8.2.0...v8.2.1) (2025-05-06)
 
 
