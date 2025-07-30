@@ -327,14 +327,14 @@ M._make_lsp_locations_async_provider = function(opts)
 
         done = true
 
-        log.debug(
-          string.format(
-            "|_lsp_location| err:%s, response:%s, ctx:%s",
-            vim.inspect(err),
-            vim.inspect(response),
-            vim.inspect(ctx)
-          )
-        )
+        -- log.debug(
+        --   string.format(
+        --     "|_lsp_location| err:%s, response:%s, ctx:%s",
+        --     vim.inspect(err),
+        --     vim.inspect(response),
+        --     vim.inspect(ctx)
+        --   )
+        -- )
         local wrapped_response = { { result = response } }
         local results = M._process_location_response(wrapped_response --[[@as table]])
 
