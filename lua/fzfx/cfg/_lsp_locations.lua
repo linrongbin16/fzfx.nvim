@@ -683,7 +683,7 @@ M._make_lsp_call_hierarchy_async_provider = function(opts)
 
     local done1 = false
 
-    local _cancel_ids1, cancel_request1
+    local cancel_request1
     cancel_request1 = vim.lsp.buf_request_all(
       context.bufnr,
       "textDocument/prepareCallHierarchy",
@@ -706,7 +706,7 @@ M._make_lsp_call_hierarchy_async_provider = function(opts)
 
         local done2 = false
 
-        local _cancel_ids2, cancel_request2
+        local cancel_request2
         cancel_request2 = vim.lsp.buf_request_all(
           context.bufnr,
           opts.method,
