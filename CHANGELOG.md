@@ -1,5 +1,12 @@
 # Changelog
 
+## [8.2.5](https://github.com/linrongbin16/fzfx.nvim/compare/v8.2.4...v8.2.5) (2025-07-30)
+
+
+### Bug Fixes
+
+* **lsp:** remove deferred cancel requests on timeout ([#829](https://github.com/linrongbin16/fzfx.nvim/issues/829)) ([0cf5aa1](https://github.com/linrongbin16/fzfx.nvim/commit/0cf5aa1f7948f735eb4e43b3cb819ae0e1c74c66))
+
 ## [8.2.4](https://github.com/linrongbin16/fzfx.nvim/compare/v8.2.3...v8.2.4) (2025-07-30)
 
 
