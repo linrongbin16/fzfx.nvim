@@ -684,20 +684,19 @@ M._make_lsp_call_hierarchy_async_provider = function(opts)
     local done1 = false
 
     local _cancel_ids1, cancel_request1
-    _cancel_ids1, cancel_request1 = vim.lsp.buf_request(
+    cancel_request1 = vim.lsp.buf_request_all(
       context.bufnr,
       "textDocument/prepareCallHierarchy",
       context.position_params,
-      function(err1, response1, ctx1)
+      function(response1)
         if vim.is_callable(cancel_request1) then
           cancel_request1()
         end
 
         done1 = true
 
-        local wrapped_response1 = { { result = response1 } }
         local prepared_item =
-          M._process_prepare_call_hierarchy_response(wrapped_response1 --[[@as table? ]])
+          M._process_prepare_call_hierarchy_response(response1 --[[@as table? ]])
 
         if prepared_item == nil then
           log.echo(LogLevels.INFO, "no lsp call hierarchy found.")
@@ -708,20 +707,18 @@ M._make_lsp_call_hierarchy_async_provider = function(opts)
         local done2 = false
 
         local _cancel_ids2, cancel_request2
-        _cancel_ids2, cancel_request2 = vim.lsp.buf_request(
+        cancel_request2 = vim.lsp.buf_request_all(
           context.bufnr,
           opts.method,
           { item = prepared_item },
-          function(err2, response2, ctx2)
+          function(response2)
             if vim.is_callable(cancel_request2) then
               cancel_request2()
             end
 
             done2 = true
 
-            local wrapped_response2 = { { result = response2 } }
-            local results =
-              M._process_call_hierarchy_response(wrapped_response2 --[[@as table? ]], opts)
+            local results = M._process_call_hierarchy_response(response2 --[[@as table? ]], opts)
 
             if tbl.tbl_empty(results) then
               log.echo(LogLevels.INFO, "no lsp call hierarchy found.")
