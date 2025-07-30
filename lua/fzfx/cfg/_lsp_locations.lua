@@ -315,14 +315,14 @@ M._make_lsp_locations_async_provider = function(opts)
 
     local done = false
 
-    local cancel_all_requests
-    cancel_all_requests = vim.lsp.buf_request_all(
+    local cancel_request
+    cancel_request = vim.lsp.buf_request_all(
       context.bufnr,
       opts.method,
       context.position_params,
       function(response)
-        if not done and vim.is_callable(cancel_all_requests) then
-          cancel_all_requests()
+        if not done and vim.is_callable(cancel_request) then
+          cancel_request()
         end
 
         done = true
@@ -340,8 +340,8 @@ M._make_lsp_locations_async_provider = function(opts)
     )
 
     vim.defer_fn(function()
-      if not done and vim.is_callable(cancel_all_requests) then
-        cancel_all_requests()
+      if not done and vim.is_callable(cancel_request) then
+        cancel_request()
         done = true
       end
     end, opts.timeout or REQUEST_TIMEOUT)
@@ -674,14 +674,14 @@ M._make_lsp_call_hierarchy_async_provider = function(opts)
 
     local done1 = false
 
-    local cancel_all_requests1
-    cancel_all_requests1 = vim.lsp.buf_request_all(
+    local cancel_request1
+    cancel_request1 = vim.lsp.buf_request_all(
       context.bufnr,
       "textDocument/prepareCallHierarchy",
       context.position_params,
       function(response1)
-        if vim.is_callable(cancel_all_requests1) then
-          cancel_all_requests1()
+        if vim.is_callable(cancel_request1) then
+          cancel_request1()
         end
 
         done1 = true
@@ -697,14 +697,14 @@ M._make_lsp_call_hierarchy_async_provider = function(opts)
 
         local done2 = false
 
-        local cancel_all_requests2
-        cancel_all_requests2 = vim.lsp.buf_request_all(
+        local cancel_request2
+        cancel_request2 = vim.lsp.buf_request_all(
           context.bufnr,
           opts.method,
           { item = prepared_item },
           function(response2)
-            if vim.is_callable(cancel_all_requests2) then
-              cancel_all_requests2()
+            if vim.is_callable(cancel_request2) then
+              cancel_request2()
             end
 
             done2 = true
@@ -722,8 +722,8 @@ M._make_lsp_call_hierarchy_async_provider = function(opts)
         )
 
         vim.defer_fn(function()
-          if not done2 and vim.is_callable(cancel_all_requests2) then
-            cancel_all_requests2()
+          if not done2 and vim.is_callable(cancel_request2) then
+            cancel_request2()
             done2 = true
           end
         end, opts.timeout or REQUEST_TIMEOUT)
@@ -740,8 +740,8 @@ M._make_lsp_call_hierarchy_async_provider = function(opts)
     )
 
     vim.defer_fn(function()
-      if not done1 and vim.is_callable(cancel_all_requests1) then
-        cancel_all_requests1()
+      if not done1 and vim.is_callable(cancel_request1) then
+        cancel_request1()
         done1 = true
       end
     end, opts.timeout or REQUEST_TIMEOUT)
