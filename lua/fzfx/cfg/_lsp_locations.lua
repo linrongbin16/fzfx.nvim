@@ -18,7 +18,7 @@ local previewers_helper = require("fzfx.helper.previewers")
 local PreviewerTypeEnum = require("fzfx.schema").PreviewerTypeEnum
 local _lsp = require("fzfx.cfg._lsp")
 
-local REQUEST_TIMEOUT = 1000
+local REQUEST_TIMEOUT = 1500
 
 local M = {}
 
@@ -347,13 +347,6 @@ M._make_lsp_locations_async_provider = function(opts)
         on_complete(results)
       end
     )
-
-    vim.defer_fn(function()
-      if not done and vim.is_callable(cancel_request) then
-        cancel_request()
-        done = true
-      end
-    end, opts.timeout or REQUEST_TIMEOUT)
   end
 
   return impl
@@ -730,12 +723,6 @@ M._make_lsp_call_hierarchy_async_provider = function(opts)
           end
         )
 
-        vim.defer_fn(function()
-          if not done2 and vim.is_callable(cancel_request2) then
-            cancel_request2()
-            done2 = true
-          end
-        end, opts.timeout or REQUEST_TIMEOUT)
         -- log.debug(
         --   string.format(
         --     "|_make_lsp_call_hierarchy_provider| 2nd call, opts:%s, lsp_item: %s, lsp_results2:%s, lsp_err2:%s",
@@ -747,13 +734,6 @@ M._make_lsp_call_hierarchy_async_provider = function(opts)
         -- )
       end
     )
-
-    vim.defer_fn(function()
-      if not done1 and vim.is_callable(cancel_request1) then
-        cancel_request1()
-        done1 = true
-      end
-    end, opts.timeout or REQUEST_TIMEOUT)
 
     -- log.debug(
     --   string.format(
