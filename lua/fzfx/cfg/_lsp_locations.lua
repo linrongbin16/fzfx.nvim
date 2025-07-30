@@ -18,7 +18,7 @@ local previewers_helper = require("fzfx.helper.previewers")
 local PreviewerTypeEnum = require("fzfx.schema").PreviewerTypeEnum
 local _lsp = require("fzfx.cfg._lsp")
 
-local REQUEST_TIMEOUT = 1000
+local REQUEST_TIMEOUT = 1500
 
 local M = {}
 
@@ -313,19 +313,15 @@ M._make_lsp_locations_async_provider = function(opts)
       return
     end
 
-    local done = false
-
     local _cancel_ids, cancel_request
     _cancel_ids, cancel_request = vim.lsp.buf_request(
       context.bufnr,
       opts.method,
       context.position_params,
       function(err, response, ctx)
-        if not done and vim.is_callable(cancel_request) then
+        if vim.is_callable(cancel_request) then
           cancel_request()
         end
-
-        done = true
 
         -- log.debug(
         --   string.format(
@@ -347,13 +343,6 @@ M._make_lsp_locations_async_provider = function(opts)
         on_complete(results)
       end
     )
-
-    vim.defer_fn(function()
-      if not done and vim.is_callable(cancel_request) then
-        cancel_request()
-        done = true
-      end
-    end, opts.timeout or REQUEST_TIMEOUT)
   end
 
   return impl
@@ -681,8 +670,6 @@ M._make_lsp_call_hierarchy_async_provider = function(opts)
       return
     end
 
-    local done1 = false
-
     local cancel_request1
     cancel_request1 = vim.lsp.buf_request_all(
       context.bufnr,
@@ -693,8 +680,6 @@ M._make_lsp_call_hierarchy_async_provider = function(opts)
           cancel_request1()
         end
 
-        done1 = true
-
         local prepared_item =
           M._process_prepare_call_hierarchy_response(response1 --[[@as table? ]])
 
@@ -703,8 +688,6 @@ M._make_lsp_call_hierarchy_async_provider = function(opts)
           on_complete(nil)
           return
         end
-
-        local done2 = false
 
         local cancel_request2
         cancel_request2 = vim.lsp.buf_request_all(
@@ -715,8 +698,6 @@ M._make_lsp_call_hierarchy_async_provider = function(opts)
             if vim.is_callable(cancel_request2) then
               cancel_request2()
             end
-
-            done2 = true
 
             local results = M._process_call_hierarchy_response(response2 --[[@as table? ]], opts)
 
@@ -730,12 +711,6 @@ M._make_lsp_call_hierarchy_async_provider = function(opts)
           end
         )
 
-        vim.defer_fn(function()
-          if not done2 and vim.is_callable(cancel_request2) then
-            cancel_request2()
-            done2 = true
-          end
-        end, opts.timeout or REQUEST_TIMEOUT)
         -- log.debug(
         --   string.format(
         --     "|_make_lsp_call_hierarchy_provider| 2nd call, opts:%s, lsp_item: %s, lsp_results2:%s, lsp_err2:%s",
@@ -747,13 +722,6 @@ M._make_lsp_call_hierarchy_async_provider = function(opts)
         -- )
       end
     )
-
-    vim.defer_fn(function()
-      if not done1 and vim.is_callable(cancel_request1) then
-        cancel_request1()
-        done1 = true
-      end
-    end, opts.timeout or REQUEST_TIMEOUT)
 
     -- log.debug(
     --   string.format(
