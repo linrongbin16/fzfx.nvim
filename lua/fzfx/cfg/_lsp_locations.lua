@@ -316,18 +316,27 @@ M._make_lsp_locations_async_provider = function(opts)
     local done = false
 
     local cancel_request
-    cancel_request = vim.lsp.buf_request_all(
+    cancel_request = vim.lsp.buf_request(
       context.bufnr,
       opts.method,
       context.position_params,
-      function(response)
+      function(err, response, ctx)
         if not done and vim.is_callable(cancel_request) then
           cancel_request()
         end
 
         done = true
 
-        local results = M._process_location_response(response --[[@as table]])
+        log.debug(
+          string.format(
+            "|_lsp_location| err:%s, response:%s, ctx:%s",
+            vim.inspect(err),
+            vim.inspect(response),
+            vim.inspect(ctx)
+          )
+        )
+        local wrapped_response = { { result = response } }
+        local results = M._process_location_response(wrapped_response --[[@as table]])
 
         if tbl.tbl_empty(results) then
           log.echo(LogLevels.INFO, "no lsp locations found.")
