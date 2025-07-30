@@ -1,5 +1,12 @@
 # Changelog
 
+## [8.2.3](https://github.com/linrongbin16/fzfx.nvim/compare/v8.2.2...v8.2.3) (2025-07-30)
+
+
+### Performance Improvements
+
+* **lsp:** speed up "buf_request_all" call in lsp locations ([#825](https://github.com/linrongbin16/fzfx.nvim/issues/825)) ([cc1c4de](https://github.com/linrongbin16/fzfx.nvim/commit/cc1c4deb47dd64ac5902dac6c3bffde0825e6771))
+
 ## [8.2.2](https://github.com/linrongbin16/fzfx.nvim/compare/v8.2.1...v8.2.2) (2025-07-04)
 
 
