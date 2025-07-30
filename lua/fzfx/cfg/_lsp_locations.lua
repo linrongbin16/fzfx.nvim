@@ -315,11 +315,16 @@ M._make_lsp_locations_async_provider = function(opts)
 
     local done = false
 
-    local cancel_request = vim.lsp.buf_request_all(
+    local cancel_request
+    cancel_request = vim.lsp.buf_request_all(
       context.bufnr,
       opts.method,
       context.position_params,
       function(response)
+        if not done and vim.is_callable(cancel_request) then
+          cancel_request()
+        end
+
         done = true
 
         local results = M._process_location_response(response --[[@as table]])
@@ -669,11 +674,16 @@ M._make_lsp_call_hierarchy_async_provider = function(opts)
 
     local done1 = false
 
-    local cancel_request1 = vim.lsp.buf_request_all(
+    local cancel_request1
+    cancel_request1 = vim.lsp.buf_request_all(
       context.bufnr,
       "textDocument/prepareCallHierarchy",
       context.position_params,
       function(response1)
+        if vim.is_callable(cancel_request1) then
+          cancel_request1()
+        end
+
         done1 = true
 
         local prepared_item =
@@ -687,11 +697,16 @@ M._make_lsp_call_hierarchy_async_provider = function(opts)
 
         local done2 = false
 
-        local cancel_request2 = vim.lsp.buf_request_all(
+        local cancel_request2
+        cancel_request2 = vim.lsp.buf_request_all(
           context.bufnr,
           opts.method,
           { item = prepared_item },
           function(response2)
+            if vim.is_callable(cancel_request2) then
+              cancel_request2()
+            end
+
             done2 = true
 
             local results = M._process_call_hierarchy_response(response2 --[[@as table? ]], opts)
