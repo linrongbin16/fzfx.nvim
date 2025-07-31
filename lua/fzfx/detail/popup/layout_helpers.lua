@@ -146,8 +146,10 @@ local function _get_row(row_opt, height, total_height)
   local center_row = _get_center(row_opt, total_height, "row")
 
   -- Note: row/col in `nvim_open_win` API is 0-indexed, so here minus 1.
-  local start_row = math.floor(center_row - (height / 2)) - 1
-  local end_row = math.floor(center_row + (height / 2)) - 1
+  -- local start_row = math.floor(center_row - (height / 2)) - 1
+  -- local end_row = math.floor(center_row + (height / 2)) - 1
+  local start_row = math.floor(center_row - (height / 2))
+  local end_row = math.floor(center_row + (height / 2))
   local adjusted = _adjust_boundary(total_height, { start_value = start_row, end_value = end_row })
 
   return { start_row = adjusted.start_value, end_row = adjusted.end_value }
