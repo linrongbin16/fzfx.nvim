@@ -1,5 +1,12 @@
 # Changelog
 
+## [8.2.6](https://github.com/linrongbin16/fzfx.nvim/compare/v8.2.5...v8.2.6) (2025-07-31)
+
+
+### Bug Fixes
+
+* **layout:** move popup window down for 1 row ([#831](https://github.com/linrongbin16/fzfx.nvim/issues/831)) ([33e4d53](https://github.com/linrongbin16/fzfx.nvim/commit/33e4d537ba2718dc20f178b1f636cabca914d2b0))
+
 ## [8.2.5](https://github.com/linrongbin16/fzfx.nvim/compare/v8.2.4...v8.2.5) (2025-07-30)
 
 
