@@ -12,4 +12,3 @@
   - Module [`fzfx.cfg`](/ApiReferences/fzfx_cfg.md)
   - Module [`fzfx.helper`](/ApiReferences/fzfx_helper.md)
   - Module [`fzfx.lib`](/ApiReferences/fzfx_lib.md)
-- [Sponsor](/Sponsor.md)
