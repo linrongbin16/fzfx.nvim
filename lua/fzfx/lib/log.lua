@@ -75,7 +75,9 @@ M.debug = function(msg)
     end
     dbglvl = dbglvl + 1
   end
-  require("fzfx.commons.logging").get("fzfx"):_log(dbg, M.LogLevels.DEBUG, msg)
+  if require("fzfx.commons.logging").has("fzfx") then
+    require("fzfx.commons.logging").get("fzfx"):_log(dbg, M.LogLevels.DEBUG, msg)
+  end
 end
 
 --- @param msg string
@@ -89,7 +91,9 @@ M.info = function(msg)
     end
     dbglvl = dbglvl + 1
   end
-  require("fzfx.commons.logging").get("fzfx"):_log(dbg, M.LogLevels.INFO, msg)
+  if require("fzfx.commons.logging").has("fzfx") then
+    require("fzfx.commons.logging").get("fzfx"):_log(dbg, M.LogLevels.INFO, msg)
+  end
 end
 
 --- @param msg string
@@ -103,7 +107,9 @@ M.warn = function(msg)
     end
     dbglvl = dbglvl + 1
   end
-  require("fzfx.commons.logging").get("fzfx"):_log(dbg, M.LogLevels.WARN, msg)
+  if require("fzfx.commons.logging").has("fzfx") then
+    require("fzfx.commons.logging").get("fzfx"):_log(dbg, M.LogLevels.WARN, msg)
+  end
 end
 
 --- @param msg string
@@ -117,7 +123,9 @@ M.err = function(msg)
     end
     dbglvl = dbglvl + 1
   end
-  require("fzfx.commons.logging").get("fzfx"):_log(dbg, M.LogLevels.ERROR, msg)
+  if require("fzfx.commons.logging").has("fzfx") then
+    require("fzfx.commons.logging").get("fzfx"):_log(dbg, M.LogLevels.ERROR, msg)
+  end
 end
 
 --- @param msg string
@@ -131,7 +139,9 @@ M.throw = function(msg)
     end
     dbglvl = dbglvl + 1
   end
-  require("fzfx.commons.logging").get("fzfx"):_log(dbg, M.LogLevels.ERROR, msg)
+  if require("fzfx.commons.logging").has("fzfx") then
+    require("fzfx.commons.logging").get("fzfx"):_log(dbg, M.LogLevels.ERROR, msg)
+  end
   error(msg)
 end
 
@@ -148,7 +158,9 @@ M.ensure = function(cond, msg)
     dbglvl = dbglvl + 1
   end
   if not cond then
-    require("fzfx.commons.logging").get("fzfx"):_log(dbg, M.LogLevels.ERROR, msg)
+    if require("fzfx.commons.logging").has("fzfx") then
+      require("fzfx.commons.logging").get("fzfx"):_log(dbg, M.LogLevels.ERROR, msg)
+    end
   end
   assert(cond, msg)
 end
