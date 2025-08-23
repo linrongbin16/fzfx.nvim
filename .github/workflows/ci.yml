@@ -18,7 +18,7 @@ jobs:
     if: ${{ github.ref != 'refs/heads/main' }}
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - uses: amannn/action-semantic-pull-request@v5
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -26,7 +26,7 @@ jobs:
     name: Lint
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - uses: JohnnyMorganz/stylua-action@v4
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
@@ -62,16 +62,12 @@ jobs:
         nvim_version: [v0.10.4, stable, nightly]
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - uses: rhysd/action-setup-vim@v1
         id: vim
         with:
           neovim: true
           version: ${{ matrix.nvim_version }}
-      - uses: leafo/gh-actions-lua@v11
-        with:
-          luaVersion: "5.1.5"
-      - uses: leafo/gh-actions-luarocks@v5
       - name: Run Tests
         run: |
           sudo apt-get update
@@ -80,25 +76,7 @@ jobs:
           sudo ln -s $(which fdfind) /usr/local/bin/fd
           sudo ln -s $(which batcat) /usr/local/bin/bat
           sudo apt-get -y -qq install fzf
-          luarocks install luacov
-          luarocks install luacov-reporter-lcov
-          luarocks --lua-version=5.1 install vusted
-          vusted --coverage ./spec
-          echo "ls -l ."
-          ls -l .
-      - name: Generate Reports
-        run: |
-          echo "luacov -r lcov"
-          luacov -r lcov
-          echo "ls -l ."
-          ls -l .
-          echo "tail ./luacov.report.out"
-          tail -n 20 ./luacov.report.out
-      - uses: codecov/codecov-action@v4
-        with:
-          files: luacov.report.out
-        env:
-          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+          make test
   release:
     name: Release
     if: ${{ github.ref == 'refs/heads/main' }}
@@ -106,13 +84,13 @@ jobs:
       - unit_test
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - uses: google-github-actions/release-please-action@v3
         id: release
         with:
           release-type: simple
           package-name: fzfx.nvim
-      - uses: nvim-neorocks/luarocks-tag-release@v5
+      - uses: nvim-neorocks/luarocks-tag-release@v7
         if: ${{ steps.release.outputs.release_created }}
         env:
           LUAROCKS_API_KEY: ${{ secrets.LUAROCKS_API_KEY }}
