@@ -234,7 +234,9 @@ describe("detail.popup.layout_helpers", function()
           -- )
           -- assert_true(isclose(2 * (actual.end_row - center_row), height))
           assert_true(isclose(2 * (center_col - actual.start_col), width))
-          -- assert_true(isclose(2 * (actual.end_col - center_col), width))
+          if not github_actions then
+            assert_true(isclose(2 * (actual.end_col - center_col), width))
+          end
         end)
       end
     end
