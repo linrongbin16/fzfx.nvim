@@ -11,7 +11,7 @@ describe("fzfx.cfg.live_grep", function()
     vim.cmd([[noautocmd edit README.md]])
   end)
 
-  require("fzfx").setup()
+  -- require("fzfx").setup()
   local tbl = require("fzfx.commons.tbl")
   local consts = require("fzfx.lib.constants")
   local live_grep_cfg = require("fzfx.cfg.live_grep")

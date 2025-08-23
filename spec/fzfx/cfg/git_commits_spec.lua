@@ -18,7 +18,7 @@ describe("fzfx.cfg.git_commits", function()
   local consts = require("fzfx.lib.constants")
   local fzf_helpers = require("fzfx.detail.fzf_helpers")
   local git_commits_cfg = require("fzfx.cfg.git_commits")
-  require("fzfx").setup()
+  -- require("fzfx").setup()
 
   describe("[_make_provider]", function()
     it("workspace", function()

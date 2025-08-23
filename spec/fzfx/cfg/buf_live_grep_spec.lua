@@ -15,7 +15,7 @@ describe("fzfx.cfg.buf_live_grep", function()
   local consts = require("fzfx.lib.constants")
   local buf_live_grep_cfg = require("fzfx.cfg.buf_live_grep")
   local _grep = require("fzfx.cfg._grep")
-  require("fzfx").setup()
+  -- require("fzfx").setup()
 
   --- @return fzfx.PipelineContext
   local function make_context()

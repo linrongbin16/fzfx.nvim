@@ -13,7 +13,7 @@ describe("fzfx.cfg.lsp_diagnostics", function()
 
   local str = require("fzfx.commons.str")
   local lsp_diagnostics_cfg = require("fzfx.cfg.lsp_diagnostics")
-  require("fzfx").setup()
+  -- require("fzfx").setup()
 
   describe("lsp_diagnostics", function()
     it("_make_signs", function()

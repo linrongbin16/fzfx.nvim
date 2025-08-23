@@ -16,7 +16,7 @@ describe("fzfx.cfg.vim_keymaps", function()
   local str = require("fzfx.commons.str")
   local constants = require("fzfx.lib.constants")
   local vim_keymaps_cfg = require("fzfx.cfg.vim_keymaps")
-  require("fzfx").setup()
+  -- require("fzfx").setup()
 
   describe("[keymaps]", function()
     local CONTEXT = vim_keymaps_cfg._context_maker()

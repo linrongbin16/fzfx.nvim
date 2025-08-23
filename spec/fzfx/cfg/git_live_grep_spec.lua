@@ -18,7 +18,7 @@ describe("fzfx.cfg.git_live_grep", function()
   local constants = require("fzfx.lib.constants")
   local fzf_helpers = require("fzfx.detail.fzf_helpers")
   local git_live_grep_cfg = require("fzfx.cfg.git_live_grep")
-  require("fzfx").setup()
+  -- require("fzfx").setup()
 
   describe("_provider", function()
     it("case-1: without extra options", function()

@@ -12,7 +12,7 @@ describe("fzfx.cfg._grep", function()
   end)
 
   local _grep = require("fzfx.cfg._grep")
-  require("fzfx").setup()
+  -- require("fzfx").setup()
 
   describe("[_buf_path]", function()
     it("test", function()

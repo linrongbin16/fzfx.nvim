@@ -17,7 +17,7 @@ describe("fzfx.cfg.vim_command_history", function()
   local tbl = require("fzfx.commons.tbl")
   local consts = require("fzfx.lib.constants")
   local vim_command_history_cfg = require("fzfx.cfg.vim_command_history")
-  require("fzfx").setup()
+  -- require("fzfx").setup()
 
   describe("[commands]", function()
     it("_provider", function()

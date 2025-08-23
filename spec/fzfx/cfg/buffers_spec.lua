@@ -15,7 +15,7 @@ describe("fzfx.cfg.buffers", function()
 
   local GITHUB_ACTIONS = os.getenv("GITHUB_ACTIONS") == "true"
 
-  require("fzfx").setup()
+  -- require("fzfx").setup()
   local fzf_helpers = require("fzfx.detail.fzf_helpers")
   local buffers_cfg = require("fzfx.cfg.buffers")
 

@@ -14,7 +14,7 @@ describe("fzfx.cfg.git_status", function()
   local str = require("fzfx.commons.str")
   local consts = require("fzfx.lib.constants")
   local git_status_cfg = require("fzfx.cfg.git_status")
-  require("fzfx").setup()
+  -- require("fzfx").setup()
 
   describe("[git_status]", function()
     it("_make_provider", function()

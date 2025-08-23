@@ -24,12 +24,12 @@ describe("detail.general", function()
   local PreviewerTypeEnum = schema.PreviewerTypeEnum
 
   local config = require("fzfx.config")
-  require("fzfx").setup({
-    debug = {
-      enable = true,
-      file_log = true,
-    },
-  })
+  -- require("fzfx").setup({
+  --   debug = {
+  --     enable = true,
+  --     file_log = true,
+  --   },
+  -- })
 
   local general = require("fzfx.detail.general")
 

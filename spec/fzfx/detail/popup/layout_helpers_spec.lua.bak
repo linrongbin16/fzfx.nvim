@@ -27,12 +27,12 @@ describe("detail.popup.layout_helpers", function()
   end)
 
   local layout_helpers = require("fzfx.detail.popup.layout_helpers")
-  require("fzfx").setup({
-    debug = {
-      enable = true,
-      file_log = true,
-    },
-  })
+  -- require("fzfx").setup({
+  --   debug = {
+  --     enable = true,
+  --     file_log = true,
+  --   },
+  -- })
 
   describe("[make_center_layout]", function()
     for i = min_test_height, max_test_height, 2 do

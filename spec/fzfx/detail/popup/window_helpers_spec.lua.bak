@@ -27,12 +27,12 @@ describe("detail.popup.window_helpers", function()
   end)
 
   local popup_window_helpers = require("fzfx.detail.popup.window_helpers")
-  require("fzfx").setup({
-    debug = {
-      enable = true,
-      file_log = true,
-    },
-  })
+  -- require("fzfx").setup({
+  --   debug = {
+  --     enable = true,
+  --     file_log = true,
+  --   },
+  -- })
 
   describe("[WindowContext]", function()
     it("save", function()

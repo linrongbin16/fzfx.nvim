@@ -28,12 +28,12 @@ describe("detail.popup.window", function()
 
   local num = require("fzfx.commons.num")
   local pwindow = require("fzfx.detail.popup.window")
-  require("fzfx").setup({
-    debug = {
-      enable = true,
-      file_log = true,
-    },
-  })
+  -- require("fzfx").setup({
+  --   debug = {
+  --     enable = true,
+  --     file_log = true,
+  --   },
+  -- })
 
   local WIN_OPTS = {
     height = 0.85,

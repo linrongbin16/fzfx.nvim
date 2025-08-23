@@ -17,7 +17,7 @@ describe("detail.popup", function()
   local str = require("fzfx.commons.str")
   local fzf_helpers = require("fzfx.detail.fzf_helpers")
   local popup = require("fzfx.detail.popup")
-  require("fzfx").setup()
+  -- require("fzfx").setup()
 
   describe("[_make_expect_keys]", function()
     it("make --expect options", function()

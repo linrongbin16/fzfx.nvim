@@ -19,7 +19,7 @@ describe("fzfx.cfg.git_blame", function()
   local fzf_helpers = require("fzfx.detail.fzf_helpers")
   local git_blame_cfg = require("fzfx.cfg.git_blame")
 
-  require("fzfx").setup()
+  -- require("fzfx").setup()
 
   describe("git_blame", function()
     it("_provider", function()

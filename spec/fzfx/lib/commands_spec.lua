@@ -13,7 +13,7 @@ describe("lib.commands", function()
   local CommandResult = require("fzfx.lib.commands").CommandResult
   local cmds = require("fzfx.lib.commands")
   local async = require("fzfx.commons.async")
-  require("fzfx").setup()
+  -- require("fzfx").setup()
 
   describe("[CommandResult]", function()
     it("new result is empty", function()

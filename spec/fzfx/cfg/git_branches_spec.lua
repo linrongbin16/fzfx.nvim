@@ -18,7 +18,7 @@ describe("fzfx.cfg.git_branches", function()
   local consts = require("fzfx.lib.constants")
   local fzf_helpers = require("fzfx.detail.fzf_helpers")
   local git_branches_cfg = require("fzfx.cfg.git_branches")
-  require("fzfx").setup()
+  -- require("fzfx").setup()
 
   describe("git_branches", function()
     it("_make_provider local", function()
