@@ -29,12 +29,12 @@ describe("helper.actions", function()
     }
   end
 
-  require("fzfx").setup({
-    debug = {
-      enable = true,
-      file_log = true,
-    },
-  })
+  -- require("fzfx").setup({
+  --   debug = {
+  --     enable = true,
+  --     file_log = true,
+  --   },
+  -- })
 
   describe("[nop]", function()
     it("test", function()

@@ -22,7 +22,7 @@ describe("helper.previewer_labels", function()
   local fio = require("fzfx.commons.fio")
   local parsers_helper = require("fzfx.helper.parsers")
   local previewer_labels_helper = require("fzfx.helper.previewer_labels")
-  require("fzfx").setup()
+  -- require("fzfx").setup()
 
   describe("[label_find]", function()
     it("test", function()

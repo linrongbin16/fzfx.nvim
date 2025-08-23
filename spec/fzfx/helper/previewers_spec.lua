@@ -27,7 +27,7 @@ describe("helper.previewers", function()
   local previewers_helper = require("fzfx.helper.previewers")
   local conf = require("fzfx.config")
   local fzf_helpers = require("fzfx.detail.fzf_helpers")
-  require("fzfx").setup()
+  -- require("fzfx").setup()
 
   describe("[_bat_style]", function()
     it("default", function()

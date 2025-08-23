@@ -20,7 +20,7 @@ describe("helper.parsers", function()
   local fio = require("fzfx.commons.fio")
   local consts = require("fzfx.lib.constants")
   local parsers_helper = require("fzfx.helper.parsers")
-  require("fzfx").setup()
+  -- require("fzfx").setup()
 
   local DEVICONS_PATH = "~/github/linrongbin16/.config/nvim/lazy/nvim-web-devicons"
 
