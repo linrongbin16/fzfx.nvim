@@ -17,7 +17,7 @@ describe("fzfx.cfg._lsp_locations", function()
   local color_term = require("fzfx.commons.color.term")
   local _lsp_locations = require("fzfx.cfg._lsp_locations")
   local uv = require("fzfx.commons.uv")
-  require("fzfx").setup()
+  -- require("fzfx").setup()
 
   describe("_lsp_locations", function()
     local HOME_DIR = uv.os_homedir()

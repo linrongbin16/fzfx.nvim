@@ -20,7 +20,7 @@ describe("fzfx.cfg.file_explorer", function()
   local fzf_helpers = require("fzfx.detail.fzf_helpers")
   local file_explorer_cfg = require("fzfx.cfg.file_explorer")
 
-  require("fzfx").setup()
+  -- require("fzfx").setup()
 
   --- @return fzfx.PipelineContext
   local function make_context()
