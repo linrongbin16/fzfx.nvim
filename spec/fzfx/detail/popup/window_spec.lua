@@ -52,7 +52,7 @@ describe("detail.popup.window", function()
             0,
             1
           )
-          print(string.format("fzf_popup_window._make_cursor_opts:%s\n", vim.inspect(actual)))
+          -- print(string.format("fzf_popup_window._make_cursor_opts:%s\n", vim.inspect(actual)))
           local win_width = vim.api.nvim_win_get_width(0)
           local win_height = vim.api.nvim_win_get_height(0)
           local expect_width = num.bound(win_width * 0.85, 1, win_width)
@@ -79,24 +79,24 @@ describe("detail.popup.window", function()
             0,
             1
           )
-          print(string.format("fzf_popup_window._make_center_opts:%s\n", vim.inspect(actual)))
+          -- print(string.format("fzf_popup_window._make_center_opts:%s\n", vim.inspect(actual)))
           local total_width = vim.api.nvim_win_get_width(0)
           local total_height = vim.api.nvim_win_get_height(0)
           local width = total_width * 0.85
           local height = total_height * 0.85
           local start_row = total_height * 0.5 - 1 - (height / 2)
           local start_col = total_width * 0.5 - 1 - (width / 2)
-          print(
-            string.format(
-              "fzf_popup_window._make_center_opts total(height/width):%s/%s, height/width:%s/%s, start(row/col):%s/%s\n",
-              vim.inspect(total_height),
-              vim.inspect(total_width),
-              vim.inspect(height),
-              vim.inspect(width),
-              vim.inspect(start_row),
-              vim.inspect(start_col)
-            )
-          )
+          -- print(
+          --   string.format(
+          --     "fzf_popup_window._make_center_opts total(height/width):%s/%s, height/width:%s/%s, start(row/col):%s/%s\n",
+          --     vim.inspect(total_height),
+          --     vim.inspect(total_width),
+          --     vim.inspect(height),
+          --     vim.inspect(width),
+          --     vim.inspect(start_row),
+          --     vim.inspect(start_col)
+          --   )
+          -- )
           assert_eq(actual.anchor, "NW")
           assert_true(num.eq(actual.height, height, 1, 1))
           assert_true(num.eq(actual.width, width, 0.1, 0.1))
@@ -114,13 +114,13 @@ describe("detail.popup.window", function()
         it("test", function()
           local actual1 = pwindow.make_opts(WIN_OPTS, 0, 1)
           local actual2 = pwindow._make_center_opts(WIN_OPTS, 0, 1)
-          print(
-            string.format(
-              "fzf_popup_window.make_opts:%s, _make_center_opts:%s\n",
-              vim.inspect(actual1),
-              vim.inspect(actual2)
-            )
-          )
+          -- print(
+          --   string.format(
+          --     "fzf_popup_window.make_opts:%s, _make_center_opts:%s\n",
+          --     vim.inspect(actual1),
+          --     vim.inspect(actual2)
+          --   )
+          -- )
           assert_eq(actual1.anchor, "NW")
           assert_eq(type(actual1.height), "number")
           assert_eq(type(actual2.height), "number")
