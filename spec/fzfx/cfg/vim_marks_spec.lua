@@ -18,7 +18,7 @@ describe("fzfx.cfg.vim_marks", function()
   local num = require("fzfx.commons.num")
   local constants = require("fzfx.lib.constants")
   local vim_marks_cfg = require("fzfx.cfg.vim_marks")
-  require("fzfx").setup()
+  -- require("fzfx").setup()
 
   describe("[_get_marks_output_in_lines]", function()
     it("test", function()
